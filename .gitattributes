@@ -1,0 +1,5 @@
+# Third-party front-end libraries shipped with the project.
+# Excluded from language statistics and diffs.
+public/vendor/**            linguist-vendored
+public/assets/vendor/**     linguist-vendored
+public/assets/css/login.css linguist-vendored
