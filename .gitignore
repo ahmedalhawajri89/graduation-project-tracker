@@ -1,0 +1,42 @@
+# Laravel
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+
+# Next.js frontend
+/frontend/node_modules
+/frontend/.next
+/frontend/out
+/frontend/.env*
+!/frontend/.env.local.example
+
+# Editors & tools
+/.idea
+/.vscode
+/.claude
+
+# editors, agents & local artefacts
+.idea/
+.vscode/
+.claude/
+.ai/
+CLAUDE.md
+.DS_Store
+Thumbs.db
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+/database/*.sqlite
+/public/build
+/storage/framework/
+/storage/logs/
