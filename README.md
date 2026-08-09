@@ -1,90 +1,135 @@
 # Graduation Project Tracker
 
-A university system for managing graduation projects end to end — from proposing a project idea and forming a group, through supervisor assignment and milestone tracking, to file submissions, comments and final evaluation. Built around **three separate roles**, each with its own dashboard, permissions and workflow.
+A university system that manages graduation projects from the first idea to the final grade — with three separate roles, each getting its own dashboard, its own permissions and its own workflow.
 
-## ✨ Features
+---
 
-**Admin**
-- Manage students, supervisors, specialisations and academic semesters
-- Bulk-import students and supervisors from Excel
-- Form and edit project groups, assign supervisors
-- Manage the catalogue of proposed project topics per specialisation
-- Dashboard KPIs backed by periodic stat snapshots
+## The problem it solves
 
-**Supervisor**
-- Review and accept or reject project requests
-- Track every supervised project, its milestones and submitted files
-- Comment on student work and record the final evaluation
-- Archive of past semesters
+Graduation projects are usually run on spreadsheets, email threads and paper. Nobody has a single answer to "which groups have no supervisor yet", "which milestones are overdue" or "where is the latest version of that file". This system puts all of that in one place, and gives each role only the part that concerns them.
 
-**Student**
-- Submit a project proposal and join a group
-- Follow milestone progress and deadlines
-- Upload deliverables and reply to supervisor comments
-- Personal profile and notifications
+---
 
-## 🛠 Tech Stack
+## The three roles
 
-**Laravel 12 · PHP 8.2 · MySQL · Blade · Sanctum**
-Yajra DataTables for server-side tables, Maatwebsite/Excel for import & export.
-A separate **Next.js 14** marketing front end lives in `frontend/` (React 18, Framer Motion, Lenis).
+**Admin** runs the semester. Adds and manages students, supervisors, specialisations and academic terms — including bulk import from Excel, which matters when a new intake is 300 rows. Forms project groups, assigns supervisors, and maintains the catalogue of proposed project topics per specialisation. The dashboard is backed by periodic stat snapshots rather than recalculating everything on every page load.
 
-## 🎨 Design System
+**Supervisor** reviews the project requests that come in, accepts or rejects them, then tracks each supervised project: its milestones, its submitted files, and the discussion around them. Comments on student work, records the final evaluation, and can look back at previous semesters through the archive.
 
-The whole product — public site, login and all three dashboards — is driven by one token layer, documented in [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md). Colours, radii, shadows and motion are defined once and never hard-coded inside pages.
+**Student** proposes a project, joins a group, follows the milestone timeline and its deadlines, uploads deliverables, and replies to supervisor comments — with a profile and notifications of their own.
 
-## 🚀 Getting Started
+---
+
+## Features
+
+- Three role-scoped dashboards with separate route groups and permissions
+- Excel import for students and supervisors, plus data export
+- Group formation and supervisor assignment
+- Project proposal, review, acceptance and rejection flow
+- Milestone tracking with deadlines
+- File submissions per project, with a dedicated file controller
+- Threaded comments between student and supervisor
+- Final evaluation recorded against the project
+- Semester management with an active-term flag and an archive of past terms
+- Server-side data tables, so large lists stay fast
+- Contact messages from the public site
+- A separate Next.js marketing front end
+
+---
+
+## Design system
+
+Every part of the product — the public site, the login screen and all three dashboards — is driven by a single documented token layer, written up in [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md). Colours, radii, shadows and motion are defined once in two stylesheets and never hard-coded inside a page. Changing the brand means editing two files, not forty.
+
+---
+
+## Tech stack
+
+**Back end** — Laravel 12, PHP 8.2, MySQL, Laravel Sanctum
+**Tables and files** — Yajra DataTables (server-side), Maatwebsite/Excel (import and export)
+**Views** — Blade, with a shared component layer (`page-header`, `kpi-card`, `status-badge`, `empty-state`, `attention-card`)
+**Marketing front end** — Next.js 14, React 18, Framer Motion, Lenis, Tailwind CSS
+
+---
+
+## Getting started
+
+### Laravel application
 
 ```bash
 composer install
-npm install && npm run dev
+npm install
 
 cp .env.example .env
 php artisan key:generate
-php artisan migrate --seed
-php artisan serve
 ```
 
-The Next.js front end:
+Set your database credentials in `.env`, then:
+
+```bash
+php artisan migrate --seed
+php artisan storage:link      # required for project file uploads
+
+npm run dev
+php artisan serve             # http://localhost:8000
+```
+
+### Next.js front end
 
 ```bash
 cd frontend
 npm install
 cp .env.local.example .env.local
-npm run dev
+npm run dev                   # http://localhost:3000
 ```
 
-## 📁 Structure
+---
+
+## Project structure
 
 ```
-app/Http/Controllers/Admin       admin area
-app/Http/Controllers/Supervisor  supervisor area
-app/Http/Controllers/Student     student area
-resources/views/dashboard        role-scoped dashboards
-public/assets/css/premium.css    public-site design tokens
-public/css/dashboard.css         dashboard design tokens
-frontend/                        Next.js marketing site
+app/Models/                        Project, Group, Student, Supervisor, Semester,
+                                   Specialize, ProjectMilestone, ProjectFile,
+                                   ProjectComment, StatSnapshot, Admin, Contact
+app/Http/Controllers/Admin/        students, supervisors, groups, semesters,
+                                   specialisations, project catalogue, contacts
+app/Http/Controllers/Supervisor/   dashboard, project management, profile
+app/Http/Controllers/Student/      dashboard, files, comments, profile
+app/Http/Controllers/FileController.php   uploads and downloads
+resources/views/dashboard/         role-scoped dashboards
+resources/views/components/        shared Blade UI components
+resources/views/layouts/admin/     shell, header, sidebars per role
+public/assets/css/premium.css      design tokens — public site
+public/css/dashboard.css           design tokens — dashboards
+frontend/                          Next.js marketing site
+DESIGN_SYSTEM.md                   the single source of visual truth
 ```
 
-## 👤 Author
+---
+
+## Author
 
 **Ahmed Al-Hawajiri** — Full-Stack Developer
-[GitHub](https://github.com/ahmedalhawajri89)
+[GitHub](https://github.com/ahmedalhawajri89) · [LinkedIn](https://www.linkedin.com/in/ahmedalhawajri)
+
+Licensed under the MIT License.
 
 ---
 
 <div dir="rtl">
 
-### نبذة
+## نبذة بالعربية
 
-نظام جامعي لإدارة مشاريع التخرّج من أولها لآخرها: اقتراح فكرة المشروع، تكوين المجموعة، إسناد المشرف، متابعة المراحل، رفع التسليمات والتعليق عليها، ثم التقييم النهائي. مبني على **ثلاثة أدوار منفصلة** لكل دور لوحة تحكم وصلاحيات ومسار عمل خاص به.
+نظام جامعي لإدارة مشاريع التخرّج من أول فكرة حتى الدرجة النهائية، مبني على **ثلاثة أدوار منفصلة** لكل واحد منها لوحة تحكم وصلاحيات ومسار عمل خاص.
 
-**الأدمن:** إدارة الطلاب والمشرفين والتخصصات والفصول الدراسية، استيراد جماعي من Excel، تكوين المجموعات، وإدارة قائمة المواضيع المقترحة.
+**الأدمن** يدير الفصل الدراسي: الطلاب والمشرفون والتخصصات والفصول، مع استيراد جماعي من Excel، وتكوين المجموعات وإسناد المشرفين، وإدارة قائمة المواضيع المقترحة.
 
-**المشرف:** مراجعة طلبات المشاريع وقبولها أو رفضها، متابعة المراحل والملفات، التعليق على عمل الطلاب، وتسجيل التقييم النهائي.
+**المشرف** يراجع طلبات المشاريع ويقبلها أو يرفضها، ثم يتابع المراحل والملفات المسلَّمة، ويعلّق على عمل الطلاب ويسجّل التقييم النهائي، مع أرشيف للفصول السابقة.
 
-**الطالب:** تقديم مقترح المشروع، متابعة المراحل والمواعيد، رفع التسليمات، والرد على تعليقات المشرف.
+**الطالب** يقدّم مقترح مشروعه، ينضم لمجموعة، يتابع المراحل ومواعيدها، يرفع التسليمات، ويرد على تعليقات المشرف.
 
-**التقنيات:** Laravel 12 و PHP 8.2 و MySQL و Blade مع Sanctum، إضافة إلى واجهة تعريفية منفصلة بـ Next.js 14 داخل مجلد `frontend/`.
+**ملاحظة على التصميم:** الموقع العام وصفحة الدخول واللوحات الثلاث كلها مبنية على طبقة توكنز واحدة موثّقة في `DESIGN_SYSTEM.md` — الألوان والزوايا والظلال والحركة معرّفة مرة واحدة في ملفين، وممنوع كتابتها يدوياً داخل الصفحات. تغيير الهوية البصرية يعني تعديل ملفين لا أربعين.
+
+**التقنيات:** Laravel 12 و PHP 8.2 و MySQL و Sanctum، مع Yajra DataTables و Maatwebsite Excel، وواجهة تعريفية منفصلة بـ Next.js 14.
 
 </div>
