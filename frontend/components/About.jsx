@@ -1,12 +1,12 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { CheckCircle2, ArrowLeft, ArrowRight, Building2, Cpu, Network } from "lucide-react";
+import { CheckCircle2, ArrowLeft, ArrowRight, GraduationCap, Users, ListChecks, Award } from "lucide-react";
 import { useLang } from "@/lib/LanguageContext";
 import Reveal from "./ui/Reveal";
 import TiltCard from "./ui/TiltCard";
 
-const PROGRAM_ICONS = [Cpu, Building2, Network];
+const PILLAR_ICONS = [Users, ListChecks, Award];
 
 export default function About() {
   const { t, dir } = useLang();
@@ -16,7 +16,7 @@ export default function About() {
   return (
     <section id="about" className="relative py-24">
       <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 md:px-6 lg:grid-cols-2">
-        {/* Illustration: layered isometric campus card */}
+        {/* Illustration: layered platform card */}
         <div className="order-2 lg:order-1">
           <TiltCard max={7}>
             <div className="relative">
@@ -24,21 +24,21 @@ export default function About() {
                 <div className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-violet-200/50 blur-3xl" />
                 <div className="pointer-events-none absolute -bottom-20 -left-16 h-56 w-56 rounded-full bg-brand-200/50 blur-3xl" />
 
-                {/* Faculty "building" illustration */}
+                {/* Platform illustration */}
                 <div className="relative mx-auto flex max-w-sm flex-col items-center gap-4 py-6">
                   <motion.div
                     animate={reduce ? {} : { y: [0, -10, 0] }}
                     transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
                     className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 to-violet-600 text-white shadow-lift"
                   >
-                    <Building2 size={44} aria-hidden="true" />
+                    <GraduationCap size={44} aria-hidden="true" />
                   </motion.div>
 
                   <div className="h-8 w-px bg-gradient-to-b from-brand-300 to-transparent" />
 
                   <div className="grid w-full grid-cols-3 gap-3">
-                    {t.about.programs.map((p, i) => {
-                      const Icon = PROGRAM_ICONS[i % PROGRAM_ICONS.length];
+                    {t.about.pillars.map((p, i) => {
+                      const Icon = PILLAR_ICONS[i % PILLAR_ICONS.length];
                       return (
                         <motion.div
                           key={i}
@@ -85,10 +85,10 @@ export default function About() {
 
           <Reveal delay={0.24} className="w-full">
             <p className="mb-3 text-sm font-bold uppercase tracking-wide text-brand-600">
-              {t.about.programsTitle}
+              {t.about.pillarsTitle}
             </p>
             <ul className="flex flex-col gap-3">
-              {t.about.programs.map((p, i) => (
+              {t.about.pillars.map((p, i) => (
                 <li
                   key={i}
                   className="glass flex items-center gap-3 rounded-2xl px-4 py-3.5 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:shadow-lift"

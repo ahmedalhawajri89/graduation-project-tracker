@@ -5,9 +5,9 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-    <title>تتبع مشاريع التخرج | كلية الحاسبات وتكنولوجيا المعلومات</title>
-    <meta name="description" content="منصة كلية الحاسبات وتكنولوجيا المعلومات — جامعة الأقصى لتتبع مشاريع التخرج وإدارة الفرق والمشرفين." />
-    <link rel="icon" href="{{ asset('/assets/img/logo.png') }}" />
+    <title>تخرُّج | منصة متابعة مشاريع التخرج</title>
+    <meta name="description" content="تخرُّج (Takharruj) — منصة لتتبع مشاريع التخرج وإدارة الفرق والمشرفين ومتابعة مراحل المشروع من الفكرة إلى المناقشة." />
+    <link rel="icon" href="{{ asset('assets/img/takharruj-logo.svg') }}" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -33,17 +33,17 @@
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                 </span>
                 <span>
-                    <span class="brand-name" data-i18n="brand.name">تتبع المشاريع</span><br>
-                    <small class="brand-sub" data-i18n="brand.sub">كلية الحاسبات وتكنولوجيا المعلومات</small>
+                    <span class="brand-name" data-i18n="brand.name">تخرُّج</span><br>
+                    <small class="brand-sub" data-i18n="brand.sub">منصة متابعة مشاريع التخرج</small>
                 </span>
             </a>
 
             <ul class="nav-links">
                 <li><a href="#hero" data-i18n="nav.home">الرئيسية</a></li>
-                <li><a href="#about" data-i18n="nav.about">عن الكلية</a></li>
+                <li><a href="#about" data-i18n="nav.about">عن المنصة</a></li>
                 <li><a href="#services" data-i18n="nav.services">الخدمات</a></li>
                 <li><a href="#features" data-i18n="nav.features">الميزات</a></li>
-                <li><a href="#staff" data-i18n="nav.staff">طاقم الكلية</a></li>
+                <li><a href="#roles" data-i18n="nav.roles">الأدوار</a></li>
                 <li><a href="#contact" data-i18n="nav.contact">اتصل بنا</a></li>
             </ul>
 
@@ -76,10 +76,10 @@
 
         <div class="mobile-menu glass-strong">
             <a href="#hero" data-i18n="nav.home">الرئيسية</a>
-            <a href="#about" data-i18n="nav.about">عن الكلية</a>
+            <a href="#about" data-i18n="nav.about">عن المنصة</a>
             <a href="#services" data-i18n="nav.services">الخدمات</a>
             <a href="#features" data-i18n="nav.features">الميزات</a>
-            <a href="#staff" data-i18n="nav.staff">طاقم الكلية</a>
+            <a href="#roles" data-i18n="nav.roles">الأدوار</a>
             <a href="#contact" data-i18n="nav.contact">اتصل بنا</a>
             @if (auth()->guard('admin')->check() || auth()->guard('supervisor')->check() || auth()->guard('student')->check())
                 <a href="{{ route('login') }}" class="btn btn-primary" data-i18n="nav.dashboard">لوحة التحكم</a>
@@ -112,8 +112,8 @@
                 </h1>
 
                 <p class="hero-sub stagger d3" data-i18n="hero.sub">
-                    منصة كلية الحاسبات وتكنولوجيا المعلومات — جامعة الأقصى، لإدارة الفرق، اختيار المشرفين،
-                    ومتابعة مراحل المشروع بتجربة عصرية وسلسة.
+                    منصة تخرُّج لإدارة الفرق، اختيار المشرفين، ومتابعة مراحل المشروع
+                    بتجربة عصرية وسلسة.
                 </p>
 
                 <div class="hero-ctas stagger d4">
@@ -172,7 +172,7 @@
                             </span>
                             <span>
                                 <span class="float-title" data-i18n="hero.approved">تمت الموافقة على المشروع</span>
-                                <span class="float-sub" data-i18n="hero.approvedSub">د. محمد عوض الله · قبل دقيقتين</span>
+                                <span class="float-sub" data-i18n="hero.approvedSub">المشرف الأكاديمي · قبل دقيقتين</span>
                             </span>
                         </div>
                     </div>
@@ -282,44 +282,45 @@
                                 <span class="about-chip-icon">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg>
                                 </span>
-                                <span data-i18n="about.p1">بكالوريوس علم الحاسوب</span>
+                                <span data-i18n="about.p1">إدارة الفرق الطلابية والمشرفين</span>
                             </div>
                             <div class="about-chip glass">
                                 <span class="about-chip-icon">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
                                 </span>
-                                <span data-i18n="about.p2">بكالوريوس تكنولوجيا المعلومات التطبيقية</span>
+                                <span data-i18n="about.p2">متابعة مراحل المشروع ونِسب الإنجاز</span>
                             </div>
                             <div class="about-chip glass">
                                 <span class="about-chip-icon">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
                                 </span>
-                                <span data-i18n="about.p3">بكالوريوس الشبكات والهواتف النقالة</span>
+                                <span data-i18n="about.p3">المناقشة والتقييم ورصد الدرجات</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="about-copy">
-                    <span class="badge reveal"><span class="dot"></span><span data-i18n="about.kicker">عن الكلية</span></span>
-                    <h2 class="reveal d1" data-i18n="about.title">كلية الحاسبات وتكنولوجيا المعلومات</h2>
+                    <span class="badge reveal"><span class="dot"></span><span data-i18n="about.kicker">عن المنصة</span></span>
+                    <h2 class="reveal d1" data-i18n="about.title">منصة تخرُّج</h2>
                     <p class="reveal d2" data-i18n="about.text">
-                        أنشئت الكلية في بداية العام الدراسي 2018–2019 كإحدى كليات جامعة الأقصى، تلبيةً لحاجة
-                        المجتمع الفلسطيني الملحّة للخريجين المؤهلين في مجال تكنولوجيا المعلومات والتقنيات الحديثة.
+                        تخرُّج منصة مستقلة لإدارة مشاريع التخرج من أول تكوين الفريق واختيار المشرف، مروراً باعتماد
+                        الفكرة ومتابعة المراحل، وصولاً إلى المناقشة والتقييم النهائي — كل ذلك في مكان واحد
+                        وبسير عمل واضح لكل طرف.
                     </p>
                     <div class="reveal d3">
-                        <div class="programs-title" data-i18n="about.programsTitle">البرامج الأكاديمية</div>
+                        <div class="programs-title" data-i18n="about.pillarsTitle">ركائز المنصة</div>
                         <div class="program-item glass">
                             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
-                            <span data-i18n="about.p1">بكالوريوس علم الحاسوب</span>
+                            <span data-i18n="about.p1">إدارة الفرق الطلابية والمشرفين</span>
                         </div>
                         <div class="program-item glass">
                             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
-                            <span data-i18n="about.p2">بكالوريوس تكنولوجيا المعلومات التطبيقية</span>
+                            <span data-i18n="about.p2">متابعة مراحل المشروع ونِسب الإنجاز</span>
                         </div>
                         <div class="program-item glass">
                             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
-                            <span data-i18n="about.p3">بكالوريوس الشبكات والهواتف النقالة</span>
+                            <span data-i18n="about.p3">المناقشة والتقييم ورصد الدرجات</span>
                         </div>
                         <a href="#services" class="link-more">
                             <span data-i18n="about.more">المزيد</span>
@@ -435,7 +436,7 @@
                                             <i>
                                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                                             </i>
-                                            <span data-i18n="brand.name">تتبع المشاريع</span>
+                                            <span data-i18n="brand.name">تخرُّج</span>
                                         </span>
                                         <span class="app-bell">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -486,7 +487,7 @@
                     <span class="badge reveal"><span class="dot"></span><span data-i18n="how.kicker">كيف يعمل النظام؟</span></span>
                     <h2 class="reveal d1" data-i18n="how.title">أربع خطوات من الفكرة إلى الدرجة</h2>
                     <p class="reveal d2" data-i18n="how.text">
-                        حسابك يُنشأ من إدارة الكلية — لا حاجة للتسجيل، فقط سجّل دخولك وابدأ.
+                        حسابك يُنشأ من إدارة المنصة — لا حاجة للتسجيل، فقط سجّل دخولك وابدأ.
                     </p>
                 </div>
 
@@ -494,7 +495,7 @@
                     <div class="how-step glass reveal">
                         <span class="how-num">1</span>
                         <h3 data-i18n="how.1.title">سجّل دخولك</h3>
-                        <p data-i18n="how.1.text">ببريدك الجامعي أو رقمك الجامعي — الحسابات جاهزة مسبقاً من إدارة الكلية.</p>
+                        <p data-i18n="how.1.text">ببريدك أو رقمك الجامعي — الحسابات جاهزة مسبقاً من إدارة المنصة.</p>
                     </div>
                     <div class="how-step glass reveal d1">
                         <span class="how-num">2</span>
@@ -515,89 +516,92 @@
             </div>
         </section>
 
-        {{-- ======= Staff ======= --}}
-        <section id="staff" class="section">
+        {{-- ======= Roles ======= --}}
+        <section id="roles" class="section">
             <div class="section-divider" aria-hidden="true"></div>
             <div class="container">
                 <div class="section-head">
-                    <span class="badge reveal"><span class="dot"></span><span data-i18n="staff.kicker">طاقم الكلية</span></span>
-                    <h2 class="reveal d1" data-i18n="staff.title">نخبة من المتخصصين</h2>
-                    <p class="reveal d2" data-i18n="staff.text">
-                        تضم الكلية نخبة من المتخصصين في مجال تكنولوجيا المعلومات من حملة شهادات الدكتوراه
-                        والماجستير من جامعات عالمية، بتنوعٍ وحداثةٍ في التخصصات لمواكبة التطور الهائل في هذا المجال.
+                    <span class="badge reveal"><span class="dot"></span><span data-i18n="roles.kicker">أدوار المنصة</span></span>
+                    <h2 class="reveal d1" data-i18n="roles.title">لكل دور مساحته الخاصة</h2>
+                    <p class="reveal d2" data-i18n="roles.text">
+                        تخرُّج مبنية حول ثلاثة أدوار متكاملة، لكل منها لوحة تحكم وصلاحيات تناسب مهامه،
+                        بحيث يعرف كل طرف ما عليه بالضبط في كل مرحلة.
                     </p>
                 </div>
 
-                <div class="staff-grid">
-                    @php
-                        $staff = [
-                            ['img' => 'dr.mohammed.jpg', 'key' => 1],
-                            ['img' => 'dr.mohammed_radi.jpg', 'key' => 2],
-                            ['img' => 'dr.yousef.jpg', 'key' => 3],
-                            ['img' => 'dr.yousef_yousef.jpg', 'key' => 4],
-                            ['img' => 'dr.abd.jpg', 'key' => 5],
-                        ];
-                        $staffNames = ['د. محمد عوض الله', 'د. محمد راضي', 'د. يوسف حمودة', 'د. يوسف يوسف', 'د. عبد الرافع الزاملي'];
-                        $staffRoles = ['أستاذ مشارك', 'أستاذ مساعد', 'أستاذ مشارك', 'أستاذ مساعد', 'أستاذ مساعد'];
-                    @endphp
-                    @foreach ($staff as $i => $member)
-                        <article class="staff-card glass reveal d{{ min($i, 4) }}" data-tilt="8">
-                            <div class="staff-photo-wrap">
-                                <div class="staff-photo-glow" aria-hidden="true"></div>
-                                <img src="{{ asset('assets/img/dr/' . $member['img']) }}" alt="{{ $staffNames[$i] }}"
-                                    class="staff-photo" loading="lazy" />
-                                <span class="staff-cap" aria-hidden="true">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                                </span>
-                            </div>
-                            <h3 data-i18n="staff.{{ $member['key'] }}.name">{{ $staffNames[$i] }}</h3>
-                            <p data-i18n="staff.{{ $member['key'] }}.role">{{ $staffRoles[$i] }}</p>
-                        </article>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-        {{-- ======= FAQ (أسئلة الطلاب الفعلية) ======= --}}
-        <section id="faq" class="section">
-            <div class="container">
-                <div class="section-head">
-                    <span class="badge reveal"><span class="dot"></span><span data-i18n="faq.kicker">الأسئلة الشائعة</span></span>
-                    <h2 class="reveal d1" data-i18n="faq.title">كل ما يسأله الطلاب قبل البدء</h2>
-                    <p class="reveal d2" data-i18n="faq.text">
-                        إجابات مباشرة من واقع النظام — ولأي سؤال آخر تواصل معنا من قسم الاتصال بالأسفل.
-                    </p>
-                </div>
-
-                <div class="lifecycle-wrap">
-                    <div class="lifecycle-line" aria-hidden="true"></div>
-
-                    @php
-                        $faqs = [
-                            ['icon' => '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>', 'title' => 'كم عضواً يتكون منه الفريق؟', 'text' => 'حسب نوع المشروع الذي يحدده قسمك — كل نوع له حد أدنى وأقصى يظهران أمامك في نموذج التقديم، والنظام لا يقبل فريقاً خارج الحدود.'],
-                            ['icon' => '<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>', 'title' => 'كيف أقدم طلب مشروع؟', 'text' => 'سجّل دخولك ← اختر نوع المشروع ومشرفاً لديه مقاعد متاحة ← اختر أعضاء فريقك من القائمة ← اكتب العنوان والوصف وأرسل. سيصل طلبك للمشرف فوراً.'],
-                            ['icon' => '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>', 'title' => 'كيف أعرف رد المشرف على طلبي؟', 'text' => 'يصلك إشعار داخل النظام فور القبول أو الرفض — تجده في جرس الإشعارات وفي لوحتك الرئيسية مع كل تحديث لاحق على مشروعك.'],
-                            ['icon' => '<circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>', 'title' => 'ماذا لو رُفض مشروعي؟', 'text' => 'يصلك سبب الرفض الذي كتبه المشرف مع الإشعار، ويفتح النظام لك نموذج تقديم جديد مباشرة — عدّل فكرتك أو اختر مشرفاً آخر وأعد الإرسال.'],
-                            ['icon' => '<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>', 'title' => 'كيف يُقيَّم مشروعي النهائي؟', 'text' => 'خلال التنفيذ تتابع نسبة إنجاز مراحلك أولاً بأول، وبعد المناقشة يرصد مشرفك الدرجة النهائية من 100 مع التقدير وملاحظاته — وتظهر في لوحتك مع إشعار لكل الفريق.'],
-                        ];
-                    @endphp
-                    @foreach ($faqs as $i => $s)
-                        <div class="step glass reveal d{{ $i }}">
-                            <button type="button" class="step-btn" aria-expanded="false" aria-controls="step-body-{{ $i }}">
-                                <span class="step-icon">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{!! $s['icon'] !!}</svg>
-                                </span>
-                                <span class="step-meta">
-                                    <span class="step-num">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
-                                    <h3 data-i18n="faq.{{ $i + 1 }}.title">{{ $s['title'] }}</h3>
-                                </span>
-                                <svg class="step-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                            </button>
-                            <div class="step-body" id="step-body-{{ $i }}">
-                                <p data-i18n="faq.{{ $i + 1 }}.text">{{ $s['text'] }}</p>
-                            </div>
+                <div class="roles-grid">
+                    <article class="role-card glass reveal d0" data-tilt="7">
+                        <div class="role-icon-wrap">
+                            <div class="role-icon-glow" aria-hidden="true"></div>
+                            <span class="role-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
                         </div>
-                    @endforeach
+                        <div>
+                            <h3 data-i18n="roles.student.name">الطالب</h3>
+                            <p class="role-tag" data-i18n="roles.student.role">تكوين الفريق وتقديم الفكرة</p>
+                        </div>
+                        <ul class="role-points">
+                                <li>
+                                    <span class="role-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                                    <span data-i18n="roles.student.p1">اختيار زملاء الفريق من قائمة المتاحين</span>
+                                </li>
+                                <li>
+                                    <span class="role-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                                    <span data-i18n="roles.student.p2">اختيار مشرف لديه مقاعد شاغرة</span>
+                                </li>
+                                <li>
+                                    <span class="role-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                                    <span data-i18n="roles.student.p3">متابعة المراحل والتعليقات ورفع الملفات</span>
+                                </li>
+                        </ul>
+                    </article>
+                    <article class="role-card glass reveal d1" data-tilt="7">
+                        <div class="role-icon-wrap">
+                            <div class="role-icon-glow" aria-hidden="true"></div>
+                            <span class="role-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span>
+                        </div>
+                        <div>
+                            <h3 data-i18n="roles.supervisor.name">المشرف</h3>
+                            <p class="role-tag" data-i18n="roles.supervisor.role">المتابعة والاعتماد والتقييم</p>
+                        </div>
+                        <ul class="role-points">
+                                <li>
+                                    <span class="role-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                                    <span data-i18n="roles.supervisor.p1">استعراض طلبات الفرق واعتماد الأفكار</span>
+                                </li>
+                                <li>
+                                    <span class="role-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                                    <span data-i18n="roles.supervisor.p2">تحديث نِسب الإنجاز لكل مرحلة</span>
+                                </li>
+                                <li>
+                                    <span class="role-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                                    <span data-i18n="roles.supervisor.p3">رصد التقييم النهائي بعد المناقشة</span>
+                                </li>
+                        </ul>
+                    </article>
+                    <article class="role-card glass reveal d2" data-tilt="7">
+                        <div class="role-icon-wrap">
+                            <div class="role-icon-glow" aria-hidden="true"></div>
+                            <span class="role-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="4" x2="14" y2="4"/><line x1="10" y1="4" x2="3" y2="4"/><line x1="21" y1="12" x2="12" y2="12"/><line x1="8" y1="12" x2="3" y2="12"/><line x1="21" y1="20" x2="16" y2="20"/><line x1="12" y1="20" x2="3" y2="20"/><line x1="14" y1="2" x2="14" y2="6"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="22"/></svg></span>
+                        </div>
+                        <div>
+                            <h3 data-i18n="roles.admin.name">الإدارة</h3>
+                            <p class="role-tag" data-i18n="roles.admin.role">ضبط النظام وتنظيم الفصل</p>
+                        </div>
+                        <ul class="role-points">
+                                <li>
+                                    <span class="role-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                                    <span data-i18n="roles.admin.p1">إدارة التخصصات وأنواع المشاريع والفصول</span>
+                                </li>
+                                <li>
+                                    <span class="role-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                                    <span data-i18n="roles.admin.p2">إضافة المشرفين وتوزيع المجموعات</span>
+                                </li>
+                                <li>
+                                    <span class="role-check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+                                    <span data-i18n="roles.admin.p3">ضبط الحد الأقصى لأعضاء الفريق</span>
+                                </li>
+                        </ul>
+                    </article>
                 </div>
             </div>
         </section>
@@ -608,41 +612,11 @@
             <div class="container">
                 <div class="section-head">
                     <span class="badge reveal"><span class="dot"></span><span data-i18n="contact.kicker">اتصل بنا</span></span>
-                    <h2 class="reveal d1" data-i18n="contact.title">تواصل مع عمادة الكلية</h2>
-                    <p class="reveal d2" data-i18n="contact.text">للتواصل مع عمادة كلية الحاسبات وتكنولوجيا المعلومات</p>
-                </div>
-
-                <div class="contact-info-grid">
-                    <div class="info-card glass reveal">
-                        <span class="info-icon">
-                            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                        </span>
-                        <span>
-                            <b data-i18n="contact.address">جامعة الأقصى – غزة</b>
-                            <small data-i18n="contact.addressSub">غرفة GWH401 – مبنى الوحدة</small>
-                        </span>
-                    </div>
-                    <a href="mailto:fcit@alaqsa.edu.ps" class="info-card glass reveal d1">
-                        <span class="info-icon">
-                            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                        </span>
-                        <span><b>fcit@alaqsa.edu.ps</b></span>
-                    </a>
-                    <a href="tel:+97082641601" class="info-card glass reveal d2">
-                        <span class="info-icon">
-                            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                        </span>
-                        <span><b class="info-ltr">+97082641601</b></span>
-                    </a>
+                    <h2 class="reveal d1" data-i18n="contact.title">تواصل معنا</h2>
+                    <p class="reveal d2" data-i18n="contact.text">عندك سؤال أو اقتراح حول منصة تخرُّج؟ اكتب لنا وسنرد في أقرب وقت.</p>
                 </div>
 
                 <div class="contact-grid">
-                    <div class="map-card glass gradient-border reveal">
-                        <iframe title="Al-Aqsa University map"
-                            src="https://www.google.com/maps/embed?pb=!1m19!1m8!1m3!1d1689.6688676903332!2d34.440154!3d31.510897000000003!3m2!1i1024!2i768!4f13.1!4m8!3e6!4m0!4m5!1s0x14fd7f418cfa8357%3A0x56d415183481113e!2z2KzYp9mF2LnYqSDYp9mE2KPZgti12YnYjCDYp9mE2LTYp9ix2Lkg2KfZhNi52YXZiNmF2Yog2YXYtdix2YEg2KfZhNiu2LXZiNi12Iwg2LrYstip!3m2!1d31.510886699999997!2d34.4407764!5e1!3m2!1sar!2s!4v1648203626448!5m2!1sar!2s"
-                            loading="lazy" allowfullscreen></iframe>
-                    </div>
-
                     @php
                         $name = auth('admin')->check() ? auth('admin')->user()->name : (auth('supervisor')->check() ? auth('supervisor')->user()->name : (auth('student')->check() ? auth('student')->user()->name : ''));
                         $email = auth('admin')->check() ? auth('admin')->user()->email : (auth('supervisor')->check() ? auth('supervisor')->user()->email : (auth('student')->check() ? auth('student')->user()->email : ''));
@@ -700,8 +674,8 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                 </span>
                 <span>
-                    <b data-i18n="footer.made">منصة تتبع مشاريع التخرج</b>
-                    <small data-i18n="footer.rights">جميع الحقوق محفوظة — كلية الحاسبات وتكنولوجيا المعلومات ©</small>
+                    <b data-i18n="footer.made">منصة متابعة مشاريع التخرج</b>
+                    <small data-i18n="footer.rights">جميع الحقوق محفوظة — تخرُّج ©</small>
                 </span>
             </div>
             <div class="socials">

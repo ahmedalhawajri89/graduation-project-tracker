@@ -1,6 +1,6 @@
-# Graduation Project Tracker
+# تخرُّج — Takharruj
 
-A university system that manages graduation projects from the first idea to the final grade — with three separate roles, each getting its own dashboard, its own permissions and its own workflow.
+A platform that manages graduation projects from the first idea to the final grade — with three separate roles, each getting its own dashboard, its own permissions and its own workflow.
 
 ---
 
@@ -120,7 +120,7 @@ Licensed under the MIT License.
 
 ## نبذة بالعربية
 
-نظام جامعي لإدارة مشاريع التخرّج من أول فكرة حتى الدرجة النهائية، مبني على **ثلاثة أدوار منفصلة** لكل واحد منها لوحة تحكم وصلاحيات ومسار عمل خاص.
+**تخرُّج** منصة لإدارة مشاريع التخرّج من أول فكرة حتى الدرجة النهائية، مبنية على **ثلاثة أدوار منفصلة** لكل واحد منها لوحة تحكم وصلاحيات ومسار عمل خاص.
 
 **الأدمن** يدير الفصل الدراسي: الطلاب والمشرفون والتخصصات والفصول، مع استيراد جماعي من Excel، وتكوين المجموعات وإسناد المشرفين، وإدارة قائمة المواضيع المقترحة.
 

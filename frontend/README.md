@@ -1,6 +1,6 @@
-# Graduation Project Tracker — Public Frontend
+# تخرُّج (Takharruj) — Public Frontend
 
-A premium, modern public website for the Graduation Project Tracker (Faculty of Computers & IT, Al-Aqsa University), built with **Next.js + Tailwind CSS + Framer Motion + Lenis**.
+A premium, modern public website for **Takharruj**, a graduation project tracking platform, built with **Next.js + Tailwind CSS + Framer Motion + Lenis**.
 
 Design language: light premium (Apple/Stripe/Linear style) — glassmorphism, layered 3D scenes, floating cards, ambient gradients, scroll reveals, magnetic buttons, card tilt, Arabic RTL + English LTR with a live language toggle.
 
@@ -19,17 +19,6 @@ npm run dev
 ```
 
 Open http://localhost:3000
-
-### Staff photos (one-time)
-
-Copy the doctors' photos from the Laravel app into the frontend:
-
-```bash
-mkdir public\staff
-copy ..\public\assets\img\dr\*.jpg public\staff\
-```
-
-If a photo is missing, the card automatically falls back to an elegant initials avatar.
 
 ## How it connects to Laravel
 
@@ -53,7 +42,7 @@ Deploy the Next.js app on any Node host (or Vercel) and set the two env vars to 
 ```
 app/            layout, page, global styles (design tokens, glass, mesh, noise, grid)
 components/     Navbar, Hero (3D scene), Stats, About, Services, Features,
-                Staff, Lifecycle, Contact, Footer
+                Roles, Lifecycle, Contact, Footer
 components/ui/  Reveal, TiltCard, MagneticButton, CountUp, CursorGlow,
                 SmoothScroll, SectionHeader
 lib/            i18n dictionaries (ar/en) + LanguageContext (RTL/LTR toggle)

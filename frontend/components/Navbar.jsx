@@ -24,7 +24,7 @@ export default function Navbar() {
     { href: "#about", label: t.nav.about },
     { href: "#services", label: t.nav.services },
     { href: "#features", label: t.nav.features },
-    { href: "#staff", label: t.nav.staff },
+    { href: "#roles", label: t.nav.roles },
     { href: "#contact", label: t.nav.contact },
   ];
 

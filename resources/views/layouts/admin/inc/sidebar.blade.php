@@ -26,11 +26,11 @@
         <h1 class="navbar-brand navbar-brand-autodark sidebar-brand">
             <a href="{{ url('/') }}" class="d-flex align-items-center gap-2 text-decoration-none">
                 <span class="sidebar-brand-logo">
-                    <img src="{{ asset('assets/img/logo_d.png') }}" alt="شعار الجامعة" height="26">
+                    <img src="{{ asset('assets/img/takharruj-logo.svg') }}" alt="شعار تخرُّج" height="26">
                 </span>
                 <span class="sidebar-brand-text">
-                    <span class="d-block">جامعة الأقصى</span>
-                    <small>تتبع مشاريع التخرج</small>
+                    <span class="d-block">تخرُّج</span>
+                    <small>متابعة مشاريع التخرج</small>
                 </span>
             </a>
         </h1>

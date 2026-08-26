@@ -1,14 +1,14 @@
 export const dictionaries = {
   ar: {
     dir: "rtl",
-    brand: "تتبع المشاريع",
-    brandSub: "كلية الحاسبات وتكنولوجيا المعلومات",
+    brand: "تخرُّج",
+    brandSub: "منصة متابعة مشاريع التخرج",
     nav: {
       home: "الرئيسية",
-      about: "عن الكلية",
+      about: "عن المنصة",
       services: "الخدمات",
       features: "الميزات",
-      staff: "طاقم الكلية",
+      roles: "الأدوار",
       contact: "اتصل بنا",
       login: "تسجيل دخول",
       dashboard: "لوحة التحكم",
@@ -18,11 +18,11 @@ export const dictionaries = {
       title1: "تتبّع مشروع تخرجك",
       title2: "من الفكرة إلى المناقشة",
       subtitle:
-        "منصة كلية الحاسبات وتكنولوجيا المعلومات — جامعة الأقصى، لإدارة الفرق، اختيار المشرفين، ومتابعة مراحل المشروع بتجربة عصرية وسلسة.",
+        "منصة تخرُّج لإدارة الفرق، اختيار المشرفين، ومتابعة مراحل المشروع بتجربة عصرية وسلسة.",
       ctaPrimary: "ابدأ الآن",
       ctaSecondary: "اكتشف المزيد",
       cardApproved: "تمت الموافقة على المشروع",
-      cardApprovedSub: "د. محمد عوض الله · قبل دقيقتين",
+      cardApprovedSub: "المشرف الأكاديمي · قبل دقيقتين",
       cardProgress: "تقدم المشروع",
       cardTeam: "أعضاء الفريق",
       dashTitle: "لوحة متابعة المشروع",
@@ -34,21 +34,21 @@ export const dictionaries = {
     stats: {
       title: "أرقام تتحدث عنا",
       items: [
-        { value: 3, suffix: "", label: "برامج أكاديمية" },
-        { value: 18, suffix: "+", label: "عضو هيئة تدريس" },
+        { value: 3, suffix: "", label: "أدوار متكاملة" },
+        { value: 18, suffix: "+", label: "مشرف أكاديمي" },
         { value: 120, suffix: "+", label: "مشروع تخرج" },
         { value: 40, suffix: "+", label: "فريق طلابي" },
       ],
     },
     about: {
-      kicker: "عن الكلية",
-      title: "كلية الحاسبات وتكنولوجيا المعلومات",
-      text: "أنشئت الكلية في بداية العام الدراسي 2018–2019 كإحدى كليات جامعة الأقصى، تلبيةً لحاجة المجتمع الفلسطيني الملحّة للخريجين المؤهلين في مجال تكنولوجيا المعلومات والتقنيات الحديثة.",
-      programsTitle: "البرامج الأكاديمية",
-      programs: [
-        "بكالوريوس علم الحاسوب",
-        "بكالوريوس تكنولوجيا المعلومات التطبيقية",
-        "بكالوريوس الشبكات والهواتف النقالة",
+      kicker: "عن المنصة",
+      title: "منصة تخرُّج",
+      text: "تخرُّج منصة مستقلة لإدارة مشاريع التخرج من أول تكوين الفريق واختيار المشرف، مروراً باعتماد الفكرة ومتابعة المراحل، وصولاً إلى المناقشة والتقييم النهائي — كل ذلك في مكان واحد وبسير عمل واضح لكل طرف.",
+      pillarsTitle: "ركائز المنصة",
+      pillars: [
+        "إدارة الفرق الطلابية والمشرفين",
+        "متابعة مراحل المشروع ونِسب الإنجاز",
+        "المناقشة والتقييم ورصد الدرجات",
       ],
       more: "المزيد",
     },
@@ -94,16 +94,41 @@ export const dictionaries = {
         },
       ],
     },
-    staff: {
-      kicker: "طاقم الكلية",
-      title: "نخبة من المتخصصين",
-      text: "تضم الكلية نخبة من المتخصصين في مجال تكنولوجيا المعلومات من حملة شهادات الدكتوراه والماجستير من جامعات عالمية، بتنوعٍ وحداثةٍ في التخصصات لمواكبة التطور الهائل في هذا المجال.",
-      members: [
-        { name: "د. محمد عوض الله", role: "أستاذ مشارك", img: "/staff/dr.mohammed.jpg" },
-        { name: "د. محمد راضي", role: "أستاذ مساعد", img: "/staff/dr.mohammed_radi.jpg" },
-        { name: "د. يوسف حمودة", role: "أستاذ مشارك", img: "/staff/dr.yousef.jpg" },
-        { name: "د. يوسف يوسف", role: "أستاذ مساعد", img: "/staff/dr.yousef_yousef.jpg" },
-        { name: "د. عبد الرافع الزاملي", role: "أستاذ مساعد", img: "/staff/dr.abd.jpg" },
+    roles: {
+      kicker: "أدوار المنصة",
+      title: "لكل دور مساحته الخاصة",
+      text: "تخرُّج مبنية حول ثلاثة أدوار متكاملة، لكل منها لوحة تحكم وصلاحيات تناسب مهامه، بحيث يعرف كل طرف ما عليه بالضبط في كل مرحلة.",
+      items: [
+        {
+          key: "student",
+          name: "الطالب",
+          role: "تكوين الفريق وتقديم الفكرة",
+          points: [
+            "اختيار زملاء الفريق من قائمة المتاحين",
+            "اختيار مشرف لديه مقاعد شاغرة",
+            "متابعة المراحل والتعليقات ورفع الملفات",
+          ],
+        },
+        {
+          key: "supervisor",
+          name: "المشرف",
+          role: "المتابعة والاعتماد والتقييم",
+          points: [
+            "استعراض طلبات الفرق واعتماد الأفكار",
+            "تحديث نِسب الإنجاز لكل مرحلة",
+            "رصد التقييم النهائي بعد المناقشة",
+          ],
+        },
+        {
+          key: "admin",
+          name: "الإدارة",
+          role: "ضبط النظام وتنظيم الفصل",
+          points: [
+            "إدارة التخصصات وأنواع المشاريع والفصول",
+            "إضافة المشرفين وتوزيع المجموعات",
+            "ضبط الحد الأقصى لأعضاء الفريق",
+          ],
+        },
       ],
     },
     lifecycle: {
@@ -131,12 +156,8 @@ export const dictionaries = {
     },
     contact: {
       kicker: "اتصل بنا",
-      title: "تواصل مع عمادة الكلية",
-      text: "للتواصل مع عمادة كلية الحاسبات وتكنولوجيا المعلومات",
-      address: "جامعة الأقصى – غزة",
-      addressSub: "غرفة GWH401 – مبنى الوحدة",
-      email: "fcit@alaqsa.edu.ps",
-      phone: "+97082641601",
+      title: "تواصل معنا",
+      text: "عندك سؤال أو اقتراح حول منصة تخرُّج؟ اكتب لنا وسنرد في أقرب وقت.",
       form: {
         name: "الاسم",
         email: "الايميل الخاص بك",
@@ -149,21 +170,21 @@ export const dictionaries = {
       },
     },
     footer: {
-      rights: "جميع الحقوق محفوظة — كلية الحاسبات وتكنولوجيا المعلومات ©",
-      madeFor: "منصة تتبع مشاريع التخرج",
+      rights: "جميع الحقوق محفوظة — تخرُّج ©",
+      madeFor: "منصة متابعة مشاريع التخرج",
     },
   },
 
   en: {
     dir: "ltr",
-    brand: "Project Tracker",
-    brandSub: "Faculty of Computers & Information Technology",
+    brand: "Takharruj",
+    brandSub: "Graduation Project Tracking Platform",
     nav: {
       home: "Home",
       about: "About",
       services: "Services",
       features: "Features",
-      staff: "Faculty",
+      roles: "Roles",
       contact: "Contact",
       login: "Sign in",
       dashboard: "Dashboard",
@@ -173,11 +194,11 @@ export const dictionaries = {
       title1: "Track your graduation project",
       title2: "from idea to defense",
       subtitle:
-        "The FCIT platform at Al-Aqsa University for managing teams, choosing supervisors, and following every phase of your project — with a modern, seamless experience.",
+        "Takharruj helps you manage teams, choose supervisors, and follow every phase of your project — with a modern, seamless experience.",
       ctaPrimary: "Get started",
       ctaSecondary: "Learn more",
       cardApproved: "Project approved",
-      cardApprovedSub: "Dr. Mohammed Awadallah · 2 min ago",
+      cardApprovedSub: "Academic supervisor · 2 min ago",
       cardProgress: "Project progress",
       cardTeam: "Team members",
       dashTitle: "Project dashboard",
@@ -189,21 +210,21 @@ export const dictionaries = {
     stats: {
       title: "Numbers that speak",
       items: [
-        { value: 3, suffix: "", label: "Academic programs" },
-        { value: 18, suffix: "+", label: "Faculty members" },
+        { value: 3, suffix: "", label: "Integrated roles" },
+        { value: 18, suffix: "+", label: "Academic supervisors" },
         { value: 120, suffix: "+", label: "Graduation projects" },
         { value: 40, suffix: "+", label: "Student teams" },
       ],
     },
     about: {
-      kicker: "About the faculty",
-      title: "Faculty of Computers & Information Technology",
-      text: "Established at the start of the 2018–2019 academic year as one of Al-Aqsa University's faculties, answering the Palestinian community's pressing need for qualified graduates in information technology and modern tech.",
-      programsTitle: "Academic programs",
-      programs: [
-        "B.Sc. Computer Science",
-        "B.Sc. Applied Information Technology",
-        "B.Sc. Networks & Mobile Computing",
+      kicker: "About the platform",
+      title: "Takharruj",
+      text: "Takharruj is a standalone platform for running graduation projects — from forming the team and picking a supervisor, through idea approval and phase tracking, all the way to the defense and final evaluation. One place, with a clear workflow for everyone involved.",
+      pillarsTitle: "Platform pillars",
+      pillars: [
+        "Student teams & supervisor management",
+        "Phase tracking with completion progress",
+        "Defense, evaluation & grade recording",
       ],
       more: "Learn more",
     },
@@ -249,16 +270,41 @@ export const dictionaries = {
         },
       ],
     },
-    staff: {
-      kicker: "Faculty",
-      title: "A team of distinguished specialists",
-      text: "The faculty gathers IT specialists holding PhDs and Master's degrees from international universities — diverse, modern specializations keeping pace with this rapidly evolving field.",
-      members: [
-        { name: "Dr. Mohammed Awadallah", role: "Associate Professor", img: "/staff/dr.mohammed.jpg" },
-        { name: "Dr. Mohammed Radi", role: "Assistant Professor", img: "/staff/dr.mohammed_radi.jpg" },
-        { name: "Dr. Yousef Hamouda", role: "Associate Professor", img: "/staff/dr.yousef.jpg" },
-        { name: "Dr. Yousef Yousef", role: "Assistant Professor", img: "/staff/dr.yousef_yousef.jpg" },
-        { name: "Dr. Abdulrafe Al-Zamli", role: "Assistant Professor", img: "/staff/dr.abd.jpg" },
+    roles: {
+      kicker: "Platform roles",
+      title: "A dedicated space for every role",
+      text: "Takharruj is built around three complementary roles, each with its own dashboard and permissions — so everyone knows exactly what's expected of them at every stage.",
+      items: [
+        {
+          key: "student",
+          name: "Student",
+          role: "Form a team, submit an idea",
+          points: [
+            "Pick teammates from the available list",
+            "Choose a supervisor with open seats",
+            "Follow phases, comments, and upload files",
+          ],
+        },
+        {
+          key: "supervisor",
+          name: "Supervisor",
+          role: "Guide, approve, evaluate",
+          points: [
+            "Review team requests and approve ideas",
+            "Update completion progress per phase",
+            "Record the final grade after the defense",
+          ],
+        },
+        {
+          key: "admin",
+          name: "Administration",
+          role: "Configure and organize the term",
+          points: [
+            "Manage specializations, project types, terms",
+            "Add supervisors and distribute groups",
+            "Set the maximum team size",
+          ],
+        },
       ],
     },
     lifecycle: {
@@ -286,12 +332,8 @@ export const dictionaries = {
     },
     contact: {
       kicker: "Contact",
-      title: "Reach the faculty deanship",
-      text: "Contact the Deanship of the Faculty of Computers & Information Technology",
-      address: "Al-Aqsa University – Gaza",
-      addressSub: "Room GWH401 – Al-Wehda Building",
-      email: "fcit@alaqsa.edu.ps",
-      phone: "+97082641601",
+      title: "Get in touch",
+      text: "Have a question or a suggestion about Takharruj? Write to us and we'll get back to you shortly.",
       form: {
         name: "Your name",
         email: "Your email",
@@ -304,7 +346,7 @@ export const dictionaries = {
       },
     },
     footer: {
-      rights: "All rights reserved — Faculty of Computers & Information Technology ©",
+      rights: "All rights reserved — Takharruj ©",
       madeFor: "Graduation Project Tracking Platform",
     },
   },

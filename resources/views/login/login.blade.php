@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>تسجيل الدخول — نظام متابعة مشاريع التخرج</title>
-    <link rel="icon" href="{{ asset('assets/img/1.png') }}">
+    <title>تسجيل الدخول — تخرُّج</title>
+    <link rel="icon" href="{{ asset('assets/img/takharruj-logo.svg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,10 +22,10 @@
         <aside class="login-brand">
             <div class="brand-inner">
                 <div class="brand-logo">
-                    <img src="{{ asset('assets/img/1.png') }}" alt="شعار النظام">
+                    <img src="{{ asset('assets/img/takharruj-logo.svg') }}" alt="شعار تخرُّج">
                 </div>
-                <h1>نظام متابعة مشاريع التخرج</h1>
-                <p class="brand-sub">جامعة الأقصى</p>
+                <h1>تخرُّج</h1>
+                <p class="brand-sub">منصة متابعة مشاريع التخرج</p>
                 <p class="brand-tag">
                     منصّة موحّدة لإدارة ومتابعة مشاريع تخرّج الطلاب — من تسجيل المشروع حتى تقييمه النهائي.
                 </p>
@@ -35,7 +35,7 @@
                     <li><span class="fchip"><i class="ti ti-check"></i></span> إدارة المجموعات والتخصّصات بسهولة</li>
                 </ul>
             </div>
-            <div class="brand-foot">© {{ date('Y') }} جامعة الأقصى — جميع الحقوق محفوظة</div>
+            <div class="brand-foot">© {{ date('Y') }} تخرُّج — جميع الحقوق محفوظة</div>
         </aside>
 
         {{-- النموذج --}}
@@ -43,7 +43,7 @@
             <div class="login-card">
 
                 <div class="mobile-logo d-lg-none text-center mb-4">
-                    <img src="{{ asset('assets/img/1.png') }}" alt="شعار النظام">
+                    <img src="{{ asset('assets/img/takharruj-logo.svg') }}" alt="شعار تخرُّج">
                 </div>
 
                 <h2>أهلاً بعودتك 👋</h2>
@@ -68,7 +68,7 @@
                         </label>
                         <input id="identify" type="text"
                             class="form-control @error('identify') is-invalid @enderror" name="identify"
-                            value="{{ old('identify') }}" placeholder="example@alaqsa.edu.ps" required
+                            value="{{ old('identify') }}" placeholder="example@mail.com" required
                             autocomplete="username" autofocus>
                         @error('identify')
                             <div class="invalid-feedback">{{ $message }}</div>

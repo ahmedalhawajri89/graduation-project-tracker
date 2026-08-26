@@ -669,44 +669,44 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 .float-badge .float-row { align-items: center; }
 .float-badge .float-title { font-size: 11px; line-height: 1.3; }
 
-/* ---------- Staff ---------- */
-.staff-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
-.staff-card {
-  border-radius: 28px; padding: 26px 16px;
-  text-align: center;
+/* ---------- Roles ---------- */
+.roles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.role-card {
+  border-radius: 28px; padding: 28px 24px;
+  display: flex; flex-direction: column; gap: 18px;
   transition: transform .5s var(--ease-expo), box-shadow .5s;
   transform-style: preserve-3d;
   height: 100%;
 }
-.staff-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lift); }
-.staff-photo-wrap { position: relative; width: 92px; margin: 0 auto 16px; }
-.staff-photo-glow {
+.role-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lift); }
+.role-icon-wrap { position: relative; width: 56px; }
+.role-icon-glow {
   position: absolute; inset: 0;
-  border-radius: 26px;
+  border-radius: 20px;
   background: linear-gradient(135deg, rgba(125,151,252,.4), rgba(167,139,250,.4));
   filter: blur(18px);
   transform: scale(.9);
   transition: transform .5s;
 }
-.staff-card:hover .staff-photo-glow { transform: scale(1.15); }
-.staff-photo {
+.role-card:hover .role-icon-glow { transform: scale(1.15); }
+.role-icon {
   position: relative;
-  width: 92px; height: 92px;
-  border-radius: 26px;
-  object-fit: cover;
-  box-shadow: var(--shadow-lift);
-  border: 4px solid #fff;
-}
-.staff-cap {
-  position: absolute; bottom: -8px; inset-inline-end: -8px;
-  width: 30px; height: 30px; border-radius: 10px;
+  width: 56px; height: 56px; border-radius: 20px;
   display: grid; place-items: center;
-  background: #fff; color: var(--brand-600);
-  box-shadow: var(--shadow-soft);
-  z-index: 2;
+  background: linear-gradient(135deg, var(--brand-600), var(--violet));
+  color: #fff;
+  box-shadow: var(--shadow-glow);
 }
-.staff-card h3 { font-size: 13.5px; font-weight: 700; }
-.staff-card p { font-size: 12px; font-weight: 600; color: var(--brand-600); margin-top: 4px; }
+.role-card h3 { font-size: 17px; font-weight: 700; }
+.role-card .role-tag { font-size: 13px; font-weight: 600; color: var(--brand-600); margin-top: 4px; }
+.role-points { display: flex; flex-direction: column; gap: 10px; list-style: none; padding: 0; margin: 0; }
+.role-points li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; line-height: 1.7; color: var(--ink-mute); }
+.role-points .role-check {
+  flex: none; margin-top: 3px;
+  width: 20px; height: 20px; border-radius: 8px;
+  display: grid; place-items: center;
+  background: rgba(16,185,129,.1); color: #059669;
+}
 
 /* ---------- Lifecycle ---------- */
 .lifecycle-wrap { max-width: 760px; margin-inline: auto; position: relative; }
@@ -912,7 +912,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
-  .staff-grid { grid-template-columns: repeat(3, 1fr); }
+  .roles-grid { grid-template-columns: repeat(3, 1fr); }
   .hero-phone { display: none; }
   .float-badge { inset-inline-end: 0; }
 }
@@ -926,7 +926,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   .stats-card { grid-template-columns: repeat(2, 1fr); padding: 32px 20px; }
   .contact-info-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
-  .staff-grid { grid-template-columns: repeat(2, 1fr); }
+  .roles-grid { grid-template-columns: 1fr; }
   .float-approved { inset-inline-start: 0; }
   .float-team { inset-inline-end: 0; }
   .section { padding: 72px 0; }
@@ -935,7 +935,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 @media (max-width: 480px) {
-  .staff-grid { grid-template-columns: 1fr; }
+  .roles-grid { grid-template-columns: 1fr; }
   .float-card { position: static; width: 100%; margin-top: 14px; animation: none; }
   .scene-inner { display: flex; flex-direction: column; }
   .ground-shadow { display: none; }
