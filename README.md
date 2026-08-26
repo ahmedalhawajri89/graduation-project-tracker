@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/cover.png" alt="تخرُّج — Takharruj" width="900">
+</p>
+
 # تخرُّج — Takharruj
 
 A platform that manages graduation projects from the first idea to the final grade — with three separate roles, each getting its own dashboard, its own permissions and its own workflow.
