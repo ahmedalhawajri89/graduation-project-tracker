@@ -58,6 +58,9 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            // جلسة بإزاحة ثابتة: أعمدة TIMESTAMP تُحوَّل بتوقيت الجلسة، وكانت
+            // SYSTEM — توقيت نظام الخادم — فتتغيّر القيم المقروءة بتغيّره
+            'timezone' => env('DB_TIMEZONE', '+00:00'),
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
