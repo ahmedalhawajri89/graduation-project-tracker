@@ -25,6 +25,25 @@
       "brand.name": "تخرُّج",
       "brand.sub": "منصة متابعة مشاريع التخرج",
       "hero.badge": "منصة ذكية لإدارة مشاريع التخرج",
+      "bento.aria": "لمحة حيّة من المنصة",
+      "bento.progress": "نسبة الإنجاز",
+      "bento.project": "كشف الرسائل الاحتيالية",
+      "bento.of": "من 5 مراحل",
+      "bento.stage": "المرحلة الحالية",
+      "bento.stageTitle": "الفصل الثاني — الدراسات السابقة",
+      "bento.s1": "مفتوحة",
+      "bento.s2": "سُلّمت",
+      "bento.s3": "اعتُمدت",
+      "bento.chat": "نقاش الفريق",
+      "bento.private": "خاص",
+      "bento.msg": "@آية راجعي الفصل الثاني قبل الخميس",
+      "bento.at": "@آية",
+      "bento.roles": "أدوار الفريق",
+      "bento.r1": "واجهات",
+      "bento.r2": "الخادم",
+      "bento.r3": "التوثيق",
+      "bento.grade": "التقييم النهائي",
+      "bento.excellent": "ممتاز",
       "hero.title": "<span class=\"ink-line\"><span>تتبّع مشروع تخرجك</span></span><span class=\"ink-line\"><span>من الفكرة <span class=\"text-gradient\">إلى المناقشة</span></span></span>",
       "hero.stageLabel": "مسار المشروع في المنصة",
       "hero.stageProject": "من التقديم إلى الدرجة النهائية",
@@ -72,35 +91,56 @@
       "about.more": "المزيد",
       "services.kicker": "الخدمات",
       "services.title": "كل ما يحتاجه مشروعك في مكان واحد",
-      "services.text": "نظام متكامل يدير كافة العمليات من تسجيل الدخول واختيار الفريق والمشرف، وصولاً إلى مناقشة المشروع وتقييمه.",
-      "services.1.title": "سهولة اختيار الفريق",
-      "services.1.text": "يساعدك الموقع على توفير الوقت والجهد اللازم لإنجاز المشروع وتكوين فريقك بسلاسة.",
-      "services.2.title": "تتبع المشروع",
-      "services.2.text": "متابعة مباشرة لمسار المشروع بين الطالب والمشرف في كل مرحلة من مراحله.",
-      "services.3.title": "إدارة الفرق والمشرفين",
-      "services.3.text": "تواصل مباشر وفعّال بين أعضاء الفريق ومع المشرف طوال دورة حياة المشروع.",
+      "services.text": "من تكوين الفريق إلى الدرجة المعتمدة — أدوات تغنيك عن مجموعات واتساب والبريد والملفات المبعثرة.",
+      "svc.1.title": "فريقك ومشرفك في دقائق",
+      "svc.1.text": "اختر زملاءك من المتاحين في تخصصك، وشاهد المقاعد المتبقية لكل مشرف — وتنبّهك المنصة إن كانت فكرتك نُفّذت من قبل.",
+      "svc.1.seats": "مقاعد متبقية لدى المشرف",
+      "svc.1.similar": "فكرة مشابهة نُفّذت في 2023 — راجعها قبل التقديم",
+      "svc.2.title": "سلّم مرحلتك، واستلم ملاحظة لا رفضاً",
+      "svc.2.text": "تسلّم كل مرحلة بملف وملاحظة، ويعتمدها مشرفك أو يطلب تعديلاً بسببه الواضح — وكل جولة محفوظة.",
+      "svc.2.s1": "سُلّمت",
+      "svc.2.s2": "مطلوب تعديل",
+      "svc.2.s3": "اعتُمدت",
+      "svc.2.noteT": "ملاحظة المشرف",
+      "svc.2.note": "ينقص مخطط الكيانات والعلاقات في الفصل الثالث.",
+      "svc.3.title": "خطة مراحل بقوالبها",
+      "svc.3.text": "يضعها المشرف مرّة بمواعيدها وقوالبها، فتصل كل مجموعاته.",
+      "svc.4.title": "نقاش خاص بالفريق",
+      "svc.4.text": "قناة لا يراها المشرف، و@ لتنبيه زميل بعينه.",
+      "svc.5.title": "ملاحظات على الملفات",
+      "svc.5.text": "«صفحة ٣ ينقصها المرجع» — على الملف نفسه، حتى تُعالَج.",
+      "svc.6.title": "توزيع الأدوار",
+      "svc.6.text": "مَن على الواجهات ومَن على الخادم — يراه الفريق والمشرف.",
+      "svc.7.title": "مستكشف المشاريع السابقة",
+      "svc.7.text": "تصفّح مشاريع الدفعات السابقة بأنواعها ومشرفيها، واستلهم فكرتك.",
+      "svc.8.title": "درجة معتمدة لا تتغيّر",
+      "svc.8.text": "يرصد المشرف درجتك بالتقدير وملاحظاته، وتُقفل بعد اعتمادها.",
+      "features.5.title": "عربية أولاً",
+      "features.5.text": "واجهة عربية كاملة من اليمين إلى اليسار، بخطوط مصمّمة للقراءة، والإنجليزية بنقرة.",
+      "features.6.title": "على الجوال كما الحاسوب",
+      "features.6.text": "سلّم مرحلة أو ردّ على مشرفك من هاتفك — كل صفحة مصمّمة للشاشة الصغيرة.",
       "features.kicker": "المميزات",
-      "features.title": "منصة صُممت لنجاح مشروعك",
-      "features.text": "يهدف النظام إلى إدارة كافة العمليات من مرحلة تسجيل الدخول واختيار الفريق والمشرف وصولاً إلى مرحلة مناقشة المشروع وتقييمه.",
-      "features.1.title": "مراحل مشروع بنسبة إنجاز مباشرة",
-      "features.1.text": "مشرفك يحدد مراحل مشروعك بتواريخ استحقاق، وأنت تتابع نسبة الإنجاز على خط زمني مرئي يميز المنجز والمتأخر تلقائياً.",
-      "features.2.title": "مستكشف المشاريع السابقة",
-      "features.2.text": "تصفّح مشاريع الدفعات السابقة بأنواعها ومشرفيها — استلهم فكرتك وتأكد أنها غير منفّذة قبل التقديم.",
-      "features.3.title": "نقاش مدمج وإشعارات فورية",
-      "features.3.text": "اسأل مشرفك وناقش فريقك داخل صفحة المشروع نفسها، واستلم إشعاراً لكل رد أو مرحلة تُنجز أو ملف يُرفع.",
-      "features.4.title": "تقييم إلكتروني بدرجة وتقدير",
-      "features.4.text": "بعد اكتمال مشروعك يرصد المشرف درجتك النهائية مع التقدير وملاحظاته الختامية — وتصلك النتيجة بإشعار فوري.",
+      "features.title": "مصمّمة للواقع الأكاديمي",
+      "features.text": "تفاصيل لا تُرى في العرض الأول، لكنها ما يجعل الفصل الدراسي يمرّ بلا مفاجآت.",
+      "features.1.title": "خصوصية الفريق",
+      "features.1.text": "نقاش الفريق الداخلي لا يراه المشرف ولا الإدارة — يكتب الطلاب بحرّية بدل الهروب إلى واتساب.",
+      "features.2.title": "إشعارات بلا ضجيج",
+      "features.2.text": "يصلك التنبيه حين يخصّك الأمر: طلب تعديل، أو ذكرك زميل، أو اعتُمدت مرحلة — لا مع كل رسالة.",
+      "features.3.title": "سجلّ لا يُعدَّل",
+      "features.3.text": "الدرجة تُقفل بعد اعتمادها، وكل قرار مهم يُحفظ في سجلّ تدقيق — مرجع واضح عند أيّ اعتراض.",
+      "features.4.title": "ملفات محمية",
+      "features.4.text": "ملفات المشروع والتسليمات على قرص خاص، لا يُنزلها إلا الفريق ومشرفه والإدارة.",
       "how.kicker": "كيف يعمل النظام؟",
       "how.title": "أربع خطوات من الفكرة إلى الدرجة",
-      "how.text": "حسابك يُنشأ من إدارة المنصة — لا حاجة للتسجيل، فقط سجّل دخولك وابدأ.",
-      "how.1.title": "سجّل دخولك",
-      "how.1.text": "ببريدك أو رقمك الجامعي — الحسابات جاهزة مسبقاً من إدارة المنصة.",
+      "how.text": "حسابك يُنشأ من إدارة القسم — لا تسجيل ولا انتظار، سجّل دخولك وابدأ.",
+      "how.1.title": "ادخل إلى المنصة",
+      "how.1.text": "ببريدك أو رقمك الجامعي — حسابك جاهز من إدارة القسم.",
       "how.2.title": "كوّن فريقك وقدّم فكرتك",
-      "how.2.text": "اختر زملاءك من قائمة المتاحين، واختر مشرفاً لديه مقاعد، واكتب فكرة مشروعك.",
-      "how.3.title": "تابع وناقش وارفع",
-      "how.3.text": "بعد موافقة المشرف: مراحل بنسبة إنجاز، نقاش مباشر، ملفات، وإشعار لكل جديد.",
-      "how.4.title": "ناقش واستلم تقييمك",
-      "how.4.text": "بعد المناقشة يرصد مشرفك درجتك النهائية بالتقدير وملاحظاته — وتصلك فوراً.",
+      "how.2.text": "اختر زملاءك ومشرفاً لديه مقاعد، واكتب فكرتك بعد أن تتأكد أنها لم تُنفَّذ.",
+      "how.3.title": "سلّم مراحلك",
+      "how.3.text": "مرحلة بعد مرحلة: تسليم، فاعتماد أو تعديل بملاحظة، ونقاش مع فريقك ومشرفك.",
+      "how.4.title": "ناقش واستلم درجتك",
+      "how.4.text": "بعد المناقشة يرصد مشرفك درجتك بالتقدير، وتُعتمد فلا تتغيّر.",
       "show.kicker": "من المنصة",
       "show.title": "مشاريع تُتابَع على تخرُّج الآن",
       "show.text": "ليست أمثلة مصنوعة — هذه مشاريع مسجّلة فعلاً على المنصة بأنواعها وفصولها وأحجام فرقها.",
@@ -131,18 +171,18 @@
       "roles.kicker": "أدوار المنصة",
       "roles.title": "لكل دور مساحته الخاصة",
       "roles.text": "تخرُّج مبنية حول ثلاثة أدوار متكاملة، لكل منها لوحة تحكم وصلاحيات تناسب مهامه، بحيث يعرف كل طرف ما عليه بالضبط في كل مرحلة.",
-      "roles.student.name": "الطالب", "roles.student.role": "تكوين الفريق وتقديم الفكرة",
-      "roles.student.p1": "اختيار زملاء الفريق من قائمة المتاحين",
-      "roles.student.p2": "اختيار مشرف لديه مقاعد شاغرة",
-      "roles.student.p3": "متابعة المراحل والتعليقات ورفع الملفات",
-      "roles.supervisor.name": "المشرف", "roles.supervisor.role": "المتابعة والاعتماد والتقييم",
-      "roles.supervisor.p1": "استعراض طلبات الفرق واعتماد الأفكار",
-      "roles.supervisor.p2": "تحديث نِسب الإنجاز لكل مرحلة",
-      "roles.supervisor.p3": "رصد التقييم النهائي بعد المناقشة",
+      "roles.student.name": "الطالب", "roles.student.role": "الفريق والتسليم والنقاش",
+      "roles.student.p1": "تكوين الفريق واختيار مشرف لديه مقاعد",
+      "roles.student.p2": "تسليم المراحل وتعديلها بملاحظات المشرف",
+      "roles.student.p3": "نقاش الفريق الخاص وتوزيع الأدوار",
+      "roles.supervisor.name": "المشرف", "roles.supervisor.role": "التخطيط والمراجعة والتقييم",
+      "roles.supervisor.p1": "قبول طلبات الفرق حسب مقاعده",
+      "roles.supervisor.p2": "خطة مراحل بقوالبها لكل مجموعاته",
+      "roles.supervisor.p3": "مراجعة التسليمات، ورصد الدرجة واعتمادها",
       "roles.admin.name": "الإدارة", "roles.admin.role": "ضبط النظام وتنظيم الفصل",
       "roles.admin.p1": "إدارة التخصصات وأنواع المشاريع والفصول",
       "roles.admin.p2": "إضافة المشرفين وتوزيع المجموعات",
-      "roles.admin.p3": "ضبط الحد الأقصى لأعضاء الفريق",
+      "roles.admin.p3": "سجلّ تدقيق، وفتح الدرجة المعتمدة عند الحاجة",
       "lc.kicker": "دورة حياة المشروع",
       "lc.title": "مراحل واضحة، من الفكرة إلى الإنجاز",
       "lc.text": "أي مشروع، بغض النظر عن طبيعته ومدته وحجم نشاطاته، يمر بمراحل محددة لتحقيق أهدافه في فترة زمنية محددة.",
@@ -197,6 +237,25 @@
       "brand.name": "Takharruj",
       "brand.sub": "Graduation Project Tracking Platform",
       "hero.badge": "A smart platform for graduation projects",
+      "bento.aria": "A live glimpse of the platform",
+      "bento.progress": "Progress",
+      "bento.project": "Fraud message detection",
+      "bento.of": "of 5 stages",
+      "bento.stage": "Current stage",
+      "bento.stageTitle": "Chapter 2 — Literature review",
+      "bento.s1": "Open",
+      "bento.s2": "Submitted",
+      "bento.s3": "Approved",
+      "bento.chat": "Team chat",
+      "bento.private": "Private",
+      "bento.msg": "@Aya please review chapter 2 by Thursday",
+      "bento.at": "@Aya",
+      "bento.roles": "Team roles",
+      "bento.r1": "Frontend",
+      "bento.r2": "Backend",
+      "bento.r3": "Docs",
+      "bento.grade": "Final grade",
+      "bento.excellent": "Excellent",
       "hero.title": "<span class=\"ink-line\"><span>Track Your Graduation Project</span></span><span class=\"ink-line\"><span>From Idea <span class=\"text-gradient\">to Defense</span></span></span>",
       "hero.stageLabel": "The project path",
       "hero.stageProject": "From submission to final grade",
@@ -244,35 +303,56 @@
       "about.more": "Learn more",
       "services.kicker": "Services",
       "services.title": "Everything Your Project Needs, in One Place",
-      "services.text": "An integrated system managing everything from sign-in, team formation, and supervisor selection to project defense and evaluation.",
-      "services.1.title": "Effortless Team Selection",
-      "services.1.text": "Save the time and effort needed to complete your project and form your team smoothly.",
-      "services.2.title": "Project Tracking",
-      "services.2.text": "Direct, live follow-up of the project between student and supervisor at every stage.",
-      "services.3.title": "Teams & Supervisors Management",
-      "services.3.text": "Direct, effective communication between team members and their supervisor across the whole lifecycle.",
+      "services.text": "From forming your team to an approved grade — tools that replace scattered WhatsApp groups, emails and files.",
+      "svc.1.title": "Your team and supervisor in minutes",
+      "svc.1.text": "Pick teammates from your major, see each supervisor's open seats — and get warned if your idea has been done before.",
+      "svc.1.seats": "seats left with this supervisor",
+      "svc.1.similar": "A similar idea was done in 2023 — review it first",
+      "svc.2.title": "Submit a stage, get feedback — not a rejection",
+      "svc.2.text": "Submit each stage with a file and a note; your supervisor approves it or asks for changes with a clear reason. Every round is kept.",
+      "svc.2.s1": "Submitted",
+      "svc.2.s2": "Changes requested",
+      "svc.2.s3": "Approved",
+      "svc.2.noteT": "Supervisor's note",
+      "svc.2.note": "The ER diagram is missing from chapter 3.",
+      "svc.3.title": "A stage plan with templates",
+      "svc.3.text": "Your supervisor sets it once, with dates and templates, for all their groups.",
+      "svc.4.title": "A private team chat",
+      "svc.4.text": "A channel your supervisor can't see, with @ to ping a teammate.",
+      "svc.5.title": "Notes on files",
+      "svc.5.text": "“Page 3 is missing a reference” — right on the file, until it's fixed.",
+      "svc.6.title": "Team roles",
+      "svc.6.text": "Who owns the frontend, who owns the backend — visible to the team and supervisor.",
+      "svc.7.title": "Past projects explorer",
+      "svc.7.text": "Browse previous cohorts' projects by type and supervisor, and find your idea.",
+      "svc.8.title": "A grade that stays final",
+      "svc.8.text": "Your supervisor records the grade with a rating and notes, and it locks once approved.",
+      "features.5.title": "Arabic first",
+      "features.5.text": "A fully right-to-left Arabic interface with fonts made for reading — and English one click away.",
+      "features.6.title": "Mobile as well as desktop",
+      "features.6.text": "Submit a stage or reply to your supervisor from your phone — every page is designed for small screens.",
       "features.kicker": "Features",
-      "features.title": "A Platform Built for Your Project's Success",
-      "features.text": "The system manages every step — from sign-in, team formation and supervisor selection, to project defense and evaluation.",
-      "features.1.title": "Milestones with Live Progress",
-      "features.1.text": "Your supervisor sets milestones with due dates, and you track completion on a visual timeline that flags overdue items automatically.",
-      "features.2.title": "Past Projects Explorer",
-      "features.2.text": "Browse previous cohorts' projects by type and supervisor — get inspired and make sure your idea hasn't been done before.",
-      "features.3.title": "Built-in Discussion & Instant Alerts",
-      "features.3.text": "Ask your supervisor and discuss with your team right inside the project page, with a notification for every reply, milestone, or file.",
-      "features.4.title": "Digital Evaluation with Grade",
-      "features.4.text": "Once your project is complete, your supervisor records the final grade with a rating and closing notes — delivered instantly.",
+      "features.title": "Built for Academic Reality",
+      "features.text": "Details you don't see at first glance — but they're what makes the term run without surprises.",
+      "features.1.title": "Team privacy",
+      "features.1.text": "The internal team chat is hidden from supervisors and admins — students speak freely instead of escaping to WhatsApp.",
+      "features.2.title": "Notifications without noise",
+      "features.2.text": "You're alerted when it's about you: changes requested, a mention, or an approved stage — not for every message.",
+      "features.3.title": "A record that can't be edited",
+      "features.3.text": "Grades lock once approved, and every key decision is kept in an audit log — a clear reference for any appeal.",
+      "features.4.title": "Protected files",
+      "features.4.text": "Project files and submissions live on private storage, downloadable only by the team, their supervisor and admins.",
       "how.kicker": "How it works",
       "how.title": "Four Steps from Idea to Grade",
-      "how.text": "Your account is created by the platform administration — no sign-up needed, just log in and start.",
-      "how.1.title": "Sign In",
-      "how.1.text": "With your email or student ID — accounts are pre-created by the platform administration.",
-      "how.2.title": "Form Your Team & Submit",
-      "how.2.text": "Pick available teammates from a list, choose a supervisor with open seats, and describe your idea.",
-      "how.3.title": "Track, Discuss, Upload",
-      "how.3.text": "After approval: milestones with progress, direct discussion, files, and an alert for every update.",
-      "how.4.title": "Defend & Get Your Grade",
-      "how.4.text": "After the defense, your supervisor records your final grade with rating and notes — instantly delivered.",
+      "how.text": "Your account is created by your department — no sign-up, no waiting. Just sign in.",
+      "how.1.title": "Sign in",
+      "how.1.text": "With your email or university ID — your account is ready.",
+      "how.2.title": "Form your team, propose your idea",
+      "how.2.text": "Choose teammates and a supervisor with open seats, after checking your idea hasn't been done.",
+      "how.3.title": "Submit your stages",
+      "how.3.text": "Stage by stage: submit, get approved or revise with feedback, and talk with your team and supervisor.",
+      "how.4.title": "Defend and get your grade",
+      "how.4.text": "After the defense your supervisor records your grade, and once approved it's final.",
       "show.kicker": "From the platform",
       "show.title": "Projects Being Tracked on Takharruj Right Now",
       "show.text": "Not invented examples — these are projects actually registered on the platform, with their types, semesters and team sizes.",
@@ -303,18 +383,18 @@
       "roles.kicker": "Platform roles",
       "roles.title": "A Dedicated Space for Every Role",
       "roles.text": "Takharruj is built around three complementary roles, each with its own dashboard and permissions — so everyone knows exactly what's expected of them at every stage.",
-      "roles.student.name": "Student", "roles.student.role": "Form a team, submit an idea",
-      "roles.student.p1": "Pick teammates from the available list",
-      "roles.student.p2": "Choose a supervisor with open seats",
-      "roles.student.p3": "Follow phases, comments, and upload files",
-      "roles.supervisor.name": "Supervisor", "roles.supervisor.role": "Guide, approve, evaluate",
-      "roles.supervisor.p1": "Review team requests and approve ideas",
-      "roles.supervisor.p2": "Update completion progress per phase",
-      "roles.supervisor.p3": "Record the final grade after the defense",
+      "roles.student.name": "Student", "roles.student.role": "Team, submissions, discussion",
+      "roles.student.p1": "Form a team and pick a supervisor with open seats",
+      "roles.student.p2": "Submit stages and revise with supervisor feedback",
+      "roles.student.p3": "Private team chat and role assignment",
+      "roles.supervisor.name": "Supervisor", "roles.supervisor.role": "Plan, review, evaluate",
+      "roles.supervisor.p1": "Accept team requests within their seats",
+      "roles.supervisor.p2": "A stage plan with templates for all groups",
+      "roles.supervisor.p3": "Review submissions, record and approve grades",
       "roles.admin.name": "Administration", "roles.admin.role": "Configure and organize the term",
       "roles.admin.p1": "Manage specializations, project types, terms",
       "roles.admin.p2": "Add supervisors and distribute groups",
-      "roles.admin.p3": "Set the maximum team size",
+      "roles.admin.p3": "Audit log, and unlocking approved grades when needed",
       "lc.kicker": "Project lifecycle",
       "lc.title": "Clear Phases, from Idea to Delivery",
       "lc.text": "Every project — whatever its nature, duration, or scale — moves through defined phases to reach its goals.",
@@ -387,6 +467,15 @@
     document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
       var key = el.getAttribute("data-i18n-placeholder");
       if (d[key] !== undefined) el.setAttribute("placeholder", d[key]);
+    });
+    // وصف الصور لقارئات الشاشة يتبع اللغة أيضاً (لقطة المنتج في الهيرو)
+    document.querySelectorAll("[data-i18n-alt]").forEach(function (el) {
+      var key = el.getAttribute("data-i18n-alt");
+      if (d[key] !== undefined) el.setAttribute("alt", d[key]);
+    });
+    document.querySelectorAll("[data-i18n-aria]").forEach(function (el) {
+      var key = el.getAttribute("data-i18n-aria");
+      if (d[key] !== undefined) el.setAttribute("aria-label", d[key]);
     });
     // المبدّل المجزّأ: الحالة تُعلَن للقارئات بـ aria-pressed لا باللون وحده
     document.querySelectorAll(".lang-switch button").forEach(function (btn) {
@@ -642,5 +731,142 @@
     /* حُذفت خمس سلوكيات زخرفية: بارالاكس الهيرو، إمالة البطاقات،
        الأزرار المغناطيسية، توهّج المؤشر بحلقة requestAnimationFrame
        الدائمة، والجسيمات الطافية. الحركة الباقية في CSS وحدها. */
+
+    initBento();
   });
+
+  /* ---------- بنتو الهيرو: قصّة واحدة في حلقة ----------
+     الفريق يكتب في نقاشه ← يُسلّم المرحلة ← المشرف يعتمدها فيرتفع الإنجاز ←
+     الأدوار تتوزّع ← الدرجة تُرصد. خطوات بمؤقّتات لا حلقة إطارات دائمة:
+     تعمل حين تكون الشبكة ظاهرة وحدها، وتتوقّف بالمرور وبإخفاء التبويب.
+     ولمن أوقف الحركة: الحالة الأخيرة ثابتة بلا مؤقّت واحد. */
+  function initBento() {
+    var root = document.querySelector("[data-bento]");
+    if (!root) return;
+
+    var ring = root.querySelector("[data-ring]");
+    var ringNum = root.querySelector("[data-ring-num]");
+    var ringDone = root.querySelector("[data-ring-done]");
+    var steps = root.querySelectorAll("[data-steps] li");
+    var typed = root.querySelector("[data-typed]");
+    var roles = root.querySelectorAll("[data-roles] li");
+    var grade = root.querySelector("[data-grade]");
+    var chat = root.querySelector(".is-chat");
+
+    function src() { return (root.querySelector("[data-type-src]") || {}).textContent || ""; }
+    function at() { return (root.querySelector("[data-type-at]") || {}).textContent || ""; }
+
+    // الذكر يُبرز حين تكتمل الرسالة — النصّ يُهرَّب، والوسم وحده HTML
+    function withMention(text) {
+      var tag = at(), esc = function (t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML; };
+      var i = tag ? text.indexOf(tag) : -1;
+      return i === -1 ? esc(text) : esc(text.slice(0, i)) + '<span class="mention">' + esc(tag) + "</span>" + esc(text.slice(i + tag.length));
+    }
+
+    function setStep(n) { steps.forEach(function (li, i) { li.classList.toggle("is-on", i <= n); li.classList.toggle("is-now", i === n); }); }
+    function setRing(p, done) {
+      ring.style.setProperty("--p", p);
+      ringNum.textContent = p;
+      ringDone.textContent = done;
+    }
+    function tween(el, from, to, ms, fmt) {
+      var t0 = performance.now();
+      (function tick(t) {
+        var k = Math.min(1, (t - t0) / ms), e = 1 - Math.pow(1 - k, 3);
+        el.textContent = fmt(Math.round(from + (to - from) * e));
+        if (k < 1) requestAnimationFrame(tick);
+      })(t0);
+    }
+
+    function finalState() {
+      setStep(2); setRing(60, 3);
+      typed.innerHTML = withMention(src());
+      chat.classList.add("is-sent");
+      roles.forEach(function (li) { li.classList.add("is-in"); });
+      grade.textContent = "96";
+      root.classList.add("is-graded");
+    }
+
+    if (reduceMotion) { finalState(); return; }
+
+    function reset() {
+      setStep(0); setRing(40, 2);
+      typed.textContent = "";
+      chat.classList.remove("is-sent");
+      roles.forEach(function (li) { li.classList.remove("is-in"); });
+      grade.textContent = "0";
+      root.classList.remove("is-graded");
+    }
+
+    // الخطوات: [تأخير قبلها بالملّي ثانية، الفعل]
+    var script = [
+      [500, function () { chat.classList.add("is-typing"); }],
+      [0, function (next) {
+        var text = src(), i = 0;
+        (function type() {
+          if (!running) return (resume = type);
+          typed.textContent = text.slice(0, ++i);
+          if (i < text.length) setTimeout(type, 42); else next();
+        })();
+        return true; // الخطوة تستدعي التالية بنفسها
+      }],
+      [250, function () { typed.innerHTML = withMention(src()); chat.classList.remove("is-typing"); chat.classList.add("is-sent"); }],
+      [900, function () { setStep(1); }],
+      [1300, function () { setStep(2); setRing(60, 3); tween(ringNum, 40, 60, 900, String); }],
+      [900, function () { roles[0] && roles[0].classList.add("is-in"); }],
+      [220, function () { roles[1] && roles[1].classList.add("is-in"); }],
+      [220, function () { roles[2] && roles[2].classList.add("is-in"); }],
+      [700, function () { root.classList.add("is-graded"); tween(grade, 0, 96, 1000, String); }],
+      [3400, function () { root.classList.add("is-resetting"); }],
+      [450, function () { reset(); root.classList.remove("is-resetting"); }],
+    ];
+
+    var i = 0, timer = 0, running = false, visible = false, hovered = false, resume = null;
+
+    function next() {
+      if (!running) return;
+      var step = script[i];
+      timer = setTimeout(function () {
+        timer = 0;
+        // توقّف قبل الخطوة: العدّاد لم يتقدّم بعد، فالاستئناف يعيدها هي نفسها
+        if (!running) { resume = next; return; }
+        var self = step[1](function () { i = (i + 1) % script.length; next(); });
+        if (self !== true) { i = (i + 1) % script.length; next(); }
+      }, step[0]);
+    }
+
+    function sync() {
+      var should = visible && !hovered && !document.hidden;
+      if (should === running) return;
+      running = should;
+      if (running) {
+        if (resume) { var r = resume; resume = null; r(); }
+        else if (!timer) next();
+      }
+    }
+
+    reset();
+
+    // تبديل اللغة يغيّر نصّ المصدر: الرسالة المكتملة تُعاد بلغتها فوراً لا في الدورة التالية
+    var srcEl = root.querySelector("[data-type-src]");
+    if (srcEl && "MutationObserver" in window) {
+      new MutationObserver(function () {
+        if (chat.classList.contains("is-sent")) typed.innerHTML = withMention(src());
+      }).observe(srcEl, { childList: true, characterData: true, subtree: true });
+    }
+
+    root.addEventListener("mouseenter", function () { hovered = true; root.classList.add("is-paused"); sync(); });
+    root.addEventListener("mouseleave", function () { hovered = false; root.classList.remove("is-paused"); sync(); });
+    document.addEventListener("visibilitychange", sync);
+
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+        sync();
+      }, { threshold: 0.25 }).observe(root);
+    } else {
+      visible = true;
+      sync();
+    }
+  }
 })();

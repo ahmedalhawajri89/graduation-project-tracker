@@ -124,6 +124,14 @@
 
     {{-- ======= Hero ======= --}}
     <section id="hero" class="hero">
+        {{-- خلفية مرسومة لا صورة: وهج بلون الهوية خلف العنوان، ونقاط تتلاشى نحو
+             الحواف، وضوء خافت يتبع المؤشّر — حادّة بأيّ دقّة، ولا وزن لها على
+             التحميل، ولا تنافس العنوان على التباين كما تفعل الصورة --}}
+        <div class="hero-bg" aria-hidden="true">
+            <span class="hero-glow"></span>
+            <span class="hero-dots"></span>
+        </div>
+
         {{-- شبكة الأعمدة الظاهرة — هي خلفية الهيرو --}}
         <div class="hero-rules" aria-hidden="true">
             <span></span><span></span><span></span><span></span><span></span><span></span>
@@ -156,22 +164,105 @@
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
                         </a>
                     </div>
+
+                    {{-- أرقام حقيقية من قاعدة البيانات — شريط أفقي تحت الأزرار
+                         (كانت عموداً جانبياً، والعمود صار للقطة المنتج) --}}
+                    <div class="hero-figures stagger d5">
+                        <div class="figure">
+                            <div class="figure-num" data-count="{{ $siteStats['projects'] }}">0</div>
+                            <div class="figure-label" data-i18n="hero.fact1">مشروع يُتابَع على المنصة</div>
+                        </div>
+                        <div class="figure">
+                            <div class="figure-num" data-count="{{ $siteStats['supervisors'] }}">0</div>
+                            <div class="figure-label" data-i18n="hero.fact2">مشرف أكاديمي</div>
+                        </div>
+                        <div class="figure">
+                            <div class="figure-num" data-count="{{ $siteStats['students'] }}">0</div>
+                            <div class="figure-label" data-i18n="hero.fact3">طالب وطالبة</div>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- أرقام حقيقية من قاعدة البيانات --}}
-                <div class="hero-figures stagger d4">
-                    <span class="figures-label" data-i18n="hero.figuresLabel">المنصة اليوم</span>
-                    <div class="figure">
-                        <div class="figure-num" data-count="{{ $siteStats['projects'] }}">0</div>
-                        <div class="figure-label" data-i18n="hero.fact1">مشروع يُتابَع على المنصة</div>
-                    </div>
-                    <div class="figure">
-                        <div class="figure-num" data-count="{{ $siteStats['supervisors'] }}">0</div>
-                        <div class="figure-label" data-i18n="hero.fact2">مشرف أكاديمي</div>
-                    </div>
-                    <div class="figure">
-                        <div class="figure-num" data-count="{{ $siteStats['students'] }}">0</div>
-                        <div class="figure-label" data-i18n="hero.fact3">طالب وطالبة</div>
+                {{-- بنتو حيّ: خمس بلاطات، كلٌّ ويدجت مبنيّة بالكود لا صورة — حادّة بأيّ
+                     دقّة وتُترجم. تحكي قصّة واحدة في حلقة: الفريق يتناقش ويُسلّم، والمشرف
+                     يعتمد فيرتفع الإنجاز، والأدوار تتوزّع، والدرجة تُرصد. المرور يوقفها،
+                     ولمن أوقف الحركة تظهر الحالة الأخيرة ثابتة. انظر initBento في premium.js --}}
+                <div class="hero-visual">
+                    <div class="bento" data-bento aria-label="لمحة من المنصة" data-i18n-aria="bento.aria">
+
+                        {{-- ١) الإنجاز: حلقة ترتفع حين تُعتمد المرحلة --}}
+                        <article class="bento-tile is-progress">
+                            <header class="bento-head">
+                                <span class="bento-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/></svg></span>
+                                <span data-i18n="bento.progress">نسبة الإنجاز</span>
+                            </header>
+                            <div class="bento-ring" data-ring style="--p: 38">
+                                <svg viewBox="0 0 120 120" aria-hidden="true">
+                                    <circle cx="60" cy="60" r="50" />
+                                    <circle cx="60" cy="60" r="50" pathLength="100" />
+                                </svg>
+                                <b><span data-ring-num>38</span>%</b>
+                            </div>
+                            <div class="bento-project">
+                                <b data-i18n="bento.project">كشف الرسائل الاحتيالية</b>
+                                <small><span data-ring-done>2</span> <span data-i18n="bento.of">من 5 مراحل</span></small>
+                            </div>
+                        </article>
+
+                        {{-- ٢) المرحلة: مفتوحة ← سُلّمت ← اعتُمدت --}}
+                        <article class="bento-tile is-stage">
+                            <header class="bento-head">
+                                <span class="bento-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h11l-2 4 2 4H5"/></svg></span>
+                                <span data-i18n="bento.stage">المرحلة الحالية</span>
+                            </header>
+                            <b class="bento-stage-title" data-i18n="bento.stageTitle">الفصل الثاني — الدراسات السابقة</b>
+                            <ol class="bento-steps" data-steps>
+                                <li class="is-on"><i></i><span data-i18n="bento.s1">مفتوحة</span></li>
+                                <li><i></i><span data-i18n="bento.s2">سُلّمت</span></li>
+                                <li><i></i><span data-i18n="bento.s3">اعتُمدت</span></li>
+                            </ol>
+                        </article>
+
+                        {{-- ٣) نقاش الفريق: رسالة تُكتب حرفاً حرفاً --}}
+                        <article class="bento-tile is-chat">
+                            <header class="bento-head">
+                                <span class="bento-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+                                <span data-i18n="bento.chat">نقاش الفريق</span>
+                                <span class="bento-lock" data-i18n="bento.private">خاص</span>
+                            </header>
+                            <div class="bento-msg">
+                                <span class="bento-avatar">دع</span>
+                                <p class="bento-bubble"><span data-typed></span><i class="bento-caret" aria-hidden="true"></i></p>
+                            </div>
+                            {{-- مصدر النصّ المكتوب — يُترجم كغيره، ويقرؤه السكربت في كل دورة --}}
+                            <span class="bento-src" data-type-src data-i18n="bento.msg" hidden>@آية راجعي الفصل الثاني قبل الخميس</span>
+                            <span class="bento-src" data-type-at data-i18n="bento.at" hidden>@آية</span>
+                        </article>
+
+                        {{-- ٤) الأدوار: تتوزّع على الفريق --}}
+                        <article class="bento-tile is-roles">
+                            <header class="bento-head">
+                                <span class="bento-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg></span>
+                                <span data-i18n="bento.roles">أدوار الفريق</span>
+                            </header>
+                            <ul class="bento-roles" data-roles>
+                                <li style="--h: 217"><span class="bento-avatar">دع</span><em data-i18n="bento.r1">واجهات</em></li>
+                                <li style="--h: 262"><span class="bento-avatar">حس</span><em data-i18n="bento.r2">الخادم</em></li>
+                                <li style="--h: 160"><span class="bento-avatar">آي</span><em data-i18n="bento.r3">التوثيق</em></li>
+                            </ul>
+                        </article>
+
+                        {{-- ٥) الدرجة: تُرصد في النهاية --}}
+                        <article class="bento-tile is-grade">
+                            <header class="bento-head">
+                                <span class="bento-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="m8.5 14.5-1.5 7 5-3 5 3-1.5-7"/></svg></span>
+                                <span data-i18n="bento.grade">التقييم النهائي</span>
+                            </header>
+                            <div class="bento-grade">
+                                <b data-grade>0</b><small>/100</small>
+                            </div>
+                            <span class="bento-grade-label" data-i18n="bento.excellent">ممتاز</span>
+                        </article>
                     </div>
                 </div>
             </div>
@@ -287,6 +378,9 @@
         </section>
 
         {{-- ======= Services ======= --}}
+        {{-- ما تفعله على المنصة — شبكة بنتو: بلاطتان كبيرتان بمشهد مصغّر ثابت،
+             وستّ بلاطات لبقية الأدوات. كانت ثلاث بطاقات بعبارات عامة («يساعدك
+             الموقع على توفير الوقت»)، والأدوات الجديدة غائبة عنها --}}
         <section id="services" class="section">
             <div class="container">
                 <div class="section-head" data-num="02">
@@ -294,79 +388,145 @@
                     <div class="section-head-grid">
                         <h2 class="reveal" data-i18n="services.title">كل ما يحتاجه مشروعك في مكان واحد</h2>
                         <p class="reveal d1" data-i18n="services.text">
-                            نظام متكامل يدير كافة العمليات من تسجيل الدخول واختيار الفريق والمشرف، وصولاً إلى مناقشة المشروع وتقييمه.
+                            من تكوين الفريق إلى الدرجة المعتمدة — أدوات تغنيك عن مجموعات واتساب والبريد والملفات المبعثرة.
                         </p>
                     </div>
                 </div>
 
-                <div class="cell-grid cols-3 reveal">
-                    <article class="cell">
-                        <span class="cell-icon" aria-hidden="true">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        </span>
-                        <h3 data-i18n="services.1.title">تكوين الفريق واختيار المشرف</h3>
-                        <p data-i18n="services.1.text">اختر زملاءك من قائمة الطلاب المتاحين في تخصصك، وشاهد المقاعد المتبقية لكل مشرف قبل تقديم طلبك.</p>
+                <div class="svc-grid reveal">
+                    {{-- ١) الفريق والمشرف — كبيرة --}}
+                    <article class="svc-tile is-wide">
+                        <div class="svc-copy">
+                            <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+                            <h3 data-i18n="svc.1.title">فريقك ومشرفك في دقائق</h3>
+                            <p data-i18n="svc.1.text">اختر زملاءك من المتاحين في تخصصك، وشاهد المقاعد المتبقية لكل مشرف — وتنبّهك المنصة إن كانت فكرتك نُفّذت من قبل.</p>
+                        </div>
+                        <div class="svc-scene" aria-hidden="true">
+                            <div class="scene-team">
+                                <span class="scene-avatars"><i>دع</i><i>حس</i><i>آي</i><i class="is-add">+</i></span>
+                                <span class="scene-chip"><b>2</b> <span data-i18n="svc.1.seats">مقاعد متبقية لدى المشرف</span></span>
+                            </div>
+                            <div class="scene-alert">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+                                <span data-i18n="svc.1.similar">فكرة مشابهة نُفّذت في 2023 — راجعها قبل التقديم</span>
+                            </div>
+                        </div>
                     </article>
 
-                    <article class="cell">
-                        <span class="cell-icon" aria-hidden="true">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>
-                        </span>
-                        <h3 data-i18n="services.2.title">تتبع مراحل بنسبة إنجاز</h3>
-                        <p data-i18n="services.2.text">مراحل يحددها مشرفك مع نسبة إنجاز مباشرة وموعد نهائي بعدّاد أيام — تعرف أين تقف في كل لحظة.</p>
+                    {{-- ٢) التسليم والمراجعة — كبيرة --}}
+                    <article class="svc-tile is-wide">
+                        <div class="svc-copy">
+                            <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5M12 3v12"/></svg></span>
+                            <h3 data-i18n="svc.2.title">سلّم مرحلتك، واستلم ملاحظة لا رفضاً</h3>
+                            <p data-i18n="svc.2.text">تسلّم كل مرحلة بملف وملاحظة، ويعتمدها مشرفك أو يطلب تعديلاً بسببه الواضح — وكل جولة محفوظة.</p>
+                        </div>
+                        <div class="svc-scene" aria-hidden="true">
+                            <ol class="scene-steps">
+                                <li class="is-done"><i></i><span data-i18n="svc.2.s1">سُلّمت</span></li>
+                                <li class="is-warn"><i></i><span data-i18n="svc.2.s2">مطلوب تعديل</span></li>
+                                <li class="is-ok"><i></i><span data-i18n="svc.2.s3">اعتُمدت</span></li>
+                            </ol>
+                            <div class="scene-note">
+                                <b data-i18n="svc.2.noteT">ملاحظة المشرف</b>
+                                <span data-i18n="svc.2.note">ينقص مخطط الكيانات والعلاقات في الفصل الثالث.</span>
+                            </div>
+                        </div>
                     </article>
 
-                    <article class="cell">
-                        <span class="cell-icon" aria-hidden="true">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg>
-                        </span>
-                        <h3 data-i18n="services.3.title">نقاش وملفات في مكان واحد</h3>
-                        <p data-i18n="services.3.text">نقاش مدمج مع مشرفك، ورفع ملفات المشروع بأمان، وإشعار فوري لكل تحديث — بلا مجموعات واتساب مبعثرة.</p>
+                    {{-- ٣–٦) أدوات يومية --}}
+                    <article class="svc-tile">
+                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3 6 1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/></svg></span>
+                        <h3 data-i18n="svc.3.title">خطة مراحل بقوالبها</h3>
+                        <p data-i18n="svc.3.text">يضعها المشرف مرّة بمواعيدها وقوالبها، فتصل كل مجموعاته.</p>
+                    </article>
+                    <article class="svc-tile">
+                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M9 10h.01M13 10h.01"/></svg></span>
+                        <h3 data-i18n="svc.4.title">نقاش خاص بالفريق</h3>
+                        <p data-i18n="svc.4.text">قناة لا يراها المشرف، و@ لتنبيه زميل بعينه.</p>
+                    </article>
+                    <article class="svc-tile">
+                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 14h6M9 17h3"/></svg></span>
+                        <h3 data-i18n="svc.5.title">ملاحظات على الملفات</h3>
+                        <p data-i18n="svc.5.text">«صفحة ٣ ينقصها المرجع» — على الملف نفسه، حتى تُعالَج.</p>
+                    </article>
+                    <article class="svc-tile">
+                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 9h3M15 13h3M6 16c.6-1.5 1.7-2 3-2s2.4.5 3 2"/></svg></span>
+                        <h3 data-i18n="svc.6.title">توزيع الأدوار</h3>
+                        <p data-i18n="svc.6.text">مَن على الواجهات ومَن على الخادم — يراه الفريق والمشرف.</p>
+                    </article>
+
+                    {{-- ٧–٨) --}}
+                    <article class="svc-tile is-half">
+                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
+                        <div>
+                            <h3 data-i18n="svc.7.title">مستكشف المشاريع السابقة</h3>
+                            <p data-i18n="svc.7.text">تصفّح مشاريع الدفعات السابقة بأنواعها ومشرفيها، واستلهم فكرتك.</p>
+                        </div>
+                    </article>
+                    <article class="svc-tile is-half">
+                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="m8.5 14.5-1.5 7 5-3 5 3-1.5-7"/></svg></span>
+                        <div>
+                            <h3 data-i18n="svc.8.title">درجة معتمدة لا تتغيّر</h3>
+                            <p data-i18n="svc.8.text">يرصد المشرف درجتك بالتقدير وملاحظاته، وتُقفل بعد اعتمادها.</p>
+                        </div>
                     </article>
                 </div>
             </div>
         </section>
 
         {{-- ======= Features ======= --}}
+        {{-- كيف بُنيت المنصة لا ماذا تفعل: جودات لا أدوات — كانت تكرّر الخدمات
+             (المراحل والنقاش والتقييم) بعبارات أخرى --}}
         <section id="features" class="section">
             <div class="container">
                 <div class="section-head" data-num="03">
                     <div class="section-index reveal"><span data-i18n="features.kicker">المميزات</span></div>
                     <div class="section-head-grid">
-                        <h2 class="reveal" data-i18n="features.title">منصة صُممت لنجاح مشروعك</h2>
+                        <h2 class="reveal" data-i18n="features.title">مصمّمة للواقع الأكاديمي</h2>
                         <p class="reveal d1" data-i18n="features.text">
-                            يهدف النظام إلى إدارة كافة العمليات من مرحلة تسجيل الدخول واختيار الفريق والمشرف
-                            وصولاً إلى مرحلة مناقشة المشروع وتقييمه.
+                            تفاصيل لا تُرى في العرض الأول، لكنها ما يجعل الفصل الدراسي يمرّ بلا مفاجآت.
                         </p>
                     </div>
                 </div>
 
-                <div class="cell-grid cols-2 reveal">
-                    <article class="cell">
-                        <div class="cell-index">01</div>
-                        <h3 data-i18n="features.1.title">مراحل مشروع بنسبة إنجاز مباشرة</h3>
-                        <p data-i18n="features.1.text">مشرفك يحدد مراحل مشروعك بتواريخ استحقاق، وأنت تتابع نسبة الإنجاز على خط زمني مرئي يميز المنجز والمتأخر تلقائياً.</p>
+                <div class="cell-grid cols-3 feat-grid reveal">
+                    <article class="cell feat-cell">
+                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><div class="cell-index">01</div></div>
+                        <h3 data-i18n="features.1.title">خصوصية الفريق</h3>
+                        <p data-i18n="features.1.text">نقاش الفريق الداخلي لا يراه المشرف ولا الإدارة — يكتب الطلاب بحرّية بدل الهروب إلى واتساب.</p>
                     </article>
-                    <article class="cell">
-                        <div class="cell-index">02</div>
-                        <h3 data-i18n="features.2.title">مستكشف المشاريع السابقة</h3>
-                        <p data-i18n="features.2.text">تصفّح مشاريع الدفعات السابقة بأنواعها ومشرفيها — استلهم فكرتك وتأكد أنها غير منفّذة قبل التقديم.</p>
+                    <article class="cell feat-cell">
+                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span><div class="cell-index">02</div></div>
+                        <h3 data-i18n="features.2.title">إشعارات بلا ضجيج</h3>
+                        <p data-i18n="features.2.text">يصلك التنبيه حين يخصّك الأمر: طلب تعديل، أو ذكرك زميل، أو اعتُمدت مرحلة — لا مع كل رسالة.</p>
                     </article>
-                    <article class="cell">
-                        <div class="cell-index">03</div>
-                        <h3 data-i18n="features.3.title">نقاش مدمج وإشعارات فورية</h3>
-                        <p data-i18n="features.3.text">اسأل مشرفك وناقش فريقك داخل صفحة المشروع نفسها، واستلم إشعاراً لكل رد أو مرحلة تُنجز أو ملف يُرفع.</p>
+                    <article class="cell feat-cell">
+                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><div class="cell-index">03</div></div>
+                        <h3 data-i18n="features.3.title">سجلّ لا يُعدَّل</h3>
+                        <p data-i18n="features.3.text">الدرجة تُقفل بعد اعتمادها، وكل قرار مهم يُحفظ في سجلّ تدقيق — مرجع واضح عند أيّ اعتراض.</p>
                     </article>
-                    <article class="cell">
-                        <div class="cell-index">04</div>
-                        <h3 data-i18n="features.4.title">تقييم إلكتروني بدرجة وتقدير</h3>
-                        <p data-i18n="features.4.text">بعد اكتمال مشروعك يرصد المشرف درجتك النهائية مع التقدير وملاحظاته الختامية — وتصلك النتيجة بإشعار فوري.</p>
+                    <article class="cell feat-cell">
+                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M8 9h8M8 13h5"/><circle cx="18" cy="18" r="3"/><path d="m20.2 20.2 1.8 1.8"/></svg></span><div class="cell-index">04</div></div>
+                        <h3 data-i18n="features.4.title">ملفات محمية</h3>
+                        <p data-i18n="features.4.text">ملفات المشروع والتسليمات على قرص خاص، لا يُنزلها إلا الفريق ومشرفه والإدارة.</p>
+                    </article>
+                    <article class="cell feat-cell">
+                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><div class="cell-index">05</div></div>
+                        <h3 data-i18n="features.5.title">عربية أولاً</h3>
+                        <p data-i18n="features.5.text">واجهة عربية كاملة من اليمين إلى اليسار، بخطوط مصمّمة للقراءة، والإنجليزية بنقرة.</p>
+                    </article>
+                    <article class="cell feat-cell">
+                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></span><div class="cell-index">06</div></div>
+                        <h3 data-i18n="features.6.title">على الجوال كما الحاسوب</h3>
+                        <p data-i18n="features.6.text">سلّم مرحلة أو ردّ على مشرفك من هاتفك — كل صفحة مصمّمة للشاشة الصغيرة.</p>
                     </article>
                 </div>
             </div>
         </section>
 
         {{-- ======= How it works ======= --}}
+        {{-- أربع محطات على مسار واحد متّصل — كانت أربعة صناديق منفصلة بالشكل ذاته
+             للقسمين قبلها. والخطوات كما تجري فعلاً: تسليم ومراجعة، ودرجة تُعتمد --}}
         <section id="how" class="section">
             <div class="container">
                 <div class="section-head" data-num="04">
@@ -374,33 +534,33 @@
                     <div class="section-head-grid">
                         <h2 class="reveal" data-i18n="how.title">أربع خطوات من الفكرة إلى الدرجة</h2>
                         <p class="reveal d1" data-i18n="how.text">
-                            حسابك يُنشأ من إدارة المنصة — لا حاجة للتسجيل، فقط سجّل دخولك وابدأ.
+                            حسابك يُنشأ من إدارة القسم — لا تسجيل ولا انتظار، سجّل دخولك وابدأ.
                         </p>
                     </div>
                 </div>
 
-                <div class="cell-grid cols-4 reveal">
-                    <div class="cell">
-                        <div class="cell-index">01</div>
-                        <h3 data-i18n="how.1.title">سجّل دخولك</h3>
-                        <p data-i18n="how.1.text">ببريدك أو رقمك الجامعي — الحسابات جاهزة مسبقاً من إدارة المنصة.</p>
-                    </div>
-                    <div class="cell">
-                        <div class="cell-index">02</div>
+                <ol class="journey reveal">
+                    <li class="journey-step">
+                        <span class="journey-node"><span class="cell-index">01</span></span>
+                        <h3 data-i18n="how.1.title">ادخل إلى المنصة</h3>
+                        <p data-i18n="how.1.text">ببريدك أو رقمك الجامعي — حسابك جاهز من إدارة القسم.</p>
+                    </li>
+                    <li class="journey-step">
+                        <span class="journey-node"><span class="cell-index">02</span></span>
                         <h3 data-i18n="how.2.title">كوّن فريقك وقدّم فكرتك</h3>
-                        <p data-i18n="how.2.text">اختر زملاءك من قائمة المتاحين، واختر مشرفاً لديه مقاعد، واكتب فكرة مشروعك.</p>
-                    </div>
-                    <div class="cell">
-                        <div class="cell-index">03</div>
-                        <h3 data-i18n="how.3.title">تابع وناقش وارفع</h3>
-                        <p data-i18n="how.3.text">بعد موافقة المشرف: مراحل بنسبة إنجاز، نقاش مباشر، ملفات، وإشعار لكل جديد.</p>
-                    </div>
-                    <div class="cell is-accent">
-                        <div class="cell-index">04</div>
-                        <h3 data-i18n="how.4.title">ناقش واستلم تقييمك</h3>
-                        <p data-i18n="how.4.text">بعد المناقشة يرصد مشرفك درجتك النهائية بالتقدير وملاحظاته — وتصلك فوراً.</p>
-                    </div>
-                </div>
+                        <p data-i18n="how.2.text">اختر زملاءك ومشرفاً لديه مقاعد، واكتب فكرتك بعد أن تتأكد أنها لم تُنفَّذ.</p>
+                    </li>
+                    <li class="journey-step">
+                        <span class="journey-node"><span class="cell-index">03</span></span>
+                        <h3 data-i18n="how.3.title">سلّم مراحلك</h3>
+                        <p data-i18n="how.3.text">مرحلة بعد مرحلة: تسليم، فاعتماد أو تعديل بملاحظة، ونقاش مع فريقك ومشرفك.</p>
+                    </li>
+                    <li class="journey-step is-accent">
+                        <span class="journey-node"><span class="cell-index">04</span></span>
+                        <h3 data-i18n="how.4.title">ناقش واستلم درجتك</h3>
+                        <p data-i18n="how.4.text">بعد المناقشة يرصد مشرفك درجتك بالتقدير، وتُعتمد فلا تتغيّر.</p>
+                    </li>
+                </ol>
             </div>
         </section>
 
@@ -423,12 +583,12 @@
                         <div class="role-head">
                             <span class="role-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
                             <h3 data-i18n="roles.student.name">الطالب</h3>
-                            <p class="role-tag" data-i18n="roles.student.role">تكوين الفريق وتقديم الفكرة</p>
+                            <p class="role-tag" data-i18n="roles.student.role">الفريق والتسليم والنقاش</p>
                         </div>
                         <ul class="role-points">
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.student.p1">اختيار زملاء الفريق من قائمة المتاحين</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.student.p2">اختيار مشرف لديه مقاعد شاغرة</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.student.p3">متابعة المراحل والتعليقات ورفع الملفات</span></li>
+                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.student.p1">تكوين الفريق واختيار مشرف لديه مقاعد</span></li>
+                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.student.p2">تسليم المراحل وتعديلها بملاحظات المشرف</span></li>
+                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.student.p3">نقاش الفريق الخاص وتوزيع الأدوار</span></li>
                         </ul>
                     </article>
 
@@ -436,12 +596,12 @@
                         <div class="role-head">
                             <span class="role-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span>
                             <h3 data-i18n="roles.supervisor.name">المشرف</h3>
-                            <p class="role-tag" data-i18n="roles.supervisor.role">المتابعة والاعتماد والتقييم</p>
+                            <p class="role-tag" data-i18n="roles.supervisor.role">التخطيط والمراجعة والتقييم</p>
                         </div>
                         <ul class="role-points">
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.supervisor.p1">استعراض طلبات الفرق واعتماد الأفكار</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.supervisor.p2">تحديث نِسب الإنجاز لكل مرحلة</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.supervisor.p3">رصد التقييم النهائي بعد المناقشة</span></li>
+                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.supervisor.p1">قبول طلبات الفرق حسب مقاعده</span></li>
+                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.supervisor.p2">خطة مراحل بقوالبها لكل مجموعاته</span></li>
+                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.supervisor.p3">مراجعة التسليمات، ورصد الدرجة واعتمادها</span></li>
                         </ul>
                     </article>
 
@@ -454,7 +614,7 @@
                         <ul class="role-points">
                             <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.admin.p1">إدارة التخصصات وأنواع المشاريع والفصول</span></li>
                             <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.admin.p2">إضافة المشرفين وتوزيع المجموعات</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.admin.p3">ضبط الحد الأقصى لأعضاء الفريق</span></li>
+                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.admin.p3">سجلّ تدقيق، وفتح الدرجة المعتمدة عند الحاجة</span></li>
                         </ul>
                     </article>
                 </div>

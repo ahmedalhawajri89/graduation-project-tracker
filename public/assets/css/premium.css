@@ -460,6 +460,57 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .hero-ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 
+/* ---------- الهيرو بملء الشاشة ----------
+   كان بارتفاع محتواه، فيطلّ رقم القسم التالي «01» من أسفل الشاشة. صار بطول
+   الشاشة (svh: بلا قفزة شريط العنوان في متصفّح الجوال)، والنصّ في منتصف
+   المساحة، ومسار المشروع في قاعها. */
+.hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+.hero > .container { flex: 1; display: flex; flex-direction: column; width: 100%; }
+.hero-grid { flex: 1; align-content: center; }
+.hero-copy { justify-content: center; }
+
+/* ---------- خلفية الهيرو: مرسومة لا صورة ---------- */
+.hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+
+/* وهج بلون الهوية خلف العنوان (أعلى اليمين في العربية)، وآخر أخفت في القاع */
+.hero-glow {
+  position: absolute; inset: -10% -5% 0;
+  background:
+    radial-gradient(42% 48% at 74% 30%, rgba(37, 99, 235, .13), transparent 70%),
+    radial-gradient(30% 36% at 88% 18%, rgba(96, 165, 250, .14), transparent 72%),
+    radial-gradient(38% 40% at 14% 92%, rgba(37, 99, 235, .06), transparent 70%);
+  animation: glow-breathe 12s ease-in-out infinite alternate;
+}
+[dir="ltr"] .hero-glow { transform: scaleX(-1); }
+@keyframes glow-breathe {
+  from { opacity: .85; }
+  to { opacity: 1; }
+}
+
+/* نقاط دقيقة تتلاشى نحو الحواف — ملمس يربط الأعمدة لا ضجيج فوقها */
+.hero-dots {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(9, 9, 11, .13) 1px, transparent 1.2px);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(70% 65% at 62% 42%, #000 20%, transparent 80%);
+          mask-image: radial-gradient(70% 65% at 62% 42%, #000 20%, transparent 80%);
+  opacity: .55;
+}
+
+
+
+/* الأعمدة والمحتوى فوق الخلفية */
+.hero-rules { z-index: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow { animation: none; }
+}
+
 .figure { padding: 15px 0; border-top: 1px solid var(--rule); }
 .figure-num {
   font-family: var(--font-display);
@@ -1223,4 +1274,448 @@ html.no-entrance .rail-line::before { transform: scaleX(1); }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
   html.locale-swapping body { opacity: 1; transform: none; }
   .badge .dot { box-shadow: none; }
+}
+
+
+/* ==========================================================
+   الهيرو: عرض المنتج
+   كان نصّاً وعمود أرقام وخلفية خافتة. صار: النصّ في نصف، ولقطة حقيقية من
+   لوحة الطالب في النصف الآخر بمنظور مائل ووهج — الزائر يرى المنصة قبل أن
+   يسجّل. في آخر الملف عمداً: يعلو قواعد عمود الأرقام القديمة في كل مقاس.
+   ========================================================== */
+.hero-grid {
+  grid-template-columns: repeat(6, 1fr);
+  align-items: center;
+  padding: 44px 0 40px;
+}
+.hero-copy { grid-column: span 3; gap: 22px; padding-inline: 28px 24px; }
+.hero h1 { font-size: clamp(2rem, 3.4vw, 3.2rem); max-width: 15ch; }
+.stagger.d5 { animation-delay: .66s; }
+
+/* الأرقام: شريط أفقي تحت الأزرار — كانت عموداً جانبياً */
+.hero-figures {
+  grid-column: auto;
+  display: flex; flex-direction: row; justify-content: flex-start;
+  align-self: stretch;
+  margin-top: 8px; padding: 0;
+  border-top: 1px solid var(--rule);
+}
+.hero-figures .figure { flex: 1; padding: 14px 0 0; border-top: 0; }
+.hero-figures .figure + .figure { padding-inline-start: 18px; border-inline-start: 1px solid var(--rule); }
+.hero-figures .figure-num { font-size: 1.55rem; }
+.hero-figures .figure-label { font-size: 12px; }
+
+/* ---------- بنتو حيّ ----------
+   كانت لقطة مائلة ببطاقات طافية — نمط شاع حتى صار قالباً. صارت شبكة بلاطات
+   غير متساوية، كلٌّ ويدجت حيّة مبنيّة بالكود: حادّة بأيّ دقّة وتُترجم. */
+.hero-visual {
+  grid-column: span 3;
+  position: relative;
+  padding-inline: 12px 24px;
+  opacity: 0;
+  animation: bento-in .9s var(--ease-expo) .5s forwards;
+}
+/* وهج بلون الهوية تحت الشبكة يرفعها عن الورقة */
+.hero-visual::before {
+  content: "";
+  position: absolute; inset: 6% 2% -4%;
+  z-index: -1;
+  background: radial-gradient(55% 55% at 50% 50%, rgba(37, 99, 235, .22), rgba(96, 165, 250, .08) 55%, transparent 75%);
+  filter: blur(30px);
+}
+@keyframes bento-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "prog prog stage stage"
+    "prog prog chat  chat"
+    "role role grade grade";
+  gap: 12px;
+}
+.bento-tile {
+  position: relative;
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(9, 9, 11, .08);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fff, #fcfcfd);
+  box-shadow: 0 1px 2px rgba(9, 9, 11, .04), 0 14px 32px -20px rgba(15, 23, 42, .28);
+  transition: transform .5s var(--ease-expo), box-shadow .5s var(--ease-expo), border-color .3s ease;
+  animation: tile-in .7s var(--ease-expo) both;
+}
+.bento-tile:hover { transform: translateY(-3px); border-color: rgba(37, 99, 235, .25); box-shadow: 0 1px 2px rgba(9, 9, 11, .04), 0 22px 40px -22px rgba(37, 99, 235, .45); }
+.is-progress { grid-area: prog; animation-delay: .6s; }
+.is-stage { grid-area: stage; animation-delay: .7s; }
+.is-chat { grid-area: chat; animation-delay: .8s; }
+.is-roles { grid-area: role; animation-delay: .9s; }
+.is-grade { grid-area: grade; animation-delay: 1s; }
+@keyframes tile-in {
+  from { opacity: 0; transform: translateY(14px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.bento-head { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: var(--ink-mute); }
+.bento-ico {
+  flex: none;
+  display: grid; place-items: center;
+  width: 24px; height: 24px; border-radius: 7px;
+  background: var(--accent-soft); color: var(--accent);
+}
+.bento-ico svg { width: 14px; height: 14px; }
+.bento-avatar {
+  flex: none;
+  display: grid; place-items: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--ink); color: #fff;
+  font-size: 10.5px; font-weight: 700;
+}
+
+/* ١) الإنجاز */
+.is-progress { justify-content: space-between; }
+.bento-ring { position: relative; width: 148px; height: 148px; margin: 4px auto 0; display: grid; place-items: center; }
+.bento-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.bento-ring circle { fill: none; stroke-width: 9; }
+.bento-ring circle:first-child { stroke: #eef2f7; }
+.bento-ring circle + circle {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(100 - var(--p));
+  transition: stroke-dashoffset 1s var(--ease-expo);
+}
+.bento-ring b {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: 30px; font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.bento-project { display: flex; flex-direction: column; gap: 2px; text-align: center; }
+.bento-project b { font-size: 13px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bento-project small { font-size: 11.5px; color: var(--ink-mute); }
+
+/* ٢) المرحلة: ثلاث محطّات تضيء بالتتابع */
+.bento-stage-title { font-size: 13px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bento-steps { list-style: none; display: flex; gap: 6px; margin: 0; padding: 0; }
+.bento-steps li {
+  flex: 1;
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: 11px; font-weight: 600; color: var(--ink-mute);
+}
+.bento-steps i {
+  display: block; height: 5px; border-radius: 99px;
+  background: #eef0f3;
+  position: relative; overflow: hidden;
+}
+.bento-steps i::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: var(--accent);
+  transform: scaleX(0); transform-origin: right;
+  transition: transform .6s var(--ease-expo);
+}
+[dir="ltr"] .bento-steps i::after { transform-origin: left; }
+.bento-steps li.is-on i::after { transform: scaleX(1); }
+.bento-steps li.is-on { color: var(--ink-soft); }
+.bento-steps li.is-now { color: var(--accent); }
+/* الاعتماد أخضر: النهاية السعيدة */
+.bento-steps li:last-child.is-on i::after { background: #10b981; }
+.bento-steps li:last-child.is-now { color: #047857; }
+
+/* ٣) نقاش الفريق: رسالة تُكتب */
+.bento-lock {
+  margin-inline-start: auto;
+  padding: 1px 8px; border-radius: 99px;
+  background: #f4f4f5;
+  font-size: 10.5px; font-weight: 700; color: var(--ink-mute);
+}
+.bento-msg { display: flex; align-items: flex-end; gap: 8px; min-height: 44px; }
+.bento-bubble {
+  flex: 1;
+  min-height: 36px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid #e8ecf3;
+  border-radius: 14px;
+  border-end-start-radius: 4px;
+  background: #f8fafc;
+  font-size: 12.5px; line-height: 1.6; color: var(--ink-soft);
+  transition: background-color .4s ease, border-color .4s ease, box-shadow .4s ease;
+}
+.bento-bubble .mention { padding: 0 4px; border-radius: 5px; background: var(--accent-soft); font-weight: 700; color: var(--accent); }
+.is-chat.is-sent .bento-bubble { border-color: #bfdbfe; background: #fff; box-shadow: 0 0 0 3px rgba(37, 99, 235, .08); }
+.bento-caret {
+  display: inline-block; width: 2px; height: 1em;
+  margin-inline-start: 2px; vertical-align: -2px;
+  background: var(--accent);
+  opacity: 0;
+}
+.is-chat.is-typing .bento-caret { opacity: 1; animation: caret 1s steps(1) infinite; }
+@keyframes caret { 50% { opacity: 0; } }
+
+/* ٤) الأدوار: تظهر بالتتابع */
+.bento-roles { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; }
+.bento-roles li {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px 3px 3px;
+  padding-inline: 3px 10px;
+  border: 1px solid hsl(var(--h) 60% 88%);
+  border-radius: 99px;
+  background: hsl(var(--h) 80% 97%);
+  opacity: .25; transform: translateY(4px) scale(.96);
+  transition: opacity .45s var(--ease-expo), transform .45s var(--ease-expo);
+}
+.bento-roles li.is-in { opacity: 1; transform: none; }
+.bento-roles .bento-avatar { width: 22px; height: 22px; font-size: 9px; }
+.bento-roles em { font-style: normal; font-size: 11.5px; font-weight: 700; color: hsl(var(--h) 55% 32%); }
+
+/* ٥) الدرجة */
+.bento-grade { display: flex; align-items: baseline; gap: 4px; }
+.bento-grade b {
+  font-family: var(--font-display);
+  font-size: 38px; font-weight: 800; line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.bento-grade small { font-size: 14px; font-weight: 600; color: var(--ink-mute); }
+.bento-grade-label {
+  align-self: flex-start;
+  padding: 2px 10px; border-radius: 99px;
+  background: #ecfdf5; color: #047857;
+  font-size: 11.5px; font-weight: 700;
+  opacity: 0; transform: translateY(4px);
+  transition: opacity .5s ease .6s, transform .5s var(--ease-expo) .6s;
+}
+.bento.is-graded .bento-grade-label { opacity: 1; transform: none; }
+.bento.is-graded .is-grade { border-color: rgba(16, 185, 129, .3); }
+
+/* نهاية الدورة: تلاشٍ قصير قبل البداية — لا قفزة */
+.bento .bento-tile > *:not(.bento-head) { transition-property: opacity, transform, stroke-dashoffset, background-color, border-color, box-shadow; }
+.bento.is-resetting .bento-tile > *:not(.bento-head) { opacity: .35; }
+
+/* ---------- المقاسات ---------- */
+@media (max-width: 1180px) {
+  .hero h1 { font-size: clamp(1.9rem, 3.6vw, 2.7rem); }
+  .bento { gap: 10px; }
+  .bento-tile { padding: 14px; }
+  .bento-ring { width: 124px; height: 124px; }
+  .bento-ring b { font-size: 25px; }
+}
+
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 36px; padding: 40px 0 36px; }
+  .hero-copy, .hero-visual { grid-column: auto; padding-inline: 22px; }
+  .hero-figures { padding-inline: 0; }
+}
+
+@media (max-width: 720px) {
+  /* تعلو قاعدة العمود القديمة: الأرقام تبقى صفّاً */
+  .hero-figures { flex-direction: row; }
+  .hero-figures .figure { border-bottom: 0; }
+  .hero-figures .figure:last-child { border-bottom: 0; }
+  .hero-figures .figure-num { font-size: 1.3rem; }
+  .hero-figures .figure + .figure { padding-inline-start: 12px; }
+}
+
+@media (max-width: 520px) {
+  /* عمودان: الإنجاز والمرحلة، ثم النقاش بعرض كامل، ثم الأدوار والدرجة */
+  .bento {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "prog  stage"
+      "prog  grade"
+      "chat  chat"
+      "role  role";
+  }
+  .bento-ring { width: 104px; height: 104px; }
+  .bento-ring b { font-size: 21px; }
+  .bento-grade b { font-size: 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-visual, .bento-tile { opacity: 1; animation: none; }
+  .bento-tile, .bento-ring circle + circle, .bento-roles li, .bento-steps i::after, .bento-grade-label { transition: none; }
+}
+html.no-entrance .hero-visual,
+html.no-entrance .bento-tile { opacity: 1; animation: none; }
+
+
+/* ==========================================================
+   الخدمات والمميزات وكيف يعمل — لكل قسم عرضه
+   كانت الأقسام الثلاثة خلايا بالشكل ذاته (١١ بطاقة متشابهة)، تتكرّر فيها
+   العبارات. صارت: بنتو للخدمات، وبطاقات أيقونة ورقم للمميزات، ومسار
+   متّصل للخطوات — بشبكة الخطوط الشعرية نفسها التي تميّز الصفحة.
+   ========================================================== */
+
+/* ---------- الخدمات: بنتو بخطوط شعرية ---------- */
+.svc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+.svc-tile {
+  display: flex; flex-direction: column; gap: 10px;
+  min-width: 0;
+  padding: 28px 26px;
+  background: var(--paper);
+  transition: background-color .25s ease;
+}
+.svc-tile:hover { background: var(--paper-raised); }
+.svc-tile.is-wide { grid-column: span 2; gap: 24px; padding: 32px 30px; }
+.svc-tile.is-half { grid-column: span 2; flex-direction: row; align-items: flex-start; gap: 16px; }
+.svc-tile h3 { font-family: var(--font-display); font-size: 16.5px; font-weight: 700; line-height: 1.55; }
+.svc-tile.is-wide h3 { font-size: 20px; font-weight: 800; }
+.svc-tile p { color: var(--ink-mute); font-size: 14px; line-height: 1.85; }
+.svc-tile.is-wide p { font-size: 15px; max-width: 46ch; }
+.svc-copy { display: flex; flex-direction: column; gap: 10px; }
+
+.svc-icon {
+  flex: none;
+  display: grid; place-items: center;
+  width: 38px; height: 38px;
+  border: 1px solid var(--rule); border-radius: 10px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  transition: color .25s ease, border-color .25s ease, background-color .25s ease;
+}
+.svc-icon svg { width: 19px; height: 19px; }
+.svc-tile:hover .svc-icon { color: var(--accent); border-color: var(--brand-200); background: var(--accent-soft); }
+
+/* مشهد مصغّر ثابت داخل البلاطة الكبيرة — واجهة مرسومة لا صورة */
+.svc-scene {
+  margin-top: auto;
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  background:
+    radial-gradient(80% 120% at 100% 0%, rgba(37, 99, 235, .06), transparent 60%),
+    var(--paper-raised);
+}
+
+.scene-team { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.scene-avatars { display: inline-flex; }
+.scene-avatars i {
+  display: grid; place-items: center;
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 2px solid var(--paper-raised);
+  background: var(--ink); color: #fff;
+  font-style: normal; font-size: 11px; font-weight: 700;
+}
+.scene-avatars i + i { margin-inline-start: -9px; }
+.scene-avatars i:nth-child(2) { background: #1e3a8a; }
+.scene-avatars i:nth-child(3) { background: #334155; }
+.scene-avatars i.is-add { background: var(--paper-sunk); color: var(--ink-mute); border-style: dashed; border-color: var(--rule-strong); font-size: 15px; }
+.scene-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 11px; border-radius: 99px;
+  background: var(--accent-soft);
+  font-size: 12px; font-weight: 600; color: var(--accent-deep);
+}
+.scene-chip b { font-family: var(--font-display); font-size: 14px; }
+.scene-alert {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; border-radius: 10px;
+  background: #fffbeb; border: 1px solid #fde68a;
+  font-size: 12.5px; font-weight: 600; color: #92400e;
+}
+.scene-alert svg { flex: none; width: 16px; height: 16px; color: #d97706; }
+
+.scene-steps { list-style: none; display: flex; gap: 8px; margin: 0; padding: 0; }
+.scene-steps li { flex: 1; display: flex; flex-direction: column; gap: 7px; font-size: 12px; font-weight: 700; color: var(--ink-mute); }
+.scene-steps i { display: block; height: 5px; border-radius: 99px; background: var(--ink); }
+.scene-steps li.is-warn { color: #b45309; }
+.scene-steps li.is-warn i { background: #f59e0b; }
+.scene-steps li.is-ok { color: #047857; }
+.scene-steps li.is-ok i { background: #10b981; }
+.scene-note {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 10px 12px; border-radius: 10px;
+  background: #fffbeb;
+  font-size: 12.5px; line-height: 1.7; color: var(--ink-soft);
+}
+.scene-note b { font-size: 12px; color: #92400e; }
+
+/* ---------- المميزات: أيقونة ورقم في رأس البطاقة ---------- */
+.feat-cell { display: flex; flex-direction: column; }
+.feat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.feat-top .cell-index { margin: 0; }
+.feat-icon {
+  display: grid; place-items: center;
+  width: 42px; height: 42px; border-radius: 12px;
+  background: var(--ink); color: #fff;
+  transition: background-color .25s ease, transform .35s var(--ease-expo);
+}
+.feat-icon svg { width: 20px; height: 20px; }
+.feat-cell:hover .feat-icon { background: var(--accent); transform: translateY(-2px) rotate(-4deg); }
+
+/* ---------- كيف يعمل: أربع محطات على مسار واحد متّصل ---------- */
+.journey {
+  --node: 46px;
+  list-style: none;
+  position: relative;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  margin: 0; padding: 0;
+}
+/* الخطّ يمرّ بمراكز المحطّات: من منتصف الأولى إلى منتصف الأخيرة */
+.journey::before {
+  content: "";
+  position: absolute; top: calc(var(--node) / 2); inset-inline: 12.5%;
+  height: 2px;
+  background: linear-gradient(to left, var(--ink) 0%, var(--ink) 66%, var(--rule-strong) 66%);
+}
+[dir="ltr"] .journey::before { background: linear-gradient(to right, var(--ink) 0%, var(--ink) 66%, var(--rule-strong) 66%); }
+.journey-step { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+.journey-node {
+  position: relative; z-index: 1;
+  display: grid; place-items: center;
+  width: var(--node); height: var(--node); border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  margin-bottom: 8px;
+  transition: transform .35s var(--ease-expo), background-color .25s ease;
+}
+.journey-node .cell-index { margin: 0; font-size: 13px; color: var(--ink); }
+.journey-step:hover .journey-node { transform: scale(1.08); }
+.journey-step.is-accent .journey-node { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 6px var(--accent-soft); }
+.journey-step.is-accent .journey-node .cell-index { color: #fff; }
+.journey-step h3 { font-family: var(--font-display); font-size: 16.5px; font-weight: 700; line-height: 1.55; }
+.journey-step p { max-width: 30ch; color: var(--ink-mute); font-size: 14px; line-height: 1.8; }
+
+/* ---------- المقاسات ---------- */
+@media (max-width: 1024px) {
+  .svc-grid { grid-template-columns: repeat(2, 1fr); }
+  .journey { grid-template-columns: repeat(2, 1fr); row-gap: 40px; }
+  .journey::before { display: none; }
+}
+@media (max-width: 640px) {
+  .svc-grid { grid-template-columns: 1fr; }
+  .svc-tile.is-wide, .svc-tile.is-half { grid-column: auto; }
+  .svc-tile.is-wide { padding: 26px 22px; }
+  .svc-tile { padding: 24px 22px; }
+  /* المسار عموديّاً: خطّ على جانب المحطّات */
+  .journey { grid-template-columns: 1fr; gap: 26px; }
+  .journey::before {
+    display: block;
+    top: 0; bottom: 0; inset-inline-start: calc(var(--node) / 2 - 1px); inset-inline-end: auto;
+    width: 2px; height: auto;
+    background: linear-gradient(to bottom, var(--ink) 0%, var(--ink) 70%, var(--rule-strong) 70%);
+  }
+  .journey-step { display: grid; grid-template-columns: var(--node) 1fr; column-gap: 16px; align-items: start; text-align: start; }
+  .journey-node { grid-row: span 2; margin: 0; }
+  .journey-step p { max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .feat-cell:hover .feat-icon, .journey-step:hover .journey-node { transform: none; }
 }
