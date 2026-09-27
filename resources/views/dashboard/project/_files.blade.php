@@ -11,8 +11,17 @@
 
 @php
     $uploaderClass = $role === 'supervisor' ? \App\Models\Supervisor::class : \App\Models\Student::class;
+    $project->loadMissing(['files.notes.author', 'files.notes.mentioned', 'files.notes.resolver', 'group.student']);
     $n = $project->files->count();
     $locked = $project->is_locked;
+
+    // الملاحظات: للفريق والمشرف في مشروع مقبول غير مؤرشف
+    $me = auth($role)->user();
+    $canNote = ! $locked && in_array($project->status, ['accept', 'complete'], true);
+    $isLeader = $role === 'student' && $project->group->contains(fn ($g) => $g->type === 'leader' && (int) $g->student_id === (int) $me->id);
+    $teamOptions = $project->group->filter(fn ($g) => $g->student)->sortBy(fn ($g) => $g->type === 'leader' ? 0 : 1);
+    // النموذج الذي فشل تحقّقه يُفتح لملفّه
+    $noteFor = (int) old('note_file');
 
     // تبقى مفتوحة إن رجع النموذج بخطأ، فلا يضيع ما كُتب
     $uploadOpen = $errors->has('file') || $errors->has('title');
@@ -121,7 +130,10 @@
                         && (int) $file->uploader_id === (int) auth($role)->id();
                     [$typeClass, $typeLabel] = $typeOf((string) $file->path);
                     $canDelete = ! $locked && ($mine || $role === 'supervisor');
+                    $open = $file->notes->filter->isOpen();
+                    $forMe = $role === 'student' && $open->contains(fn ($x) => (int) $x->mentioned_id === (int) $me->id);
                 @endphp
+                <div class="file-item {{ $open->isNotEmpty() ? 'has-open' : '' }}" id="file-{{ $file->id }}">
                 <div class="file-row">
                     <span class="file-type {{ $typeClass }}" aria-hidden="true">{{ $typeLabel }}</span>
 
@@ -136,7 +148,28 @@
                         </span>
                     </div>
 
+                    {{-- ملاحظة مفتوحة = الملف بحاجة لتعديل؛ «لك» حين تكون أنت المنبَّه --}}
+                    @if ($open->isNotEmpty())
+                        <span class="file-flag {{ $forMe ? 'is-mine' : '' }}">
+                            <i class="ti ti-alert-circle" aria-hidden="true"></i>
+                            {{ $forMe ? 'تعديل مطلوب منك' : 'بحاجة لتعديل' }}
+                        </span>
+                    @endif
+
                     <div class="file-actions">
+                        @if ($file->notes->isNotEmpty() || $canNote)
+                            <button type="button" class="file-notes-btn {{ $open->isNotEmpty() ? 'has-open' : '' }}"
+                                data-notes-toggle="{{ $file->id }}" aria-expanded="false" aria-controls="notes-{{ $file->id }}"
+                                title="الملاحظات">
+                                <i class="ti ti-message-2" aria-hidden="true"></i>
+                                @if ($file->notes->isNotEmpty())
+                                    <span>{{ $open->count() ?: $file->notes->count() }}</span>
+                                @else
+                                    <span class="visually-hidden">ملاحظة</span>
+                                @endif
+                            </button>
+                        @endif
+
                         <a href="{{ route('files.download', ['file' => $file->id]) }}" class="btn-action"
                             title="تنزيل" aria-label="تنزيل {{ $file->title }}">
                             <i class="ti ti-download" aria-hidden="true"></i>
@@ -155,6 +188,103 @@
                             </form>
                         @endif
                     </div>
+                </div>
+
+                {{-- ===== الملاحظات على الملف ===== --}}
+                <div class="file-notes" id="notes-{{ $file->id }}" @if ($noteFor !== $file->id) hidden @endif>
+                    @foreach ($file->notes as $note)
+                        @php
+                            $byMe = $note->isBy($me);
+                            $canToggle = ! $locked && ($byMe || $role === 'supervisor' || $isLeader
+                                || ($role === 'student' && (int) $note->mentioned_id === (int) $me->id));
+                        @endphp
+                        <div class="file-note {{ $note->isOpen() ? '' : 'is-resolved' }}">
+                            <x-avatar :user="$note->author" class="ctx-avatar file-note-avatar" />
+                            <div class="file-note-body">
+                                <div class="file-note-head">
+                                    <b>{{ $byMe ? 'أنت' : ($note->author->name ?? 'مستخدم محذوف') }}</b>
+                                    @if ($note->author_type === \App\Models\Supervisor::class)
+                                        <span class="msg-role">مشرف</span>
+                                    @endif
+                                    @if ($note->mentioned)
+                                        <span class="file-note-mention {{ (int) $note->mentioned_id === (int) $me->id && $role === 'student' ? 'is-me' : '' }}">
+                                            <i class="ti ti-at" aria-hidden="true"></i>{{ (int) $note->mentioned_id === (int) $me->id && $role === 'student' ? 'أنت' : $note->mentioned->name }}
+                                        </span>
+                                    @endif
+                                    <time datetime="{{ $note->created_at->toIso8601String() }}"
+                                        title="{{ $note->created_at->format('Y-m-d H:i') }}">{{ $note->created_at->diffForHumans() }}</time>
+                                </div>
+                                <p class="file-note-text">{{ $note->body }}</p>
+                                @unless ($note->isOpen())
+                                    <span class="file-note-done">
+                                        <i class="ti ti-circle-check" aria-hidden="true"></i>
+                                        عولجت{{ $note->resolver ? ' — ' . ($note->resolver->is($me) ? 'أنت' : $note->resolver->name) : '' }}
+                                        · {{ $note->resolved_at->diffForHumans() }}
+                                    </span>
+                                @endunless
+                            </div>
+                            <div class="file-note-actions">
+                                @if ($canToggle)
+                                    <form action="{{ route('files.notes.toggle', $note->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="file-note-resolve {{ $note->isOpen() ? '' : 'is-reopen' }}">
+                                            <i class="ti {{ $note->isOpen() ? 'ti-check' : 'ti-rotate' }}" aria-hidden="true"></i>
+                                            {{ $note->isOpen() ? 'عولجت' : 'إعادة فتح' }}
+                                        </button>
+                                    </form>
+                                @endif
+                                @if ($byMe || $role === 'supervisor')
+                                    <form action="{{ route('files.notes.destroy', $note->id) }}" method="POST"
+                                        onsubmit="return confirm('حذف هذه الملاحظة؟')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn-action btn-action--danger" title="حذف" aria-label="حذف الملاحظة">
+                                            <i class="ti ti-trash" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+
+                    @if ($canNote)
+                        <form action="{{ route('files.notes.store', $file->id) }}" method="POST" class="file-note-form">
+                            @csrf
+                            <input type="hidden" name="note_file" value="{{ $file->id }}">
+                            <textarea name="body" rows="2" maxlength="1000" required
+                                class="form-control {{ $noteFor === $file->id && $errors->has('body') ? 'is-invalid' : '' }}"
+                                placeholder="ما الذي يحتاج تعديلاً في هذا الملف؟ مثال: صفحة ٣ ينقصها المرجع"
+                                aria-label="ملاحظة على {{ $file->title }}">{{ $noteFor === $file->id ? old('body') : '' }}</textarea>
+                            <div class="file-note-form-row">
+                                <label class="file-note-to">
+                                    <i class="ti ti-at" aria-hidden="true"></i>
+                                    <select name="mentioned_id" class="form-select form-select-sm" aria-label="تنبيه عضو">
+                                        <option value="">بلا تنبيه عضو</option>
+                                        @foreach ($teamOptions as $g)
+                                            @continue($role === 'student' && (int) $g->student_id === (int) $me->id)
+                                            <option value="{{ $g->student_id }}" @selected($noteFor === $file->id && (int) old('mentioned_id') === (int) $g->student_id)>
+                                                {{ $g->student->name }}{{ $g->type === 'leader' ? ' (القائد)' : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </label>
+                                <button type="submit" class="btn btn-primary btn-sm" data-loading-text="…">
+                                    <i class="ti ti-send me-1" aria-hidden="true"></i>
+                                    إضافة ملاحظة
+                                </button>
+                            </div>
+                            @if ($noteFor === $file->id)
+                                @foreach (['body', 'mentioned_id'] as $field)
+                                    @if ($errors->has($field))
+                                        <div class="invalid-feedback d-block">{{ $errors->first($field) }}</div>
+                                    @endif
+                                @endforeach
+                            @endif
+                        </form>
+                    @elseif ($file->notes->isEmpty())
+                        <p class="file-notes-empty">لا ملاحظات على هذا الملف.</p>
+                    @endif
+                </div>
                 </div>
             @endforeach
         </div>
@@ -258,6 +388,41 @@
                     showPicked();
                 }
             });
+        })();
+    </script>
+@endpush
+
+@push('js')
+    <script>
+        // ملاحظات الملف: لوحة تنفتح تحته — ومن رابط إشعار (#file-<id>) تنفتح مباشرة
+        (function () {
+            function toggle(id, force) {
+                var panel = document.getElementById('notes-' + id);
+                var btn = document.querySelector('[data-notes-toggle="' + id + '"]');
+                if (!panel) return;
+                var open = typeof force === 'boolean' ? force : panel.hidden;
+                panel.hidden = !open;
+                if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open) {
+                    var box = panel.querySelector('textarea');
+                    if (box && force !== true) box.focus({ preventScroll: true });
+                }
+            }
+
+            document.querySelectorAll('[data-notes-toggle]').forEach(function (btn) {
+                btn.addEventListener('click', function () { toggle(btn.dataset.notesToggle); });
+            });
+
+            // عند التحميل، وعند تغيّر العلامة في الصفحة نفسها (سطر «ماذا عليّ الآن»)
+            function fromHash() {
+                var m = location.hash.match(/^#file-(\d+)$/);
+                if (!m) return;
+                toggle(m[1], true);
+                var item = document.getElementById('file-' + m[1]);
+                if (item) item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            fromHash();
+            window.addEventListener('hashchange', fromHash);
         })();
     </script>
 @endpush

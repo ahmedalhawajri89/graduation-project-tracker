@@ -44,6 +44,23 @@
         ];
     }
 
+    // ملاحظات على ملفات نُبِّهتُ إليها ولم تُعالَج — فيها ما يجب تعديله بالضبط
+    $myNotes = $project->files->flatMap(fn ($f) => $f->notes)
+        ->filter(fn ($n) => $n->isOpen() && (int) $n->mentioned_id === (int) auth('student')->id());
+
+    if ($myNotes->count()) {
+        $first = $myNotes->first();
+        $todos[] = [
+            'icon' => 'ti-message-2-exclamation',
+            'tone' => 'is-warn',
+            'n' => $myNotes->count(),
+            'label' => $myNotes->count() === 1
+                ? 'ملاحظة على «' . $project->files->firstWhere('id', $first->project_file_id)?->title . '» تنتظر تعديلك'
+                : 'ملاحظات على ملفات تنتظر تعديلك',
+            'href' => '#file-' . $first->project_file_id,
+        ];
+    }
+
     // للقائد: أعضاء بلا دور — والرابط يفتح محرّر التوزيع مباشرة
     $amLeader = $project->group->contains(fn ($g) => $g->type === 'leader' && (int) $g->student_id === (int) auth('student')->id());
     $noRole = $project->group->filter(fn ($g) => $g->roles->isEmpty())->count();

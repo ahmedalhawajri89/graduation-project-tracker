@@ -27,6 +27,12 @@ class ProjectFile extends Model
         return $this->morphTo();
     }
 
+    /** ملاحظات الفريق والمشرف على الملف، الأقدم أولاً كمحادثة */
+    public function notes()
+    {
+        return $this->hasMany(FileNote::class, 'project_file_id')->orderBy('id');
+    }
+
     /** حجم الملف بصيغة مقروءة */
     public function getHumanSizeAttribute()
     {

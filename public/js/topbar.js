@@ -94,6 +94,13 @@
                 target.scrollIntoView({ behavior: "smooth", block: "start" });
                 target.classList.add("section-flash");
                 setTimeout(function () { target.classList.remove("section-flash"); }, 1600);
+
+                // منع الافتراضي كان يُبقي العنوان بلا علامة، فلا يصل hashchange من
+                // ينتظره (لوحة ملاحظات الملف مثلاً). تُحدَّث العلامة ويُعلَن التغيير
+                if (location.hash !== url.hash) {
+                    history.pushState(null, "", url.hash);
+                    window.dispatchEvent(new HashChangeEvent("hashchange"));
+                }
             }
         }
     });

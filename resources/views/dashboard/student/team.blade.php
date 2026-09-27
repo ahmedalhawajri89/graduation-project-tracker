@@ -144,15 +144,38 @@
             @endforeach
 
             @if ($canAssign)
+                {{-- دور خارج المقترحات: حقل بزرّه، واقتراحات بنقرة --}}
+                @php
+                    $ideas = collect(['الأمن والصلاحيات', 'النشر والاستضافة', 'إدارة المخاطر', 'تجربة المستخدم'])
+                        ->reject(fn ($label) => $roles->contains('label', $label))->take(3);
+                @endphp
                 <article class="role-card is-add">
-                    <span class="role-card-icon" aria-hidden="true"><i class="ti ti-plus"></i></span>
-                    <label class="role-add-field">
-                        <span>دور جديد</span>
-                        <input type="text" maxlength="30" class="form-control form-control-sm" data-new-role
-                            placeholder="مثال: الأمن والصلاحيات" aria-label="اسم الدور الجديد">
-                    </label>
-                    <button type="button" class="btn btn-sm btn-primary" data-new-role-add>إضافة</button>
-                    <small class="role-add-note">يُحفظ حين تسنده لعضو.</small>
+                    <header class="role-card-head">
+                        <span class="role-card-icon" aria-hidden="true"><i class="ti ti-circle-plus"></i></span>
+                        <span class="role-card-title">
+                            <b>دور جديد</b>
+                            <small>خارج المقترحات — يُحفظ حين تسنده لعضو</small>
+                        </span>
+                    </header>
+
+                    <div class="role-add-box">
+                        <i class="ti ti-tag" aria-hidden="true"></i>
+                        <input type="text" maxlength="30" data-new-role
+                            placeholder="اسم الدور…" aria-label="اسم الدور الجديد">
+                        <button type="button" class="role-add-submit" data-new-role-add disabled aria-label="إضافة الدور">
+                            <i class="ti ti-plus" aria-hidden="true"></i>
+                            <span>إضافة</span>
+                        </button>
+                    </div>
+
+                    @if ($ideas->isNotEmpty())
+                        <div class="role-add-ideas">
+                            <small>اقتراحات:</small>
+                            @foreach ($ideas as $idea)
+                                <button type="button" class="role-idea" data-role-idea="{{ $idea }}">{{ $idea }}</button>
+                            @endforeach
+                        </div>
+                    @endif
                 </article>
             @endif
         </section>
@@ -409,11 +432,25 @@
                         '<button type="button" class="role-assign-btn" data-assign="' + esc(key) + '" aria-haspopup="menu"><i class="ti ti-user-plus" aria-hidden="true"></i> إسناد</button>';
                     board.insertBefore(card, board.querySelector('.role-card.is-add'));
                     newInput.value = '';
+                    addBtn.disabled = true;
                     render();
                     openMenu(card.querySelector('[data-assign]'));
                 }
-                form.querySelector('[data-new-role-add]').addEventListener('click', function (e) { e.stopPropagation(); addRole(); });
+                var addBtn = form.querySelector('[data-new-role-add]');
+                addBtn.addEventListener('click', function (e) { e.stopPropagation(); addRole(); });
                 newInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); addRole(); } });
+                // الزرّ يضيء حين يوجد ما يُضاف — لا زرّ نشط لحقل فارغ
+                newInput.addEventListener('input', function () { addBtn.disabled = !newInput.value.trim(); });
+
+                // اقتراح بنقرة: يُضاف دوراً ويُفتح إسناده، ويختفي من الاقتراحات
+                form.querySelectorAll('[data-role-idea]').forEach(function (chip) {
+                    chip.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        newInput.value = chip.dataset.roleIdea;
+                        chip.remove();
+                        addRole();
+                    });
+                });
 
                 // ===== اقتراح توزيع: الشاغر للأقلّ حملاً، بالتناوب — اقتراح يُراجَع لا حفظ =====
                 form.querySelector('[data-suggest]').addEventListener('click', function () {

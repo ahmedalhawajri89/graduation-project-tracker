@@ -2,11 +2,11 @@
 
 namespace App\Support;
 
+use App\Models\FileNote;
 use App\Models\MilestoneSubmission;
 use App\Models\ProjectComment;
 use App\Models\ProjectFile;
 use App\Models\ProjectMilestone;
-use App\Models\Student;
 use App\Models\Supervisor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -107,7 +107,30 @@ class ProjectActivity
                 'href' => $chatUrl($c->project_id),
             ]);
 
-        return $files->concat($submitted)->concat($reviewed)->concat($done)->concat($comments)
+        // ملاحظات على الملفات: «ترك ملاحظة على…» — وحدث المعالجة بوقته
+        $notes = FileNote::whereHas('file', fn ($q) => $q->whereIn('project_id', $projectIds))
+            ->with(['file.project:id,title', 'author', 'resolver'])
+            ->latest('id')->limit($limit)->get();
+
+        $noted = $notes->map(fn ($n) => [
+            'at' => $n->created_at,
+            'icon' => 'ti-message-2-exclamation',
+            'tone' => 'is-warn',
+            'text' => $did($n->author, 'ترك ملاحظة على', 'تركتَ ملاحظة على') . ' «' . $n->file->title . '»',
+            'project' => $n->file->project,
+            'href' => $projectUrl($n->file->project_id, '#file-' . $n->project_file_id),
+        ]);
+
+        $resolvedNotes = $notes->filter(fn ($n) => $n->resolved_at)->map(fn ($n) => [
+            'at' => $n->resolved_at,
+            'icon' => 'ti-circle-check',
+            'tone' => 'is-success',
+            'text' => $did($n->resolver, 'عالج ملاحظة على', 'عالجتَ ملاحظة على') . ' «' . $n->file->title . '»',
+            'project' => $n->file->project,
+            'href' => $projectUrl($n->file->project_id, '#file-' . $n->project_file_id),
+        ]);
+
+        return $files->concat($noted)->concat($resolvedNotes)->concat($submitted)->concat($reviewed)->concat($done)->concat($comments)
             ->filter(fn ($a) => $a['at'] && $a['project'])
             ->sortByDesc(fn ($a) => $a['at']->timestamp)
             ->values()

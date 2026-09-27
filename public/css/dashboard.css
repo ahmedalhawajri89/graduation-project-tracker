@@ -2728,7 +2728,120 @@ button.filter-tab { border: 0; background: transparent; font-family: inherit; cu
     gap: 11px;
     padding: 11px 18px;
 }
-.file-row + .file-row { border-top: 1px solid var(--ds-border); }
+.file-row + .file-row,
+.file-item + .file-item { border-top: 1px solid var(--ds-border); }
+
+/* ---- ملاحظات على الملفات ----
+   «صفحة ٣ ينقصها المرجع — @آية»: على ملفها، تنبّه عضواً، وتُغلق حين تُعالَج.
+   كانت تُكتب في النقاش باسم الملف نصّاً، أو تنتقل إلى واتساب. */
+.file-item.has-open { box-shadow: inset -3px 0 0 var(--ds-warning); }
+[dir="ltr"] .file-item.has-open { box-shadow: inset 3px 0 0 var(--ds-warning); }
+.file-flag {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 9px;
+    border-radius: var(--ds-radius-pill);
+    background: var(--ds-warning-bg);
+    font-size: 11px;
+    font-weight: 700;
+    color: #b45309;
+}
+.file-flag i { font-size: 13px; }
+.file-flag.is-mine { background: #b45309; color: #fff; }
+
+.file-notes-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 32px;
+    padding: 0 9px;
+    border: 1px solid var(--ds-border);
+    border-radius: 9px;
+    background: var(--ds-surface);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ds-ink-soft);
+    cursor: pointer;
+    transition: border-color var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease, color var(--ds-dur-fast) ease;
+}
+.file-notes-btn i { font-size: 16px; }
+.file-notes-btn:hover { border-color: var(--ds-border-strong); background: var(--ds-surface-sunk); color: var(--ds-ink); }
+.file-notes-btn.has-open { border-color: #fcd34d; background: var(--ds-warning-bg); color: #b45309; }
+.file-notes-btn[aria-expanded="true"] { border-color: var(--ds-brand-300); background: var(--ds-brand-50); color: var(--ds-brand-700); }
+
+.file-notes {
+    margin: 0 18px 14px;
+    padding: 12px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface-sunk);
+    animation: ms-open .2s var(--ds-ease);
+}
+.file-note { display: flex; align-items: flex-start; gap: 10px; padding: 10px 4px; }
+.file-note + .file-note { border-top: 1px dashed var(--ds-border); }
+.file-note-avatar.ctx-avatar { width: 30px; height: 30px; border-radius: 50%; font-size: 11px; }
+.file-note-body { flex: 1; min-width: 0; }
+.file-note-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; }
+.file-note-head b { color: var(--ds-ink); }
+.file-note-head time { margin-inline-start: auto; font-size: 11px; color: var(--ds-ink-mute); }
+.file-note-mention {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    padding: 0 7px;
+    border-radius: var(--ds-radius-pill);
+    background: var(--ds-brand-50);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ds-brand-700);
+}
+.file-note-mention i { font-size: 12px; }
+.file-note-mention.is-me { background: var(--ds-brand-600); color: #fff; }
+.file-note-text { margin: 4px 0 0; font-size: 13px; line-height: 1.75; color: var(--ds-ink-soft); white-space: pre-line; overflow-wrap: anywhere; }
+.file-note-done { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 11.5px; font-weight: 600; color: #047857; }
+.file-note.is-resolved .file-note-text { color: var(--ds-ink-mute); text-decoration: line-through; text-decoration-color: rgba(0, 0, 0, .25); }
+.file-note.is-resolved .file-note-avatar { opacity: .6; }
+.file-note-actions { flex: none; display: flex; align-items: center; gap: 4px; }
+.file-note-actions form { margin: 0; }
+.file-note-resolve {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border: 1px solid #a7f3d0;
+    border-radius: var(--ds-radius-pill);
+    background: var(--ds-success-bg);
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #047857;
+    cursor: pointer;
+}
+.file-note-resolve:hover { background: #d1fae5; }
+.file-note-resolve.is-reopen { border-color: var(--ds-border); background: var(--ds-surface); color: var(--ds-ink-soft); }
+
+.file-note-form { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding-top: 10px; border-top: 1px solid var(--ds-border); }
+.file-notes > .file-note-form:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.file-note-form textarea { resize: vertical; font-size: 13px; }
+.file-note-form-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.file-note-to { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: var(--ds-brand-600); }
+.file-note-to .form-select { min-width: 190px; }
+.file-notes-empty { margin: 0; font-size: 12.5px; color: var(--ds-ink-mute); }
+
+@media (max-width: 575.98px) {
+    /* الاسم سطرٌ كامل، والشارة والأزرار تحته — كان الاسم يُعصر في عمود ضيّق */
+    .file-row { flex-wrap: wrap; row-gap: 8px; }
+    .file-row .file-body { flex: 1 1 calc(100% - 64px); }
+    .file-flag { order: 3; }
+    .file-row .file-actions { order: 4; margin-inline-start: auto; }
+    .file-notes { margin-inline: 12px; }
+    .file-note { flex-wrap: wrap; }
+    .file-note-actions { width: 100%; justify-content: flex-end; }
+    .file-note-form-row .btn, .file-note-to, .file-note-to .form-select { flex: 1; min-width: 0; }
+}
 .file-icon { font-size: 19px; color: var(--ds-ink-mute); flex: none; }
 .file-body { min-width: 0; flex: 1; }
 .file-name {
@@ -6754,11 +6867,80 @@ a.team-assign-btn { text-decoration: none; }
 .role-assign-btn i { font-size: 15px; }
 .role-card.is-vacant .role-assign-btn { border-color: #f59e0b; color: #b45309; }
 
-.role-card.is-add { justify-content: center; border-style: dashed; background: var(--ds-surface-sunk); animation: none; }
-.role-card.is-add .role-card-icon { background: var(--ds-surface); color: var(--ds-ink-soft); }
-.role-add-field { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: 12.5px; font-weight: 700; color: var(--ds-ink); }
-.role-card.is-add .btn { align-self: flex-start; }
-.role-add-note { font-size: 11px; color: var(--ds-ink-mute); }
+/* بطاقة «دور جديد»: حقل بزرّه المدمج، واقتراحات بنقرة — كانت حقلاً رفيعاً
+   وزرّاً صغيراً معزولاً تحته */
+.role-card.is-add {
+    border: 1.5px dashed var(--ds-border-strong);
+    background: var(--ds-surface);
+    animation: none;
+    transition: border-color var(--ds-dur-fast) ease, box-shadow var(--ds-dur-fast) ease;
+}
+.role-card.is-add:hover,
+.role-card.is-add:focus-within { border-color: var(--ds-brand-400); box-shadow: var(--ds-shadow-glow); }
+.role-card.is-add .role-card-icon { background: var(--ds-ink); color: #fff; }
+
+.role-add-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    padding-inline-start: 12px;
+    border: 1px solid var(--ds-border);
+    border-radius: 12px;
+    background: var(--ds-surface-sunk);
+    transition: border-color var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease;
+}
+.role-add-box:focus-within { border-color: var(--ds-brand-300); background: var(--ds-surface); }
+.role-add-box > i { flex: none; font-size: 16px; color: var(--ds-ink-mute); }
+.role-add-box input {
+    flex: 1;
+    min-width: 0;
+    height: 34px;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    color: var(--ds-ink);
+}
+.role-add-box input:focus { outline: 0; }
+.role-add-submit {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 34px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--ds-brand-600);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color var(--ds-dur-fast) ease, transform var(--ds-dur-fast) ease, opacity var(--ds-dur-fast) ease;
+}
+.role-add-submit i { font-size: 15px; }
+.role-add-submit:hover:not(:disabled) { background: var(--ds-brand-700); }
+.role-add-submit:active:not(:disabled) { transform: scale(.96); }
+.role-add-submit:disabled { background: var(--ds-border-strong); cursor: not-allowed; }
+
+.role-add-ideas { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+.role-add-ideas small { font-size: 11px; color: var(--ds-ink-mute); }
+.role-idea {
+    padding: 3px 10px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-pill);
+    background: var(--ds-surface);
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ds-ink-soft);
+    cursor: pointer;
+    transition: border-color var(--ds-dur-fast) ease, color var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease;
+}
+.role-idea::before { content: "+ "; color: var(--ds-brand-600); }
+.role-idea:hover { border-color: var(--ds-brand-300); background: var(--ds-brand-50); color: var(--ds-brand-700); }
 
 /* ---- الأعضاء: الحمل والمسؤولية ---- */
 .roster { border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); background: var(--ds-surface); overflow: hidden; }

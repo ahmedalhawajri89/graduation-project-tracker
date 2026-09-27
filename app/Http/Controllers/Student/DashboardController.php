@@ -46,6 +46,10 @@ class DashboardController extends Controller
                         'project.milestones.submissions.student',
                         'project.group.student',
                         'project.group.roles',
+                        'project.files.uploader',
+                        'project.files.notes.author',
+                        'project.files.notes.mentioned',
+                        'project.files.notes.resolver',
                         'project.supervisor.specialize',
                         'project.project_type',
                     ]);

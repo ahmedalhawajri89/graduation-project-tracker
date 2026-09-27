@@ -99,6 +99,9 @@ class ProjectManageController extends Controller
             'group.roles',
             'milestones.stage',
             'files.uploader',
+            'files.notes.author',
+            'files.notes.mentioned',
+            'files.notes.resolver',
             'project_type',
             'semester',
         ]);

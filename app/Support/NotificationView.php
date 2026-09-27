@@ -37,6 +37,9 @@ class NotificationView
 
         // نشاط المشروع: الفئة من نصّ الرسالة — الأخصّ أولاً
         return match (true) {
+            // ملاحظة على ملف: من زميل أو من المشرف — المصدر من اسم المرسل لا يُعرف، فهي «الفريق»
+            str_contains($msg, 'عولجت ملاحظتك') => self::make('note-done', 'team', 'ti-circle-check', 'is-success', 'عولجت ملاحظتك', $sender, $msg, $dash . '#files'),
+            str_contains($msg, 'ملاحظة على «') => self::make('note', 'team', 'ti-message-2-exclamation', 'is-warn', 'ملاحظة على ملف', $sender, $msg, $dash . '#files'),
             // من القائد لا المشرف: المرسل زميل
             str_contains($msg, 'عيّنك القائد') => self::make('role', 'team', 'ti-id-badge-2', 'is-brand', 'دورك في المشروع', $sender, $msg, route('student.team')),
             str_contains($msg, 'مطلوب تعديل') => self::make('revision', 'supervisor', 'ti-pencil', 'is-warn', 'مطلوب تعديل', $sender, $msg, $dash . '#milestones'),

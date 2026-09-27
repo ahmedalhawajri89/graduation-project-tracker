@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\SupervisorController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\FileNoteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Student\DashboardController as StudentDashboardController;
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
@@ -238,6 +239,11 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
     Route::get('/files/{file}/download', [FileController::class, 'download'])->name('files.download');
     Route::get('/stages/{stage}/template', [FileController::class, 'stageTemplate'])->name('stages.template');
     Route::get('/submissions/{submission}/file', [FileController::class, 'submissionFile'])->name('submissions.file');
+
+    // ملاحظات على ملفات المشروع — للفريق ولمشرفه، والصلاحية في المتحكّم
+    Route::post('/files/{file}/notes', [FileNoteController::class, 'store'])->name('files.notes.store');
+    Route::post('/file-notes/{note}/toggle', [FileNoteController::class, 'toggle'])->name('files.notes.toggle');
+    Route::delete('/file-notes/{note}', [FileNoteController::class, 'destroy'])->name('files.notes.destroy');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
