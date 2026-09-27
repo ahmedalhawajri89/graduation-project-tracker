@@ -14,7 +14,14 @@ class Group extends Model
         'student_id',
         'project_id',
         'type',
+        'responsibility',
     ];
+
+    /** أدوار العضو في مشروعه، بترتيب إضافتها */
+    public function roles()
+    {
+        return $this->hasMany(GroupRole::class)->orderBy('id');
+    }
 
     ################# relations
 

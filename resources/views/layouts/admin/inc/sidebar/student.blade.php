@@ -16,6 +16,16 @@
     </a>
 </li>
 
+{{-- الفريق والأدوار: لمن له مشروع — مَن مسؤول عن ماذا --}}
+@if (! empty($layoutShared['studentProject']))
+    <li class="nav-item {{ request()->routeIs('student.team') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('student.team') }}">
+            <span class="nav-link-icon"><i class="ti ti-id-badge-2"></i></span>
+            <span class="nav-link-title">الفريق والأدوار</span>
+        </a>
+    </li>
+@endif
+
 <li class="nav-item {{ request()->routeIs('student.showNotification') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('student.showNotification') }}">
         <span class="nav-link-icon"><i class="ti ti-bell"></i></span>

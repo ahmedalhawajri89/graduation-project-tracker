@@ -96,6 +96,7 @@ class ProjectManageController extends Controller
         // النقاش صار تبويباً مستقلّاً: لا تعليقات هنا، عدّاد غير المقروء وحده
         $project->load([
             'group.student',
+            'group.roles',
             'milestones.stage',
             'files.uploader',
             'project_type',

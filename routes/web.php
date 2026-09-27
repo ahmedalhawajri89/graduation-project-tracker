@@ -20,6 +20,7 @@ use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Student\ProjectCommentController as StudentProjectCommentController;
 use App\Http\Controllers\Student\ProjectFileController as StudentProjectFileController;
 use App\Http\Controllers\Student\MilestoneSubmissionController as StudentMilestoneSubmissionController;
+use App\Http\Controllers\Student\TeamRolesController as StudentTeamRolesController;
 use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboardController;
 use App\Http\Controllers\Supervisor\ProfileController as SupervisorProfileController;
 use App\Http\Controllers\Supervisor\ProjectManageController;
@@ -167,6 +168,10 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
         // ملفات المشروع
         Route::post('/projects/{project}/files', [StudentProjectFileController::class, 'store'])->name('files.store');
         Route::delete('/files/{file}', [StudentProjectFileController::class, 'destroy'])->name('files.destroy');
+
+        // الفريق والأدوار: صفحة يراها كل الفريق، ويوزّع فيها القائد وحده
+        Route::get('/team', [StudentTeamRolesController::class, 'index'])->name('team');
+        Route::post('/projects/{project}/roles', [StudentTeamRolesController::class, 'update'])->name('roles.update');
 
         // تسليم مرحلة — تنتظر بعده مراجعة المشرف
         Route::post('/milestones/{milestone}/submit', [StudentMilestoneSubmissionController::class, 'store'])->name('milestones.submit');

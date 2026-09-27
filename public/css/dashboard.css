@@ -6529,6 +6529,393 @@ a.hero-team:hover { color: var(--ds-brand-600); }
     .stu-hero, .spotlight, .pct-ring.is-xl circle + circle { animation: none; }
 }
 
+/* ==================== أدوار الفريق ====================
+   مَن مسؤول عن ماذا: وسوم ملوّنة تحت كل عضو، ومحرّر للقائد بمصفوفة
+   تغطية تكشف الدور بلا مسؤول والعضو بلا دور. اللون من \u200E--h\u200E ثابت لكل دور. */
+.role-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.role-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--ds-radius-pill);
+    background: hsl(var(--h) 80% 96%);
+    border: 1px solid hsl(var(--h) 60% 88%);
+    color: hsl(var(--h) 55% 32%);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+.role-chip i { font-size: 13px; }
+.role-chip.is-flat { border-color: transparent; }
+.role-resp { display: block; margin-top: 4px; font-size: 12px; line-height: 1.6; color: var(--ds-ink-mute); }
+
+.team-assign-btn {
+    margin-inline-start: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-pill);
+    background: var(--ds-surface);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ds-brand-700);
+    cursor: pointer;
+    transition: border-color var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease;
+}
+.team-assign-btn:hover { border-color: var(--ds-brand-300); background: var(--ds-brand-50); }
+.team-assign-btn i { font-size: 15px; }
+.ctx-head .ctx-count + .team-assign-btn { margin-inline-start: auto; }
+
+.team-coverage {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    border-bottom: 1px solid var(--ds-border);
+    background: var(--ds-surface-sunk);
+    font-size: 12px;
+    color: var(--ds-ink-mute);
+}
+.team-coverage b { color: #b45309; }
+.team-coverage-bar { flex: 0 0 70px; height: 5px; border-radius: 99px; background: var(--ds-border); overflow: hidden; }
+.team-coverage-bar span { display: block; height: 100%; border-radius: inherit; background: var(--ds-success); }
+.team-coverage.has-gap .team-coverage-bar span { background: var(--ds-warning); }
+
+.team-invite {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 18px;
+    border: 0;
+    border-bottom: 1px solid var(--ds-border);
+    background: linear-gradient(90deg, var(--ds-brand-50), var(--ds-surface));
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+}
+.team-invite:hover { background: var(--ds-brand-50); }
+.team-invite-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--ds-brand-600);
+    color: #fff;
+    font-size: 17px;
+}
+.team-invite > span:nth-child(2) { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.team-invite b { font-size: 13px; color: var(--ds-ink); }
+.team-invite small { font-size: 11.5px; line-height: 1.6; color: var(--ds-ink-mute); }
+.team-invite > .ti-chevron-left { color: var(--ds-brand-600); }
+
+/* ---- صفحة الفريق والأدوار: الأدوار في المركز ----
+   كانت بطاقة لكل عضو تحمل كل الأدوار المقترحة، ومصفوفة تكرّر البيانات
+   نفسها. صارت: لوحة أدوار بأفاتارات حامليها، وشريط أعضاء بحمل كلٍّ. */
+a.team-assign-btn { text-decoration: none; }
+
+.roles-summary-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    margin-bottom: 18px;
+    padding: 14px 18px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface);
+}
+.roles-cover { flex: 1 1 260px; display: flex; flex-direction: column; gap: 7px; }
+.roles-cover-label { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--ds-ink-mute); }
+.roles-cover-label b { font-family: var(--ds-font-display); font-size: 13.5px; color: var(--ds-ink); }
+.roles-cover-track { height: 8px; border-radius: 99px; background: var(--ds-surface-sunk); overflow: hidden; }
+.roles-cover-track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--ds-brand-500), var(--ds-brand-600));
+    transition: width var(--ds-dur-slow) var(--ds-ease);
+}
+.roles-balance {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--ds-radius-pill);
+    background: var(--ds-surface-sunk);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--ds-ink-soft);
+}
+.roles-balance i { font-size: 16px; }
+.roles-balance.is-ok { background: var(--ds-success-bg); color: #047857; }
+.roles-balance.is-warn { background: var(--ds-warning-bg); color: #b45309; }
+.roles-suggest.is-done { animation: shake .3s; }
+@keyframes shake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+
+/* ---- لوحة الأدوار ---- */
+.role-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.role-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 150px;
+    padding: 14px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background:
+        linear-gradient(180deg, hsl(var(--h) 80% 97%), var(--ds-surface) 55%);
+    transition: border-color var(--ds-dur-fast) ease, box-shadow var(--ds-dur-fast) ease, transform var(--ds-dur-fast) ease;
+    animation: role-card-in .35s var(--ds-ease) both;
+}
+.role-card:hover { border-color: hsl(var(--h) 55% 80%); box-shadow: var(--ds-shadow-md); }
+.role-card.is-vacant { border-style: dashed; border-color: #fcd34d; background: var(--ds-surface); }
+.role-card.is-mine { box-shadow: 0 0 0 2px var(--ds-brand-300); }
+.role-card.is-new { animation: role-pop .35s var(--ds-ease); }
+@keyframes role-card-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes role-pop { from { transform: scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
+.role-board .role-card:nth-child(2) { animation-delay: .03s; }
+.role-board .role-card:nth-child(3) { animation-delay: .06s; }
+.role-board .role-card:nth-child(4) { animation-delay: .09s; }
+.role-board .role-card:nth-child(n+5) { animation-delay: .12s; }
+
+.role-card-head { display: flex; align-items: flex-start; gap: 10px; }
+.role-card-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: hsl(var(--h) 75% 93%);
+    color: hsl(var(--h) 55% 38%);
+    font-size: 19px;
+}
+.role-card-title { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.role-card-title b { font-size: 13.5px; font-weight: 700; line-height: 1.4; color: var(--ds-ink); overflow-wrap: anywhere; }
+.role-card-title small { font-size: 11.5px; color: var(--ds-ink-mute); }
+.role-card.is-vacant .role-card-title small { color: #b45309; font-weight: 600; }
+.role-card-kind {
+    flex: none;
+    padding: 1px 7px;
+    border-radius: var(--ds-radius-pill);
+    background: var(--ds-surface-sunk);
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--ds-ink-mute);
+}
+
+.role-holders { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; flex: 1; align-content: flex-start; }
+.role-holder {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 3px;
+    padding-inline: 3px 10px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-pill);
+    background: var(--ds-surface);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ds-ink-soft);
+    animation: holder-in .3s var(--ds-ease) both;
+}
+.role-holder .ctx-avatar { width: 24px; height: 24px; border-radius: 50%; font-size: 9.5px; }
+.role-holder.is-me { border-color: var(--ds-brand-300); background: var(--ds-brand-50); color: var(--ds-brand-700); }
+.role-holder.is-suggested { border-style: dashed; border-color: var(--ds-brand-400); animation: holder-in .3s var(--ds-ease) both, suggest-pulse 1.6s ease-in-out 2; }
+@keyframes holder-in { from { opacity: 0; transform: translateY(-4px) scale(.95); } to { opacity: 1; transform: none; } }
+@keyframes suggest-pulse { 50% { box-shadow: 0 0 0 4px var(--ds-brand-100); } }
+
+.role-assign-btn {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border: 1px dashed var(--ds-border-strong);
+    border-radius: var(--ds-radius-pill);
+    background: transparent;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ds-ink-soft);
+    cursor: pointer;
+    transition: border-color var(--ds-dur-fast) ease, color var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease;
+}
+.role-assign-btn:hover { border-style: solid; border-color: hsl(var(--h) 55% 60%); background: hsl(var(--h) 80% 96%); color: hsl(var(--h) 55% 32%); }
+.role-assign-btn i { font-size: 15px; }
+.role-card.is-vacant .role-assign-btn { border-color: #f59e0b; color: #b45309; }
+
+.role-card.is-add { justify-content: center; border-style: dashed; background: var(--ds-surface-sunk); animation: none; }
+.role-card.is-add .role-card-icon { background: var(--ds-surface); color: var(--ds-ink-soft); }
+.role-add-field { display: flex; flex-direction: column; gap: 4px; margin: 0; font-size: 12.5px; font-weight: 700; color: var(--ds-ink); }
+.role-card.is-add .btn { align-self: flex-start; }
+.role-add-note { font-size: 11px; color: var(--ds-ink-mute); }
+
+/* ---- الأعضاء: الحمل والمسؤولية ---- */
+.roster { border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); background: var(--ds-surface); overflow: hidden; }
+.roster-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--ds-border);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ds-ink);
+}
+.roster-title > i { color: var(--ds-ink-mute); font-size: 17px; }
+.roster-title span { font-size: 12px; font-weight: 400; color: var(--ds-ink-mute); }
+.roster-row {
+    display: grid;
+    grid-template-columns: 40px minmax(140px, 1.1fr) 110px minmax(0, 1.4fr) minmax(0, 1.6fr);
+    align-items: center;
+    gap: 14px;
+    padding: 12px 18px;
+    transition: background-color var(--ds-dur-fast) ease;
+}
+.roster-row + .roster-row { border-top: 1px solid var(--ds-border); }
+.roster-row:hover { background: var(--ds-surface-sunk); }
+.roster-row.is-me { background: linear-gradient(90deg, var(--ds-surface), var(--ds-brand-50)); }
+.roster-row.is-empty { box-shadow: inset -3px 0 0 var(--ds-warning); }
+[dir="ltr"] .roster-row.is-empty { box-shadow: inset 3px 0 0 var(--ds-warning); }
+.roster-avatar.ctx-avatar { width: 40px; height: 40px; border-radius: 50%; }
+.roster-who { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; font-size: 13.5px; }
+.roster-who b { color: var(--ds-ink); }
+.roster-load { display: flex; flex-direction: column; gap: 4px; }
+.load-dots { display: flex; gap: 4px; }
+.load-dots i {
+    width: 16px;
+    height: 6px;
+    border-radius: 99px;
+    background: var(--ds-surface-sunk);
+    box-shadow: inset 0 0 0 1px var(--ds-border);
+    transition: background-color var(--ds-dur) var(--ds-ease);
+}
+.load-dots i.is-on { background: var(--ds-brand-600); box-shadow: none; }
+.roster-row.is-empty .roster-load small { color: #b45309; font-weight: 700; }
+.roster-load small { font-size: 11.5px; color: var(--ds-ink-mute); }
+.roster-roles { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+.roster-resp { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.roster-resp-view { flex: 1; min-width: 0; font-size: 12.5px; line-height: 1.6; color: var(--ds-ink-soft); cursor: text; }
+.roster-resp-view.is-placeholder { color: var(--ds-ink-mute); font-style: italic; }
+.roles-app.is-readonly .roster-resp-view { cursor: default; }
+.roster-resp-input { flex: 1; }
+
+/* ---- قائمة الإسناد ---- */
+.assign-menu {
+    position: absolute;
+    z-index: 1060;
+    width: 280px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface);
+    box-shadow: var(--ds-shadow-lg), 0 20px 40px -20px rgba(9, 9, 11, .25);
+    overflow: hidden;
+}
+.assign-menu.is-open { animation: menu-in .18s var(--ds-ease); }
+.assign-menu-head { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-bottom: 1px solid var(--ds-border); }
+.assign-menu-head b { flex: 1; min-width: 0; font-size: 13px; color: var(--ds-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.assign-menu-head .btn-close { font-size: 10px; }
+.assign-menu-list { max-height: 320px; overflow-y: auto; padding: 6px; }
+.assign-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition: background-color var(--ds-dur-fast) ease;
+}
+.assign-option:hover:not(:disabled), .assign-option:focus-visible { background: var(--ds-surface-sunk); outline: 0; }
+.assign-option .ctx-avatar { width: 32px; height: 32px; border-radius: 50%; }
+.assign-option-name { flex: 1; min-width: 0; display: flex; flex-direction: column; font-size: 13px; font-weight: 600; color: var(--ds-ink); }
+.assign-option-name small { font-size: 11px; font-weight: 400; color: var(--ds-ink-mute); }
+.assign-check {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid var(--ds-border-strong);
+    border-radius: 7px;
+    color: transparent;
+    font-size: 13px;
+    transition: background-color var(--ds-dur-fast) ease, border-color var(--ds-dur-fast) ease;
+}
+.assign-option.is-on .assign-check { border-color: var(--ds-brand-600); background: var(--ds-brand-600); color: #fff; }
+.assign-option:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ---- شريط الحفظ: يظهر حين يوجد ما يُحفظ ---- */
+.roles-savebar {
+    position: sticky;
+    bottom: 12px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 12px 16px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background: rgba(255, 255, 255, .94);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--ds-shadow-lg);
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: opacity var(--ds-dur) var(--ds-ease), transform var(--ds-dur) var(--ds-ease);
+}
+.roles-savebar.is-visible { opacity: 1; transform: none; pointer-events: auto; }
+.roles-savebar-text { flex: 1; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ds-brand-700); }
+.roles-savebar-text i { font-size: 18px; animation: badge-ping-dot 1.6s ease-in-out infinite; }
+@keyframes badge-ping-dot { 50% { opacity: .35; } }
+
+@media (max-width: 991.98px) {
+    .roster-row { grid-template-columns: 40px minmax(0, 1fr) auto; grid-template-areas: "av who load" "roles roles roles" "resp resp resp"; row-gap: 8px; }
+    .roster-avatar { grid-area: av; }
+    .roster-who { grid-area: who; }
+    .roster-load { grid-area: load; align-items: flex-end; }
+    .roster-roles { grid-area: roles; }
+    .roster-resp { grid-area: resp; }
+}
+@media (max-width: 575.98px) {
+    .role-board { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .role-card { min-height: 0; padding: 12px; }
+    .role-card.is-add { grid-column: 1 / -1; }
+    .roster-row { padding: 12px 14px; }
+    /* الجوال: القائمة لوح من الأسفل */
+    .assign-menu {
+        position: fixed;
+        inset: auto 0 0 0;
+        width: auto;
+        border-radius: 20px 20px 0 0;
+    }
+    .assign-menu.is-open { animation: sheet-in .25s var(--ds-ease); }
+    .assign-menu-list { max-height: 60vh; }
+    .roles-savebar { flex-wrap: wrap; }
+    .roles-savebar-text { flex-basis: 100%; }
+    .roles-savebar .btn { flex: 1; }
+}
+@keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+    .role-card, .role-holder, .role-holder.is-suggested, .assign-menu.is-open, .roles-savebar-text i { animation: none; }
+}
+
 /* ==================== إشعارات الطالب ====================
    كانت سطوراً رمادية متشابهة: قبول المشروع وطلب التعديل وتغيير الإدارة
    بوزن واحد. صارت بطاقات بأيقونة فئتها، مجموعة باليوم، ومصفّاة بالمصدر. */

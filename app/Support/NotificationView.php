@@ -37,6 +37,8 @@ class NotificationView
 
         // نشاط المشروع: الفئة من نصّ الرسالة — الأخصّ أولاً
         return match (true) {
+            // من القائد لا المشرف: المرسل زميل
+            str_contains($msg, 'عيّنك القائد') => self::make('role', 'team', 'ti-id-badge-2', 'is-brand', 'دورك في المشروع', $sender, $msg, route('student.team')),
             str_contains($msg, 'مطلوب تعديل') => self::make('revision', 'supervisor', 'ti-pencil', 'is-warn', 'مطلوب تعديل', $sender, $msg, $dash . '#milestones'),
             str_contains($msg, 'اعتُمدت') => self::make('approved', 'supervisor', 'ti-rosette-discount-check', 'is-success', 'اعتُمدت مرحلة', $sender, $msg, $dash . '#milestones'),
             str_contains($msg, 'مرحلة جديدة') => self::make('stage', 'supervisor', 'ti-flag', 'is-brand', 'مرحلة جديدة', $sender, $msg, $dash . '#milestones'),

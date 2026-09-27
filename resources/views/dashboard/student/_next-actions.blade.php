@@ -44,6 +44,22 @@
         ];
     }
 
+    // للقائد: أعضاء بلا دور — والرابط يفتح محرّر التوزيع مباشرة
+    $amLeader = $project->group->contains(fn ($g) => $g->type === 'leader' && (int) $g->student_id === (int) auth('student')->id());
+    $noRole = $project->group->filter(fn ($g) => $g->roles->isEmpty())->count();
+
+    if ($amLeader && $noRole && $project->status === 'accept' && ! $project->is_locked) {
+        $todos[] = [
+            'icon' => 'ti-id-badge-2',
+            'tone' => 'is-brand',
+            'n' => $noRole,
+            'label' => $noRole === $project->group->count()
+                ? 'وزّع الأدوار على الفريق — مَن مسؤول عن ماذا'
+                : ($noRole === 1 ? 'عضو بلا دور في الفريق' : 'أعضاء بلا دور في الفريق'),
+            'href' => route('student.team'),
+        ];
+    }
+
     $daysLeft = $project->days_left;
 
     if (! is_null($daysLeft) && $daysLeft >= 0 && $daysLeft <= 7) {

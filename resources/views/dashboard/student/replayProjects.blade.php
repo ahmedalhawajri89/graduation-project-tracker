@@ -47,6 +47,11 @@
             <button type="button" class="filter-tab" data-notif-filter="supervisor">
                 من المشرف <span class="filter-count">{{ $counts['supervisor'] ?? 0 }}</span>
             </button>
+            @if ($counts['team'] ?? 0)
+                <button type="button" class="filter-tab" data-notif-filter="team">
+                    من الفريق <span class="filter-count">{{ $counts['team'] }}</span>
+                </button>
+            @endif
             <button type="button" class="filter-tab" data-notif-filter="admin">
                 من الإدارة <span class="filter-count">{{ $counts['admin'] ?? 0 }}</span>
             </button>

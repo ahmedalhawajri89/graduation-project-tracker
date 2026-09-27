@@ -7,12 +7,20 @@
 
     @param \App\Models\Project $project         بـ group.student و supervisor
     @param string              $role            student | supervisor — من يرى البطاقة
+
+    وتحت كل عضو أدواره ومسؤوليته — القائد يوزّعها من «توزيع الأدوار».
 --}}
 
 @php
     $meId = (int) auth($role)->id();
     // القائد أولاً ثم الباقون بترتيبهم
     $members = $project->group->sortBy(fn ($m) => $m->type === 'leader' ? 0 : 1)->values();
+
+    $isLeader = $role === 'student' && $members->contains(fn ($m) => $m->type === 'leader' && (int) $m->student_id === $meId);
+    $canAssign = $isLeader && $project->status !== 'reject' && ! $project->is_locked;
+    $withRoles = $members->filter(fn ($m) => $m->roles->isNotEmpty())->count();
+    $roleCount = $members->sum(fn ($m) => $m->roles->count());
+    $unassigned = $members->count() - $withRoles;
     $contact = function ($person) {
         return array_filter([
             $person?->email ? ['href' => 'mailto:' . $person->email, 'icon' => 'ti-mail', 'title' => $person->email] : null,
@@ -26,7 +34,41 @@
         <i class="ti ti-users-group" aria-hidden="true"></i>
         الفريق
         <span class="ctx-count">{{ $members->count() + ($role === 'student' ? 1 : 0) }}</span>
+        @if ($canAssign)
+            <a href="{{ route('student.team') }}" class="team-assign-btn">
+                <i class="ti ti-id-badge-2" aria-hidden="true"></i>
+                توزيع الأدوار
+            </a>
+        @elseif ($role === 'student' && $roleCount)
+            <a href="{{ route('student.team') }}" class="team-assign-btn">الأدوار</a>
+        @endif
     </div>
+
+    {{-- التغطية: كم عضواً بدور — والعضو بلا دور يُقال ولا يُترك --}}
+    @if ($roleCount)
+        <div class="team-coverage {{ $unassigned ? 'has-gap' : '' }}">
+            <span class="team-coverage-bar" aria-hidden="true">
+                <span style="width: {{ $members->count() ? round($withRoles * 100 / $members->count()) : 0 }}%"></span>
+            </span>
+            <span>
+                {{ $roleCount }} {{ $roleCount === 1 ? 'دور' : 'أدوار' }}
+                @if ($unassigned)
+                    · <b>{{ $unassigned === 1 ? 'عضو بلا دور' : $unassigned . ' أعضاء بلا دور' }}</b>
+                @else
+                    · كل الفريق له دور
+                @endif
+            </span>
+        </div>
+    @elseif ($canAssign)
+        <a href="{{ route('student.team') }}" class="team-invite">
+            <span class="team-invite-icon" aria-hidden="true"><i class="ti ti-id-badge-2"></i></span>
+            <span>
+                <b>وزّع الأدوار على الفريق</b>
+                <small>مَن على الواجهات، ومَن على الخادم، ومَن يكتب التوثيق — يراه الفريق والمشرف.</small>
+            </span>
+            <i class="ti ti-chevron-left" aria-hidden="true"></i>
+        </a>
+    @endif
 
     {{-- المشرف أولاً عند الطالب — هو من يُسأل. والمشرف لا يرى نفسه --}}
     @if ($role === 'student' && $project->supervisor)
@@ -68,8 +110,21 @@
                         <span class="cell-you">أنت</span>
                     @endif
                 </span>
-                @if ($role === 'supervisor')
+                @if ($role === 'supervisor' && $member->roles->isEmpty() && ! $member->responsibility)
                     <span class="ctx-person-meta" dir="ltr">{{ $member->student?->university_id }}</span>
+                @endif
+                @if ($member->roles->isNotEmpty())
+                    <span class="role-chips">
+                        @foreach ($member->roles as $r)
+                            @php $meta = $r->meta(); @endphp
+                            <span class="role-chip" style="--h: {{ $meta['hue'] }}">
+                                <i class="ti {{ $meta['icon'] }}" aria-hidden="true"></i>{{ $r->label }}
+                            </span>
+                        @endforeach
+                    </span>
+                @endif
+                @if ($member->responsibility)
+                    <span class="role-resp">{{ $member->responsibility }}</span>
                 @endif
             </span>
             @unless ($isMe)
