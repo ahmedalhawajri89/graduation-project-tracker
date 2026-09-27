@@ -865,6 +865,7 @@ section[id], [id] { scroll-margin-top: calc(var(--header-h) + 18px); }
 .project-state { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-mute); }
 .project-state i { width: 6px; height: 6px; border-radius: 50%; background: var(--rule-strong); }
 .project-state.done i { background: var(--accent); }
+.project-state.done { color: #047857; font-weight: 600; }
 .project-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; line-height: 1.65; }
 .project-meta {
   display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
@@ -926,7 +927,7 @@ section[id], [id] { scroll-margin-top: calc(var(--header-h) + 18px); }
 /* ---------- For departments ---------- */
 .dept-grid {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  gap: 56px; align-items: center;
+  gap: 56px; align-items: start;
 }
 .dept-points { border-top: 1px solid var(--rule); }
 .dept-point {
@@ -1126,7 +1127,7 @@ section[id], [id] { scroll-margin-top: calc(var(--header-h) + 18px); }
   .section { padding: 84px 0; }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 900px) {
   .nav-links { display: none; }
   .menu-toggle { display: grid; }
   .nav-login { display: none; }
@@ -1718,4 +1719,64 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .feat-cell:hover .feat-icon, .journey-step:hover .journey-node { transform: none; }
+}
+
+/* ==========================================================
+   07 — قبل تخرُّج وبعدها: صفوف مقارنة بأرقامها
+   تبقى .lc-row و.lc-num كما هي (طريقة الأرقام)، ويتبدّل العمود الثالث
+   إلى عمودين: «قبل» باهتاً مشطوباً، و«مع تخرُّج» بعلامة زرقاء.
+   ========================================================== */
+.lifecycle.is-vs .lc-row,
+.vs-head {
+  grid-template-columns: 58px minmax(0, .8fr) minmax(0, 1.1fr) minmax(0, 1.1fr);
+  align-items: center;
+}
+.vs-head {
+  display: grid; gap: 24px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--rule-strong);
+  font-size: 12px; font-weight: 700; letter-spacing: .02em;
+  color: var(--ink-mute);
+}
+.vs-head span:last-child { color: var(--accent); }
+.vs-before, .vs-after {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 14.5px; line-height: 1.8;
+}
+.vs-before { color: var(--ink-mute); }
+.vs-before > span:last-child {
+  text-decoration: line-through;
+  text-decoration-color: var(--rule-strong);
+  text-decoration-thickness: 1px;
+}
+.vs-after { color: var(--ink); font-weight: 600; }
+.vs-mark {
+  flex: none;
+  display: grid; place-items: center;
+  width: 22px; height: 22px; margin-top: 2px;
+  border-radius: 50%;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  color: var(--ink-mute);
+}
+.vs-after .vs-mark { background: var(--accent); border-color: var(--accent); color: #fff; }
+.lifecycle.is-vs .lc-row:hover .vs-after .vs-mark { box-shadow: 0 0 0 5px var(--accent-soft); }
+.vs-mark { transition: box-shadow .25s ease; }
+
+/* 09 — فقرة القسم (كانت style مضمَّناً) */
+.dept-lead { color: var(--ink-mute); font-size: 15.5px; line-height: 1.95; margin-top: 18px; }
+
+@media (max-width: 900px) {
+  .vs-head { display: none; }
+  .lifecycle.is-vs .lc-row {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 10px 14px;
+    align-items: baseline;
+  }
+  .lifecycle.is-vs .vs-before,
+  .lifecycle.is-vs .vs-after { grid-column: 2; }
+}
+/* ستّ نقاط تطيل العمود: يبقى العنوان في أعلاه ويرافق القارئ */
+@media (min-width: 901px) {
+  .dept-grid > div:first-child { position: sticky; top: 120px; }
 }

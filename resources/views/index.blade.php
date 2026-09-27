@@ -333,7 +333,7 @@
                             </div>
                             <div class="pillar">
                                 <span class="pillar-num">02</span>
-                                <span class="pillar-text" data-i18n="about.p2">متابعة مراحل المشروع ونِسب الإنجاز</span>
+                                <span class="pillar-text" data-i18n="about.p2">خطط المراحل والتسليم والمراجعة</span>
                             </div>
                             <div class="pillar">
                                 <span class="pillar-num">03</span>
@@ -621,15 +621,23 @@
             </div>
         </section>
 
-        {{-- ======= Showcase — مشاريع حقيقية من قاعدة البيانات ======= --}}
+        {{-- ======= Showcase — مشاريع أُنجزت فعلاً ======= --}}
+        {{-- المكتملة المقيَّمة وحدها: الصفحة عامّة، فتعرض ما أُنجز لا عمل فرق لم
+             تُسلّم بعد. وكانت تعرض أحدث المقبولة، فظهرت بيانات تجريبية وعناوين
+             مكرّرة بلاحقة «— نسخة N» من بذور العرض — تُستبعد، ويُكتفى بعنوان واحد --}}
         @php
-            $showcase = \Illuminate\Support\Facades\Cache::remember('site_showcase', 3600, function () {
-                return \App\Models\Project::whereIn('status', ['accept', 'complete'])
+            $showcase = \Illuminate\Support\Facades\Cache::remember('site_showcase_v2', 3600, function () {
+                return \App\Models\Project::where('status', 'complete')
+                    ->whereNotNull('grade')
                     ->with(['project_type', 'semester'])
                     ->withCount('group')
                     ->latest()
+                    ->take(24)
+                    ->get()
+                    ->reject(fn ($p) => preg_match('/—\s*نسخة\s*\d+\s*$/u', $p->title))
+                    ->unique('title')
                     ->take(4)
-                    ->get();
+                    ->values();
             });
         @endphp
         @if ($showcase->isNotEmpty())
@@ -638,25 +646,22 @@
                     <div class="section-head" data-num="06">
                         <div class="section-index reveal"><span data-i18n="show.kicker">من المنصة</span></div>
                         <div class="section-head-grid">
-                            <h2 class="reveal" data-i18n="show.title">مشاريع تُتابَع على تخرُّج الآن</h2>
+                            <h2 class="reveal" data-i18n="show.title">مشاريع أُنجزت على تخرُّج</h2>
                             <p class="reveal d1" data-i18n="show.text">
-                                ليست أمثلة مصنوعة — هذه مشاريع مسجّلة فعلاً على المنصة بأنواعها وفصولها وأحجام فرقها.
+                                ليست أمثلة مصنوعة — مشاريع أكملتها فرق فعلاً على المنصة، بتخصّصاتها وفصولها وأحجام فرقها.
                             </p>
                         </div>
                     </div>
 
                     <div class="showcase reveal">
                         @foreach ($showcase as $project)
+                            @php $sem = $project->semester?->parts(); @endphp
                             <article class="project-cell">
                                 <div class="project-top">
                                     <span class="project-type">{{ $project->project_type->name }}</span>
-                                    <span class="project-state {{ $project->status === 'complete' ? 'done' : '' }}">
-                                        <i aria-hidden="true"></i>
-                                        @if ($project->status === 'complete')
-                                            <span data-i18n="state.done">مكتمل</span>
-                                        @else
-                                            <span data-i18n="state.progress">قيد التنفيذ</span>
-                                        @endif
+                                    <span class="project-state done">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                                        <span data-i18n="state.done">مكتمل</span>
                                     </span>
                                 </div>
                                 <h3 class="project-title">{{ $project->title }}</h3>
@@ -665,10 +670,15 @@
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
                                         {{ $project->group_count }} <span data-i18n="unit.members">أعضاء</span>
                                     </span>
-                                    <span>
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                                        {{ $project->semester->name }}
-                                    </span>
+                                    @if ($sem)
+                                        <span>
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                                            {{ $sem['term'] }}
+                                            @if ($sem['year'])
+                                                · <bdi dir="ltr">{{ $sem['year'] }}</bdi>
+                                            @endif
+                                        </span>
+                                    @endif
                                 </div>
                             </article>
                         @endforeach
@@ -677,39 +687,64 @@
             </section>
         @endif
 
-        {{-- ======= Lifecycle ======= --}}
+        {{-- ======= Lifecycle — قبل تخرُّج وبعدها ======= --}}
+        {{-- كانت «دورة حياة المشروع» بنصّ كتاب إدارة مشاريع عامّ («رصد الموارد
+             المالية»، «الفئات المستفيدة») — ومسار الخطوات الأربع للمرّة الثالثة بعد
+             الهيرو و04. صارت مقارنة تجيب «لماذا أنتقل؟»؛ والرقم والمعرّف كما هما --}}
         <section id="lifecycle" class="section">
             <div class="container">
                 <div class="section-head" data-num="07">
-                    <div class="section-index reveal"><span data-i18n="lc.kicker">دورة حياة المشروع</span></div>
+                    <div class="section-index reveal"><span data-i18n="lc.kicker">لماذا تخرُّج</span></div>
                     <div class="section-head-grid">
-                        <h2 class="reveal" data-i18n="lc.title">مراحل واضحة، من الفكرة إلى الإنجاز</h2>
+                        <h2 class="reveal" data-i18n="lc.title">ما يتغيّر حين يجتمع مشروعك في مكان واحد</h2>
                         <p class="reveal d1" data-i18n="lc.text">
-                            أي مشروع، بغض النظر عن طبيعته ومدته وحجم نشاطاته، يمر بمراحل محددة لتحقيق أهدافه في فترة زمنية محددة.
+                            ستّ مشكلات يعرفها كل فريق تخرّج، وما تفعله المنصة بكلٍّ منها.
                         </p>
                     </div>
                 </div>
 
-                <div class="lifecycle reveal">
+                <div class="lifecycle is-vs reveal">
+                    <div class="vs-head" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span data-i18n="lc.before">قبل</span>
+                        <span data-i18n="lc.after">مع تخرُّج</span>
+                    </div>
                     <div class="lc-row">
                         <span class="lc-num">01</span>
-                        <h3 class="lc-title" data-i18n="lc.1.title">التفكير في المشروع</h3>
-                        <p class="lc-text" data-i18n="lc.1.text">تحديد الفكرة ونطاقها والتأكد من جدواها قبل تقديمها للمشرف.</p>
+                        <h3 class="lc-title" data-i18n="lc.1.title">التنسيق</h3>
+                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.1.before">مجموعة واتساب يقرؤها الجميع وتضيع فيها المهام</span></p>
+                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.1.after">نقاش فريق خاص، و@ لتنبيه زميل بعينه</span></p>
                     </div>
                     <div class="lc-row">
                         <span class="lc-num">02</span>
-                        <h3 class="lc-title" data-i18n="lc.2.title">التخطيط</h3>
-                        <p class="lc-text" data-i18n="lc.2.text">تقسيم العمل إلى مراحل بمواعيد استحقاق وتوزيع المهام على الفريق.</p>
+                        <h3 class="lc-title" data-i18n="lc.2.title">الملفات</h3>
+                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.2.before">نسخ متضاربة بين البريد والرسائل</span></p>
+                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.2.after">ملف واحد، وملاحظاته عليه حتى تُعالَج</span></p>
                     </div>
                     <div class="lc-row">
                         <span class="lc-num">03</span>
-                        <h3 class="lc-title" data-i18n="lc.3.title">التنفيذ والمتابعة</h3>
-                        <p class="lc-text" data-i18n="lc.3.text">إنجاز المراحل ورفع الملفات ومناقشة المشرف مع تحديث نسبة الإنجاز.</p>
+                        <h3 class="lc-title" data-i18n="lc.3.title">المواعيد</h3>
+                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.3.before">جدول يُرسل مرّة ثم يضيع بين الرسائل</span></p>
+                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.3.after">خطة مراحل بمواعيدها وقوالبها تصل كل مجموعة</span></p>
                     </div>
                     <div class="lc-row">
                         <span class="lc-num">04</span>
-                        <h3 class="lc-title" data-i18n="lc.4.title">المناقشة والتقييم</h3>
-                        <p class="lc-text" data-i18n="lc.4.text">عرض المشروع أمام اللجنة ورصد الدرجة النهائية مع التقدير والملاحظات.</p>
+                        <h3 class="lc-title" data-i18n="lc.4.title">الملاحظات</h3>
+                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.4.before">«مرفوض» بلا سبب، وتخمين ما المطلوب</span></p>
+                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.4.after">«مطلوب تعديل» بسبب واضح، وكل جولة محفوظة</span></p>
+                    </div>
+                    <div class="lc-row">
+                        <span class="lc-num">05</span>
+                        <h3 class="lc-title" data-i18n="lc.5.title">المسؤوليات</h3>
+                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.5.before">لا أحد يعرف مَن فعل ماذا حتى المناقشة</span></p>
+                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.5.after">أدوار معلنة يراها الفريق والمشرف</span></p>
+                    </div>
+                    <div class="lc-row">
+                        <span class="lc-num">06</span>
+                        <h3 class="lc-title" data-i18n="lc.6.title">الدرجة</h3>
+                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.6.before">كشف ورقي يتغيّر ولا أثر لمن غيّره</span></p>
+                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.6.after">درجة معتمدة مقفلة، وسجلّ لكل قرار</span></p>
                     </div>
                 </div>
             </div>
@@ -732,9 +767,11 @@
                     @foreach ([
                         ['كم عضواً يتكون منه الفريق؟', 'حسب نوع المشروع الذي يحدده قسمك — كل نوع له حد أدنى وأقصى يظهران أمامك في نموذج التقديم، والنظام لا يقبل فريقاً خارج الحدود.'],
                         ['كيف أقدم طلب مشروع؟', 'سجّل دخولك ← اختر نوع المشروع ومشرفاً لديه مقاعد متاحة ← اختر أعضاء فريقك من القائمة ← اكتب العنوان والوصف وأرسل. سيصل طلبك للمشرف فوراً.'],
-                        ['كيف أعرف رد المشرف على طلبي؟', 'يصلك إشعار داخل النظام فور القبول أو الرفض — تجده في جرس الإشعارات وفي لوحتك الرئيسية مع كل تحديث لاحق على مشروعك.'],
-                        ['ماذا لو رُفض مشروعي؟', 'يصلك سبب الرفض الذي كتبه المشرف مع الإشعار، ويفتح النظام لك نموذج تقديم جديد مباشرة — عدّل فكرتك أو اختر مشرفاً آخر وأعد الإرسال.'],
-                        ['كيف يُقيَّم مشروعي النهائي؟', 'خلال التنفيذ تتابع نسبة إنجاز مراحلك أولاً بأول، وبعد المناقشة يرصد مشرفك الدرجة النهائية من 100 مع التقدير وملاحظاته — وتظهر في لوحتك مع إشعار لكل الفريق.'],
+                        ['كيف أعرف ردّ المشرف، وماذا لو رُفض طلبي؟', 'يصلك إشعار فور القبول أو الرفض. وإن رُفض فمعه السبب الذي كتبه المشرف، ويُفتح لك نموذج تقديم جديد مباشرة — عدّل فكرتك أو اختر مشرفاً آخر.'],
+                        ['ماذا يعني «مطلوب تعديل» على مرحلة سلّمتها؟', 'أن مشرفك راجعها وكتب ما ينقصها — لا أنها رُفضت. عدّل ملفك وأعد التسليم من الصفحة نفسها، وتبقى كل جولة وملاحظتها محفوظة.'],
+                        ['من يوزّع الأدوار في الفريق؟', 'قائد الفريق: يسند لكل عضو دوره ومسؤولياته، فيراها الفريق كله ويراها المشرف — واضح من على ماذا قبل المناقشة.'],
+                        ['هل يرى المشرف نقاش الفريق؟', 'لا. للفريق قناة خاصة لا يراها المشرف ولا الإدارة، وقناة ثانية مشتركة مع المشرف للأسئلة والملاحظات.'],
+                        ['كيف يُقيَّم مشروعي النهائي؟', 'بعد المناقشة يرصد مشرفك الدرجة من 100 مع التقدير وملاحظاته، ويصل الإشعار للفريق كله. وبعد اعتمادها تُقفل — لا يفتحها إلا الإدارة، ويُسجَّل ذلك.'],
                     ] as $i => [$question, $answer])
                         <div class="faq-item">
                             <button type="button" class="faq-btn" aria-expanded="false" aria-controls="faq-body-{{ $i + 1 }}">
@@ -760,7 +797,7 @@
                 <div class="dept-grid">
                     <div>
                         <h2 class="reveal" data-i18n="dept.title">ملف الفصل الدراسي كاملاً في مكان واحد</h2>
-                        <p class="reveal d1" style="color: var(--ink-mute); font-size: 15.5px; line-height: 1.95; margin-top: 18px;" data-i18n="dept.text">
+                        <p class="dept-lead reveal d1" data-i18n="dept.text">
                             بدل جداول متفرقة ومجموعات محادثة، تعطي تخرُّج القسمَ صورةً واحدة: من قدّم،
                             ومن وافق، وأين وصل كل فريق، ومن لم يلتحق بمجموعة بعد.
                         </p>
@@ -795,6 +832,20 @@
                                 <span data-i18n="dept.4.text">تُخرج كشفاً بالمجموعات ومشرفيها ودرجاتها في أي لحظة من الفصل.</span>
                             </span>
                         </div>
+                        <div class="dept-point">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                            <span>
+                                <b data-i18n="dept.5.title">سجلّ تدقيق لكل قرار</b>
+                                <span data-i18n="dept.5.text">كل اعتماد وفتح درجة وتغيير مهم يُحفظ باسم صاحبه ووقته.</span>
+                            </span>
+                        </div>
+                        <div class="dept-point">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                            <span>
+                                <b data-i18n="dept.6.title">فصول دراسية تُفتح وتُغلق</b>
+                                <span data-i18n="dept.6.text">تفتح فصلاً جديداً للتقديم وتغلق السابق، فتبقى مشاريع كل دفعة في فصلها.</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -820,7 +871,7 @@
                     <aside class="contact-aside">
                         <h3 data-i18n="contact.asideTitle">قبل أن تكتب</h3>
                         <p data-i18n="contact.asideText">
-                            حسابك يُنشأ من إدارة المنصة، فإن لم تستطع الدخول برقمك الجامعي راجع إدارة قسمك أولاً.
+                            حسابك يُنشأ من إدارة قسمك، فإن لم تستطع الدخول برقمك الجامعي راجعها أولاً.
                             وللأسئلة حول المواعيد وأنواع المشاريع، اكتب لنا هنا.
                         </p>
                         <div class="contact-point">
