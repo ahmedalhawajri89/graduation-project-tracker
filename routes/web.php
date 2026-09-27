@@ -19,6 +19,7 @@ use App\Http\Controllers\Student\DashboardController as StudentDashboardControll
 use App\Http\Controllers\Student\ProfileController as StudentProfileController;
 use App\Http\Controllers\Student\ProjectCommentController as StudentProjectCommentController;
 use App\Http\Controllers\Student\ProjectFileController as StudentProjectFileController;
+use App\Http\Controllers\Student\MilestoneSubmissionController as StudentMilestoneSubmissionController;
 use App\Http\Controllers\Supervisor\DashboardController as SupervisorDashboardController;
 use App\Http\Controllers\Supervisor\ProfileController as SupervisorProfileController;
 use App\Http\Controllers\Supervisor\ProjectManageController;
@@ -167,6 +168,9 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
         Route::post('/projects/{project}/files', [StudentProjectFileController::class, 'store'])->name('files.store');
         Route::delete('/files/{file}', [StudentProjectFileController::class, 'destroy'])->name('files.destroy');
 
+        // تسليم مرحلة — تنتظر بعده مراجعة المشرف
+        Route::post('/milestones/{milestone}/submit', [StudentMilestoneSubmissionController::class, 'store'])->name('milestones.submit');
+
         // تعليقات المشروع
         Route::post('/projects/{project}/comments', [StudentProjectCommentController::class, 'store'])->name('comments.store');
         Route::delete('/comments/{comment}', [StudentProjectCommentController::class, 'destroy'])->name('comments.destroy');
@@ -191,6 +195,8 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
         // مراحل المشروع (Milestones)
         Route::post('/projects/{project}/milestones', [ProjectManageController::class, 'milestoneStore'])->name('milestones.store');
         Route::post('/milestones/{milestone}/toggle', [ProjectManageController::class, 'milestoneToggle'])->name('milestones.toggle');
+        // مراجعة تسليم: اعتماد، أو «مطلوب تعديل» بملاحظة
+        Route::post('/milestones/{milestone}/review', [ProjectManageController::class, 'milestoneReview'])->name('milestones.review');
         Route::delete('/milestones/{milestone}', [ProjectManageController::class, 'milestoneDestroy'])->name('milestones.destroy');
 
         // ملفات المشروع
@@ -226,6 +232,7 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
     // تنزيل ملفات المشاريع (أدمن/مشرف المشروع/أعضاء الفريق)
     Route::get('/files/{file}/download', [FileController::class, 'download'])->name('files.download');
     Route::get('/stages/{stage}/template', [FileController::class, 'stageTemplate'])->name('stages.template');
+    Route::get('/submissions/{submission}/file', [FileController::class, 'submissionFile'])->name('submissions.file');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

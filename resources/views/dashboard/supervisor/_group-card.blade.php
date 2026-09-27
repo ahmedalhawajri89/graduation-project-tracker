@@ -1,7 +1,7 @@
 @php
     $days = $project->days_left;
     $overdue = $project->milestones->contains(
-        fn ($m) => ! $m->is_done && $m->due_date && $m->due_date->isPast()
+        fn ($m) => $m->isLate()
     );
     $ungraded = $project->status === 'complete' && is_null($project->grade);
     $progress = $project->progress;
@@ -62,13 +62,29 @@
     </div>
 
     {{-- المرحلة الحالية: ما يعمل عليه الفريق الآن، لا نسبة وحدها --}}
-    <div class="group-card-stage {{ $current && $current->due_date?->isPast() ? 'is-late' : '' }}">
+    {{-- تسليم ينتظر مراجعتك يسبق كل شيء: هو العمل الذي عليك أنت --}}
+    @php
+        $reviewing = $project->milestones->first(fn ($m) => $m->isSubmitted());
+        $current = $reviewing ?? $current;
+        $stageTone = match (true) {
+            ! $current => '',
+            $current->isSubmitted() => 'is-review',
+            $current->needsRevision() => 'is-revision',
+            $current->isLate() => 'is-late',
+            default => '',
+        };
+    @endphp
+    <div class="group-card-stage {{ $stageTone }}">
         @if ($current)
-            <i class="ti {{ $current->due_date?->isPast() ? 'ti-alert-triangle' : 'ti-flag' }}" aria-hidden="true"></i>
+            <i class="ti {{ ['is-review' => 'ti-inbox', 'is-revision' => 'ti-pencil', 'is-late' => 'ti-alert-triangle'][$stageTone] ?? 'ti-flag' }}" aria-hidden="true"></i>
             <span class="group-card-stage-title">{{ $current->title }}</span>
-            @if ($current->due_date)
+            @if ($stageTone === 'is-review')
+                <a href="{{ route('supervisor.projects.show', $project->id) }}#milestone-{{ $current->id }}" class="group-card-stage-due is-link">راجِع التسليم</a>
+            @elseif ($stageTone === 'is-revision')
+                <span class="group-card-stage-due">مطلوب تعديل</span>
+            @elseif ($current->due_date)
                 <span class="group-card-stage-due">
-                    {{ $current->due_date->isPast() ? 'متأخّرة منذ ' . $current->due_date->diffInDays(today()) . ' يوماً' : $current->due_date->translatedFormat('j F') }}
+                    {{ $stageTone === 'is-late' ? 'متأخّرة منذ ' . $current->due_date->diffInDays(today()) . ' يوماً' : $current->due_date->translatedFormat('j F') }}
                 </span>
             @endif
         @elseif ($project->milestones->isNotEmpty())

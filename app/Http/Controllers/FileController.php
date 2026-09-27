@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MilestoneSubmission;
 use App\Models\ProjectFile;
 use App\Models\SupervisorStage;
 use Illuminate\Support\Facades\Storage;
@@ -70,5 +71,25 @@ class FileController extends Controller
         abort_unless(Storage::disk('local')->exists($stage->template_path), 404);
 
         return Storage::disk('local')->download($stage->template_path, $stage->template_name ?: 'قالب');
+    }
+
+    /** ملف تسليم مرحلة: للأدمن، ولمشرف المشروع، ولأعضاء فريقه */
+    public function submissionFile(MilestoneSubmission $submission)
+    {
+        abort_unless($submission->hasFile(), 404);
+
+        $project = $submission->milestone->project;
+
+        $allowed = match (true) {
+            auth('admin')->check() => true,
+            auth('supervisor')->check() => (int) $project->supervisor_id === (int) auth('supervisor')->id(),
+            auth('student')->check() => $project->group()->where('student_id', auth('student')->id())->exists(),
+            default => false,
+        };
+
+        abort_unless($allowed, 403);
+        abort_unless(Storage::disk('local')->exists($submission->file_path), 404);
+
+        return Storage::disk('local')->download($submission->file_path, $submission->file_name ?: 'تسليم');
     }
 }

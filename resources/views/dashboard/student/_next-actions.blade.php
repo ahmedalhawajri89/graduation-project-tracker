@@ -11,9 +11,25 @@
 @php
     $todos = [];
 
+    // طلب تعديل من المشرف: أعلى من المتأخّر — فيه ما يجب فعله بالضبط
+    $revisions = $project->milestones->filter(fn ($m) => $m->needsRevision());
+
+    if ($revisions->count()) {
+        $todos[] = [
+            'icon' => 'ti-pencil',
+            'tone' => 'is-warn',
+            'n' => $revisions->count(),
+            'label' => $revisions->count() === 1
+                ? 'مطلوب تعديل في: ' . $revisions->first()->title
+                : 'مراحل أعادها المشرف بطلب تعديل',
+            'href' => '#milestone-' . $revisions->first()->id,
+        ];
+    }
+
     // المتأخّر أولاً: هو ما يُكلِّف إن أُهمل
+    // المعادة بطلب تعديل في سطرها أعلاه — لا تُعدّ مرّتين
     $overdue = $project->milestones->filter(
-        fn ($m) => ! $m->is_done && $m->due_date && $m->due_date->isPast()
+        fn ($m) => $m->isLate() && ! $m->needsRevision()
     );
 
     if ($overdue->count()) {

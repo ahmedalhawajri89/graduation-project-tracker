@@ -37,9 +37,25 @@
         ];
     }
 
+    // تسليمات تنتظر المراجعة: الفريق لا يتقدّم قبل ردّك
+    $reviewItems = $groups->flatMap(fn ($p) => $p->milestones->filter(fn ($m) => $m->isSubmitted()));
+
+    if ($reviewItems->count()) {
+        $first = $reviewItems->first();
+        $todos[] = [
+            'icon' => 'ti-inbox',
+            'tone' => 'is-brand',
+            'n' => $reviewItems->count(),
+            'label' => $reviewItems->count() === 1
+                ? 'تسليم بانتظار مراجعتك: ' . $first->title
+                : 'تسليمات مراحل بانتظار مراجعتك',
+            'href' => route('supervisor.projects.show', $first->project_id) . '#milestone-' . $first->id,
+        ];
+    }
+
     // المتأخّر أولاً: هو ما يُكلِّف إن أُهمل
     $late = $groups->filter(fn ($p) => $p->milestones->contains(
-        fn ($m) => ! $m->is_done && $m->due_date && $m->due_date->isPast()
+        fn ($m) => $m->isLate()
     ));
 
     if ($late->count()) {

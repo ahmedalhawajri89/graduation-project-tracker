@@ -12,6 +12,7 @@ use App\Notifications\ProjectActivityNotify;
 use App\Support\Audit;
 use App\Support\Discussion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
@@ -140,10 +141,24 @@ class ProjectManageController extends Controller
             return redirect()->back()->with('fail', $reason);
         }
 
-        $milestone->update([
-            'is_done' => ! $milestone->is_done,
-            'done_at' => $milestone->is_done ? null : now(),
-        ]);
+        $done = ! $milestone->is_done;
+
+        // الإنجاز المباشر (مناقشة شفهية مثلاً) اعتماد: تسليم معلّق يُعتمد معه
+        DB::transaction(function () use ($milestone, $done) {
+            $milestone->update([
+                'is_done' => $done,
+                'status' => $done ? ProjectMilestone::APPROVED : ProjectMilestone::OPEN,
+                'done_at' => $done ? now() : null,
+            ]);
+
+            if ($done) {
+                $milestone->submissions()->whereNull('decision')->update([
+                    'decision' => ProjectMilestone::APPROVED,
+                    'reviewed_by' => auth('supervisor')->id(),
+                    'reviewed_at' => now(),
+                ]);
+            }
+        });
 
         $this->notifyStudents(
             $milestone->project,
@@ -155,6 +170,72 @@ class ProjectManageController extends Controller
         return redirect()->back()->with('success', 'تم تحديث حالة المرحلة');
     }
 
+    /**
+     * مراجعة تسليم: اعتماد، أو «مطلوب تعديل» بملاحظة تصل الفريق.
+     *
+     * كان الردّ على التسليم في النقاش وحده، فيضيع سبب الإرجاع بين الرسائل.
+     */
+    public function milestoneReview(Request $request, ProjectMilestone $milestone)
+    {
+        $this->authorizeProject($milestone->project);
+
+        if ($reason = $this->blocked($milestone->project)) {
+            return redirect()->back()->with('fail', $reason);
+        }
+
+        $data = $request->validate([
+            'decision' => ['required', 'in:approve,revision'],
+            'feedback' => ['nullable', 'string', 'max:2000', 'required_if:decision,revision'],
+        ], [
+            'feedback.required_if' => 'اكتب ما يجب تعديله — الفريق يحتاج السبب ليعدّل.',
+        ], [
+            'feedback' => 'ملاحظة التعديل',
+        ]);
+
+        $approve = $data['decision'] === 'approve';
+
+        $round = DB::transaction(function () use ($milestone, $data, $approve) {
+            $locked = ProjectMilestone::whereKey($milestone->id)->lockForUpdate()->first();
+
+            // مراجعة مزدوجة (نقرتان، أو تبويبان) لا تُسجَّل مرّتين
+            if (! $locked->isSubmitted()) {
+                return null;
+            }
+
+            $submission = $locked->submissions()->first();
+            $submission->update([
+                'decision' => $approve ? ProjectMilestone::APPROVED : ProjectMilestone::REVISION,
+                'feedback' => $data['feedback'] ?? null,
+                'reviewed_by' => auth('supervisor')->id(),
+                'reviewed_at' => now(),
+            ]);
+
+            $locked->update([
+                'status' => $approve ? ProjectMilestone::APPROVED : ProjectMilestone::REVISION,
+                'is_done' => $approve,
+                'done_at' => $approve ? now() : null,
+            ]);
+
+            return $submission->round;
+        });
+
+        if (! $round) {
+            return redirect()->back()->with('fail', 'لا تسليم بانتظار المراجعة في هذه المرحلة.');
+        }
+
+        Audit::record($approve ? 'milestone.approved' : 'milestone.revision', $milestone->project, [
+            'milestone' => ['to' => $milestone->title],
+            'round' => ['to' => $round],
+        ]);
+
+        $this->notifyStudents($milestone->project, $approve
+            ? 'اعتُمدت مرحلة «' . $milestone->title . '» ✅'
+            : 'مطلوب تعديل في مرحلة «' . $milestone->title . '»: ' . \Illuminate\Support\Str::limit($data['feedback'], 120));
+
+        return redirect()->to(url()->previous() . '#milestone-' . $milestone->id)
+            ->with('success', $approve ? 'اعتُمدت المرحلة.' : 'أُرسل طلب التعديل إلى الفريق.');
+    }
+
     public function milestoneDestroy(ProjectMilestone $milestone)
     {
         $this->authorizeProject($milestone->project);
@@ -163,7 +244,10 @@ class ProjectManageController extends Controller
             return redirect()->back()->with('fail', $reason);
         }
 
+        // ملفات التسليمات على القرص: الصفوف تُحذف بالتتابع، والملفات لا
+        $files = $milestone->submissions()->whereNotNull('file_path')->pluck('file_path')->all();
         $milestone->delete();
+        Storage::disk('local')->delete($files);
 
         return redirect()->back()->with('success', 'تم حذف المرحلة');
     }

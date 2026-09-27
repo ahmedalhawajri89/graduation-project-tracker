@@ -83,8 +83,10 @@ class StagePlan
     /** حذف المرحلة: غير المنجز في المجموعات الجارية يُحذف، والمنجز يبقى مرحلةً خاصة */
     public static function remove(SupervisorStage $stage): int
     {
+        // ما له تسليم يبقى كالمنجز: عمل الفريق لا يُحذف بحذف أصله من الخطة
         $removed = ProjectMilestone::where('stage_id', $stage->id)
             ->where('is_done', false)
+            ->whereDoesntHave('submissions')
             ->whereHas('project', fn ($q) => $q->whereNull('grade'))
             ->delete();
 
@@ -113,22 +115,26 @@ class StagePlan
         foreach ($stages as $stage) {
             $byProject = ($milestones[$stage->id] ?? collect())->keyBy('project_id');
             $groups = [];
-            $done = $late = 0;
+            $done = $late = $review = 0;
 
             foreach ($projects as $project) {
                 $m = $byProject[$project->id] ?? null;
+                // المسلَّمة قبل المتأخّرة: الانتظار على المشرف لا على الفريق
                 $state = match (true) {
                     ! $m => 'missing',
                     $m->is_done => 'done',
-                    $m->due_date && $m->due_date->isPast() => 'late',
+                    $m->isSubmitted() => 'submitted',
+                    $m->needsRevision() => 'revision',
+                    $m->isLate() => 'late',
                     default => 'open',
                 };
                 $done += $state === 'done';
                 $late += $state === 'late';
+                $review += $state === 'submitted';
                 $groups[$project->id] = $state;
             }
 
-            $out[$stage->id] = ['done' => $done, 'late' => $late, 'total' => $projects->count(), 'groups' => $groups];
+            $out[$stage->id] = ['done' => $done, 'late' => $late, 'review' => $review, 'total' => $projects->count(), 'groups' => $groups];
         }
 
         return $out;

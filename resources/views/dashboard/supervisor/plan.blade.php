@@ -178,6 +178,9 @@
                                     <div class="stage-groups-head">
                                         <span>
                                             أنجزتها <b>{{ $p['done'] }}</b> من {{ $p['total'] }}
+                                            @if ($p['review'] ?? 0)
+                                                · <span class="stage-review-note">{{ $p['review'] }} بانتظار مراجعتك</span>
+                                            @endif
                                             @if ($p['late'])
                                                 · <span class="text-danger">{{ $p['late'] }} متأخّرة</span>
                                             @endif
@@ -188,14 +191,14 @@
                                         @foreach ($projects as $project)
                                             @php
                                                 $state = $p['groups'][$project->id];
-                                                $label = ['done' => 'أنجزت', 'late' => 'متأخّرة', 'open' => 'جارية', 'missing' => 'لم تصلها'][$state];
+                                                $label = ['done' => 'أنجزت', 'submitted' => 'بانتظار مراجعتك', 'revision' => 'مطلوب تعديل', 'late' => 'متأخّرة', 'open' => 'جارية', 'missing' => 'لم تصلها'][$state];
                                                 // اسم القائد لا عنوان المشروع: العناوين المتشابهة تتطابق حين تُقصّ
                                                 $leader = $project->group->first()?->student?->name;
                                                 $teamName = $leader ? 'فريق ' . implode(' ', array_slice(preg_split('/\s+/u', trim($leader)), 0, 2)) : \Illuminate\Support\Str::limit($project->title, 22);
                                             @endphp
                                             <a href="{{ route('supervisor.projects.show', $project->id) }}#milestones"
                                                 class="stage-pill is-{{ $state }}" title="{{ $project->title }} — {{ $label }}">
-                                                <i class="ti {{ ['done' => 'ti-check', 'late' => 'ti-alert-triangle', 'open' => 'ti-clock', 'missing' => 'ti-minus'][$state] }}" aria-hidden="true"></i>
+                                                <i class="ti {{ ['done' => 'ti-check', 'submitted' => 'ti-inbox', 'revision' => 'ti-pencil', 'late' => 'ti-alert-triangle', 'open' => 'ti-clock', 'missing' => 'ti-minus'][$state] }}" aria-hidden="true"></i>
                                                 <span>{{ $teamName }}</span>
                                             </a>
                                         @endforeach

@@ -18,7 +18,7 @@
         $todos = [];
 
         $overdue = $project->milestones->filter(
-            fn ($m) => ! $m->is_done && $m->due_date && $m->due_date->isPast()
+            fn ($m) => $m->isLate()
         );
 
         // بعد الاكتمال لا تُطلب مراحل — الدرجة وحدها ما بقي

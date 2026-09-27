@@ -46,7 +46,13 @@ class SupervisorStage extends Model
     /** شارة نوع القالب [صنف، تسمية] — كشارات بطاقة الملفات */
     public function templateBadge(): array
     {
-        $ext = $this->templateExtension();
+        return self::badgeFor($this->template_name);
+    }
+
+    /** شارة نوع أيّ ملف باسمه — للقالب ولملف التسليم */
+    public static function badgeFor(?string $fileName): array
+    {
+        $ext = strtolower(pathinfo((string) $fileName, PATHINFO_EXTENSION));
 
         return match (true) {
             $ext === 'pdf' => ['is-pdf', 'PDF'],
