@@ -14,39 +14,40 @@
     $latestNotifications = $layoutShared['latestNotifications'] ?? collect();
 @endphp
 
-<header class="navbar navbar-expand-md topbar d-none d-lg-flex d-print-none">
+{{-- كان d-none d-lg-flex فيختفي الشريط كله تحت ٩٩٢ بكسل، ويفقد الموبايل
+     البحث والإشعارات وقائمة المستخدم معاً. صار ظاهراً في كل المقاسات. --}}
+<header class="navbar navbar-expand-md topbar d-print-none">
     <div class="container-xl">
 
-        {{-- يمين الشريط: بحث سريع + الفصل الحالي --}}
-        <div class="navbar-nav flex-row align-items-center gap-2">
+        {{-- صدر الشريط: فتح السايدبار (موبايل) + مسار التنقّل --}}
+        <button type="button" class="topbar-icon-btn topbar-burger" data-bs-toggle="collapse"
+            data-bs-target="#sidebar-menu" aria-label="فتح القائمة" aria-expanded="false">
+            <i class="ti ti-menu-2" aria-hidden="true"></i>
+        </button>
 
-            <button type="button" class="cmdk-trigger" data-bs-toggle="modal" data-bs-target="#cmdk-modal"
-                aria-label="فتح البحث السريع">
-                <i class="ti ti-search"></i>
-                <span class="cmdk-trigger-label">بحث سريع أو انتقال..</span>
-                <span class="cmdk-kbd">Ctrl K</span>
-            </button>
+        <x-breadcrumb />
 
-            @isset($viewSemester)
-                <span class="topbar-chip d-none d-xl-inline-flex">
-                    <i class="ti ti-calendar"></i>
-                    الفصل: <strong>{{ $viewSemester->name }}</strong>
-                </span>
-            @endisset
-        </div>
+        {{-- الوسط: البحث --}}
+        <button type="button" class="cmdk-trigger" data-bs-toggle="modal" data-bs-target="#cmdk-modal"
+            aria-label="فتح البحث السريع">
+            <i class="ti ti-search" aria-hidden="true"></i>
+            <span class="cmdk-trigger-label">بحث سريع أو انتقال..</span>
+            <span class="cmdk-kbd">Ctrl K</span>
+        </button>
 
-        {{-- يسار الشريط: إشعارات + مستخدم --}}
-        <div class="navbar-nav flex-row order-md-last align-items-center gap-1">
+        {{-- الذيل: إشعارات + مستخدم --}}
+        <div class="navbar-nav flex-row align-items-center gap-1">
 
             {{-- الإشعارات: قائمة منسدلة بمعاينة --}}
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link px-2 position-relative topbar-icon-btn" data-bs-toggle="dropdown"
-                    aria-label="الإشعارات ({{ $unreadCount }} غير مقروء)" aria-expanded="false">
-                    <i class="ti ti-bell fs-2"></i>
+                <button type="button" class="topbar-icon-btn" data-bs-toggle="dropdown"
+                    aria-label="الإشعارات ({{ $unreadCount }} غير مقروء)"
+                    aria-haspopup="true" aria-expanded="false">
+                    <i class="ti ti-bell" aria-hidden="true"></i>
                     @if ($unreadCount > 0)
                         <span class="topbar-badge">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
                     @endif
-                </a>
+                </button>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notif-menu">
                     <div class="notif-menu-head">
                         <span class="fw-bold">الإشعارات</span>
@@ -87,28 +88,22 @@
                 </div>
             </div>
 
-            {{-- المستخدم --}}
+            {{-- المستخدم: الأفاتار وحده. الاسم والدور داخل القائمة المنسدلة
+                 (وهما فيها أصلاً) فلا يُكرَّران في الشريط. --}}
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link d-flex align-items-center lh-1 p-1 user-trigger" data-bs-toggle="dropdown"
-                    aria-label="فتح قائمة المستخدم" aria-expanded="false">
-                    <span class="avatar avatar-sm avatar-gradient">
-                        {{ mb_substr(str_replace('د.', '', auth()->user()->name), 0, 2) }}
-                    </span>
-                    <div class="d-none d-xl-block ps-2 me-2 text-start">
-                        <div class="fw-bold">{{ auth()->user()->name }}</div>
-                        <div class="mt-1 small text-secondary">{{ $roleLabel }}</div>
-                    </div>
-                    <i class="ti ti-chevron-down text-secondary d-none d-xl-block"></i>
-                </a>
+                <button type="button" class="user-trigger" data-bs-toggle="dropdown"
+                    aria-label="فتح قائمة المستخدم" aria-haspopup="true" aria-expanded="false">
+                    <x-avatar :user="auth()->user()" class="avatar avatar-sm avatar-gradient" />
+                    <i class="ti ti-chevron-down" aria-hidden="true"></i>
+                </button>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow user-menu">
                     <div class="user-menu-head">
-                        <span class="avatar avatar-gradient">
-                            {{ mb_substr(str_replace('د.', '', auth()->user()->name), 0, 2) }}
-                        </span>
+                        <x-avatar :user="auth()->user()" class="avatar avatar-gradient" />
                         <div class="min-w-0">
                             <div class="fw-bold text-truncate">{{ auth()->user()->name }}</div>
                             <div class="small text-secondary text-truncate">{{ auth()->user()->email }}</div>
-                            <span class="badge bg-purple-lt text-purple mt-1">{{ $roleLabel }}</span>
+                            {{-- كانت bg-purple-lt — بنفسجي بقي من قبل ترحيل الألوان --}}
+                            <span class="badge role-badge mt-1">{{ $roleLabel }}</span>
                         </div>
                     </div>
                     <div class="dropdown-divider"></div>

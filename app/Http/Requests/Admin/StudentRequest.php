@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StudentRequest extends FormRequest
 {
@@ -23,13 +24,20 @@ class StudentRequest extends FormRequest
      */
     public function rules()
     {
+        // عند الإضافة: التخصص النشط وحده. وعند التعديل: أي تخصص، وإلا
+        // تعذّر حفظ طالب قائم في تخصص أُوقف — وهو ليس خطأه.
+        // وجود \u200Eid\u200E في الطلب يميّز الحالتين، كما تفعل قاعدة كلمة المرور.
+        $specializeRule = $this->id
+            ? Rule::exists('specializes', 'id')
+            : Rule::exists('specializes', 'id')->whereNull('archived_at');
+
         return [
             'university_id' => 'required|numeric|starts_with:130,230|digits:10|unique:students,university_id,' . $this->id,
-            'specialize_id' => 'required|exists:specializes,id',
+            'specialize_id' => ['required', $specializeRule],
             'name' => 'required|string|max:70',
             'email' => 'required|email|unique:students,email,' . $this->id,
             'phone' => 'nullable|digits:10',
-            'password' => 'nullable|required_without:id|min:6',
+            'password' => 'nullable|required_without:id|string|min:8|max:60',
             'gender' => 'required|in:male,female',
         ];
     }

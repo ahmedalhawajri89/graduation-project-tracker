@@ -1,6 +1,5 @@
 <form action="{{ route('student.project.create') }}" method="post">
     @csrf
-    <input type="hidden" name="semester_id" value="{{ $semester->id }}">
 
     <div class="mb-3">
         <label for="specialize_project_id" class="form-label">نوع المشروع</label>
@@ -45,15 +44,23 @@
         @error('title')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
+        {{-- «هل نُفّذت فكرتي؟» في لحظتها — تنبيه لا يمنع الإرسال --}}
+        <div class="hint-bar similar-hint mt-2 d-none" id="similar-hint" role="status" aria-live="polite">
+            <i class="ti ti-bulb" aria-hidden="true"></i>
+            <div>
+                <b>مشاريع منجزة مشابهة</b> — راجعها لتميّز فكرتك عنها:
+                <ul id="similar-list"></ul>
+            </div>
+        </div>
     </div>
 
     <div class="mb-3">
         <label for="description" class="form-label">وصف المشروع</label>
-        <textarea rows="8" name="description" id="description" maxlength="1000"
+        <textarea rows="8" name="description" id="description" maxlength="500"
             class="form-control @error('description') is-invalid @enderror" placeholder="وصف مختصر للمشروع ان وجد">{{ old('description') }}</textarea>
         <div class="form-hint d-flex justify-content-between">
             <span>اشرح فكرة المشروع والمشكلة التي يحلها.</span>
-            <span><span id="desc-counter">0</span> / 1000</span>
+            <span><span id="desc-counter">0</span> / 500</span>
         </div>
         @error('description')
             <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -70,6 +77,49 @@
                     desc.addEventListener('input', update);
                     update();
                 }
+
+                // مشاريع منجزة مشابهة للعنوان — بتأخير حتى يتوقّف عن الكتابة
+                var title = document.getElementById('title');
+                var hint = document.getElementById('similar-hint');
+                var list = document.getElementById('similar-list');
+                if (!title || !hint || !list) return;
+
+                var timer = null, last = '';
+                function check() {
+                    var q = title.value.trim();
+                    if (q === last) return;
+                    last = q;
+                    if (q.length < 4) { hint.classList.add('d-none'); return; }
+
+                    fetch(@json(route('student.projects.similar')) + '?title=' + encodeURIComponent(q), {
+                        headers: { 'Accept': 'application/json' }
+                    })
+                        .then(function (r) { return r.ok ? r.json() : { results: [] }; })
+                        .then(function (data) {
+                            if (q !== last) return; // ردّ قديم وصل بعد كتابة جديدة
+                            list.textContent = '';
+                            (data.results || []).forEach(function (p) {
+                                // textContent لا innerHTML: العناوين نصّ كتبه طلاب
+                                var li = document.createElement('li');
+                                var a = document.createElement('a');
+                                a.href = p.url;
+                                a.target = '_blank';
+                                a.textContent = p.title;
+                                li.appendChild(a);
+                                li.appendChild(document.createTextNode(
+                                    ' — ' + (p.supervisor || '') + (p.semester ? '، ' + p.semester : '')
+                                ));
+                                list.appendChild(li);
+                            });
+                            hint.classList.toggle('d-none', !list.children.length);
+                        })
+                        .catch(function () { hint.classList.add('d-none'); });
+                }
+                title.addEventListener('input', function () {
+                    clearTimeout(timer);
+                    timer = setTimeout(check, 400);
+                });
+                check();
             })();
         </script>
     @endpush

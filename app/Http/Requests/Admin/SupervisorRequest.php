@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SupervisorRequest extends FormRequest
 {
@@ -23,15 +24,23 @@ class SupervisorRequest extends FormRequest
      */
     public function rules()
     {
+        // عند الإضافة: التخصص النشط وحده. وعند التعديل: أي تخصص، وإلا
+        // تعذّر حفظ مشرف قائم في تخصص أُوقف — وهو ليس خطأه.
+        $specializeRule = $this->id
+            ? Rule::exists('specializes', 'id')
+            : Rule::exists('specializes', 'id')->whereNull('archived_at');
+
         return [
             'university_id' => 'required|numeric|digits:9|unique:supervisors,university_id,' . $this->id,
-            'specialize_id' => 'required|exists:specializes,id',
+            'specialize_id' => ['required', $specializeRule],
             'name' => 'required|string|max:70',
             'email' => 'required|email|unique:supervisors,email,' . $this->id,
             'phone' => 'nullable|digits:10',
-            'password' => 'nullable|min:6',
+            // كانت nullable حتى عند الإنشاء، والعمود NOT NULL: مشرف بلا كلمة سر يفشل بخطأ عامّ
+            'password' => 'nullable|required_without:id|string|min:8|max:60',
             'gender' => 'required|in:male,female',
-            'max_group' => 'nullable|numeric|integer',
+            // صفر = لا يستقبل طلبات (supervisorsAvailable يستبعده). كان يقبل السالب
+            'max_group' => 'nullable|integer|min:0|max:50',
         ];
     }
 

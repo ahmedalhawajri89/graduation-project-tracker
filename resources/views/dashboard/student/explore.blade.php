@@ -1,98 +1,141 @@
 @extends('layouts.admin.admin')
-@section('title', 'مستكشف المشاريع')
+@section('title', 'مشاريع منجزة')
+
+@section('crumbs')
+    <x-crumb :href="route('student.dashboard')">لوحتي</x-crumb>
+    <x-crumb>مشاريع منجزة</x-crumb>
+@endsection
 
 @section('content')
 
-    <x-page-header pretitle="لوحة الطالب" title="مستكشف المشاريع السابقة">
-        <x-slot:actions>
-            <a href="{{ route('student.dashboard') }}" class="btn btn-outline-primary">
-                <i class="ti ti-arrow-right me-1"></i>
-                العودة للرئيسية
-            </a>
-        </x-slot:actions>
-    </x-page-header>
+    @php
+        $own = $specializeId && (int) $specializeId === (int) $ownSpecialize;
+        $hasFilters = request()->filled('q') || request()->filled('supervisor');
+        // التبويب يغيّر النطاق ويُسقط المشرف: مشرف تخصص آخر لا معنى له هنا
+        $tabUrl = fn ($spec) => route('student.projects.explore', array_filter([
+            'specialize' => $spec,
+            'q' => request('q'),
+        ]));
+    @endphp
 
-    <p class="text-secondary mb-4">
-        تصفّح مشاريع الدفعات السابقة والحالية — استلهم فكرتك وتأكد أنها غير منفّذة من قبل. 💡
-    </p>
+    <x-page-header title="مشاريع منجزة"
+        subtitle="قبل أن تقدّم فكرتك: ما الذي نُفّذ في تخصصك، ومع أيّ مشرف." />
 
-    {{-- البحث والفلترة --}}
-    <form method="GET" action="{{ route('student.projects.explore') }}" class="card mb-4">
-        <div class="card-body py-3">
-            <div class="row g-2 align-items-center">
-                <div class="col-md-6">
-                    <div class="input-icon">
-                        <span class="input-icon-addon"><i class="ti ti-search"></i></span>
-                        <input type="search" name="q" value="{{ request('q') }}" class="form-control"
-                            placeholder="ابحث بعنوان المشروع أو وصفه.." aria-label="بحث في المشاريع">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <select name="semester_id" class="form-select" aria-label="فلترة حسب الفصل">
-                        <option value="">كل الفصول</option>
-                        @foreach ($semesters as $sem)
-                            <option value="{{ $sem->id }}" @if (request('semester_id') == $sem->id) selected @endif>
-                                {{ $sem->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary flex-fill">
-                        <i class="ti ti-filter me-1"></i>
-                        بحث
-                    </button>
-                    @if (request('q') || request('semester_id'))
-                        <a href="{{ route('student.projects.explore') }}" class="btn btn-outline-secondary" title="مسح الفلاتر">
-                            <i class="ti ti-x"></i>
-                        </a>
-                    @endif
+    <div class="filter-bar mb-3">
+        <div class="filter-tabs" role="group" aria-label="نطاق التخصص">
+            <a href="{{ $tabUrl(null) }}" class="filter-tab {{ $own ? 'is-active' : '' }}">تخصصي</a>
+            <a href="{{ $tabUrl('all') }}" class="filter-tab {{ is_null($specializeId) ? 'is-active' : '' }}">كل التخصصات</a>
+        </div>
+
+        <form method="GET" action="{{ route('student.projects.explore') }}" class="filter-form">
+            @if (is_null($specializeId))
+                <input type="hidden" name="specialize" value="all">
+            @endif
+
+            <div class="filter-field filter-field--search">
+                <label class="form-label" for="explore-q">بحث</label>
+                <div class="filter-search-box">
+                    <i class="ti ti-search filter-search-icon" aria-hidden="true"></i>
+                    <input type="search" id="explore-q" name="q" value="{{ request('q') }}" class="form-control"
+                        placeholder="كلمة من فكرتك — مثال: التسرّب، الاحتيال، التوصية…">
                 </div>
             </div>
-        </div>
-    </form>
 
-    {{-- النتائج --}}
-    @if ($projects->count() === 0)
-        <div class="card">
-            <x-empty-state icon="ti-telescope" title="لا توجد مشاريع مطابقة"
-                text="جرّب كلمات بحث مختلفة أو غيّر الفصل الدراسي." class="py-5" />
+            {{-- المشرف بعدد ما أنجزه: «من أشرف على ما يشبه فكرتي؟» --}}
+            <div class="filter-field">
+                <label class="form-label" for="explore-supervisor">المشرف</label>
+                <select id="explore-supervisor" name="supervisor" class="form-select">
+                    <option value="">كل المشرفين</option>
+                    @foreach ($supervisors as $row)
+                        <option value="{{ $row->supervisor_id }}" @selected(request('supervisor') == $row->supervisor_id)>
+                            {{ $row->supervisor->name }} ({{ $row->n }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="ti ti-filter me-1" aria-hidden="true"></i>
+                    تصفية
+                </button>
+                @if ($hasFilters)
+                    <a href="{{ $tabUrl(is_null($specializeId) ? 'all' : null) }}" class="btn btn-outline-secondary"
+                        title="مسح البحث والمشرف" aria-label="مسح البحث والمشرف">
+                        <i class="ti ti-x" aria-hidden="true"></i>
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+
+    @php
+        $n = $projects->total();
+        $countLabel = match (true) {
+            $n === 1 => 'مشروع منجز واحد',
+            $n === 2 => 'مشروعان منجزان',
+            $n >= 3 && $n <= 10 => $n . ' مشاريع منجزة',
+            default => $n . ' مشروعاً منجزاً',
+        };
+    @endphp
+    <p class="dist-head-note mb-3">
+        {{ $countLabel }}
+        {{ $own ? 'في تخصصك' : ($specializeId ? '' : 'في كل التخصصات') }}
+        — المكتملة وحدها؛ مشاريع زملائك الجارية لا تُعرض.
+    </p>
+
+    @if ($projects->isEmpty())
+        <div class="dist-panel">
+            @if ($own && ! $hasFilters)
+                <x-empty-state icon="ti-telescope" title="لا مشاريع منجزة في تخصصك بعد"
+                    text="قد تكون من أوائل الدفعات. اطّلع على ما أُنجز في التخصصات الأخرى." class="py-6">
+                    <x-slot:action>
+                        <a href="{{ $tabUrl('all') }}" class="btn btn-primary">كل التخصصات</a>
+                    </x-slot:action>
+                </x-empty-state>
+            @else
+                <x-empty-state icon="ti-search-off" title="لا مشاريع مطابقة"
+                    text="{{ $hasFilters ? 'فكرتك لم تُنفَّذ بهذه الكلمات — جيّد. جرّب كلمة أخرى للتأكّد.' : 'لا مشاريع منجزة بعد.' }}"
+                    class="py-6">
+                    @if ($own)
+                        <x-slot:action>
+                            <a href="{{ $tabUrl('all') }}" class="btn btn-outline-secondary">ابحث في كل التخصصات</a>
+                        </x-slot:action>
+                    @endif
+                </x-empty-state>
+            @endif
         </div>
     @else
-        <div class="row row-deck row-cards">
+        {{-- بلا درجات ولا أسماء طلاب: السؤال «ماذا نُفّذ» لا «كم أخذوا» --}}
+        <div class="group-grid">
             @foreach ($projects as $project)
-                <div class="col-md-6 col-lg-4">
-                    <div class="card card-link-pop h-100">
-                        <div class="card-body d-flex flex-column">
-                            <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
-                                <span class="badge bg-primary-lt text-primary">
-                                    {{ $project->project_type->name }}
-                                </span>
-                                <x-status-badge :status="$project->status" />
-                            </div>
-
-                            <h3 class="card-title mb-2">{{ $project->title }}</h3>
-
-                            @if ($project->description)
-                                <p class="text-secondary small mb-3">
-                                    {{ \Illuminate\Support\Str::limit($project->description, 140) }}
-                                </p>
-                            @endif
-
-                            <div class="mt-auto pt-3 border-top d-flex flex-wrap gap-3 text-secondary small">
-                                <span title="المشرف">
-                                    <i class="ti ti-user-star me-1"></i>{{ $project->supervisor->name ?: '—' }}
-                                </span>
-                                <span title="الفصل">
-                                    <i class="ti ti-calendar me-1"></i>{{ $project->semester->name ?: '—' }}
-                                </span>
-                                <span title="عدد أعضاء الفريق">
-                                    <i class="ti ti-users me-1"></i>{{ $project->group_count }}
-                                </span>
-                            </div>
+                <article class="group-card">
+                    <header class="group-card-head">
+                        <div class="group-card-title">
+                            <span>{{ $project->title }}</span>
+                            <small>{{ $project->project_type->name }}</small>
                         </div>
+                    </header>
+
+                    @if ($project->description)
+                        <p class="explore-desc">{{ \Illuminate\Support\Str::limit($project->description, 160) }}</p>
+                    @endif
+
+                    <div class="group-card-facts">
+                        <span class="group-fact">
+                            <i class="ti ti-user-star" aria-hidden="true"></i>
+                            {{ $project->supervisor->name ?? '—' }}
+                        </span>
+                        <span class="group-fact">
+                            <i class="ti ti-calendar" aria-hidden="true"></i>
+                            {{ $project->semester->name ?? '—' }}
+                        </span>
+                        <span class="group-fact">
+                            <i class="ti ti-users" aria-hidden="true"></i>
+                            {{ $project->group_count }} أعضاء
+                        </span>
                     </div>
-                </div>
+                </article>
             @endforeach
         </div>
 
@@ -101,4 +144,4 @@
         </div>
     @endif
 
-@stop
+@endsection

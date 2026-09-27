@@ -45,10 +45,16 @@
                         <label for="password" class="form-label">كلمة السر</label>
                         <input id="password" type="password"
                             class="form-control @error('password') is-invalid @enderror" name="password"
-                            placeholder="كلمة السر" autocomplete="off">
+                            placeholder="اتركها فارغة لإبقائها كما هي" minlength="8" autocomplete="new-password">
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password_confirmation" class="form-label">تأكيد كلمة السر</label>
+                        <input id="password_confirmation" type="password" class="form-control"
+                            name="password_confirmation" placeholder="أعد كتابتها" autocomplete="new-password">
                     </div>
 
                     <div class="mb-3">

@@ -34,16 +34,18 @@
                 ['icon' => 'ti-home', 'label' => 'الصفحة الرئيسية', 'url' => route('student.dashboard'), 'keys' => 'home dashboard رئيسية'],
                 ['icon' => 'ti-list-check', 'label' => 'مراحل المشروع', 'url' => route('student.dashboard') . '#milestones', 'keys' => 'milestones مراحل تقدم'],
                 ['icon' => 'ti-files', 'label' => 'ملفات المشروع', 'url' => route('student.dashboard') . '#files', 'keys' => 'files ملفات رفع'],
-                ['icon' => 'ti-message-circle', 'label' => 'نقاش المشروع', 'url' => route('student.dashboard') . '#discussion', 'keys' => 'comments نقاش تعليق مشرف'],
+                ['icon' => 'ti-messages', 'label' => 'النقاش مع المشرف', 'url' => route('student.discussion'), 'keys' => 'comments chat نقاش تعليق رسائل مشرف'],
                 ['icon' => 'ti-users-group', 'label' => 'فريق المشروع', 'url' => route('student.dashboard') . '#team', 'keys' => 'team فريق أعضاء'],
-                ['icon' => 'ti-telescope', 'label' => 'مستكشف المشاريع السابقة', 'url' => route('student.projects.explore'), 'keys' => 'explore استكشاف مشاريع سابقة أفكار'],
+                ['icon' => 'ti-telescope', 'label' => 'مشاريع منجزة', 'url' => route('student.projects.explore'), 'keys' => 'explore استكشاف مشاريع سابقة منجزة مكتملة أفكار'],
                 ['icon' => 'ti-bell', 'label' => 'الإشعارات', 'url' => route('student.showNotification'), 'keys' => 'notifications إشعارات ردود'],
                 ['icon' => 'ti-user-cog', 'label' => 'الملف الشخصي', 'url' => route('student.profile.edit'), 'keys' => 'profile ملف شخصي كلمة سر جوال'],
             ];
         } elseif (auth()->guard('supervisor')->check()) {
             $cmdkActions = [
                 ['icon' => 'ti-home', 'label' => 'الصفحة الرئيسية', 'url' => route('supervisor.dashboard'), 'keys' => 'home dashboard رئيسية مجموعات'],
-                ['icon' => 'ti-briefcase', 'label' => 'الطلبات والإشعارات', 'url' => route('supervisor.showNotification'), 'keys' => 'requests طلبات إشعارات'],
+                ['icon' => 'ti-route', 'label' => 'خطة المراحل', 'url' => route('supervisor.plan'), 'keys' => 'plan stages milestones template خطة مراحل قالب قوالب'],
+                ['icon' => 'ti-messages', 'label' => 'النقاش', 'url' => route('supervisor.discussion'), 'keys' => 'comments chat نقاش تعليق رسائل مجموعات'],
+                ['icon' => 'ti-briefcase', 'label' => 'طلبات الإشراف', 'url' => route('supervisor.showNotification'), 'keys' => 'requests طلبات إشراف قبول رفض إشعارات'],
                 ['icon' => 'ti-archive', 'label' => 'أرشيف مشاريعي', 'url' => route('supervisor.projects.archive'), 'keys' => 'archive أرشيف مشاريع سابقة درجات'],
                 ['icon' => 'ti-user-cog', 'label' => 'الملف الشخصي', 'url' => route('supervisor.profile.edit'), 'keys' => 'profile ملف شخصي كلمة سر جوال'],
             ];
@@ -57,6 +59,7 @@
                 ['icon' => 'ti-calendar', 'label' => 'الفصول الدراسية', 'url' => route('admin.semesters.index'), 'keys' => 'semesters فصول'],
                 ['icon' => 'ti-users-group', 'label' => 'المجموعات', 'url' => route('admin.groups.index'), 'keys' => 'groups مجموعات فرق'],
                 ['icon' => 'ti-mail', 'label' => 'رسائل التواصل', 'url' => route('admin.contact.index'), 'keys' => 'contacts رسائل استفسارات'],
+                ['icon' => 'ti-history', 'label' => 'سجلّ التدقيق', 'url' => route('admin.audit.index'), 'keys' => 'audit سجل تدقيق درجات تغييرات'],
                 ['icon' => 'ti-user-cog', 'label' => 'الملف الشخصي', 'url' => route('admin.profile.edit'), 'keys' => 'profile ملف شخصي كلمة سر جوال'],
             ];
         }

@@ -24,10 +24,12 @@ class SendMessageRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'subject' => 'required|string',
-            'message' => 'required|string',
+            // نقطة عامة بلا دخول: حدود صريحة للطول. كانت بلا حدود، و\u200Esubject\u200E
+            // بالذات يُعرض في صفحة الأدمن
+            'name' => 'required|string|max:120',
+            'email' => 'required|email|max:190',
+            'subject' => 'required|string|max:200',
+            'message' => 'required|string|max:5000',
         ];
     }
 

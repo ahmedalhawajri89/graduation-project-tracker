@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\SupervisorsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SupervisorRequest;
 use App\Http\Requests\UploadExcelFileRequest;
@@ -9,44 +10,106 @@ use App\Imports\SupervisorsImport;
 use App\Models\Semester;
 use App\Models\Specialize;
 use App\Models\Supervisor;
-use DataTables;
-use Excel;
+use App\Support\Audit;
+use Maatwebsite\Excel\Facades\Excel;
+use Yajra\DataTables\Facades\DataTables;
 
 class SupervisorController extends Controller
 {
 
     public function checkRequiredTables()
     {
-        if (Specialize::count() == 0) {
-            return redirect()->route('admin.specialize.index')->with('fail', 'الرجاء ادخال تخصص أو أكثر');
+        // \u200Eactive()\u200E لا \u200Ecount()\u200E: تخصصات كلها موقوفة = لا مكان لمشرف جديد
+        if (Specialize::active()->count() == 0) {
+            return redirect()->route('admin.specialize.index')->with('fail', 'الرجاء ادخال تخصص نشط أو أكثر');
         }
     }
 
     public function index()
     {
-        // $supervisors = Supervisor::get();
-        // foreach ($supervisors as $supvisor) {
-        //     $supvisor->update(['max_group' => 2]);
-        // }
-        $this->checkRequiredTables();
+        // كانت قيمة الإرجاع مُهمَلة، فتُفتح الصفحة بلا تخصصات ونموذج
+        // الإضافة بقائمة فارغة — فيفشل الحفظ بلا سبب مفهوم
+        if ($redirect = $this->checkRequiredTables()) {
+            return $redirect;
+        }
 
-        $specializes = Specialize::select('id', 'name')->orderBy('name')->get();
-        return view('dashboard.admin.supervisor.index', compact('specializes'));
+        $semesterId = Semester::current()->id;
+
+        // قائمتان لا واحدة: الإضافة على تخصص موقوف ممنوعة، لكن البحث
+        // عن مشرفيه لا بدّ أن يبقى ممكناً — وإلا اختفوا كلهم
+        $allSpecializes = Specialize::select('id', 'name', 'archived_at')->orderBy('name')->get();
+
+        $data['specializes'] = $allSpecializes->reject->isArchived()->values();
+        $data['filterSpecializes'] = $allSpecializes;
+        $data['editSpecializes'] = $allSpecializes;
+        $data['semesterId'] = $semesterId;
+
+        // عدّادات التبويبات: من يستطيع استقبال مجموعة أخرى، ومن تجاوز
+        // حدّه أصلاً. كان الحدّ \u200Emax_group\u200E مُخزَّناً ولا يُعرض في أي
+        // مكان، فالأدمن يوزّع المشاريع بلا أن يرى السقف.
+        $data['currentLoad'] = in_array(request('load'), ['free', 'full', 'over'], true) ? request('load') : null;
+        $data['currentSpecialize'] = request()->filled('specialize') ? (int) request('specialize') : null;
+
+        // العدّادات تحترم فلتر التخصص، وإلا قالت الترويسة «٣٠٠ مشرفاً»
+        // بينما الجدول يعرض ١٠٥ — والقادم من بطاقة تخصص يصل إلى صفحة
+        // تناقض نفسها
+        $scope = fn () => Supervisor::query()
+            ->when($data['currentSpecialize'], fn ($q) => $q->where('specialize_id', $data['currentSpecialize']));
+
+        $counts = [];
+        foreach (['free', 'full', 'over'] as $bucket) {
+            $counts[$bucket] = $scope()->whereRaw(
+                Supervisor::loadExpression() . ' ' . Supervisor::loadOperator($bucket) . ' supervisors.max_group',
+                [$semesterId]
+            )->count();
+        }
+
+        $data['countAll'] = $scope()->count();
+        $data['countFree'] = $counts['free'];
+        $data['countFull'] = $counts['full'];
+        $data['countOver'] = $counts['over'];
+
+        $data['currentSpecializeName'] = $data['currentSpecialize']
+            ? $allSpecializes->firstWhere('id', $data['currentSpecialize'])?->name
+            : null;
+
+        return view('dashboard.admin.supervisor.index', $data);
+    }
+
+    /** تصدير كشف المشرفين — يحترم الفلاتر المطبَّقة على الجدول */
+    public function export()
+    {
+        return Excel::download(
+            new SupervisorsExport(
+                request('load'),
+                request()->filled('specialize') ? (int) request('specialize') : null
+            ),
+            'supervisors_' . now()->format('Y-m-d') . '.xlsx'
+        );
     }
 
     public function getData()
     {
-        // if (request()->ajax()) {
+        $semesterId = Semester::current()->id;
 
-        $last_semester = Semester::current();
-        $supervisors = Supervisor::select('id', 'name', 'university_id', 'specialize_id', 'email', 'phone', 'gender', 'max_group')
-            ->with(['specialize' => function ($q) {
-                return $q->select('id', 'name');
+        $supervisors = Supervisor::query()
+            ->with(['specialize:id,name'])
+            ->withCount(['projects' => function ($q) use ($semesterId) {
+                $q->whereIn('status', ['accept', 'complete'])->where('semester_id', $semesterId);
             }])
-            ->select('supervisors.*')
-            ->withCount(['projects' => function ($q) use ($last_semester) {
-                $q->whereIn('status', ['accept', 'complete'])->where('semester_id', $last_semester->id);
-            }]);
+            ->select('supervisors.*');
+
+        // الفلاتر تُطبَّق على الخادم فلا يُحمَّل الكشف كاملاً إلى المتصفّح
+        if (in_array(request('load'), ['free', 'full', 'over'], true)) {
+            $supervisors->whereRaw(
+                Supervisor::loadExpression() . ' ' . Supervisor::loadOperator(request('load')) . ' supervisors.max_group',
+                [$semesterId]
+            );
+        }
+
+        if (request()->filled('specialize')) {
+            $supervisors->where('specialize_id', (int) request('specialize'));
+        }
 
         return DataTables::of($supervisors)
             ->addIndexColumn()
@@ -55,21 +118,65 @@ class SupervisorController extends Controller
                 return __('site.' . $row->gender);
             })
 
+            // الهوية في خليّة واحدة: الاسم هو ما تبحث عنه العين وهي
+            // تمسح، والبريد بيانات تُستخرج عند الحاجة
+            ->addColumn('identity', function ($row) {
+                // الصورة إن رفعها المشرف، وإلا أحرفه الأولى — و«د.»
+                // تُسقَط منها في \u200EHasAvatar\u200E لأنها بادئة على كل اسم
+                // تقريباً فلا تميّز أحداً
+                return '<div class="cell-identity">'
+                    . \App\Support\Avatar::html($row)
+                    . '<span class="cell-identity-body">'
+                    . '<span class="cell-name">' . e($row->name) . '</span>'
+                    . '<span class="cell-sub" dir="ltr">' . e($row->email) . '</span>'
+                    . '</span>'
+                    . '</div>';
+            })
+
+            ->editColumn('university_id', fn ($row) => '<span class="cell-num" dir="ltr">' . e($row->university_id) . '</span>')
+
+            ->editColumn('phone', fn ($row) => '<span class="cell-num" dir="ltr">' . e($row->phone) . '</span>')
+
+            // عبء الإشراف: كانت شارة تقول «٢ مجموعة» ولا تقول من أصل
+            // كم — وهو السؤال الوحيد الذي تُفتح الصفحة من أجله حين
+            // يُوزَّع مشروع جديد.
             ->editColumn('projects_count', function ($row) {
-                return "<a href='" . route('admin.supervisors.groups', $row->id) . "' class='btn btn-info'>{$row->projects_count} مجموعة</a>";
+                $used = (int) $row->projects_count;
+                $max = (int) $row->max_group;
+
+                $state = match (true) {
+                    $max > 0 && $used > $max => 'is-over',
+                    $max > 0 && $used === $max => 'is-full',
+                    default => 'is-free',
+                };
+
+                $label = match ($state) {
+                    'is-over' => 'تجاوز الحد',
+                    'is-full' => 'مكتمل',
+                    default => 'متاح',
+                };
+
+                $pct = $max > 0 ? min(100, round($used / $max * 100)) : 0;
+
+                return '<a href="' . route('admin.supervisors.groups', $row->id) . '"'
+                    . ' class="load-cell ' . $state . '" title="' . e($label) . '">'
+                    . '<span class="load-figure">' . e($used) . '<small>/' . e($max) . '</small></span>'
+                    . '<span class="load-bar"><span style="width: ' . $pct . '%"></span></span>'
+                    . '</a>';
             })
 
             ->addColumn('actions', function ($row) {
 
-                $editBtn = "<a class='btn mb-2 btn-success btn-sm btn-edit' data-bs-toggle='modal' data-bs-target='#editModal'
-                              data-id='{$row->id}' data-name='{$row->name}' data-email='{$row->email}'
-                              data-phone='{$row->phone}' data-gender='{$row->gender}' data-max_group='{$row->max_group}'
-                              data-university_id='{$row->university_id}' data-specialize_id='{$row->specialize_id}' title='تعديل'>
+                $editBtn = "<a class='btn-action btn-edit' data-bs-toggle='modal' data-bs-target='#editModal'
+                              data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' data-email='" . e($row->email) . "'
+                              data-phone='" . e($row->phone) . "' data-gender='" . e($row->gender) . "' data-max_group='" . e($row->max_group) . "'
+                              data-university_id='" . e($row->university_id) . "' data-specialize_id='" . e($row->specialize_id) . "'
+                              data-has-avatar='" . ($row->avatar ? '1' : '') . "' title='تعديل'>
                               <i class='ti ti-pencil'></i>
                           </a>";
 
-                $deleteBtn = "<button type='button' class='btn mb-2 btn-danger btn-sm btn-delete' data-bs-toggle='modal' data-bs-target='#deleteModal'
-                              data-id='{$row->id}' data-name='{$row->name}' title='حذف'>
+                $deleteBtn = "<button type='button' class='btn-action btn-action--danger btn-delete' data-bs-toggle='modal' data-bs-target='#deleteModal'
+                              data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' title='حذف'>
                               <i class='ti ti-trash'></i>
                           </button>";
 
@@ -77,11 +184,8 @@ class SupervisorController extends Controller
 
                 return $actionBtn;
             })
-            ->rawColumns(['projects_count', 'actions'])
+            ->rawColumns(['identity', 'university_id', 'phone', 'projects_count', 'actions'])
             ->make(true);
-
-        //}
-
     }
 
     public function store(SupervisorRequest $request)
@@ -118,6 +222,12 @@ class SupervisorController extends Controller
             }
 
             $admin->update($data);
+
+            // مخرج الأدمن من صورة غير لائقة، بلا تدخّل في القاعدة
+            if ($request->boolean('remove_avatar')) {
+                $admin->deleteAvatar();
+            }
+
             return redirect()->back()->with('success', "تم تعديل السجل بنجاح");
 
         } catch (\Exception $ex) {
@@ -145,6 +255,9 @@ class SupervisorController extends Controller
                     'لا يمكن حذف المشرف — لديه مشاريع/مجموعات قائمة. انقل مجموعاته لمشرف آخر من صفحة المجموعات أولاً.');
             }
 
+            // قبل الحذف: بعده يفقد المشرف اسمه ورقمه الجامعي
+            Audit::record('supervisor.deleted', $admin);
+
             $admin->delete();
             return redirect()->back()->with('success', "تم حذف السجل بنجاح");
 
@@ -156,39 +269,62 @@ class SupervisorController extends Controller
 
     }
 
+    /**
+     * استيراد متزامن بتقرير: كان في الطابور بلا تحقّق، يقول «بدأت عملية الرفع
+     * بنجاح» ثم يفشل بصمت إن لم يعمل عامل أو كان في الملف صفّ معطوب.
+     */
     public function import(UploadExcelFileRequest $request)
     {
+        $import = new SupervisorsImport(auth('admin')->id());
+        Excel::import($import, $request->file('attachment'));
 
-        $file = $request->file('attachment');
-        $admin_id = auth()->id();
+        $report = $import->report();
+        $skipped = count($report['skipped']) + $report['errored'];
 
-        Excel::queueImport(new SupervisorsImport($admin_id), $file);
+        // العدد والمعدود متوافقان: «أُضيف ٣ طلاب — وتُخطّي صفّان» لا «٣ طالب … ٢ صفّاً»
+        $count = fn (int $n, array $w) => match (true) {
+            $n === 1 => $w[0],
+            $n === 2 => $w[1],
+            $n <= 10 => "{$n} {$w[2]}",
+            default => "{$n} {$w[3]}",
+        };
 
-        // Excel::import(new StudentsImport($admin_id), $file);
+        $message = $report['added']
+            ? 'أُضيف ' . $count($report['added'], ['مشرف واحد', 'مشرفان', 'مشرفين', 'مشرفاً'])
+            : 'لم يُضف أحد';
+        if ($skipped) {
+            $message .= ' — وتُخطّي ' . $count($skipped, ['صفّ واحد', 'صفّان', 'صفوف', 'صفّاً']) . '، التفاصيل أعلى الصفحة.';
+        }
 
-        return redirect()->back()->with([
-            'success' => 'بدأت عملية الرفع بنجاح',
-        ]);
-
+        return redirect()->back()
+            ->with('import_report', $report)
+            ->with($report['added'] ? 'success' : 'fail', $message . ($skipped ? '' : '.'));
     }
 
+    /**
+     * مجموعات مشرف في الفصل الحالي.
+     *
+     * كان المتحكّم يحمّل مشاريع الفصل في \u200Eprojects\u200E والعرض يمرّ على
+     * \u200EprojectsAccept\u200E (كل الفصول) تحت عنوان الفصل الحالي، وعمود «التخصص»
+     * يعرض عنوان المشروع، ورقم مشرف مجهول يُسقط الصفحة بخطأ 500.
+     */
     public function groups($id)
     {
-        $last_semester = Semester::current();
-        $data['semester'] = $last_semester;
-        $data['supervisor'] = Supervisor::where('id', $id)
-            ->select('id', 'name')
-            ->with(['projects' => function ($q) use ($last_semester) {
-                $q->whereIn('status', ['accept', 'complete'])
-                    ->where('semester_id', $last_semester->id)
-                    ->with(['group' => function ($q) {
-                        $q->with(['student' => function ($q) {
-                            $q->with('specialize');
-                        }]);
-                    }]);
-            }])
-            ->first();
-        return view('dashboard.admin.supervisor.groups', $data);
+        $semester = Semester::current();
+        $supervisor = Supervisor::with('specialize')->findOrFail($id);
+
+        $projects = $semester
+            ? $supervisor->projectsAccept()
+                ->where('semester_id', $semester->id)
+                ->with(['project_type', 'group.student.specialize'])
+                ->get()
+            : collect();
+
+        return view('dashboard.admin.supervisor.groups', [
+            'supervisor' => $supervisor,
+            'semester' => $semester,
+            'projects' => $projects,
+        ]);
     }
 
 }

@@ -32,8 +32,11 @@ class SpecializeProjectRequest extends FormRequest
                     ->where('name', $this->name),
             ], //'required|string|max:70|', //unique:specializes,name,' . $this->id,
             'specialize_id' => 'required|numeric|exists:specializes,id',
-            'min' => 'nullable|numeric|integer|lte:max',
-            'max' => 'nullable|numeric|integer|gte:min',
+            // كانا \u200Enullable\u200E، و\u200EStudent\DashboardController::createProject\u200E
+            // يقارن حجم الفريق بهما — فنوع بلا حدود كان يُلغي التحقّق
+            // من حجم الفرق كلّه بصمت.
+            'min' => 'required|integer|min:1|lte:max',
+            'max' => 'required|integer|min:1|gte:min',
         ];
     }
 

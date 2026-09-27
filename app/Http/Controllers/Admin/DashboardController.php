@@ -27,12 +27,16 @@ class DashboardController extends Controller
         $data['semester'] = $last_semester;
         $data['student_count'] = Student::count();
         $data['supervisor_count'] = Supervisor::count();
-        $data['has_group'] = Student::whereHas('groups', function ($q) use ($last_semester) {
-            $q->with(['project' => function ($q) use ($last_semester) {
-                $q->where('status', '!=', 'reject')->where('semester_id', $last_semester->id);
-            }]);
+        // كان يستعمل with() داخل whereHas — و with يحمّل ولا يُرشِّح، فلم
+        // يكن شرط الفصل والحالة يُطبَّق، والرقم يعدّ كل طالب انضمّ لأي
+        // مجموعة في أي فصل. الشرط الآن داخل whereHas فعلياً.
+        $data['has_group'] = Student::whereHas('groups.project', function ($q) use ($last_semester) {
+            $q->where('status', '!=', 'reject')->where('semester_id', $last_semester->id);
         })->count();
-        $data['not_has_group'] = Student::doesntHave('groups')->count();
+
+        $data['not_has_group'] = Student::whereDoesntHave('groups.project', function ($q) use ($last_semester) {
+            $q->where('status', '!=', 'reject')->where('semester_id', $last_semester->id);
+        })->count();
         $data['project_count'] = Project::whereIn('status', ['accept', 'complete'])->where('semester_id', $last_semester->id)->count();
         $data['admin_count'] = Admin::count();
         $data['msg_count'] = Contact::count();
@@ -71,7 +75,20 @@ class DashboardController extends Controller
             'messages'    => $pct($data['msg_count'], $prev->messages),
         ] : [];
 
-        $data['specializes'] = Specialize::select('id', 'name')->withCount('students')->get();
+        // سلسلة زمنية للرسم: جدول stat_snapshots كان يُستعمل لحساب سهم
+        // النسبة فقط ثم يُرمى، رغم أنه لقطة يومية بستة عدّادات. الخط
+        // يجيب ما لا يجيبه الرقم: إلى أين تتجه الأرقام، لا أين هي.
+        // الأحدث ستّون ثم تُعاد تصاعدية للرسم. كان ‎orderBy('date')->take(60)‎
+        // يأخذ أقدم ستّين، فيتجمّد الخطّ بعد شهرين من التشغيل
+        $data['trendSeries'] = StatSnapshot::orderByDesc('date')
+            ->take(60)
+            ->get(['date', 'groups', 'not_has_group'])
+            ->reverse()
+            ->values();
+
+        // الموقوف يبقى هنا: ما زال يحمل طلاباً، وإخفاؤه يُنقص المجموع
+        // بلا تفسير. يُميَّز في العرض وحده.
+        $data['specializes'] = Specialize::select('id', 'name', 'archived_at')->withCount('students')->get();
         $data['project_types'] = SpecializeProject::select('id', 'name')
             ->withCount(['projects' => function ($q) use ($last_semester) {
                 $q->whereIn('status', ['accept', 'complete'])->where('semester_id', $last_semester->id);

@@ -36,15 +36,28 @@
                         <label for="specialize_id" class="form-label required">التخصص</label>
                         <select id="specialize_id" class="form-select @error('specialize_id') is-invalid @enderror"
                             name="specialize_id">
-                            @foreach ($specializes as $specialize)
+                            {{-- الموقوفة معروضة هنا خلافاً لنافذة الإضافة:
+                                 مشرفٌ في تخصص موقوف لن يجد الـ select قيمته
+                                 الحالية، فيُحفظ على أول خيار — نقلٌ صامت
+                                 إلى تخصص آخر. --}}
+                            @foreach ($editSpecializes as $specialize)
                                 <option @if (old('specialize_id') == $specialize->id) selected @endif value="{{ $specialize->id }}">
-                                    {{ $specialize->name }}
+                                    {{ $specialize->name }}@if ($specialize->isArchived()) (موقوف)@endif
                                 </option>
                             @endforeach
                         </select>
                         @error('specialize_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
+
+                    {{-- يظهر لمن رفع صورة وحده — مخرج الأدمن من صورة
+                         غير لائقة، بلا تدخّل في قاعدة البيانات --}}
+                    <div class="mb-3 d-none" id="remove-avatar-row">
+                        <label class="form-check">
+                            <input type="checkbox" class="form-check-input" name="remove_avatar" value="1">
+                            <span class="form-check-label">إزالة الصورة الشخصية</span>
+                        </label>
                     </div>
 
                     <div class="mb-3">
@@ -135,6 +148,11 @@
             modal.find('input[name="phone"]').val(phone);
             modal.find('input[name="max_group"]').val(max_group);
             modal.find('select[name="gender"]').val(gender);
+
+            // خيار إزالة الصورة يظهر لمن رفع صورة وحده
+            var row = modal.find('#remove-avatar-row');
+            row.find('input[name="remove_avatar"]').prop('checked', false);
+            row.toggleClass('d-none', !button.data('has-avatar'));
 
             modal.find('.modal-footer').show();
             $('.jquer-valid').remove();

@@ -6,16 +6,35 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\ProjectComment;
 use App\Models\Student;
-use App\Notifications\ProjectActivityNotify;
+use App\Support\Discussion;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Str;
 
 class ProjectCommentController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth:student');
+    }
+
+    /** النقاش — محادثة الطالب الواحدة مع مشرفه */
+    public function index()
+    {
+        $student = auth('student')->user();
+        $project = Discussion::projectsFor($student)->first();
+        $lastRead = null;
+
+        if ($project) {
+            $project->load(['comments.author', 'supervisor.specialize']);
+
+            // يُقرأ قبل التعليم: الفاصل يقع عند ما كان جديداً لحظة الفتح
+            $lastRead = Discussion::lastReadId($project, $student);
+            Discussion::markRead($project, $student);
+        }
+
+        return view('dashboard.student.discussion', [
+            'project' => $project,
+            'lastRead' => $lastRead,
+        ]);
     }
 
     public function store(Request $request, Project $project)
@@ -35,14 +54,9 @@ class ProjectCommentController extends Controller
             'author_id' => auth('student')->id(),
         ]);
 
-        // إشعار المشرف
-        if ($project->supervisor_id) {
-            Notification::send($project->supervisor, new ProjectActivityNotify([
-                'project' => $project->title,
-                'supervisor_name' => auth('student')->user()->name,
-                'msg' => 'تعليق جديد من الطالب: ' . Str::limit($request->body, 80),
-            ]));
-        }
+        // لا إشعار: عدّاد النقاش في الشريط الجانبي يحلّ محلّه، وبقاؤه
+        // يعدّ الرسالة الواحدة مرّتين — في الجرس وفي النقاش
+        Discussion::markRead($project, auth('student')->user());
 
         return redirect()->back()->with('success', 'تم إضافة التعليق');
     }

@@ -2,50 +2,42 @@
 
 namespace App\Http\Controllers\Supervisor;
 
+use App\Http\Controllers\Concerns\UpdatesOwnProfile;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\ProfileRequest;
 
 class ProfileController extends Controller
 {
+    use UpdatesOwnProfile;
+
     public function __construct()
     {
         $this->middleware('auth:supervisor');
     }
 
+    /**
+     * الاسم والبريد والرقم الجامعي والتخصص تصدرها الجامعة، ولا
+     * يُعدّلها صاحبها من ملفه — يبقى له جواله وكلمة سرّه.
+     */
+    protected function editableFields(): array
+    {
+        return ['phone'];
+    }
+
+    protected function profileUser()
+    {
+        return auth('supervisor')->user();
+    }
+
     public function edit()
     {
         return view('dashboard.supervisor.profile', [
-            'supervisor' => auth('supervisor')->user(),
+            'supervisor' => $this->profileUser()->loadMissing('specialize'),
         ]);
     }
 
-    public function update(Request $request)
+    public function update(ProfileRequest $request)
     {
-        $supervisor = auth('supervisor')->user();
-
-        $request->validate([
-            'phone' => ['required', 'string', 'max:20'],
-            'current_password' => ['required_with:password', 'nullable', 'string'],
-            'password' => ['nullable', 'string', 'min:6', 'max:30', 'confirmed'],
-        ], [], [
-            'phone' => 'رقم الجوال',
-            'current_password' => 'كلمة السر الحالية',
-            'password' => 'كلمة السر الجديدة',
-        ]);
-
-        if ($request->filled('password')) {
-            if (! Hash::check($request->current_password, $supervisor->password)) {
-                return redirect()->back()
-                    ->withErrors(['current_password' => 'كلمة السر الحالية غير صحيحة'])
-                    ->withInput($request->only('phone'));
-            }
-            $supervisor->password = bcrypt($request->password);
-        }
-
-        $supervisor->phone = $request->phone;
-        $supervisor->save();
-
-        return redirect()->back()->with('success', 'تم تحديث بياناتك بنجاح');
+        return $this->saveProfile($request);
     }
 }

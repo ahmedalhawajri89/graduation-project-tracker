@@ -42,10 +42,19 @@
                         <label for="password_create" class="form-label required">كلمة السر</label>
                         <input id="password_create" type="password"
                             class="form-control @error('password') is-invalid @enderror" name="password"
-                            placeholder="كلمة السر" required autocomplete="off">
+                            placeholder="٨ أحرف على الأقل" required minlength="8" autocomplete="new-password">
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        <div class="form-hint">حساب المسؤول يملك صلاحية كاملة على النظام.</div>
+                    </div>
+
+                    {{-- التأكيد يمنع خطأً مطبعياً يقفل الحساب الجديد
+                         صامتاً: لا أحد يعرف كلمة المرور التي كُتبت --}}
+                    <div class="mb-3">
+                        <label for="password_confirmation_create" class="form-label required">تأكيد كلمة السر</label>
+                        <input id="password_confirmation_create" type="password" class="form-control"
+                            name="password_confirmation" placeholder="أعد كتابتها" required autocomplete="new-password">
                     </div>
 
                     <div class="mb-3">

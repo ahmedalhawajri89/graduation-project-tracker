@@ -1,247 +1,194 @@
 @extends('layouts.admin.admin')
-@section('title', 'الصفحة الرئيسية')
+@section('title', 'لوحتي')
+
+@section('crumbs')
+    <x-crumb>لوحتي</x-crumb>
+@endsection
 
 @section('content')
 
     @php
-        $groupsCount = $supervisor->projectsAccept->count();
+        $groups = $supervisor->projectsAccept;
+        $groupsCount = $groups->count();
         $seatsLeft = max(0, $supervisor->max_group - $groupsCount);
-        $completedCount = $supervisor->projectsAccept->where('status', 'complete')->count();
-        $pendingRequests = auth()->user()->unreadNotifications
-            ->where('type', 'App\Notifications\SuperVisorRequestProjectNotify')
-            ->count();
+        $completedCount = $groups->where('status', 'complete')->count();
+
+        // من حالة المشروع لا من الإشعار: إشعار مقروء كان يُخفي طلباً معلّقاً
+        $requests = $supervisor->pendingRequests()->with(['group.student', 'project_type'])->oldest()->get();
+        $pendingRequests = $requests->count();
+        $seatsExact = $supervisor->seatsLeft();
+
+        // الترتيب يصير ذا معنى: المتأخّر أولاً، ثم الأقرب موعداً.
+        // كان ترتيب العلاقة — فالمتأخّر والمستقرّ سواء.
+        $ranked = $groups->sortBy(function ($project) {
+            $overdue = $project->milestones->contains(
+                fn ($m) => ! $m->is_done && $m->due_date && $m->due_date->isPast()
+            );
+            $days = $project->days_left;
+
+            return [$overdue ? 0 : 1, is_null($days) ? 9999 : $days];
+        })->values();
     @endphp
 
-    {{-- ===== ترحيب ===== --}}
-    <div class="page-header d-print-none mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-pretitle">لوحة المشرف — الفصل: {{ $semester->name }}</div>
-                <h2 class="page-title">أهلاً، {{ $supervisor->name }} 👋</h2>
-            </div>
-            <div class="col-auto d-flex gap-2">
-                @if ($pendingRequests > 0)
-                    <a href="{{ route('supervisor.showNotification') }}" class="btn btn-primary">
-                        <i class="ti ti-inbox me-1"></i>
-                        {{ $pendingRequests }} طلب بانتظار ردّك
-                    </a>
+    <x-page-header title="أهلاً، {{ $supervisor->name }}" subtitle="{{ $semester->name }}" />
+
+    @include('dashboard.supervisor._next-actions', [
+        'groups' => $groups,
+        'pendingRequests' => $pendingRequests,
+    ])
+
+    {{-- الطلبات قرارات لا إشعارات: تُعرض فوق المجموعات بزرّيها --}}
+    @if ($pendingRequests)
+        <section class="mb-4" aria-labelledby="pending-title">
+            <div class="req-section-head">
+                <h2 id="pending-title">
+                    طلبات إشراف بانتظار ردّك
+                    <span class="sidebar-count">{{ $pendingRequests }}</span>
+                </h2>
+                @if ($pendingRequests > 2)
+                    <a href="{{ route('supervisor.showNotification') }}" class="ctx-head-link">كلّها ({{ $pendingRequests }})</a>
                 @endif
-                <a href="{{ route('supervisor.profile.edit') }}" class="btn btn-outline-primary">
-                    <i class="ti ti-user-edit me-1"></i>
-                    الملف الشخصي
-                </a>
             </div>
+            <div class="req-list">
+                @foreach ($requests->take(2) as $request)
+                    @include('dashboard.supervisor._request-card', [
+                        'project' => $request,
+                        'seatsLeft' => $seatsExact,
+                        'pending' => $pendingRequests,
+                        'compact' => true,
+                    ])
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    {{-- شريط بدل أربع بطاقات بارتفاع ١٤٠ بكسل لأربعة أرقام --}}
+    <div class="stat-strip mb-4">
+        <div class="stat-cell">
+            <span class="stat-label">مجموعاتي هذا الفصل</span>
+            <span class="stat-value">{{ $groupsCount }}</span>
+        </div>
+        <div class="stat-cell">
+            <span class="stat-label">المقاعد المتبقية</span>
+            <span class="stat-value {{ $seatsLeft === 0 ? 'is-late' : '' }}">{{ $seatsLeft }}</span>
+            {{-- «٠ من ٣» تُخفي مشرفاً بأربع مجموعات: التجاوز حالة يعرفها الأدمن فليعرفها صاحبها --}}
+            <span class="stat-sub">
+                من {{ $supervisor->max_group }}@if ($groupsCount > $supervisor->max_group) · تجاوزتَ الحدّ بـ{{ $groupsCount - $supervisor->max_group }}@endif
+            </span>
+        </div>
+        <a href="{{ route('supervisor.showNotification') }}" class="stat-cell">
+            <span class="stat-label">طلبات بانتظار ردّك</span>
+            <span class="stat-value {{ $pendingRequests > 0 ? 'is-late' : '' }}">{{ $pendingRequests }}</span>
+        </a>
+        <div class="stat-cell">
+            <span class="stat-label">مشاريع مكتملة</span>
+            <span class="stat-value">{{ $completedCount }}</span>
         </div>
     </div>
 
-    {{-- ===== مؤشرات سريعة ===== --}}
-    <div class="row row-deck row-cards mb-4">
-        <div class="col-sm-6 col-lg-3">
-            <div class="card">
-                <div class="card-body d-flex align-items-center">
-                    <span class="avatar avatar-lg bg-blue-lt text-blue rounded-3 me-3">
-                        <i class="ti ti-users-group fs-2"></i>
-                    </span>
-                    <div>
-                        <div class="h1 mb-0 lh-1">{{ $groupsCount }}</div>
-                        <div class="text-secondary mt-1">مجموعاتي هذا الفصل</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <div class="card">
-                <div class="card-body d-flex align-items-center">
-                    <span class="avatar avatar-lg {{ $seatsLeft > 0 ? 'bg-green-lt text-green' : 'bg-red-lt text-red' }} rounded-3 me-3">
-                        <i class="ti ti-armchair fs-2"></i>
-                    </span>
-                    <div>
-                        <div class="h1 mb-0 lh-1">{{ $seatsLeft }}</div>
-                        <div class="text-secondary mt-1">مقاعد متبقية من {{ $supervisor->max_group }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <div class="card">
-                <div class="card-body d-flex align-items-center">
-                    <span class="avatar avatar-lg bg-yellow-lt text-yellow rounded-3 me-3">
-                        <i class="ti ti-clock-hour-4 fs-2"></i>
-                    </span>
-                    <div>
-                        <div class="h1 mb-0 lh-1">{{ $pendingRequests }}</div>
-                        <div class="text-secondary mt-1">طلبات معلقة</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <div class="card">
-                <div class="card-body d-flex align-items-center">
-                    <span class="avatar avatar-lg bg-purple-lt text-purple rounded-3 me-3">
-                        <i class="ti ti-rosette-discount-check fs-2"></i>
-                    </span>
-                    <div>
-                        <div class="h1 mb-0 lh-1">{{ $completedCount }}</div>
-                        <div class="text-secondary mt-1">مشاريع مكتملة</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- ===== جدول المجموعات: مقارنة التقدم ===== --}}
-    <div class="card">
-        <div class="card-header flex-wrap gap-2">
-            <h3 class="card-title mb-0">
-                <i class="ti ti-users-group me-2"></i>
-                مجموعاتي
-            </h3>
-            <div class="card-actions d-flex flex-wrap gap-2 align-items-center">
-                <div class="btn-group" role="group" aria-label="فلترة حسب الحالة">
-                    <button type="button" class="btn btn-sm btn-outline-primary active" data-status-filter="all">الكل</button>
-                    <button type="button" class="btn btn-sm btn-outline-primary" data-status-filter="accept">قيد التنفيذ</button>
-                    <button type="button" class="btn btn-sm btn-outline-primary" data-status-filter="complete">مكتملة</button>
-                </div>
-                <input type="search" id="groups-search" class="form-control form-control-sm" style="max-width: 220px"
-                    placeholder="ابحث بعنوان المشروع.." aria-label="بحث في المجموعات">
-            </div>
-        </div>
-
-        @if ($supervisor->projectsAccept->count() === 0)
-            <div class="empty py-5">
-                <div class="empty-icon"><i class="ti ti-users-group fs-1"></i></div>
-                <p class="empty-title">لا توجد مجموعات بعد</p>
-                <p class="empty-subtitle text-secondary">
-                    عندما تقبل طلبات المشاريع ستظهر مجموعاتك هنا.
-                </p>
+    @if ($groupsCount === 0)
+        <div class="card">
+            <x-empty-state icon="ti-users-group" title="لا مجموعات بعد"
+                text="حين تقبل طلب مشروع، تظهر مجموعته هنا لتتابعها: المراحل والملفات والنقاش والتقييم."
+                class="py-6">
                 @if ($pendingRequests > 0)
-                    <div class="empty-action">
+                    <x-slot:action>
                         <a href="{{ route('supervisor.showNotification') }}" class="btn btn-primary">
-                            <i class="ti ti-inbox me-1"></i>
-                            مراجعة الطلبات المعلقة
+                            <i class="ti ti-inbox me-1" aria-hidden="true"></i>
+                            مراجعة {{ $pendingRequests }} طلباً
                         </a>
-                    </div>
+                    </x-slot:action>
                 @endif
-            </div>
-        @else
-            <div class="table-responsive">
-                <table class="table table-vcenter card-table">
-                    <thead>
-                        <tr>
-                            <th>المشروع</th>
-                            <th>الحالة</th>
-                            <th style="min-width: 160px">التقدم</th>
-                            <th>الفريق</th>
-                            <th>الموعد النهائي</th>
-                            <th class="w-1">إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($supervisor->projectsAccept as $project)
-                            @php
-                                $dl = $project->days_left;
-                                $dlClass = is_null($dl) ? 'text-secondary' : ($dl < 0 || $dl <= 7 ? 'text-red' : ($dl <= 14 ? 'text-yellow' : 'text-secondary'));
-                            @endphp
-                            <tr class="groups-item"
-                                data-title="{{ mb_strtolower($project->title . ' ' . $project->project_type->name) }}"
-                                data-status="{{ $project->status }}">
-                                <td>
-                                    <a href="{{ route('supervisor.projects.show', ['project' => $project->id]) }}"
-                                        class="fw-bold text-reset d-block">
-                                        {{ $project->title }}
-                                    </a>
-                                    <span class="text-secondary small">{{ $project->project_type->name }}</span>
-                                </td>
-                                <td><x-status-badge :status="$project->status" /></td>
-                                <td>
-                                    @if (is_null($project->progress))
-                                        <span class="text-secondary small">لا مراحل بعد</span>
-                                    @else
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="progress flex-fill" style="height: 8px">
-                                                <div class="progress-bar bg-primary" role="progressbar"
-                                                    style="width: {{ $project->progress }}%"
-                                                    aria-valuenow="{{ $project->progress }}" aria-valuemin="0"
-                                                    aria-valuemax="100"></div>
-                                            </div>
-                                            <span class="small text-secondary tabular-nums" style="min-width: 34px">
-                                                {{ $project->progress }}%
-                                            </span>
-                                        </div>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="badge bg-blue-lt text-blue">
-                                        <i class="ti ti-users me-1"></i>{{ $project->group->count() }}
-                                    </span>
-                                </td>
-                                <td>
-                                    @if ($project->date_line)
-                                        <span class="{{ $dlClass }} small">
-                                            {{ $project->date_line->format('Y-m-d') }}
-                                            @if (!is_null($dl))
-                                                ({{ $dl < 0 ? 'انقضى' : 'متبقي ' . $dl . ' يوم' }})
-                                            @endif
-                                        </span>
-                                    @else
-                                        <span class="text-secondary small">—</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="{{ route('supervisor.projects.show', ['project' => $project->id]) }}"
-                                        class="btn btn-sm btn-primary">
-                                        <i class="ti ti-settings me-1"></i>
-                                        إدارة
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="empty py-4 d-none" id="groups-no-results">
-                <div class="empty-icon"><i class="ti ti-search-off fs-1"></i></div>
-                <p class="empty-subtitle text-secondary">لا توجد نتائج مطابقة للبحث/الفلتر.</p>
+            </x-empty-state>
+        </div>
+    @else
+        {{-- التصفية تظهر حين تستحقّ: أربع مجموعات تُمسح بالعين --}}
+        @if ($groupsCount > 4)
+            <div class="filter-bar mb-3">
+                <div class="filter-tabs" role="group" aria-label="تصفية حسب الحالة">
+                    <button type="button" class="filter-tab is-active" data-status-filter="all">
+                        الكل
+                        <span class="filter-count">{{ $groupsCount }}</span>
+                    </button>
+                    <button type="button" class="filter-tab" data-status-filter="accept">
+                        <span class="filter-dot" style="background: {{ config('statuses.map.accept.hex') }}"></span>
+                        قيد التنفيذ
+                        <span class="filter-count">{{ $groups->where('status', 'accept')->count() }}</span>
+                    </button>
+                    <button type="button" class="filter-tab" data-status-filter="complete">
+                        <span class="filter-dot" style="background: {{ config('statuses.map.complete.hex') }}"></span>
+                        مكتملة
+                        <span class="filter-count">{{ $completedCount }}</span>
+                    </button>
+                </div>
+
+                <div class="filter-form">
+                    <div class="filter-field filter-field--search">
+                        <label class="form-label" for="groups-search">بحث</label>
+                        <div class="filter-search-box">
+                            <i class="ti ti-search filter-search-icon" aria-hidden="true"></i>
+                            <input type="search" id="groups-search" class="form-control"
+                                placeholder="ابحث بعنوان المشروع أو نوعه…" aria-label="بحث في المجموعات">
+                        </div>
+                    </div>
+                </div>
             </div>
         @endif
-    </div>
 
-    @push('js')
-        <script>
-            // ===== بحث وفلترة صفوف المجموعات =====
-            (function () {
-                var search = document.getElementById('groups-search');
-                var items = Array.prototype.slice.call(document.querySelectorAll('.groups-item'));
-                var noResults = document.getElementById('groups-no-results');
-                var filterBtns = Array.prototype.slice.call(document.querySelectorAll('[data-status-filter]'));
-                var currentStatus = 'all';
+        <div class="group-grid" id="groups-grid">
+            @foreach ($ranked as $project)
+                @include('dashboard.supervisor._group-card', ['project' => $project])
+            @endforeach
+        </div>
 
-                function apply() {
-                    var q = (search ? search.value : '').trim().toLowerCase();
-                    var visible = 0;
-                    items.forEach(function (el) {
-                        var matchText = el.getAttribute('data-title').indexOf(q) !== -1;
-                        var matchStatus = currentStatus === 'all' || el.getAttribute('data-status') === currentStatus;
-                        var show = matchText && matchStatus;
-                        el.classList.toggle('d-none', !show);
-                        if (show) visible++;
-                    });
-                    if (noResults) noResults.classList.toggle('d-none', visible > 0 || items.length === 0);
-                }
+        <div class="card d-none" id="groups-no-results">
+            <x-empty-state icon="ti-search-off" title="لا نتائج مطابقة"
+                text="جرّب كلمة أخرى أو اعرض كل المجموعات." class="py-5" />
+        </div>
+    @endif
 
-                if (search) search.addEventListener('input', apply);
+@endsection
 
-                filterBtns.forEach(function (btn) {
-                    btn.addEventListener('click', function () {
-                        filterBtns.forEach(function (b) { b.classList.remove('active'); });
-                        btn.classList.add('active');
-                        currentStatus = btn.getAttribute('data-status-filter');
-                        apply();
-                    });
+@push('js')
+    <script>
+        // تصفية وبحث على البطاقات — كانت على صفوف جدول
+        (function () {
+            var grid = document.getElementById('groups-grid');
+            if (!grid) return;
+
+            var cards = Array.prototype.slice.call(grid.querySelectorAll('.group-card'));
+            var search = document.getElementById('groups-search');
+            var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-status-filter]'));
+            var noResults = document.getElementById('groups-no-results');
+            var status = 'all';
+
+            function apply() {
+                var q = search ? search.value.trim().toLowerCase() : '';
+                var visible = 0;
+
+                cards.forEach(function (card) {
+                    var okStatus = status === 'all' || card.dataset.status === status;
+                    var okText = q === '' || card.dataset.search.indexOf(q) !== -1;
+                    var show = okStatus && okText;
+
+                    card.classList.toggle('d-none', !show);
+                    if (show) visible++;
                 });
-            })();
-        </script>
-    @endpush
 
-@stop
+                grid.classList.toggle('d-none', visible === 0);
+                if (noResults) noResults.classList.toggle('d-none', visible > 0);
+            }
+
+            tabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    tabs.forEach(function (t) { t.classList.remove('is-active'); });
+                    tab.classList.add('is-active');
+                    status = tab.dataset.statusFilter;
+                    apply();
+                });
+            });
+
+            if (search) search.addEventListener('input', apply);
+        })();
+    </script>
+@endpush

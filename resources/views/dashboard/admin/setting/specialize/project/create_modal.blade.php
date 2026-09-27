@@ -23,25 +23,37 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label for="min_create" class="form-label required">الحد الأدنى لعدد أعضاء الفريق</label>
-                        <input id="min_create" type="text" class="form-control @error('min') is-invalid @enderror"
-                            name="min" value="{{ old('min') }}" placeholder="الحد الأدنى لعدد أعضاء الفريق" required
-                            autocomplete="off">
-                        @error('min')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    {{-- الحدّان مفهوم واحد — مدى حجم الفريق — فيقفان في
+                         صفّ واحد. و\u200Etype="number"\u200E لا \u200Etext\u200E: لوحة أرقام
+                         على الهاتف، وحدّ في المتصفّح قبل الخادم. --}}
+                    <label class="form-label required">حجم الفريق المسموح</label>
+                    <div class="row g-2 mb-2">
+                        <div class="col">
+                            <div class="input-group">
+                                <span class="input-group-text">من</span>
+                                <input id="min_create" type="number" min="1" step="1"
+                                    class="form-control @error('min') is-invalid @enderror" name="min"
+                                    value="{{ old('min', 2) }}" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="input-group">
+                                <span class="input-group-text">إلى</span>
+                                <input id="max_create" type="number" min="1" step="1"
+                                    class="form-control @error('max') is-invalid @enderror" name="max"
+                                    value="{{ old('max', 3) }}" required autocomplete="off">
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="max_create" class="form-label required">الحد الأقصى لعدد أعضاء الفريق</label>
-                        <input id="max_create" type="text" class="form-control @error('max') is-invalid @enderror"
-                            name="max" value="{{ old('max') }}" placeholder="الحد الأقصى لعدد أعضاء الفريق" required
-                            autocomplete="off">
-                        @error('max')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                    <div class="form-hint mb-3">
+                        فريق خارج هذا المدى يُرفض عند تسجيل الطالب لمشروعه.
                     </div>
+                    @error('min')
+                        <div class="text-danger small mb-2">{{ $message }}</div>
+                    @enderror
+                    @error('max')
+                        <div class="text-danger small mb-2">{{ $message }}</div>
+                    @enderror
 
                 </div>
                 <div class="modal-footer">

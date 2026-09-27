@@ -4,69 +4,43 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SemesterRequest;
+use App\Models\Project;
 use App\Models\Semester;
-use DataTables;
 
 class semesterController extends Controller
 {
 
+    /**
+     * كانت جدول DataTables خادمياً بعمودين لحفنة صفوف، وزرّ التفعيل
+     * نموذجاً محشوراً في خليّة يسأل بـ \u200Econfirm()\u200E المتصفّح.
+     *
+     * والتفعيل أخطر مفتاح في النظام: ينقل التقديم واللوحات والإحصائيات
+     * كلها إلى فصل آخر. ولم تكن الصفحة تقول أي فصل يعمل النظام عليه
+     * الآن، ولا كم مشروعاً في كل فصل — وهو كل قيمة الأرشيف.
+     */
     public function index()
     {
-        return view('dashboard.admin.setting.semester.index');
-    }
+        $semesters = Semester::withCount('projects')
+            ->orderByDesc('is_active')
+            ->orderByDesc('id')
+            ->get();
 
-    public function getData()
-    {
-        // if (request()->ajax()) {
+        $active = $semesters->firstWhere('is_active', true);
 
-        $semesters = Semester::select('id', 'name', 'is_active');
+        // توزيع حالات الفصل الحالي — من نفس مصدر بقية اللوحة
+        $statusCounts = $active
+            ? Project::where('semester_id', $active->id)
+                ->selectRaw('status, COUNT(*) as total')
+                ->groupBy('status')
+                ->pluck('total', 'status')
+            : collect();
 
-        return DataTables::of($semesters)
-            ->addIndexColumn()
-
-            // اسم الفصل + شارة "النشط حالياً"
-            ->editColumn('name', function ($row) {
-                $badge = $row->is_active
-                    ? " <span class='badge bg-green-lt text-green ms-2'><i class='ti ti-check me-1'></i>الفصل النشط</span>"
-                    : '';
-
-                return e($row->name) . $badge;
-            })
-
-            ->addColumn('actions', function ($row) {
-
-                // زر التفعيل: يظهر فقط لغير النشط
-                $activateBtn = '';
-                if (! $row->is_active) {
-                    $activateUrl = route('admin.semesters.activate', ['id' => $row->id]);
-                    $csrf = csrf_field();
-                    $activateBtn = "<form method='POST' action='{$activateUrl}' class='d-inline'
-                                        onsubmit=\"return confirm('تفعيل هذا الفصل كفصل حالي؟ سينتقل النظام كاملاً (التقديم، اللوحات، الإحصائيات) للعمل عليه.')\">
-                                        {$csrf}
-                                        <button type='submit' class='btn mb-2 btn-outline-primary btn-sm' title='تفعيل كفصل حالي'>
-                                            <i class='ti ti-player-play'></i> تفعيل
-                                        </button>
-                                    </form> ";
-                }
-
-                $editBtn = "<a class='btn mb-2 btn-success btn-sm btn-edit' data-bs-toggle='modal' data-bs-target='#editModal'
-                              data-id='{$row->id}' data-name='{$row->name}'  title='تعديل'>
-                              <i class='ti ti-pencil'></i>
-                          </a>";
-                $deleteBtn = "<button type='button' class='btn mb-2 btn-danger btn-sm btn-delete' data-bs-toggle='modal' data-bs-target='#deleteModal'
-                              data-id='{$row->id}' data-name='{$row->name}' title='حذف'>
-                              <i class='ti ti-trash'></i>
-                          </button>";
-
-                $actionBtn = $activateBtn . '<div class="btn-group">' . $deleteBtn . $editBtn . '</div>';
-
-                return $actionBtn;
-            })
-            ->rawColumns(['name', 'actions'])
-            ->make(true);
-
-        //}
-
+        return view('dashboard.admin.setting.semester.index', [
+            'semesters' => $semesters,
+            'active' => $active,
+            'archive' => $semesters->where('is_active', false)->values(),
+            'statusCounts' => $statusCounts,
+        ]);
     }
 
     public function store(SemesterRequest $request)
@@ -121,7 +95,11 @@ class semesterController extends Controller
                 return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
             }
 
-            $semester->update($request->all());
+            // \u200E$request->all()\u200E و\u200Eis_active\u200E قابل للإسناد الجماعي: طلبٌ
+            // مُلفَّق كان يُفعّل فصلاً بلا إلغاء تفعيل الباقي، فيصير في
+            // النظام فصلان نشطان و\u200ESemester::current()\u200E تختار أحدهما
+            // اعتباطاً. التفعيل له مساره الخاص وحده.
+            $semester->update($request->only('name'));
             return redirect()->back()->with('success', "تم تعديل السجل بنجاح");
 
         } catch (\Exception$ex) {
@@ -140,8 +118,10 @@ class semesterController extends Controller
                 return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
             }
 
-            // حماية الأرشيف: لا حذف لفصل يحتوي مشاريع مسجلة — وإلا تفقد المشاريع ربطها بالفصل
-            if (\App\Models\Project::where('semester_id', $semester->id)->exists()) {
+            // حماية الأرشيف: لا حذف لفصل يحتوي مشاريع مسجلة — وإلا تفقد المشاريع ربطها بالفصل.
+            // \u200EwithTrashed()\u200E مقصودة: المشروع المحذوف حذفاً ناعماً قابل
+            // للاسترجاع، وحذف فصله يُرجعه بلا فصل.
+            if (Project::withTrashed()->where('semester_id', $semester->id)->exists()) {
                 return redirect()->back()->with('fail',
                     'لا يمكن حذف هذا الفصل — يحتوي مشاريع مسجلة، وحذفه يدمر أرشيف النتائج.');
             }

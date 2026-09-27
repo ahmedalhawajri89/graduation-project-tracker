@@ -14,40 +14,40 @@
     $sbProject = $layoutShared['studentProject'] ?? null;
 @endphp
 
-<aside class="navbar navbar-vertical navbar-expand-lg sidebar" data-bs-theme="dark">
+{{-- حُذف data-bs-theme="dark": كان يفرض ألوان نصّ الوضع الداكن على
+     خلفية صارت فاتحة، فتبقى النصوص بيضاء غير مقروءة. --}}
+<aside class="navbar navbar-vertical navbar-expand-lg sidebar">
     <div class="container-fluid d-flex flex-column h-100">
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu"
-            aria-controls="sidebar-menu" aria-expanded="false" aria-label="إظهار القائمة">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
         {{-- الشعار --}}
-        <h1 class="navbar-brand navbar-brand-autodark sidebar-brand">
+        <h1 class="navbar-brand sidebar-brand">
             <a href="{{ url('/') }}" class="d-flex align-items-center gap-2 text-decoration-none">
                 <span class="sidebar-brand-logo">
-                    <img src="{{ asset('assets/img/takharruj-logo.svg') }}" alt="شعار تخرُّج" height="26">
+                    <img src="{{ asset('assets/img/takharruj-logo.svg') }}" alt="شعار تخرُّج" height="22">
                 </span>
                 <span class="sidebar-brand-text">
-                    <span class="d-block">تخرُّج</span>
+                    <b class="d-block">تخرُّج</b>
                     <small>متابعة مشاريع التخرج</small>
                 </span>
             </a>
         </h1>
 
-        {{-- إشعارات للشاشات الصغيرة (الهيدر مخفي عليها) --}}
-        <div class="navbar-nav flex-row d-lg-none">
-            <div class="nav-item position-relative">
-                <a href="{{ $sbNotifyRoute }}" class="nav-link px-2" title="الإشعارات">
-                    <i class="ti ti-bell fs-2"></i>
-                    @if ($sbUnread > 0)
-                        <span class="badge bg-red text-red-fg badge-notify">{{ $sbUnread }}</span>
-                    @endif
-                </a>
-            </div>
-        </div>
+        {{-- شريط إشعارات الموبايل حُذف: الهيدر صار ظاهراً على كل
+             المقاسات ويحمل الجرس وقائمة المستخدم. --}}
 
         <div class="collapse navbar-collapse d-lg-flex flex-column flex-grow-1" id="sidebar-menu">
+
+            {{-- مساحة العمل: الفصل النشط. داخل القائمة المطويّة لا فوقها: كانت
+                 تسبق شريط التنقّل على الجوال فتأخذ ~١٤٥ بكسل قبل أي محتوى --}}
+            @isset($viewSemester)
+                <div class="sidebar-context" title="{{ $viewSemester->name }}">
+                    <i class="ti ti-calendar" aria-hidden="true"></i>
+                    <span class="sidebar-context-text">
+                        <small>الفصل الحالي</small>
+                        <b>{{ $viewSemester->name }}</b>
+                    </span>
+                </div>
+            @endisset
 
             {{-- الأدمن لديه تسميات أقسام داخلية خاصة به --}}
             @unless (auth()->guard('admin')->check())

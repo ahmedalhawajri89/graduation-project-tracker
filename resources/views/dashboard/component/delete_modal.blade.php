@@ -17,7 +17,10 @@
                     <div class="alert alert-danger mb-0">
                         <div class="d-flex">
                             <i class="ti ti-alert-triangle fs-2 me-2"></i>
-                            <p class="mb-0">هل أنت متأكد من عملية الحذف؟ لا يمكن التراجع عنها.</p>
+                            {{-- المجموعات صار لها حذف ناعم واسترجاع، فقول
+                                 «لا يمكن التراجع» صار كذباً يُخيف بلا داعٍ.
+                                 الصفحة التي تملك استرجاعاً تمرّر نصّها. --}}
+                            <p class="mb-0">{{ $delete_note ?? 'هل أنت متأكد من عملية الحذف؟ لا يمكن التراجع عنها.' }}</p>
                         </div>
                     </div>
                 </div>
@@ -41,7 +44,10 @@
             var button = $(this);
             var modal = $('#deleteModal');
             modal.find('#delete-id').val(button.data('id'));
-            modal.find('#delete-name').html(button.data('name'));
+            // \u200E.text()\u200E لا \u200E.html()\u200E: المتصفّح يفكّ ترميز السمة، و\u200E.html()\u200E كان يعيد
+            // النصّ HTML حيّاً — فعنوان رسالة تواصل من زائر مجهول ينفّذ سكربتاً
+            // في جلسة الأدمن حين يضغط «حذف»
+            modal.find('#delete-name').text(button.data('name'));
             modal.find('.modal-footer').show();
             $('.jquer-valid').remove();
             $("#deleteModal form").find('*').removeClass('border-danger');

@@ -5,51 +5,91 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SpecializeRequest;
 use App\Models\Specialize;
-use DataTables;
+use App\Support\Audit;
 
 class SpecializeController extends Controller
 {
 
+    /**
+     * كانت الصفحة جدول DataTables خادمياً لأربعة صفوف — آلة أكبر من
+     * حاجتها — يعرض عموداً واحداً: عدد أنواع المشاريع، بعبارة «٣ مشروع»
+     * وهي ليست مشاريع بل أنواعاً.
+     *
+     * والتخصص ليس اسماً في قائمة: هو سلسلة شروط. الطالب لا يستطيع
+     * تسجيل مشروع إلا إذا كان لتخصصه نوع مشروع ومشرف متاح
+     * (\u200EStudent\DashboardController::createProject\u200E). فتخصص ينقصه أحدهما
+     * طريق مسدود أمام طلابه، ولم يكن شيء في الشاشة يقول ذلك.
+     *
+     * وحارس الحذف يمنع حذف تخصص عليه طلاب أو مشرفون — والصفحة لم تكن
+     * تعرض عددهم، فالمنع يأتي مفاجأة.
+     */
     public function index()
     {
-        return view('dashboard.admin.setting.specialize.index');
+        $specializes = Specialize::withCount([
+            'students',
+            'supervisors',
+            'supervisorsAvailable',
+            'projects',
+        ])
+            // الأسماء نفسها لا عددها: «ما الأنواع المعرَّفة تحته؟» سؤال
+            // كان يحتاج نقرة وانتقالاً إلى صفحة أخرى لكل تخصص
+            ->with(['projects' => fn ($q) => $q->select('id', 'specialize_id', 'name', 'min', 'max')->orderBy('name')])
+            // النشطة أولاً: الموقوفة أرشيف يُراجَع لا عملٌ يومي
+            ->orderByRaw('archived_at is not null')
+            ->orderBy('name')
+            ->get();
+
+        $showArchived = request('view') === 'archived';
+
+        return view('dashboard.admin.setting.specialize.index', [
+            'specializes' => $showArchived
+                ? $specializes->filter->isArchived()
+                : $specializes->reject->isArchived(),
+            'countActive' => $specializes->reject->isArchived()->count(),
+            'countArchived' => $specializes->filter->isArchived()->count(),
+            'showArchived' => $showArchived,
+        ]);
     }
 
-    public function getData()
+    /**
+     * إيقاف التخصص.
+     *
+     * البديل عن حذفٍ ممنوع: لا يُسجَّل عليه أحد جديد، وطلابه ومشرفوه
+     * ومشاريعه تبقى تعمل كما كانت.
+     */
+    public function archive($id)
     {
-        // if (request()->ajax()) {
+        $specialize = Specialize::find($id);
 
-        $specializes = Specialize::select('id', 'name')
-            ->withCount('projects');
-        // ->select('specializes.*');
+        if (! $specialize) {
+            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+        }
 
-        return DataTables::of($specializes)
-            ->addIndexColumn()
+        if ($specialize->isArchived()) {
+            return redirect()->back()->with('fail', 'التخصص موقوف أصلاً.');
+        }
 
-            ->editColumn('projects_count', function ($row) {
-                return "<a class='btn btn-info' href='" . route('admin.specialize.projects.index', $row->id) . "'>{$row->projects_count} مشروع</a>";
-            })
+        $specialize->update(['archived_at' => now()]);
 
-            ->addColumn('actions', function ($row) {
+        Audit::record('specialize.archived', $specialize);
 
-                $editBtn = "<a class='btn mb-2 btn-success btn-sm btn-edit' data-bs-toggle='modal' data-bs-target='#editModal'
-                              data-id='{$row->id}' data-name='{$row->name}'  title='تعديل'>
-                              <i class='ti ti-pencil'></i>
-                          </a>";
-                $deleteBtn = "<button type='button' class='btn mb-2 btn-danger btn-sm btn-delete' data-bs-toggle='modal' data-bs-target='#deleteModal'
-                              data-id='{$row->id}' data-name='{$row->name}' title='حذف'>
-                              <i class='ti ti-trash'></i>
-                          </button>";
+        return redirect()->back()->with('success', "تم إيقاف «{$specialize->name}» — لن يُسجَّل عليه أحد جديد.");
+    }
 
-                $actionBtn = '<div class="btn-group">' . $deleteBtn . $editBtn . '</div>';
+    /** استئناف تخصص موقوف */
+    public function restore($id)
+    {
+        $specialize = Specialize::find($id);
 
-                return $actionBtn;
-            })
-            ->rawColumns(['projects_count', 'actions'])
-            ->make(true);
+        if (! $specialize) {
+            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+        }
 
-        //}
+        $specialize->update(['archived_at' => null]);
 
+        Audit::record('specialize.restored', $specialize);
+
+        return redirect()->back()->with('success', "تم استئناف «{$specialize->name}».");
     }
 
     public function store(SpecializeRequest $request)
@@ -57,7 +97,8 @@ class SpecializeController extends Controller
         try {
             // dd($request->all());
 
-            Specialize::create($request->all());
+            // لا \u200E$request->all()\u200E: \u200Earchived_at\u200E قابل للإسناد، والأرشفة فعلٌ له مساره
+            Specialize::create($request->only('name'));
             return redirect()->route("admin.specialize.index")->with('success', "تم اضافة السجل بنجاح");
 
         } catch (\Exception$ex) {
@@ -75,7 +116,7 @@ class SpecializeController extends Controller
                 return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
             }
 
-            $specialize->update($request->all());
+            $specialize->update($request->only('name'));
             return redirect()->back()->with('success', "تم تعديل السجل بنجاح");
 
         } catch (\Exception$ex) {

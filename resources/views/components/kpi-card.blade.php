@@ -1,6 +1,6 @@
 @props([
     'icon' => 'ti-chart-bar',
-    'tone' => 'blue',
+    'tone' => 'neutral',
     'value' => 0,
     'label' => '',
     'sub' => null,
@@ -29,8 +29,10 @@
 
     <div class="card-body">
         <div class="d-flex align-items-center">
-            <span class="avatar avatar-lg bg-{{ $tone }}-lt text-{{ $tone }} rounded-3 me-3">
-                <i class="ti {{ $icon }} fs-2"></i>
+            {{-- محايدة افتراضياً: حين يكون لون واحد ملوّناً تعرف العين أين تنظر.
+                 tone="accent" للبطاقة التي تحتاج تدخّلاً فعلياً وحدها. --}}
+            <span class="kpi-icon {{ $tone === 'accent' ? 'kpi-icon--accent' : '' }} me-3">
+                <i class="ti {{ $icon }}"></i>
             </span>
             <div class="me-auto">
                 <div class="d-flex align-items-center gap-2">

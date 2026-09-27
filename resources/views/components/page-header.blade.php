@@ -1,4 +1,4 @@
-@props(['pretitle' => null, 'title'])
+@props(['pretitle' => null, 'title', 'subtitle' => null])
 
 {{--
     ترويسة صفحة موحّدة.
@@ -15,10 +15,15 @@
                 <div class="page-pretitle">{{ $pretitle }}</div>
             @endif
             <h2 class="page-title">{{ $title }}</h2>
+            @if ($subtitle)
+                <div class="page-subtitle">{{ $subtitle }}</div>
+            @endif
         </div>
 
         @isset($actions)
-            <div class="col-auto d-flex gap-2">
+            {{-- تحت ٥٧٦ تنزل الأزرار إلى سطرها وتلتفّ: ثلاثة أزرار بجانب
+                 عنوان طويل تتجاوز ٣٧٥ بكسل --}}
+            <div class="col-12 col-sm-auto d-flex flex-wrap align-items-center gap-2 mt-2 mt-sm-0">
                 {{ $actions }}
             </div>
         @endisset

@@ -14,25 +14,57 @@
   --ds-radius-lg: 16px;
   --ds-radius-xl: 20px;
 
-  --bg: #f7f8fd;
-  --ink: #0f1222;
-  --ink-soft: #3d4257;
-  --ink-mute: #6b7186;
-  --brand-50: #eef4ff;
-  --brand-100: #dfe9ff;
-  --brand-200: #c5d7ff;
-  --brand-300: #a2bcff;
-  --brand-400: #7d97fc;
-  --brand-500: #5d72f6;
-  --brand-600: #464eea;
-  --brand-700: #393ccf;
-  --violet: #8b5cf6;
-  --cyan: #06b6d4;
-  --shadow-soft: 0 2px 8px -2px rgba(28,29,77,.08), 0 12px 32px -8px rgba(28,29,77,.12);
-  --shadow-lift: 0 4px 12px -2px rgba(28,29,77,.10), 0 24px 56px -12px rgba(70,78,234,.22);
-  --shadow-glow: 0 0 0 1px rgba(93,114,246,.15), 0 8px 40px -8px rgba(93,114,246,.35);
+  /* ===== رمادي معماري =====
+     رماديات باردة محايدة لا بيج دافئ، حبر شبه أسود، وأزرق إشاري واحد.
+     البنية تأتي من شبكة ظاهرة وخطوط فاصلة، لا من ظلال ولا تدرّجات. */
+  --paper: #fbfbfc;
+  --paper-raised: #ffffff;
+  --paper-sunk: #f4f4f5;
+  --rule: #e4e4e7;
+  --rule-strong: #d4d4d8;
+
+  --ink: #09090b;
+  --ink-soft: #3f3f46;
+  /* غُمّق من ‎#71717a‎ (تباين ٤٫٦٧ يمرّ بالكاد) إلى ٦٫٢ — لأنه مستعمل
+     عند ١١–١٢ بكسل في الوحدات والبيانات الثانوية */
+  --ink-mute: #5c5c66;
+
+  --accent: #2563eb;
+  --accent-deep: #1d4ed8;
+  --accent-soft: #eff6ff;
+
+  --bg: var(--paper);
+
+  /* التوكنز القديمة مستهلكة في بقية أقسام الصفحة — تُعاد توجيهها إلى
+     درجات اللوحة الجديدة حتى تنتقل تلك الأقسام معنا بدل أن تتعارض،
+     ريثما نعيد كتابتها قسماً قسماً. */
+  --brand-50: #eff6ff;
+  --brand-100: #dbeafe;
+  --brand-200: #bfdbfe;
+  --brand-300: #93c5fd;
+  --brand-400: #60a5fa;
+  --brand-500: #3b82f6;
+  --brand-600: #2563eb;
+  --brand-700: #1d4ed8;
+  --violet: #1e40af;
+  --cyan: #60a5fa;
+
+  /* ظلال محايدة ومنخفضة — الارتفاع يأتي من الحدّ لا من الضبابية */
+  --shadow-soft: 0 1px 2px rgba(9,9,11,.04), 0 6px 16px -10px rgba(9,9,11,.10);
+  --shadow-lift: 0 1px 2px rgba(9,9,11,.05), 0 12px 32px -14px rgba(9,9,11,.14);
+  --shadow-glow: 0 0 0 1px rgba(9,9,11,.06);
   --ease-expo: cubic-bezier(.16,1,.3,1);
-  --font: "IBM Plex Sans Arabic", "Outfit", system-ui, sans-serif;
+
+  /* عمود الشبكة — مصدر واحد يضبط الهيدر والهيرو معاً */
+  --gutter: 24px;
+  --maxw: 1200px;
+
+  /* اللاتيني أولاً ثم العربي: الحرف اللاتيني يلتقط Inter Tight، والعربي
+     يسقط إلى Almarai لأن Inter لا يملك حروفاً عربية. مكدّس واحد للغتين
+     بلا حاجة إلى محدّدات اتجاه. */
+  --font-display: "Inter Tight", "Almarai", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font: var(--font-body);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -48,7 +80,7 @@ body {
   line-height: 1.6;
 }
 
-::selection { background: rgba(93,114,246,.25); }
+::selection { background: rgba(15,118,110,.18); }
 
 img { max-width: 100%; display: block; }
 a { text-decoration: none; color: inherit; }
@@ -61,885 +93,1113 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   border-radius: 6px;
 }
 
-.container { max-width: 1120px; margin-inline: auto; padding-inline: 20px; }
+.container { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gutter); }
 
-/* ---------- Glass ---------- */
+/* ---------- Paper surfaces ----------
+   كانت زجاجاً مثلّجاً في ٢٩ موضعاً — صارت ورقاً بحدّ شعرة.
+   الاسم باقٍ لأن بقية الأقسام تستعمله، والمادة تبدّلت. */
 .glass {
-  background: rgba(255,255,255,.65);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid rgba(255,255,255,.75);
-  box-shadow: 0 1px 1px rgba(255,255,255,.9) inset, var(--shadow-soft);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  box-shadow: var(--shadow-soft);
 }
 .glass-strong {
-  background: rgba(255,255,255,.82);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255,255,255,.9);
-  box-shadow: 0 1px 1px rgba(255,255,255,1) inset, 0 4px 12px -2px rgba(28,29,77,.08), 0 24px 64px -16px rgba(28,29,77,.18);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  box-shadow: var(--shadow-lift);
 }
 
-/* ---------- Text gradient ---------- */
+/* ---------- Accent text ----------
+   كان تدرّجاً ثلاثي الألوان على العنوان كله. صار لوناً مصمتاً على
+   كلمة واحدة: الإشارة أقوى من الصراخ. */
 .text-gradient {
-  background: linear-gradient(120deg, var(--brand-600), var(--violet) 55%, var(--cyan));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
 }
 
-/* ---------- Animated gradient border ---------- */
+/* ---------- Hairline frame ----------
+   كان حدّاً متدرّجاً يدور كل ٨ ثوانٍ بلا توقف. صار خطاً ساكناً. */
 .gradient-border { position: relative; }
 .gradient-border::before {
   content: "";
   position: absolute; inset: 0;
   border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(130deg, rgba(70,78,234,.5), rgba(139,92,246,.25), rgba(6,182,212,.4), rgba(70,78,234,.5));
-  background-size: 300% 300%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: border-pan 8s linear infinite;
+  border: 1px solid var(--rule);
   pointer-events: none;
 }
-@keyframes border-pan {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
 
-/* ---------- Ambient background ---------- */
+/* ---------- Paper ground ----------
+   كانت ثلاث بقع ضبابية ملوّنة وشبكة زرقاء. حُذفت.
+   بقي الضجيج وحده — لا كأثر عابر بل كحُبيبات الورق نفسه. */
 .mesh-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-.mesh-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-  opacity: .5;
-  will-change: transform;
-}
-.blob-a { width: 520px; height: 520px; top: -15%; inset-inline-start: -10%; background: var(--brand-300); }
-.blob-b { width: 460px; height: 460px; top: 10%; inset-inline-end: -12%; background: #c4b5fd; }
-.blob-c { width: 420px; height: 420px; bottom: -20%; left: 30%; background: #a5f3fc; }
 
-.grid-overlay {
-  position: absolute; inset: 0; pointer-events: none;
-  background-image:
-    linear-gradient(rgba(70,78,234,.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(70,78,234,.05) 1px, transparent 1px);
-  background-size: 56px 56px;
-  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 75%);
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 75%);
-}
 .noise-overlay {
-  position: absolute; inset: 0; pointer-events: none; opacity: .35;
+  position: absolute; inset: 0; pointer-events: none; opacity: .5;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
 }
+
+/* حافة سفلية تفصل الهيرو عن أول قسم — خط شعرة بدل تلاشٍ ملوّن */
+.hero::after {
+  content: "";
+  position: absolute; inset-inline: 0; bottom: 0;
+  height: 1px; background: var(--rule);
+}
+
+/* ---------- Skip link ----------
+   مخفي حتى يستقبل التركيز، فيقفز مستخدم لوحة المفاتيح فوق الهيدر كله */
+.skip-link {
+  position: fixed; inset-inline-start: 50%; top: 10px; z-index: 200;
+  transform: translate(50%, -160%);
+  padding: 11px 20px; border-radius: 7px;
+  background: var(--ink); color: #fff;
+  font-size: 14px; font-weight: 600;
+  transition: transform .2s var(--ease-expo);
+}
+.skip-link:focus-visible { transform: translate(50%, 0); }
 
 /* ---------- Header ---------- */
 .site-header {
   position: fixed; inset-inline: 0; top: 0; z-index: 100;
-  padding: 14px 16px 0;
-  transform: translateY(-80px); opacity: 0;
-  animation: header-in .6s var(--ease-expo) .1s forwards;
+  background: rgba(251, 251, 252, .72);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  backdrop-filter: saturate(180%) blur(16px);
+  border-bottom: 1px solid transparent;
+  opacity: 0;
+  animation: header-in .5s var(--ease-expo) .05s forwards;
+  transition: background-color .3s ease, border-color .3s ease, box-shadow .3s ease;
 }
-@keyframes header-in { to { transform: translateY(0); opacity: 1; } }
+@keyframes header-in { to { opacity: 1; } }
+
+/* في الأعلى الهيدر شبه شفاف بلا حدّ؛ عند التمرير يكتسب أرضية وحدّاً */
+.site-header.scrolled {
+  background: rgba(251, 251, 252, .88);
+  border-bottom-color: var(--rule);
+  box-shadow: 0 1px 24px -16px rgba(9, 9, 11, .5);
+}
 
 .nav-bar {
-  max-width: 1120px; margin-inline: auto;
+  position: relative;
+  max-width: var(--maxw); margin-inline: auto;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px;
-  border-radius: 18px;
-  transition: all .3s var(--ease-expo);
-  border: 1px solid transparent;
+  gap: 24px;
+  height: 72px;
+  padding-inline: var(--gutter);
 }
-.nav-bar.scrolled {
-  background: rgba(255,255,255,.82);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
-  border-color: rgba(255,255,255,.9);
-  box-shadow: var(--shadow-soft);
-}
-
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-logo {
-  width: 40px; height: 40px; border-radius: 12px;
-  display: grid; place-items: center; color: #fff;
-  background: linear-gradient(135deg, var(--brand-600), var(--violet));
-  box-shadow: var(--shadow-glow);
-}
-.brand-name { font-weight: 700; font-size: 16px; line-height: 1.2; }
-.brand-sub { font-size: 11px; color: var(--ink-mute); }
-
-.nav-links { display: flex; align-items: center; gap: 2px; }
-.nav-links a {
-  padding: 8px 14px; border-radius: 10px;
-  font-size: 14px; font-weight: 500; color: var(--ink-soft);
-  transition: all .25s;
-}
-.nav-links a:hover { background: var(--brand-50); color: var(--brand-700); }
-
-.nav-actions { display: flex; align-items: center; gap: 8px; }
-
-.lang-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 14px; border-radius: 12px;
-  border: 1px solid var(--brand-100);
-  background: rgba(255,255,255,.7);
-  font-size: 13px; font-weight: 700; color: var(--brand-700);
-  transition: all .3s;
-}
-.lang-btn:hover { border-color: var(--brand-300); box-shadow: var(--shadow-soft); }
-
-.btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  border-radius: 14px; font-weight: 600; font-size: 15px;
-  padding: 13px 26px;
-  transition: transform .3s var(--ease-expo), box-shadow .3s;
-  position: relative; overflow: hidden;
-  will-change: transform;
-}
-.btn-primary {
-  color: #fff;
-  background: linear-gradient(90deg, var(--brand-600), var(--violet));
-  box-shadow: var(--shadow-glow);
-}
-.btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
-.btn-ghost {
-  color: var(--brand-700);
-  border: 1px solid var(--brand-200);
-  background: rgba(255,255,255,.7);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-}
-.btn-ghost:hover { border-color: var(--brand-400); box-shadow: var(--shadow-soft); }
-.btn-sm { padding: 10px 18px; font-size: 14px; border-radius: 12px; }
-
-/* shine sweep */
-.shine::after {
+/* خطان يربطان الهيدر بشبكة الهيرو */
+.nav-bar::before, .nav-bar::after {
   content: "";
-  position: absolute; top: 0; left: -80%;
-  width: 50%; height: 100%;
-  background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent);
-  transform: skewX(-20deg);
-  transition: left .7s var(--ease-expo);
+  position: absolute; inset-block: 0;
+  width: 1px; background: var(--rule);
+  opacity: .7;
+}
+.nav-bar::before { inset-inline-start: var(--gutter); }
+.nav-bar::after { inset-inline-end: var(--gutter); }
+
+/* ---------- Brand ----------
+   العلامة مبنية من استعارة المنتج نفسه: عقد على مسار تتقدّم.
+   لا مربع أسود بأيقونة عامة. */
+.brand {
+  display: flex; align-items: center; gap: 11px;
+  padding-inline-start: 20px;
+  position: relative; z-index: 2;
+}
+.brand-mark {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border: 1px solid var(--rule); border-radius: 9px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  transition: border-color .35s var(--ease-expo), background-color .35s ease;
+}
+.brand:hover .brand-mark { border-color: var(--ink); }
+/* العقدة الأخيرة تمتلئ عند المرور — المسار يكتمل */
+.brand-mark .node-last {
+  fill: none; stroke: currentColor;
+  transition: fill .35s var(--ease-expo);
+}
+.brand:hover .brand-mark .node-last { fill: var(--accent); stroke: var(--accent); }
+.brand-mark .rail-fill {
+  stroke-dasharray: 20; stroke-dashoffset: 8;
+  transition: stroke-dashoffset .45s var(--ease-expo);
+}
+.brand:hover .brand-mark .rail-fill { stroke-dashoffset: 0; }
+
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 17px; line-height: 1;
+  letter-spacing: 0;
+}
+.brand-sub { display: none; }
+
+/* ---------- Nav with sliding indicator ---------- */
+.nav-wrap { position: relative; display: flex; align-items: center; }
+
+.nav-links {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 2px;
+}
+.nav-links a {
+  display: block;
+  padding: 9px 15px;
+  font-family: var(--font-display);
+  font-size: 13.5px; font-weight: 700;
+  color: var(--ink-mute);
+  border-radius: 8px;
+  transition: color .25s var(--ease-expo);
+}
+.nav-links a:hover,
+.nav-links a[aria-current="true"] { color: var(--ink); }
+
+/* حبّة واحدة تنزلق بين الروابط بدل أن تومض تحت كل واحد على حدة.
+   موضعها وعرضها يضبطهما JS، والانتقال هنا. */
+.nav-pill {
+  position: absolute; z-index: 0;
+  top: 50%; inset-inline-start: 0;
+  height: 34px; width: 0;
+  border-radius: 9px;
+  background: var(--paper-sunk);
+  transform: translateY(-50%);
+  opacity: 0;
+  transition:
+    transform .38s var(--ease-expo),
+    width .38s var(--ease-expo),
+    opacity .25s ease;
   pointer-events: none;
 }
-.shine:hover::after { left: 130%; }
+.nav-wrap.pill-ready .nav-pill { opacity: 1; }
+
+/* ---------- Actions ---------- */
+.nav-actions {
+  display: flex; align-items: center; gap: 10px;
+  padding-inline-end: 20px;
+  position: relative; z-index: 2;
+}
+
+/* مبدّل لغة مجزّأ: الخياران ظاهران معاً فيعرف الزائر ما سينتقل إليه،
+   بدل زر واحد يخفي حالته الحالية */
+.lang-switch {
+  position: relative;
+  display: inline-flex; align-items: center;
+  padding: 3px;
+  border: 1px solid var(--rule); border-radius: 9px;
+  background: var(--paper-sunk);
+}
+.lang-switch button {
+  position: relative; z-index: 1;
+  padding: 6px 11px;
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 700;
+  color: var(--ink-mute);
+  border-radius: 6px;
+  transition: color .25s var(--ease-expo);
+}
+.lang-switch button[aria-pressed="true"] { color: var(--ink); }
+.lang-thumb {
+  position: absolute; z-index: 0;
+  top: 3px; bottom: 3px; left: 0;
+  border-radius: 6px;
+  background: var(--paper-raised);
+  box-shadow: 0 1px 2px rgba(9, 9, 11, .07);
+  transition: transform .34s var(--ease-expo), width .34s var(--ease-expo);
+}
+
+/* زر الدخول: سهم ينزلق للأمام عند المرور */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  border-radius: 8px; font-weight: 600; font-size: 15px;
+  padding: 13px 24px;
+  font-family: var(--font-display);
+  transition: background-color .25s var(--ease-expo), color .25s ease, border-color .25s ease;
+}
+.btn-primary { color: var(--paper-raised); background: var(--ink); }
+.btn-primary:hover { background: var(--accent); }
+.btn-ghost { color: var(--ink); border: 1px solid var(--rule-strong); background: transparent; }
+.btn-ghost:hover { border-color: var(--ink); }
+.btn-sm { padding: 9px 16px; font-size: 13px; border-radius: 8px; }
+
+.btn .btn-arrow { transition: transform .32s var(--ease-expo); }
+.btn:hover .btn-arrow { transform: translateX(-4px); }
+[dir="ltr"] .btn:hover .btn-arrow { transform: translateX(4px); }
 
 .menu-toggle {
   display: none;
-  width: 40px; height: 40px; border-radius: 12px;
-  border: 1px solid var(--brand-100);
-  background: rgba(255,255,255,.7);
+  width: 40px; height: 40px; border-radius: 9px;
+  border: 1px solid var(--rule);
+  background: var(--paper-raised);
+  place-items: center; color: var(--ink);
+  transition: border-color .2s ease;
+}
+.menu-toggle:hover { border-color: var(--ink); }
+
+.mobile-menu { display: none; padding: 6px 20px 18px; }
+.mobile-menu.open { display: block; animation: menu-in .22s var(--ease-expo); }
+@keyframes menu-in { from { opacity: 0; transform: translateY(-6px); } }
+.mobile-menu a {
+  display: block; padding: 13px 2px;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 600; color: var(--ink-soft);
+  transition: color .2s ease;
+}
+.mobile-menu a:hover { color: var(--ink); }
+.mobile-menu .btn { justify-content: center; width: 100%; margin-top: 14px; border-bottom: 0; }
+
+/* رابط نصّي بسهم — بديل الزر الثانوي الزجاجي */
+.btn-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 15px; font-weight: 600; color: var(--ink);
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--rule-strong);
+  transition: border-color .2s ease, gap .2s var(--ease-expo);
+}
+.btn-link:hover { border-bottom-color: var(--ink); gap: 11px; }
+
+.menu-toggle {
+  display: none;
+  width: 40px; height: 40px; border-radius: 6px;
+  border: 1px solid var(--rule);
+  background: transparent;
   place-items: center; color: var(--ink);
 }
 
 .mobile-menu {
   display: none;
-  max-width: 1120px; margin: 8px auto 0;
-  border-radius: 18px; padding: 14px;
+  padding: 8px 20px 18px;
 }
-.mobile-menu.open { display: block; animation: menu-in .25s var(--ease-expo); }
-@keyframes menu-in { from { opacity: 0; transform: translateY(-10px) scale(.98); } }
+.mobile-menu.open { display: block; animation: menu-in .2s var(--ease-expo); }
+@keyframes menu-in { from { opacity: 0; transform: translateY(-6px); } }
 .mobile-menu a {
-  display: block; padding: 12px 16px; border-radius: 10px;
-  font-size: 14px; font-weight: 500; color: var(--ink-soft);
+  display: block; padding: 12px 2px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 15px; font-weight: 500; color: var(--ink-soft);
 }
-.mobile-menu a:hover { background: var(--brand-50); color: var(--brand-700); }
-.mobile-menu .btn { justify-content: center; width: 100%; margin-top: 8px; }
+.mobile-menu a:hover { color: var(--ink); }
+.mobile-menu .btn { justify-content: center; width: 100%; margin-top: 14px; border-bottom: 0; }
 
 /* ---------- Hero ---------- */
 .hero {
-  position: relative; min-height: 100vh;
-  display: flex; align-items: center;
-  padding: 130px 0 90px;
+  position: relative;
+  padding: 68px 0 0;
   overflow: hidden;
 }
+
+/* شبكة الأعمدة الظاهرة — هي خلفية الهيرو، لا تدرّج ولا بقع */
+.hero-rules {
+  position: absolute; inset: 0;
+  max-width: var(--maxw); margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  pointer-events: none;
+}
+.hero-rules span {
+  border-inline-start: 1px solid var(--rule);
+  transform: scaleY(0); transform-origin: top;
+  animation: rule-draw .7s var(--ease-expo) forwards;
+}
+.hero-rules span:last-child { border-inline-end: 1px solid var(--rule); }
+.hero-rules span:nth-child(1) { animation-delay: .05s; }
+.hero-rules span:nth-child(2) { animation-delay: .1s; }
+.hero-rules span:nth-child(3) { animation-delay: .15s; }
+.hero-rules span:nth-child(4) { animation-delay: .2s; }
+.hero-rules span:nth-child(5) { animation-delay: .25s; }
+.hero-rules span:nth-child(6) { animation-delay: .3s; }
+@keyframes rule-draw { to { transform: scaleY(1); } }
+
+/* المحتوى ينطبق على الأعمدة الستة الظاهرة نفسها: النص أربعة والأرقام عمودان */
 .hero-grid {
   position: relative; z-index: 2;
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 48px; align-items: center;
+  display: grid; grid-template-columns: repeat(6, 1fr);
+  gap: 0; align-items: stretch;
+  padding: 84px 0 64px;
+  border-bottom: 1px solid var(--rule);
 }
-.hero-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
 
+.hero-copy {
+  grid-column: span 4;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 26px;
+  padding-inline: 28px 32px;
+}
+
+/* عمود الأرقام يملأ ارتفاع العمود: عنوان في أعلاه والأرقام في قاعه */
+.hero-figures {
+  grid-column: span 2;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding-inline: 28px;
+}
+.figures-label {
+  margin-bottom: auto;
+  font-size: 12px; font-weight: 600; color: var(--ink-mute);
+}
+
+/* شارة سطرية صغيرة بحدّ — لا حبّة ملوّنة ولا زجاج */
 .badge {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 7px 16px; border-radius: 999px;
-  border: 1px solid var(--brand-200);
-  background: rgba(255,255,255,.7);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  font-size: 13px; font-weight: 700; color: var(--brand-700);
+  padding: 5px 11px 5px 9px;
+  border: 1px solid var(--rule); border-radius: 999px;
+  background: var(--paper-raised);
+  font-size: 12px; font-weight: 600; color: var(--ink-soft);
 }
-.badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-500); }
+.badge .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
 
+/* العربية خط متصل: التقارب صفر وارتفاع السطر ١٫٣ — التقارب السالب يسحق الحروف */
 .hero h1 {
-  font-size: clamp(2rem, 5vw, 3.3rem);
-  font-weight: 700; line-height: 1.18; letter-spacing: -.5px;
+  font-family: var(--font-display);
+  font-size: clamp(2.1rem, 4.6vw, 3.6rem);
+  font-weight: 800; line-height: 1.32; letter-spacing: 0;
+  max-width: 20ch;
 }
-.hero-sub { max-width: 540px; font-size: clamp(15px, 2vw, 18px); color: var(--ink-mute); }
-.hero-ctas { display: flex; flex-wrap: wrap; gap: 14px; }
+.hero h1 .text-gradient { color: var(--accent); }
 
-/* staged entrance */
-.stagger { opacity: 0; transform: translateY(24px); filter: blur(8px); animation: rise .7s var(--ease-expo) forwards; }
-.stagger.d1 { animation-delay: .15s; }
-.stagger.d2 { animation-delay: .28s; }
-.stagger.d3 { animation-delay: .42s; }
-.stagger.d4 { animation-delay: .56s; }
-@keyframes rise { to { opacity: 1; transform: translateY(0); filter: blur(0); } }
-
-/* ---------- 3D scene ---------- */
-.scene {
-  position: relative;
-  perspective: 1400px;
-  opacity: 0; transform: scale(.92); filter: blur(10px);
-  animation: scene-in .9s var(--ease-expo) .4s forwards;
+.hero-sub {
+  max-width: 52ch;
+  font-size: clamp(15px, 1.35vw, 17px);
+  color: var(--ink-mute);
+  line-height: 1.8;
 }
-@keyframes scene-in { to { opacity: 1; transform: scale(1); filter: blur(0); } }
+.hero-ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 
-.scene-inner {
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform .25s ease-out;
-  will-change: transform;
+.figure { padding: 15px 0; border-top: 1px solid var(--rule); }
+.figure-num {
+  font-family: var(--font-display);
+  font-size: 1.9rem; font-weight: 800; line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
+.figure-label { margin-top: 2px; font-size: 13px; color: var(--ink-mute); }
 
-.dash-card {
+/* الانكشاف: صعود هادئ متدرّج بعد رسم الشبكة */
+.ink-line { display: block; }
+.ink-line > span { display: block; }
+.stagger { opacity: 0; transform: translateY(12px); animation: rise .55s var(--ease-expo) forwards; }
+.stagger.d1 { animation-delay: .34s; }
+.stagger.d2 { animation-delay: .42s; }
+.stagger.d3 { animation-delay: .5s; }
+.stagger.d4 { animation-delay: .58s; }
+@keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+/* ---------- Stage rail ----------
+   شريط بعرض الصفحة يحمل مسار المشروع الحقيقي كما تعرّفه config/statuses.php */
+.stage {
   position: relative; z-index: 2;
-  border-radius: 30px;
-  padding: 24px;
-  animation: floaty 9s ease-in-out infinite;
-}
-@keyframes floaty {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
+  padding: 32px 28px 46px;
+  opacity: 0;
+  animation: rise .6s var(--ease-expo) .66s forwards;
 }
 
-.dash-chrome { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.dash-dots { display: flex; gap: 7px; }
-.dash-dots span { width: 12px; height: 12px; border-radius: 50%; }
-.dash-dots .r { background: #fb7185; } .dash-dots .y { background: #fbbf24; } .dash-dots .g { background: #34d399; }
-.dash-title { font-size: 12px; font-weight: 600; color: var(--ink-mute); }
+.stage-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+.stage-label { font-size: 12px; font-weight: 600; color: var(--ink-mute); }
+.stage-project { font-family: var(--font-display); font-size: 14px; font-weight: 700; }
 
-.dash-project {
-  display: flex; align-items: center; gap: 12px;
-  background: rgba(238,244,255,.8);
-  border-radius: 18px; padding: 14px;
-  margin-bottom: 16px;
+.rail { position: relative; }
+/* المسار يبدأ وينتهي عند مركزَي العقدتين الأولى والأخيرة (١٢٫٥٪ من كل
+   طرف)، فلا يتدلّى طرفٌ منه في الفراغ */
+.rail-line {
+  position: absolute; inset-inline: 12.5%; top: 11px; height: 1px;
+  background: var(--rule);
 }
-.dash-project-icon {
-  width: 44px; height: 44px; border-radius: 13px; flex-shrink: 0;
-  display: grid; place-items: center; color: #fff;
-  background: linear-gradient(135deg, var(--brand-500), var(--violet));
+/* الحركة الوحيدة ذات المعنى: المسار يرسم نفسه من البداية حتى المرحلة
+   الحالية. الأنيميشن هنا ليس زينة — هو ما تقوله الصفحة أصلاً. */
+.rail-line::before {
+  content: "";
+  position: absolute; inset-block: 0; inset-inline-start: 0;
+  inline-size: var(--progress, 50%);
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: right; /* RTL: يبدأ من اليمين حيث أول مرحلة */
+  animation: rail-advance 1s var(--ease-expo) 1s forwards;
 }
-.dash-project-name { font-size: 14px; font-weight: 700; }
-.dash-project-phase { font-size: 12px; color: var(--ink-mute); }
-.dash-pct {
-  margin-inline-start: auto;
-  background: #d1fae5; color: #047857;
-  padding: 4px 12px; border-radius: 999px;
-  font-size: 12px; font-weight: 700;
-}
+@keyframes rail-advance { to { transform: scaleX(1); } }
 
-.dash-progress-label {
-  display: flex; justify-content: space-between;
-  font-size: 12px; font-weight: 600; color: var(--ink-mute);
-  margin-bottom: 6px;
+.rail-steps {
+  position: relative;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
 }
-.dash-progress-label b { color: var(--brand-600); }
-.dash-track { height: 10px; border-radius: 999px; background: var(--brand-100); overflow: hidden; margin-bottom: 20px; }
-.dash-fill {
-  height: 100%; width: 0; border-radius: 999px;
-  background: linear-gradient(90deg, var(--brand-500), var(--violet), var(--cyan));
-  animation: fill-in 1.4s var(--ease-expo) 1.2s forwards;
-}
-@keyframes fill-in { to { width: 78%; } }
+.step-node { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
 
-.dash-chart {
-  display: flex; align-items: flex-end; justify-content: space-between; gap: 8px;
-  background: rgba(255,255,255,.6);
-  border-radius: 18px; padding: 16px;
-  height: 100px;
-}
-.dash-chart span {
-  flex: 1; border-radius: 8px 8px 3px 3px;
-  background: linear-gradient(to top, rgba(93,114,246,.7), rgba(167,139,250,.8));
-  height: 0;
-  animation: bar-in .8s var(--ease-expo) forwards;
-}
-@keyframes bar-in { to { height: var(--h); } }
-
-/* floating cards */
-.float-card {
-  position: absolute; z-index: 3;
-  border-radius: 20px; padding: 16px;
-  animation: floaty 6s ease-in-out infinite;
-}
-.float-approved { top: -34px; inset-inline-start: -30px; width: 250px; animation-delay: .4s; }
-.float-team { bottom: -40px; inset-inline-end: -24px; width: 220px; animation-duration: 7s; animation-delay: 1s; }
-
-.float-row { display: flex; align-items: flex-start; gap: 10px; }
-.float-icon {
-  width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0;
+.node {
+  inline-size: 23px; block-size: 23px; border-radius: 50%;
   display: grid; place-items: center;
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  color: transparent;
 }
-.float-icon.green { background: #d1fae5; color: #059669; }
-.float-title { font-size: 13px; font-weight: 700; }
-.float-sub { font-size: 11px; color: var(--ink-mute); margin-top: 2px; }
+.node svg { inline-size: 12px; block-size: 12px; }
 
-.team-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
-.team-label svg { color: var(--brand-500); }
-.avatars { display: flex; }
-.avatars span {
-  width: 34px; height: 34px; border-radius: 50%;
-  border: 2px solid #fff;
+.step-node.done .node { background: var(--ink); border-color: var(--ink); color: #fff; }
+.step-node.current .node {
+  background: var(--paper-raised);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.step-node.current .node::after {
+  content: ""; inline-size: 7px; block-size: 7px; border-radius: 50%;
+  background: var(--accent);
+}
+
+.step-name { font-size: 13px; font-weight: 600; color: var(--ink-mute); }
+.step-node.done .step-name { color: var(--ink-soft); }
+.step-node.current .step-name { color: var(--ink); }
+.step-meta { font-size: 11px; color: var(--ink-mute); }
+
+/* كل عقدة تُضيء لحظة بلوغ الخط إياها — التوقيتات محسوبة على مراكز
+   الأعمدة الأربعة (١٢٫٥٪ · ٣٧٫٥٪ · ٦٢٫٥٪) لا مختارة عشوائياً */
+.step-node .node,
+.step-node .step-name,
+.step-node .step-meta { opacity: 0; animation: node-in .45s var(--ease-expo) forwards; }
+.step-node .node { transform: scale(.72); }
+
+.step-node:nth-child(1) .node,
+.step-node:nth-child(1) .step-name,
+.step-node:nth-child(1) .step-meta { animation-delay: 1.05s; }
+.step-node:nth-child(2) .node,
+.step-node:nth-child(2) .step-name,
+.step-node:nth-child(2) .step-meta { animation-delay: 1.4s; }
+.step-node:nth-child(3) .node,
+.step-node:nth-child(3) .step-name,
+.step-node:nth-child(3) .step-meta { animation-delay: 1.75s; }
+.step-node:nth-child(4) .node,
+.step-node:nth-child(4) .step-name,
+.step-node:nth-child(4) .step-meta { animation-delay: 1.95s; }
+
+@keyframes node-in { to { opacity: 1; transform: scale(1); } }
+
+/* العقدة النشطة وحدها تنبض بهدوء: إشارة أن هذه المرحلة جارية الآن */
+.step-node.current .node {
+  animation:
+    node-in .45s var(--ease-expo) 1.75s forwards,
+    node-pulse 2.8s ease-in-out 2.3s infinite;
+}
+@keyframes node-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px var(--accent-soft); }
+  50% { box-shadow: 0 0 0 9px rgba(37,99,235,.09); }
+}
+
+/* نقطة الشارة تومض كمؤشر حيّ */
+.badge .dot { animation: dot-live 2.4s ease-in-out 1.4s infinite; }
+@keyframes dot-live {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,.45); }
+  55% { box-shadow: 0 0 0 5px rgba(37,99,235,0); }
+}
+
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 40px; padding: 60px 0 48px; }
+  .hero-copy, .hero-figures { grid-column: auto; padding-inline: 22px; }
+  .hero-figures { flex-direction: row; gap: 24px; }
+  .figures-label { display: none; }
+  .figure { flex: 1; }
+  .hero-rules { grid-template-columns: repeat(3, 1fr); }
+  .stage { padding-inline: 22px; }
+}
+
+@media (max-width: 720px) {
+  .rail-steps { grid-template-columns: repeat(2, 1fr); gap: 26px 8px; }
+  .rail-line { display: none; }
+  .hero-figures { flex-direction: column; gap: 0; }
+  .figure { border-bottom: 0; }
+  .figure:last-child { border-bottom: 1px solid var(--rule); }
+}
+
+/* الهيدر ثابت بارتفاع ٦٨ بكسل، فبدون هذا يقفز أي رابط تنقّل إلى قسم
+   يختفي عنوانه خلف الهيدر. المسافة تُقاس من ارتفاعه لا بالتخمين. */
+:root { --header-h: 68px; }
+section[id], [id] { scroll-margin-top: calc(var(--header-h) + 18px); }
+@media (max-width: 860px) { :root { --header-h: 62px; } }
+
+/* ---------- Sections ----------
+   كل قسم يفصله خط شعرة عمّا قبله. لا فواصل مزخرفة ولا تدرّجات. */
+.section { position: relative; padding: 100px 0; }
+.section + .section { border-top: 1px solid var(--rule); }
+.section-divider { display: none; }
+
+/* رأس القسم ----------------------------------------------------------
+   كان سطراً رمادياً باهتاً. صار طبقتين: رقم ضخم شبحي يسند العنوان من
+   خلفه — نفس أسلوب الاسم الضخم في الفوتر — وفوقه بطاقة صغيرة مؤطَّرة.
+   الرقم يأتي من خاصية data-num فلا يتكرر في الـ markup كنص. */
+.section-head { position: relative; padding-bottom: 60px; }
+
+.section-head::before {
+  content: attr(data-num);
+  position: absolute;
+  inset-inline-start: -.06em; top: -.34em;
+  z-index: 0;
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 15vw, 12rem);
+  font-weight: 800; line-height: 1;
+  color: var(--paper-sunk);
+  letter-spacing: -.04em;
+  user-select: none; pointer-events: none;
+}
+
+.section-index {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 32px;
+}
+/* البطاقة: إطار وخلفية ورقية لتقرأ كعلامة لا كنص سائب */
+.section-index > span {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 7px 14px;
+  border: 1px solid var(--rule); border-radius: 999px;
+  background: var(--paper-raised);
+  font-size: 12.5px; font-weight: 700; color: var(--ink);
+}
+/* نقطة اللون: الإشارة الوحيدة الملوّنة في رأس القسم */
+.section-index > span::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent);
+}
+/* الخط يتلاشى بدل أن ينقطع فجأة عند حافة الصفحة */
+.section-index::after {
+  content: ""; flex: 1; height: 1px;
+  background: linear-gradient(to left, var(--rule), transparent);
+}
+[dir="ltr"] .section-index::after {
+  background: linear-gradient(to right, var(--rule), transparent);
+}
+
+/* العنوان والنص فوق الرقم الشبحي */
+.section-head-grid, .section h2, .section-head p { position: relative; z-index: 1; }
+
+.section-head-grid {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 24px 56px; align-items: start;
+}
+.section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 2.9vw, 2.3rem);
+  font-weight: 800; line-height: 1.45; letter-spacing: 0;
+}
+.section-head p {
+  color: var(--ink-mute);
+  font-size: 15.5px; line-height: 1.9;
+  padding-top: 6px;
+}
+
+/* ---------- Cell grid ----------
+   العنصر الأساسي في كل الأقسام: خلايا تتقاسم حدودها بدل بطاقات طافية.
+   الفاصل هو خلفية الشبكة الظاهرة من خلال gap مقداره بكسل واحد. */
+.cell-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+.cell {
+  background: var(--paper);
+  padding: 32px 28px;
+  transition: background-color .2s ease;
+}
+.cell:hover { background: var(--paper-raised); }
+
+.cell-icon {
+  width: 38px; height: 38px;
   display: grid; place-items: center;
-  font-size: 11px; font-weight: 700; color: #fff;
+  border: 1px solid var(--rule); border-radius: 9px;
+  color: var(--ink);
+  margin-bottom: 22px;
 }
-.avatars span + span { margin-inline-start: -10px; }
-.av1 { background: linear-gradient(135deg, #7d97fc, #464eea); }
-.av2 { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
-.av3 { background: linear-gradient(135deg, #22d3ee, #0891b2); }
-.av4 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
-.av-more { background: var(--brand-50) !important; color: var(--brand-600) !important; }
-
-/* phone in hero */
-.hero-phone {
-  position: absolute; z-index: 1;
-  top: 26%; inset-inline-end: -95px;
-  width: 160px;
-  animation: floaty 8s ease-in-out infinite .5s;
+.cell-index {
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 800; color: var(--ink-mute);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 20px;
 }
-
-.phone-frame {
-  border-radius: 30px;
-  background: rgba(255,255,255,.88);
-  padding: 8px;
-  box-shadow: var(--shadow-lift);
-}
-.phone-screen {
-  border-radius: 24px;
-  background: linear-gradient(to bottom, var(--brand-50), #fff);
-  padding: 12px;
-}
-.phone-notch { width: 46px; height: 5px; border-radius: 999px; background: rgba(15,18,34,.1); margin: 0 auto 12px; }
-.phone-notif {
-  display: flex; align-items: center; gap: 8px;
-  background: #fff; border-radius: 12px; padding: 9px;
-  box-shadow: var(--shadow-soft);
+.cell h3 {
+  font-family: var(--font-display);
+  font-size: 16.5px; font-weight: 700; line-height: 1.6;
   margin-bottom: 10px;
 }
-.phone-notif-icon {
-  width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
-  display: grid; place-items: center;
-  background: var(--brand-100); color: var(--brand-600);
-}
-.phone-notif b { font-size: 9px; display: block; }
-.phone-notif small { font-size: 8px; color: var(--ink-mute); }
-.ph-line { height: 7px; border-radius: 999px; background: var(--brand-100); margin-bottom: 8px; }
-.ph-line.w80 { width: 80%; } .ph-line.w60 { width: 60%; background: #ede9fe; } .ph-line.w66 { width: 66%; }
-.ph-block { height: 60px; border-radius: 12px; background: linear-gradient(135deg, var(--brand-100), #ede9fe); margin-bottom: 8px; }
+.cell p { color: var(--ink-mute); font-size: 14.5px; line-height: 1.85; }
 
-.ground-shadow {
-  position: absolute; bottom: -60px; left: 50%;
-  transform: translateX(-50%);
-  width: 70%; height: 36px;
-  border-radius: 50%;
-  background: rgba(28,29,77,.1);
-  filter: blur(24px);
+/* الخلية النشطة: شريط أزرق رفيع على حافتها العليا */
+.cell.is-accent { position: relative; }
+.cell.is-accent::before {
+  content: ""; position: absolute; inset-inline: 0; top: 0;
+  height: 2px; background: var(--accent);
 }
-
-/* particles */
-.particles { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
-.particles i {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(125,151,252,.4);
-  animation: particle 9s ease-in-out infinite;
-}
-@keyframes particle {
-  0%, 100% { transform: translateY(0); opacity: .2; }
-  50% { transform: translateY(-30px); opacity: .7; }
-}
-
-/* ---------- Sections ---------- */
-.section { position: relative; padding: 96px 0; }
-.section-divider {
-  position: absolute; top: 0; inset-inline: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--brand-200), transparent);
-}
-
-.section-head { max-width: 620px; margin: 0 auto 56px; text-align: center; }
-.section-head .badge { margin-bottom: 16px; }
-.section-head h2 {
-  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-  font-weight: 700; line-height: 1.25; letter-spacing: -.4px;
-  margin-bottom: 14px;
-}
-.section-head p { color: var(--ink-mute); font-size: clamp(14px, 2vw, 17px); }
-
-/* reveal on scroll */
-.reveal { opacity: 0; transform: translateY(32px); filter: blur(8px); transition: all .6s var(--ease-expo); }
-.reveal.visible { opacity: 1; transform: translateY(0); filter: blur(0); }
-.reveal.d1 { transition-delay: .1s; } .reveal.d2 { transition-delay: .2s; } .reveal.d3 { transition-delay: .3s; } .reveal.d4 { transition-delay: .4s; }
-
-/* ---------- Stats ---------- */
-.stats-card {
-  border-radius: 30px;
-  padding: 44px 32px;
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 28px;
-}
-.stat { text-align: center; }
-.stat-icon {
-  width: 48px; height: 48px; margin: 0 auto 10px;
-  border-radius: 16px;
-  display: grid; place-items: center;
-  background: linear-gradient(135deg, var(--brand-50), #f5f3ff);
-  color: var(--brand-600);
-  box-shadow: var(--shadow-soft);
-}
-.stat-num { font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 700; font-variant-numeric: tabular-nums; }
-.stat-label { font-size: 13px; color: var(--ink-mute); font-weight: 500; margin-top: 4px; }
 
 /* ---------- About ---------- */
-.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: center; }
-.about-copy h2 { font-size: clamp(1.6rem, 3.5vw, 2.3rem); font-weight: 700; line-height: 1.25; margin: 14px 0; }
-.about-copy > p { color: var(--ink-mute); font-size: 16px; margin-bottom: 22px; }
-.programs-title {
-  font-size: 12px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--brand-600);
-  margin-bottom: 12px;
+.about-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 64px; align-items: start;
 }
-.program-item {
-  display: flex; align-items: center; gap: 12px;
-  border-radius: 18px; padding: 14px 16px;
-  margin-bottom: 10px;
-  transition: transform .3s var(--ease-expo), box-shadow .3s;
-  font-size: 14px; font-weight: 600; color: var(--ink-soft);
-}
-.program-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
-.program-item svg { color: #10b981; flex-shrink: 0; }
+.about-copy h2 { margin-bottom: 20px; }
+.about-copy > p { color: var(--ink-mute); font-size: 15.5px; line-height: 1.95; margin-bottom: 34px; }
 
-.about-illustration {
-  position: relative;
-  border-radius: 30px; padding: 40px 32px;
-  overflow: hidden;
-  transition: transform .25s ease-out;
-  transform-style: preserve-3d;
+/* ركائز المنصة: صفوف مرقّمة يفصلها خط، لا شرائح زجاجية */
+.pillars { border-top: 1px solid var(--rule); }
+.pillar {
+  display: grid; grid-template-columns: 34px 1fr;
+  gap: 16px; align-items: baseline;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--rule);
 }
-.about-illustration .glow-a { position: absolute; top: -60px; inset-inline-end: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(196,181,253,.5); filter: blur(48px); }
-.about-illustration .glow-b { position: absolute; bottom: -80px; inset-inline-start: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(197,215,255,.5); filter: blur(48px); }
-.about-scene { position: relative; display: flex; flex-direction: column; align-items: center; gap: 16px; }
-.about-building {
-  width: 92px; height: 92px; border-radius: 26px;
-  display: grid; place-items: center; color: #fff;
-  background: linear-gradient(135deg, var(--brand-500), #7c3aed);
-  box-shadow: var(--shadow-lift);
-  animation: floaty 7s ease-in-out infinite;
+.pillar-num {
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 800; color: var(--ink-mute);
+  font-variant-numeric: tabular-nums;
 }
-.about-line { width: 1px; height: 30px; background: linear-gradient(to bottom, var(--brand-300), transparent); }
-.about-programs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
-.about-chip {
-  border-radius: 18px; padding: 14px 10px;
-  text-align: center;
-  animation: floaty 6s ease-in-out infinite;
-}
-.about-chip:nth-child(2) { animation-delay: .6s; }
-.about-chip:nth-child(3) { animation-delay: 1.2s; }
-.about-chip-icon {
-  width: 36px; height: 36px; margin: 0 auto 8px;
-  border-radius: 12px; display: grid; place-items: center;
-  background: var(--brand-50); color: var(--brand-600);
-}
-.about-chip span { font-size: 11px; font-weight: 600; color: var(--ink-soft); line-height: 1.4; display: block; }
+.pillar-text { font-size: 15px; font-weight: 600; }
+.pillar-note { display: block; margin-top: 4px; font-size: 13.5px; font-weight: 400; color: var(--ink-mute); }
 
 .link-more {
   display: inline-flex; align-items: center; gap: 8px;
-  margin-top: 20px;
-  font-size: 14px; font-weight: 700; color: var(--brand-600);
+  margin-top: 30px;
+  font-size: 15px; font-weight: 600; color: var(--ink);
+  padding-bottom: 3px; border-bottom: 1px solid var(--rule-strong);
+  transition: border-color .2s ease, gap .2s var(--ease-expo);
 }
-.link-more svg { transition: transform .3s; }
-.link-more:hover svg { transform: translateX(var(--arrow-dir, -4px)); }
-[dir="ltr"] .link-more:hover svg { --arrow-dir: 4px; }
+.link-more:hover { border-bottom-color: var(--ink); gap: 12px; }
 
-/* ---------- Cards (services) ---------- */
-.cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.p-card {
-  position: relative; overflow: hidden;
-  border-radius: 30px; padding: 30px 26px;
-  transition: transform .5s var(--ease-expo), box-shadow .5s;
-  transform-style: preserve-3d;
-  height: 100%;
+/* لوح جانبي يعرض المنصة كطبقات — بديل رسم المبنى المزخرف */
+.about-panel { border: 1px solid var(--rule); background: var(--paper-raised); }
+.panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--rule);
+  font-size: 12.5px; font-weight: 600; color: var(--ink-mute);
 }
-.p-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lift); }
-.p-card .card-glow {
-  position: absolute; top: -56px; inset-inline-end: -56px;
-  width: 160px; height: 160px; border-radius: 50%;
-  filter: blur(48px); opacity: 0;
-  transition: opacity .5s;
+.panel-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.panel-row {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 12px; align-items: center;
+  padding: 18px 20px;
 }
-.p-card:hover .card-glow { opacity: 1; }
-.card-glow.g-blue { background: rgba(197,215,255,.7); }
-.card-glow.g-violet { background: rgba(221,214,254,.7); }
-.card-glow.g-cyan { background: rgba(165,243,252,.7); }
-
-.card-icon {
-  width: 56px; height: 56px; border-radius: 18px;
-  display: grid; place-items: center; color: #fff;
-  box-shadow: var(--shadow-glow);
-  margin-bottom: 20px;
-  animation: floaty 6s ease-in-out infinite;
-}
-.card-icon.i-blue { background: linear-gradient(135deg, var(--brand-500), var(--brand-600)); }
-.card-icon.i-violet { background: linear-gradient(135deg, #a78bfa, #7c3aed); animation-delay: .7s; }
-.card-icon.i-cyan { background: linear-gradient(135deg, #22d3ee, #0891b2); animation-delay: 1.4s; }
-
-.p-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
-.p-card p { font-size: 14px; color: var(--ink-mute); }
-
-/* ---------- Features ---------- */
-.features-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: center; margin-top: 56px; }
-.feature-list { display: flex; flex-direction: column; gap: 18px; }
-.feature-item {
-  display: flex; gap: 16px;
-  border-radius: 24px; padding: 22px;
-  transition: transform .4s var(--ease-expo), box-shadow .4s;
-}
-.feature-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
-.feature-icon {
-  width: 48px; height: 48px; border-radius: 16px; flex-shrink: 0;
-  display: grid; place-items: center;
-  background: linear-gradient(135deg, var(--brand-50), #f5f3ff);
-  color: var(--brand-600);
-  box-shadow: var(--shadow-soft);
-  transition: transform .4s var(--ease-expo);
-}
-.feature-item:hover .feature-icon { transform: scale(1.1) rotate(3deg); }
-.feature-item h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-.feature-item p { font-size: 13.5px; color: var(--ink-mute); }
-
-.features-phone-wrap { position: relative; display: flex; justify-content: center; perspective: 1200px; }
-.features-phone {
-  width: 270px;
-  animation: floaty 8s ease-in-out infinite;
-  position: relative;
-}
-.features-phone .phone-frame { border-radius: 40px; padding: 10px; }
-.features-phone .phone-screen { border-radius: 32px; padding: 16px; background: linear-gradient(to bottom, var(--brand-50), #fff, #f5f3ff); }
-.app-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-.app-brand { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; }
-.app-brand i {
-  width: 30px; height: 30px; border-radius: 10px;
-  display: grid; place-items: center; color: #fff;
-  background: linear-gradient(135deg, var(--brand-500), var(--violet));
-}
-.app-bell {
-  position: relative;
-  width: 30px; height: 30px; border-radius: 10px;
-  display: grid; place-items: center;
-  background: #fff; color: var(--brand-600);
-  box-shadow: var(--shadow-soft);
-}
-.app-bell::after {
-  content: ""; position: absolute; top: -2px; inset-inline-end: -2px;
-  width: 9px; height: 9px; border-radius: 50%;
-  background: #f43f5e; border: 2px solid #fff;
-}
-.app-card { background: #fff; border-radius: 16px; padding: 13px; box-shadow: var(--shadow-soft); margin-bottom: 10px; }
-.app-progress-head { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 7px; }
-.app-progress-head b { color: var(--brand-600); }
-.app-track { height: 8px; border-radius: 999px; background: var(--brand-100); overflow: hidden; }
-.app-fill { height: 100%; width: 78%; border-radius: 999px; background: linear-gradient(90deg, var(--brand-500), var(--violet)); }
-.app-task { display: flex; align-items: center; gap: 9px; background: rgba(255,255,255,.8); border-radius: 14px; padding: 11px; box-shadow: var(--shadow-soft); margin-bottom: 8px; }
-.app-task svg { flex-shrink: 0; }
-.app-task .done { color: #10b981; } .app-task .todo { color: rgba(15,18,34,.2); }
-.app-task-lines { flex: 1; }
-.app-task-lines i { display: block; height: 6px; border-radius: 999px; background: var(--brand-100); margin-bottom: 5px; }
-.app-task-lines i:last-child { width: 35%; background: rgba(15,18,34,.05); margin-bottom: 0; }
-.tl-75 { width: 75%; } .tl-66 { width: 66%; } .tl-80 { width: 80%; }
-.app-graphic { height: 84px; border-radius: 16px; margin-top: 10px; background: linear-gradient(135deg, rgba(93,114,246,.15), rgba(167,139,250,.15), rgba(34,211,238,.15)); }
-
-.float-badge {
-  position: absolute; top: 44px; inset-inline-end: -60px;
-  width: 160px; border-radius: 16px; padding: 12px;
-  animation: floaty 5s ease-in-out infinite .8s;
-  z-index: 2;
-}
-.float-badge .float-row { align-items: center; }
-.float-badge .float-title { font-size: 11px; line-height: 1.3; }
+.panel-row + .panel-row { border-top: 1px solid var(--rule); }
+.panel-row-name { font-size: 14.5px; font-weight: 600; }
+.panel-row-meta { font-size: 12.5px; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
+.panel-bar { grid-column: 1 / -1; height: 3px; background: var(--paper-sunk); }
+.panel-bar i { display: block; height: 100%; background: var(--ink); }
+.panel-bar i.accent { background: var(--accent); }
 
 /* ---------- Roles ---------- */
-.roles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-.role-card {
-  border-radius: 28px; padding: 28px 24px;
-  display: flex; flex-direction: column; gap: 18px;
-  transition: transform .5s var(--ease-expo), box-shadow .5s;
-  transform-style: preserve-3d;
-  height: 100%;
-}
-.role-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lift); }
-.role-icon-wrap { position: relative; width: 56px; }
-.role-icon-glow {
-  position: absolute; inset: 0;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(125,151,252,.4), rgba(167,139,250,.4));
-  filter: blur(18px);
-  transform: scale(.9);
-  transition: transform .5s;
-}
-.role-card:hover .role-icon-glow { transform: scale(1.15); }
+.role-cell { display: flex; flex-direction: column; gap: 0; padding: 0; }
+.role-head { padding: 30px 28px 24px; border-bottom: 1px solid var(--rule); }
 .role-icon {
-  position: relative;
-  width: 56px; height: 56px; border-radius: 20px;
+  width: 40px; height: 40px;
   display: grid; place-items: center;
-  background: linear-gradient(135deg, var(--brand-600), var(--violet));
-  color: #fff;
-  box-shadow: var(--shadow-glow);
+  border-radius: 9px; background: var(--ink); color: #fff;
+  margin-bottom: 20px;
 }
-.role-card h3 { font-size: 17px; font-weight: 700; }
-.role-card .role-tag { font-size: 13px; font-weight: 600; color: var(--brand-600); margin-top: 4px; }
-.role-points { display: flex; flex-direction: column; gap: 10px; list-style: none; padding: 0; margin: 0; }
-.role-points li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; line-height: 1.7; color: var(--ink-mute); }
-.role-points .role-check {
-  flex: none; margin-top: 3px;
-  width: 20px; height: 20px; border-radius: 8px;
-  display: grid; place-items: center;
-  background: rgba(16,185,129,.1); color: #059669;
-}
+.role-cell h3 { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.role-tag { font-size: 13.5px; color: var(--ink-mute); }
+.role-points { padding: 22px 28px 30px; display: flex; flex-direction: column; gap: 14px; }
+.role-points li { display: flex; align-items: flex-start; gap: 11px; font-size: 14.5px; line-height: 1.7; color: var(--ink-soft); }
+.role-check { flex: none; margin-top: 4px; color: var(--accent); }
 
-/* ---------- Lifecycle ---------- */
-.lifecycle-wrap { max-width: 760px; margin-inline: auto; position: relative; }
-.lifecycle-line {
-  position: absolute; top: 24px; bottom: 24px;
-  inset-inline-start: 27px;
-  width: 1px;
-  background: linear-gradient(to bottom, var(--brand-300), #c4b5fd, #a5f3fc);
+/* ---------- Showcase (مشاريع حقيقية) ----------
+   إثبات لا ادّعاء: عناوين من قاعدة البيانات لا نصوص تسويقية */
+.showcase { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.project-cell {
+  background: var(--paper);
+  padding: 26px 28px;
+  display: flex; flex-direction: column; gap: 14px;
+  transition: background-color .2s ease;
 }
-.step { border-radius: 24px; margin-bottom: 14px; transition: transform .4s var(--ease-expo), box-shadow .4s; position: relative; }
-.step:hover { transform: translateY(-2px); box-shadow: var(--shadow-soft); }
-.step.open { box-shadow: var(--shadow-lift); }
-.step-btn {
-  display: flex; align-items: center; gap: 16px;
-  width: 100%; padding: 18px;
+.project-cell:hover { background: var(--paper-raised); }
+.project-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.project-type {
+  font-size: 12px; font-weight: 600; color: var(--ink-mute);
+  padding: 4px 10px; border: 1px solid var(--rule); border-radius: 999px;
+}
+.project-state { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-mute); }
+.project-state i { width: 6px; height: 6px; border-radius: 50%; background: var(--rule-strong); }
+.project-state.done i { background: var(--accent); }
+.project-title { font-family: var(--font-display); font-size: 16px; font-weight: 700; line-height: 1.65; }
+.project-meta {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  margin-top: auto; padding-top: 6px;
+  font-size: 12.5px; color: var(--ink-mute);
+}
+.project-meta span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ---------- Lifecycle ----------
+   أربع مراحل رأسية يربطها خط — لا أكورديون ولا بطاقات */
+.lifecycle { border-top: 1px solid var(--rule); }
+.lc-row {
+  display: grid; grid-template-columns: 58px minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 24px; align-items: baseline;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--rule);
+  transition: background-color .2s ease;
+}
+.lc-row:hover { background: var(--paper-raised); }
+.lc-num {
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 800; color: var(--ink-mute);
+  font-variant-numeric: tabular-nums;
+}
+.lc-title { font-family: var(--font-display); font-size: 16.5px; font-weight: 700; line-height: 1.6; }
+.lc-text { color: var(--ink-mute); font-size: 14.5px; line-height: 1.9; }
+
+/* ---------- FAQ ----------
+   أكورديون بخطوط فاصلة فقط، بلا بطاقات ولا ظلال */
+.faq { border-top: 1px solid var(--rule); }
+.faq-item { border-bottom: 1px solid var(--rule); }
+.faq-btn {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 24px 0;
   text-align: start;
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.6;
+  transition: color .15s ease;
 }
-.step-icon {
-  position: relative; z-index: 2;
-  width: 54px; height: 54px; border-radius: 17px; flex-shrink: 0;
-  display: grid; place-items: center;
-  background: #fff; color: var(--brand-600);
-  box-shadow: var(--shadow-soft);
-  transition: all .4s;
+.faq-btn:hover { color: var(--accent); }
+.faq-sign { flex: none; position: relative; width: 14px; height: 14px; color: var(--ink-mute); }
+.faq-sign::before, .faq-sign::after {
+  content: ""; position: absolute; inset-inline: 0; top: 50%;
+  height: 1.5px; background: currentColor;
+  transition: transform .3s var(--ease-expo);
 }
-.step.open .step-icon {
-  background: linear-gradient(135deg, var(--brand-500), var(--violet));
-  color: #fff;
-  box-shadow: var(--shadow-glow);
-}
-.step-meta { flex: 1; }
-.step-num { font-size: 11px; font-weight: 700; color: var(--brand-500); display: block; }
-.step-meta h3 { font-size: 16px; font-weight: 700; }
-.step-chev { color: var(--ink-mute); transition: transform .3s; flex-shrink: 0; }
-.step.open .step-chev { transform: rotate(180deg); }
-.step-body {
-  max-height: 0; overflow: hidden;
-  transition: max-height .4s var(--ease-expo);
-}
-.step-body p {
-  padding: 0 18px 18px;
-  padding-inline-start: 88px;
-  font-size: 14px; color: var(--ink-mute);
+.faq-sign::after { transform: rotate(90deg); }
+.faq-item.open .faq-sign { color: var(--accent); }
+.faq-item.open .faq-sign::after { transform: rotate(0deg); }
+
+.faq-body { overflow: hidden; max-height: 0; transition: max-height .35s var(--ease-expo); }
+.faq-body p {
+  padding: 0 0 26px;
+  max-width: 70ch;
+  color: var(--ink-mute); font-size: 14.5px; line-height: 1.95;
 }
 
-/* ---------- How it works ---------- */
-.how-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+/* ---------- For departments ---------- */
+.dept-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 56px; align-items: center;
 }
-.how-step {
-  position: relative;
-  border-radius: 24px;
-  padding: 28px 22px 24px;
-  transition: transform .4s var(--ease-expo), box-shadow .4s;
+.dept-points { border-top: 1px solid var(--rule); }
+.dept-point {
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 14px; align-items: start;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--rule);
 }
-.how-step:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
-.how-num {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  margin-bottom: 16px;
-  font-size: 19px;
-  font-weight: 700;
-  color: #fff;
-  background: linear-gradient(135deg, var(--brand-600), var(--violet));
-  box-shadow: var(--shadow-glow);
-}
-.how-step h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-.how-step p { font-size: 13.5px; color: var(--ink-mute); }
-/* سهم واصل بين الخطوات (شاشات كبيرة فقط) */
-.how-step:not(:last-child)::after {
-  content: "←";
-  position: absolute;
-  top: 34px;
-  inset-inline-end: -18px;
-  color: var(--brand-300);
-  font-size: 18px;
-  font-weight: 700;
-}
-[dir="ltr"] .how-step:not(:last-child)::after { content: "→"; }
+.dept-point svg { margin-top: 3px; color: var(--accent); flex: none; }
+.dept-point b { display: block; font-family: var(--font-display); font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+.dept-point span { color: var(--ink-mute); font-size: 14px; line-height: 1.85; }
 
-@media (max-width: 1024px) {
-  .how-grid { grid-template-columns: repeat(2, 1fr); }
-  .how-step::after { display: none; }
-}
-@media (max-width: 560px) {
-  .how-grid { grid-template-columns: 1fr; }
+@media (max-width: 900px) {
+  .showcase { grid-template-columns: 1fr; }
+  .lc-row { grid-template-columns: 40px 1fr; gap: 14px; }
+  .lc-text { grid-column: 2; }
+  .dept-grid { grid-template-columns: 1fr; gap: 36px; }
 }
 
 /* ---------- Contact ---------- */
-.contact-info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
-.info-card {
-  display: flex; align-items: center; gap: 14px;
-  border-radius: 24px; padding: 20px;
-  transition: transform .4s var(--ease-expo), box-shadow .4s;
+.contact-grid {
+  display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  border: 1px solid var(--rule);
+  background: var(--rule); gap: 1px;
 }
-.info-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
-.info-icon {
-  width: 48px; height: 48px; border-radius: 16px; flex-shrink: 0;
-  display: grid; place-items: center; color: #fff;
-  background: linear-gradient(135deg, var(--brand-500), var(--violet));
-  box-shadow: var(--shadow-glow);
-  transition: transform .4s;
-}
-.info-card:hover .info-icon { transform: scale(1.1); }
-.info-card b { font-size: 14px; display: block; }
-.info-card small { font-size: 12px; color: var(--ink-mute); }
-.info-ltr { direction: ltr; }
+.contact-aside { background: var(--paper); padding: 38px 32px; }
+.contact-aside h3 { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-bottom: 12px; }
+.contact-aside p { color: var(--ink-mute); font-size: 14.5px; line-height: 1.9; margin-bottom: 28px; }
+.contact-point { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-top: 1px solid var(--rule); font-size: 14px; }
+.contact-point svg { flex: none; color: var(--ink-mute); }
 
-.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.map-card { border-radius: 30px; padding: 8px; overflow: hidden; min-height: 340px; }
-.map-card iframe {
-  width: 100%; height: 100%; min-height: 324px;
-  border: 0; border-radius: 24px;
-  filter: grayscale(30%);
-  transition: filter .5s;
-}
-.map-card:hover iframe { filter: grayscale(0); }
-
-.contact-form { border-radius: 30px; padding: 30px; display: flex; flex-direction: column; gap: 16px; }
+.contact-form { background: var(--paper); padding: 38px 32px; display: flex; flex-direction: column; gap: 16px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.contact-form input, .contact-form textarea {
+/* تسمية ظاهرة فوق كل حقل — الـ placeholder وحده يختفي عند الكتابة */
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field label { font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+.contact-form input,
+.contact-form textarea {
   width: 100%;
-  border: 1px solid rgba(255,255,255,.8);
-  background: rgba(255,255,255,.7);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  border-radius: 16px;
-  padding: 14px 16px;
-  font-family: inherit; font-size: 14px; color: var(--ink);
-  box-shadow: var(--shadow-soft);
-  transition: all .3s;
+  font-family: inherit; font-size: 14.5px; color: var(--ink);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule); border-radius: 7px;
+  padding: 13px 15px;
+  transition: border-color .2s ease;
 }
-.contact-form input::placeholder, .contact-form textarea::placeholder { color: rgba(107,113,134,.7); }
-.contact-form input:focus, .contact-form textarea:focus {
-  border-color: var(--brand-400);
-  background: #fff;
-  box-shadow: var(--shadow-glow);
-  outline: none;
-}
-.contact-form textarea { resize: none; }
-.contact-form .btn { align-self: center; }
+.contact-form input::placeholder,
+.contact-form textarea::placeholder { color: var(--ink-mute); }
+.contact-form input:focus,
+.contact-form textarea:focus { outline: none; border-color: var(--ink); }
+.contact-form input:read-only { background: var(--paper-sunk); color: var(--ink-mute); }
+.contact-form input.is-invalid,
+.contact-form textarea.is-invalid { border-color: var(--ds-danger); }
+.contact-form textarea { resize: vertical; min-height: 130px; }
+.contact-form .btn { align-self: flex-start; margin-top: 4px; }
+
 .form-alert {
-  display: flex; align-items: center; gap: 8px;
-  border-radius: 16px; padding: 12px 16px;
-  font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; gap: 9px;
+  padding: 12px 15px; border-radius: 7px;
+  font-size: 14px;
+  border: 1px solid var(--rule);
 }
-.form-alert.ok { background: #ecfdf5; color: #047857; }
-.form-alert.err { background: #fff1f2; color: #be123c; }
-.is-invalid { border-color: #fda4af !important; }
+.form-alert svg { flex: none; }
+.form-alert.ok { color: #065f46; background: #ecfdf5; border-color: #a7f3d0; }
+.form-alert.err { color: #9f1239; background: #fff1f2; border-color: #fecdd3; }
+
+/* ---------- Closing CTA ----------
+   الصفحة كانت تنتهي بنموذج ثم سطر فوتر باهت. هذا اللوح الحبري يغلقها
+   بنداء واحد واضح، ويمنح الأسود الذي تحمله الهوية مساحته الوحيدة. */
+.cta-band {
+  background: var(--ink);
+  color: #fff;
+  border-top: 1px solid var(--ink);
+}
+.cta-inner {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  gap: 32px; align-items: center;
+  padding: 64px 0;
+}
+.cta-band h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+  font-weight: 800; line-height: 1.5; letter-spacing: 0;
+  margin-bottom: 12px;
+}
+.cta-band p { color: rgba(255,255,255,.62); font-size: 15px; line-height: 1.85; max-width: 54ch; }
+.cta-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.cta-band .btn-primary { background: #fff; color: var(--ink); }
+.cta-band .btn-primary:hover { background: var(--accent); color: #fff; }
+.cta-band .btn-link { color: #fff; border-bottom-color: rgba(255,255,255,.3); }
+.cta-band .btn-link:hover { border-bottom-color: #fff; }
 
 /* ---------- Footer ---------- */
-.site-footer { padding: 40px 16px 20px; }
-.footer-card {
-  max-width: 1120px; margin-inline: auto;
-  border-radius: 30px; padding: 30px;
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 20px;
+.site-footer { border-top: 1px solid var(--rule); overflow: hidden; }
+
+.footer-cols {
+  display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  gap: 40px;
+  padding: 56px 0 44px;
 }
-.footer-brand { display: flex; align-items: center; gap: 12px; }
-.footer-brand b { font-size: 14px; display: block; }
-.footer-brand small { font-size: 12px; color: var(--ink-mute); }
-.socials { display: flex; gap: 8px; }
-.socials a {
-  width: 40px; height: 40px; border-radius: 12px;
+.footer-about { max-width: 34ch; }
+.footer-brand { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; }
+.footer-brand .brand-name { font-family: var(--font-display); font-weight: 800; font-size: 16px; }
+.footer-about p { color: var(--ink-mute); font-size: 14px; line-height: 1.9; }
+
+.footer-col-title {
+  font-size: 12px; font-weight: 700; color: var(--ink);
+  padding-bottom: 14px; margin-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+.footer-col a,
+.footer-col span.footer-note {
+  display: block;
+  padding: 8px 0;
+  font-size: 14px; color: var(--ink-mute);
+  transition: color .15s ease;
+}
+.footer-col a:hover { color: var(--ink); }
+
+.footer-socials { display: flex; gap: 6px; margin-top: 12px; }
+.footer-socials a {
+  width: 36px; height: 36px; border-radius: 8px;
   display: grid; place-items: center;
-  border: 1px solid var(--brand-100);
-  background: rgba(255,255,255,.7);
-  color: var(--ink-soft);
-  transition: all .3s var(--ease-expo);
+  border: 1px solid var(--rule); color: var(--ink-mute);
+  padding: 0;
+  transition: color .2s ease, border-color .2s ease;
 }
-.socials a:hover { transform: translateY(-4px); border-color: var(--brand-300); color: var(--brand-600); box-shadow: var(--shadow-glow); }
+.footer-socials a:hover { color: var(--ink); border-color: var(--ink); }
+
+/* الشريط السفلي: حقوق وفصل دراسي وزر العودة للأعلى */
+.footer-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 18px; flex-wrap: wrap;
+  padding: 18px 0;
+  border-top: 1px solid var(--rule);
+  font-size: 13px; color: var(--ink-mute);
+}
+.footer-meta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.footer-semester { display: inline-flex; align-items: center; gap: 7px; }
+.footer-semester i { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.footer-up {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-weight: 600; color: var(--ink-soft);
+  transition: gap .2s var(--ease-expo);
+}
+.footer-up:hover { gap: 11px; color: var(--ink); }
+
+/* اسم المنصة بحجم ضخم يقطعه حدّ الصفحة من الأسفل — عنصر طباعي لا نص يُقرأ.
+   الكلمة تُقرأ كاملة تقريباً؛ الربع الأخير وحده هو المقطوع. */
+.footer-wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(3.6rem, 15vw, 11rem);
+  line-height: 1;
+  color: var(--paper-sunk);
+  text-align: center;
+  margin-top: 26px;
+  margin-bottom: -.24em;
+  user-select: none;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .cta-inner { grid-template-columns: 1fr; gap: 26px; padding: 48px 0; }
+  .footer-cols { grid-template-columns: 1fr 1fr; gap: 32px; padding: 44px 0 34px; }
+  .footer-about { grid-column: 1 / -1; max-width: none; }
+}
+@media (max-width: 560px) {
+  .footer-cols { grid-template-columns: 1fr; }
+  .footer-bar { justify-content: flex-start; }
+}
 
 /* ---------- Back to top ---------- */
 .back-top {
-  position: fixed; bottom: 24px; inset-inline-end: 24px; z-index: 90;
-  width: 46px; height: 46px; border-radius: 14px;
-  display: grid; place-items: center; color: #fff;
-  background: linear-gradient(135deg, var(--brand-600), var(--violet));
-  box-shadow: var(--shadow-glow);
-  opacity: 0; pointer-events: none;
-  transform: translateY(12px);
-  transition: all .35s var(--ease-expo);
+  position: fixed; inset-inline-end: 22px; bottom: 22px; z-index: 90;
+  width: 42px; height: 42px; border-radius: 9px;
+  display: grid; place-items: center;
+  background: var(--ink); color: #fff;
+  opacity: 0; pointer-events: none; transform: translateY(8px);
+  transition: opacity .25s ease, transform .25s var(--ease-expo);
 }
 .back-top.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
-.back-top:hover { transform: translateY(-3px); }
 
-/* ---------- Cursor glow ---------- */
-.cursor-glow {
-  position: fixed; top: 0; left: 0; z-index: 0;
-  width: 400px; height: 400px;
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: .4;
-  background: radial-gradient(circle, rgba(93,114,246,.16) 0%, rgba(139,92,246,.08) 40%, transparent 70%);
-  transform: translate(-400px, -400px);
-  will-change: transform;
-}
+/* ---------- Reveal ----------
+   صعود هادئ عند التمرير — بلا ضبابية ولا تكبير */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .5s var(--ease-expo), transform .5s var(--ease-expo); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal.d1 { transition-delay: .07s; }
+.reveal.d2 { transition-delay: .14s; }
+.reveal.d3 { transition-delay: .21s; }
+.reveal.d4 { transition-delay: .28s; }
 
-/* ---------- Responsive ---------- */
+/* ---------- Responsive ----------
+   شبكات الخلايا تنهار تدريجياً: أربعة ← اثنان ← واحد.
+   بدونها كانت الخلايا تُضغط إلى شرائط رأسية وتنزلق الصفحة أفقياً. */
 @media (max-width: 1024px) {
-  .roles-grid { grid-template-columns: repeat(3, 1fr); }
-  .hero-phone { display: none; }
-  .float-badge { inset-inline-end: 0; }
+  .cols-4 { grid-template-columns: repeat(2, 1fr); }
+  .section { padding: 84px 0; }
 }
 
 @media (max-width: 860px) {
   .nav-links { display: none; }
   .menu-toggle { display: grid; }
   .nav-login { display: none; }
-  .hero-grid, .about-grid, .features-grid, .contact-grid { grid-template-columns: 1fr; }
-  .cards-grid { grid-template-columns: 1fr; }
-  .stats-card { grid-template-columns: repeat(2, 1fr); padding: 32px 20px; }
-  .contact-info-grid { grid-template-columns: 1fr; }
+  .nav-bar { height: 62px; }
+
+  .cols-2, .cols-3, .cols-4 { grid-template-columns: 1fr; }
+  .section-head-grid { grid-template-columns: 1fr; gap: 16px; }
+  .section-head { padding-bottom: 40px; }
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .contact-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
-  .roles-grid { grid-template-columns: 1fr; }
-  .float-approved { inset-inline-start: 0; }
-  .float-team { inset-inline-end: 0; }
-  .section { padding: 72px 0; }
-  .step-body p { padding-inline-start: 18px; }
-  .brand-sub { display: none; }
+  .cta-inner { grid-template-columns: 1fr; }
+
+  .section { padding: 64px 0; }
+  .hero { padding-top: 62px; }
+  .hero-copy { padding-bottom: 48px; }
+  .cell { padding: 26px 22px; }
+  .contact-aside, .contact-form { padding: 28px 22px; }
 }
 
-@media (max-width: 480px) {
-  .roles-grid { grid-template-columns: 1fr; }
-  .float-card { position: static; width: 100%; margin-top: 14px; animation: none; }
-  .scene-inner { display: flex; flex-direction: column; }
-  .ground-shadow { display: none; }
+@media (max-width: 560px) {
+  :root { --gutter: 16px; }
+  .brand { padding-inline-start: 12px; }
+  .nav-actions { padding-inline-end: 12px; }
+  .section { padding: 52px 0; }
+  .role-head { padding: 24px 22px 20px; }
+  .role-points { padding: 18px 22px 24px; }
 }
+
+/* ---------- Touch targets ----------
+   المعيار ٤٤ بكسل. على الماوس تبقى الروابط مضغوطة، وعلى اللمس تتوسّع. */
+@media (hover: none) and (pointer: coarse) {
+  .nav-links a,
+  .mobile-menu a,
+  .footer-col a,
+  .link-more,
+  .btn-link,
+  .footer-up { min-height: 44px; display: flex; align-items: center; }
+  .footer-col a { padding-block: 11px; }
+  .socials a, .footer-socials a { width: 44px; height: 44px; }
+  .lang-btn, .menu-toggle { min-height: 44px; }
+  .faq-btn { padding-block: 26px; }
+}
+
+/* ---------- Latin typography ----------
+   العربية خط متصل فتباعدها صفر دائماً؛ أما اللاتينية في الأحجام الكبيرة
+   فتحتاج تقارباً سالباً وإلا بدت مفكّكة. القاعدتان متناقضتان، فتُفصلان
+   بالاتجاه لا تُفرض إحداهما على الأخرى. */
+[dir="ltr"] .hero h1 {
+  letter-spacing: -.033em;
+  line-height: 1.08;
+  font-weight: 700;
+}
+[dir="ltr"] .section h2,
+[dir="ltr"] .cta-band h2 {
+  letter-spacing: -.021em;
+  line-height: 1.2;
+}
+[dir="ltr"] .cell h3,
+[dir="ltr"] .project-title,
+[dir="ltr"] .lc-title,
+[dir="ltr"] .faq-btn,
+[dir="ltr"] .role-cell h3,
+[dir="ltr"] .brand-name,
+[dir="ltr"] .stage-project { letter-spacing: -.012em; }
+
+/* الأرقام: مسافة ثابتة حتى لا ترقص عند تغيّر القيمة، وتقارب سالب خفيف */
+[dir="ltr"] .figure-num,
+[dir="ltr"] .fact-num,
+.figure-num, .fact-num, .cell-index, .pillar-num, .lc-num, .section-head::before {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+}
+
+/* توازن الأسطر: يمنع سقوط كلمة وحيدة في سطر — كانت "project" تسقط وحدها */
+.hero h1, .section h2, .cta-band h2, .cell h3, .project-title {
+  text-wrap: balance;
+}
+/* الفقرات: يمنع بقاء كلمة يتيمة في آخر سطر */
+.hero-sub, .section-head p, .cell p, .cta-band p { text-wrap: pretty; }
+
+/* ---------- Locale transition ----------
+   تبديل اللغة كان يقفز: ينعكس التخطيط وتتبدّل كل النصوص في إطار واحد.
+   View Transition يلتقط لقطة قبل وبعد ويمزج بينهما — وهو وحده القادر
+   على تنعيم انعكاس RTL إلى LTR، إذ لا يمكن تحريك ذلك بـ CSS. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: .42s;
+  animation-timing-function: var(--ease-expo);
+}
+
+/* البديل لمتصفح بلا دعم: يخفت المحتوى، يُستبدل النص وهو غير مرئي، ثم يعود */
+html.locale-swapping body {
+  opacity: .32;
+  transform: translateY(4px);
+}
+html.locale-swapping body {
+  transition: opacity .19s ease, transform .19s var(--ease-expo);
+}
+body { transition: opacity .22s ease, transform .22s var(--ease-expo); }
+
+/* أثناء التبديل تُكبح حركات الدخول: استبدال العنوان يعيد إنشاء عناصره
+   فتنطلق حركة طباعة الحبر فوق مزج الصفحة — مشهدان متزامنان. */
+html.no-entrance .ink-line > span,
+html.no-entrance .stagger,
+html.no-entrance .stage,
+html.no-entrance .hero-rules span,
+html.no-entrance .rail-line::before,
+html.no-entrance .step-node .node,
+html.no-entrance .step-node .step-name,
+html.no-entrance .step-node .step-meta,
+html.no-entrance .site-header {
+  animation: none !important;
+}
+/* وتُثبَّت حالتها النهائية حتى لا يختفي المحتوى */
+html.no-entrance .ink-line > span,
+html.no-entrance .step-node .node { transform: none; opacity: 1; }
+html.no-entrance .stagger,
+html.no-entrance .stage,
+html.no-entrance .site-header,
+html.no-entrance .step-node .step-name,
+html.no-entrance .step-node .step-meta { opacity: 1; transform: none; }
+html.no-entrance .hero-rules span { transform: scaleY(1); }
+html.no-entrance .rail-line::before { transform: scaleX(1); }
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
@@ -949,8 +1209,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
-  .stagger, .scene { opacity: 1; transform: none; filter: none; }
+  .stagger, .stage { opacity: 1; transform: none; filter: none; }
   .reveal { opacity: 1; transform: none; filter: none; }
-  .dash-fill { width: 78%; }
-  .dash-chart span { height: var(--h); }
+  .ink-line > span { transform: none; }
+  /* الحالة النهائية تظهر فوراً: المسار مرسوم والعقد مضيئة بلا نبض */
+  .hero-rules span { transform: scaleY(1); }
+  .rail-line::before { transform: scaleX(1); }
+  .step-node .node,
+  .step-node .step-name,
+  .step-node .step-meta { opacity: 1; transform: none; }
+  .step-node.current .node { box-shadow: 0 0 0 4px var(--accent-soft); }
+  /* تبديل اللغة يقع فوراً: لا مزج ولا تلاشٍ */
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+  html.locale-swapping body { opacity: 1; transform: none; }
+  .badge .dot { box-shadow: none; }
 }

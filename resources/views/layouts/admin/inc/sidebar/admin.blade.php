@@ -70,9 +70,16 @@
     </a>
 </li>
 
-<li class="nav-item {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
-    <a class="nav-link" href="{{ route('admin.profile.edit') }}">
-        <span class="nav-link-icon"><i class="ti ti-user-cog"></i></span>
-        <span class="nav-link-title">الملف الشخصي</span>
+<li class="nav-item {{ request()->routeIs('admin.audit.*') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('admin.audit.index') }}">
+        <span class="nav-link-icon"><i class="ti ti-history"></i></span>
+        <span class="nav-link-title">سجلّ التدقيق</span>
     </a>
 </li>
+
+{{-- «الملف الشخصي» انتقل إلى قائمة الأفاتار وحدها.
+     السايدبار يعدّد ما تُديره — الطلاب والمجموعات والفصول — والملف
+     الشخصي ليس شيئاً تُديره، هو أنت. وكان في الموضعين معاً: مدخلان
+     لصفحة واحدة بلا فرق بينهما، وموضع دائم في التنقّل الأساسي لفعل
+     يُستعمل مرّتين في السنة. ولا يضيع وصول: الهيدر ظاهر في كل
+     المقاسات. --}}

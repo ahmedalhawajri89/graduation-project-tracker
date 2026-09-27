@@ -6,113 +6,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>تسجيل الدخول — تخرُّج</title>
     <link rel="icon" href="{{ asset('assets/img/takharruj-logo.svg') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="{{ asset('vendor/fonts/cairo.css') }}" rel="stylesheet">
+    {{-- خطوط مستضافة محلياً بدل fonts.googleapis.com --}}
+    <link rel="preload" href="{{ asset('assets/fonts/IBMPlexSansArabic-400-arabic.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link href="{{ asset('assets/fonts/fonts.css') }}" rel="stylesheet">
     <link href="{{ asset('vendor/tabler/css/tabler.rtl.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
 </head>
 
 <body class="auth-body">
-    <div class="login-split">
-
-        {{-- لوحة العلامة --}}
-        <aside class="login-brand">
-            <div class="brand-inner">
-                <div class="brand-logo">
-                    <img src="{{ asset('assets/img/takharruj-logo.svg') }}" alt="شعار تخرُّج">
-                </div>
-                <h1>تخرُّج</h1>
-                <p class="brand-sub">منصة متابعة مشاريع التخرج</p>
-                <p class="brand-tag">
-                    منصّة موحّدة لإدارة ومتابعة مشاريع تخرّج الطلاب — من تسجيل المشروع حتى تقييمه النهائي.
-                </p>
-                <ul class="brand-features">
-                    <li><span class="fchip"><i class="ti ti-check"></i></span> متابعة حالة المشروع لحظة بلحظة</li>
-                    <li><span class="fchip"><i class="ti ti-check"></i></span> تواصل مباشر بين الطالب والمشرف</li>
-                    <li><span class="fchip"><i class="ti ti-check"></i></span> إدارة المجموعات والتخصّصات بسهولة</li>
-                </ul>
-            </div>
-            <div class="brand-foot">© {{ date('Y') }} تخرُّج — جميع الحقوق محفوظة</div>
-        </aside>
-
-        {{-- النموذج --}}
-        <main class="login-form-side">
-            <div class="login-card">
-
-                <div class="mobile-logo d-lg-none text-center mb-4">
-                    <img src="{{ asset('assets/img/takharruj-logo.svg') }}" alt="شعار تخرُّج">
-                </div>
-
-                <h2>أهلاً بعودتك 👋</h2>
-                <p class="login-lead">سجّل الدخول للمتابعة إلى لوحتك.</p>
-
-                @if (Session::get('fail'))
-                    <div class="alert alert-danger" role="alert">
-                        <div class="d-flex">
-                            <i class="ti ti-alert-circle fs-2 me-2"></i>
-                            <div>{{ Session::get('fail') }}</div>
-                        </div>
-                    </div>
-                @endif
-
-                <form action="{{ route('login.check') }}" method="POST" novalidate>
-                    @csrf
-
-                    <div class="mb-3">
-                        <label class="form-label" for="identify">
-                            <i class="ti ti-user me-1"></i>
-                            البريد الإلكتروني أو الرقم الجامعي
-                        </label>
-                        <input id="identify" type="text"
-                            class="form-control @error('identify') is-invalid @enderror" name="identify"
-                            value="{{ old('identify') }}" placeholder="example@mail.com" required
-                            autocomplete="username" autofocus>
-                        @error('identify')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label" for="password">
-                            <i class="ti ti-lock me-1"></i>
-                            كلمة السر
-                        </label>
-                        <div class="password-wrapper">
-                            <input id="password" type="password"
-                                class="form-control @error('password') is-invalid @enderror" name="password"
-                                placeholder="••••••••" required autocomplete="current-password">
-                            <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
-                                data-target="password">
-                                <i class="ti ti-eye"></i>
-                            </button>
-                        </div>
-                        @error('password')
-                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-footer">
-                        <button type="submit" class="btn btn-login w-100">
-                            <i class="ti ti-login-2 me-1"></i>
-                            تسجيل الدخول
-                        </button>
-                    </div>
-                </form>
-
-                <div class="text-center mt-4">
-                    <a href="{{ route('site.home') }}" class="text-secondary text-decoration-none">
-                        <i class="ti ti-arrow-right me-1"></i>
-                        العودة إلى الموقع الرئيسي
-                    </a>
-                </div>
-            </div>
-        </main>
+    {{-- مسار المنصة يمرّ خلف البطاقة: مرحلتان مضتا يميناً واثنتان قادمتان يساراً --}}
+    <div class="auth-path" aria-hidden="true">
+        <span class="line"></span>
+        <span class="pulse-track"><span class="pulse"></span></span>
+        <span class="node done n1"></span><span class="step n1">تقديم الطلب</span>
+        <span class="node done n2"></span><span class="step n2">موافقة المشرف</span>
+        <span class="node todo n3"></span><span class="step n3">متابعة التنفيذ</span>
+        <span class="node todo n4"></span><span class="step n4">المناقشة والتقييم</span>
     </div>
 
-    <script src="{{ asset('vendor/tabler/js/tabler.min.js') }}"></script>
+    <main class="auth-col">
+        <div class="login-card @if (Session::get('fail') || $errors->any()) has-error @endif">
+            <div class="auth-brand">
+            {{-- العلامة نفسها المستعملة في هيدر الموقع: عقد على مسار --}}
+            <span class="auth-mark" aria-hidden="true">
+                <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+                    <path d="M6 16h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="6" cy="16" r="3.2" fill="currentColor"/>
+                    <circle cx="16" cy="16" r="3.2" fill="currentColor"/>
+                    <circle cx="26" cy="16" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </span>
+            <span class="auth-brand-name">تخرُّج</span>
+            </div>
+
+            <h2>تسجيل الدخول</h2>
+            {{-- السطر يشرح اكتشاف الدور التلقائي في AuthController@login --}}
+            <p class="login-lead">
+                ادخل بالرقم الجامعي أو بريدك الإلكتروني — وسيوجّهك النظام إلى لوحتك حسب دورك.
+            </p>
+
+            @if (Session::get('fail'))
+                <div class="alert" role="alert">{{ Session::get('fail') }}</div>
+            @endif
+
+            <form action="{{ route('login.check') }}" method="POST" novalidate>
+                @csrf
+
+                <div class="mb-3 auth-field">
+                    <label class="form-label" for="identify">البريد الإلكتروني أو الرقم الجامعي</label>
+                    <input id="identify" type="text"
+                        class="form-control @error('identify') is-invalid @enderror" name="identify"
+                        value="{{ old('identify') }}" placeholder="مثال: 2300000238" required
+                        autocomplete="username" autofocus>
+                    @error('identify')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-4 auth-field">
+                    <label class="form-label" for="password">كلمة السر</label>
+                    <div class="password-wrapper">
+                        <input id="password" type="password"
+                            class="form-control @error('password') is-invalid @enderror" name="password"
+                            placeholder="••••••••" required autocomplete="current-password">
+                        <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
+                            data-target="password">
+                            <i class="ti ti-eye" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    @error('password')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="auth-actions">
+                    <button type="submit" class="btn btn-login">دخول</button>
+                </div>
+
+                {{-- بلا مدخل ظاهر هنا لا قيمة لمسار الاسترجاع: من نسي
+                     كلمته لا يبحث عن رابط في صفحة أخرى --}}
+                <p class="auth-forgot">
+                    <a href="{{ route('password.request') }}">نسيت كلمة السر؟</a>
+                </p>
+            </form>
+
+            {{-- يجيب السؤال الأكثر وروداً في نموذج التواصل: أين أسجّل؟ --}}
+            <p class="auth-note">
+                لا يوجد تسجيل ذاتي — الحسابات تُنشئها إدارة القسم.
+                راجعهم إن تعذّر عليك الدخول.
+            </p>
+
+            <div class="text-center">
+                <a href="{{ route('site.home') }}" class="auth-back">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                    العودة إلى الموقع
+                </a>
+            </div>
+        </div>
+
+        <p class="auth-foot">© {{ date('Y') }} تخرُّج — جميع الحقوق محفوظة</p>
+    </main>
+
     <script>
         // إظهار/إخفاء كلمة السر
         document.querySelectorAll('.toggle-password').forEach(function (btn) {
@@ -132,7 +127,7 @@
             var btn = e.target.querySelector('button[type="submit"]');
             if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>جارٍ الدخول...';
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>جارٍ الدخول…';
             }
         });
     </script>

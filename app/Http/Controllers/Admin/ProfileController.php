@@ -2,50 +2,48 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\UpdatesOwnProfile;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\ProfileRequest;
+use App\Models\Admin;
 
 class ProfileController extends Controller
 {
+    use UpdatesOwnProfile;
+
     public function __construct()
     {
         $this->middleware('auth:admin');
     }
 
+    /**
+     * المسؤول يملك اسمه وبريده وجنسه وجواله.
+     *
+     * كان لا يُعدّل من ملفه إلا رقم الجوال — بينما \u200EAdminController\u200E
+     * يتيح له تعديل اسم وبريد أي مسؤول آخر. فلو أخطأ في اسمه احتاج
+     * مسؤولاً آخر ليصلحه. معكوس.
+     */
+    protected function editableFields(): array
+    {
+        return ['name', 'email', 'phone', 'gender'];
+    }
+
+    protected function profileUser()
+    {
+        return auth('admin')->user();
+    }
+
     public function edit()
     {
         return view('dashboard.admin.profile', [
-            'admin' => auth('admin')->user(),
+            'admin' => $this->profileUser(),
+            // حساب وحيد = نقطة فشل مفردة: لا استرجاع لكلمة مرور فُقدت
+            'isOnlyAdmin' => Admin::count() <= 1,
         ]);
     }
 
-    public function update(Request $request)
+    public function update(ProfileRequest $request)
     {
-        $admin = auth('admin')->user();
-
-        $request->validate([
-            'phone' => ['required', 'string', 'max:20'],
-            'current_password' => ['required_with:password', 'nullable', 'string'],
-            'password' => ['nullable', 'string', 'min:6', 'max:30', 'confirmed'],
-        ], [], [
-            'phone' => 'رقم الجوال',
-            'current_password' => 'كلمة السر الحالية',
-            'password' => 'كلمة السر الجديدة',
-        ]);
-
-        if ($request->filled('password')) {
-            if (! Hash::check($request->current_password, $admin->password)) {
-                return redirect()->back()
-                    ->withErrors(['current_password' => 'كلمة السر الحالية غير صحيحة'])
-                    ->withInput($request->only('phone'));
-            }
-            $admin->password = bcrypt($request->password);
-        }
-
-        $admin->phone = $request->phone;
-        $admin->save();
-
-        return redirect()->back()->with('success', 'تم تحديث بياناتك بنجاح');
+        return $this->saveProfile($request);
     }
 }

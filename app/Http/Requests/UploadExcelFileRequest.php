@@ -24,7 +24,8 @@ class UploadExcelFileRequest extends FormRequest
     public function rules()
     {
         return [
-            'attachment' => 'required|mimes:xlsx,xls',
+            // بحدّ حجم: كان بلا حدّ، والاستيراد صار متزامناً
+            'attachment' => 'required|file|mimes:xlsx,xls|max:5120',
         ];
     }
 

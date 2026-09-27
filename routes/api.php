@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\HomeController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,9 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// /user أُزيل: لم يستعمله الموقع العام، وكان يعتمد حارس sanctum "web"
+// غير المعرَّف في config/auth.php
 
 // Contact form endpoint used by the Next.js public frontend (frontend/)
 Route::post('/send', [HomeController::class, 'sendApi'])->middleware('throttle:5,1');

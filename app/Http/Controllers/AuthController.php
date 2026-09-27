@@ -17,7 +17,9 @@ class AuthController extends Controller
         // التحقق من المدخلات
         $request->validate([
             'identify' => 'required',
-            'password' => 'required|min:5|max:30',
+            // بلا حدّ أدنى: حسابات قديمة بكلمات أقصر يجب أن تدخل. والأقصى ٦٠ كالتعيين —
+            // كان ٣٠ فيُقفَل خارج حسابه من اختار ٣١ حرفاً فأكثر من صفحة ملفّه
+            'password' => 'required|string|max:60',
         ], [], [
             'identify' => 'البريد الإلكتروني أو الرقم الجامعي',
             'password' => 'كلمة السر',
@@ -51,9 +53,8 @@ class AuthController extends Controller
             ->with('fail', 'بيانات الدخول غير صحيحة. تأكد من البريد/الرقم الجامعي وكلمة السر.');
     }
 
-    public function logout()
+    public function logout(\Illuminate\Http\Request $request)
     {
-        // dd(config('auth.guards'));
         foreach (config('auth.guards') as $key => $guard) {
             if (auth()->guard($key)->check()) {
                 auth()->guard($key)->logout();
@@ -61,8 +62,11 @@ class AuthController extends Controller
             }
         }
 
-        return redirect()->route('site.home');
+        // الخروج يُنهي الجلسة ورمز CSRF معها — كانا يبقيان صالحين بعده
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
+        return redirect()->route('site.home');
     }
 
 }

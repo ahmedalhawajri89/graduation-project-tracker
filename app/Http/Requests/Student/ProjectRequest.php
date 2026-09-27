@@ -25,15 +25,16 @@ class ProjectRequest extends FormRequest
     {
 
         return [
+            // لا \u200Estatus\u200E ولا \u200Edate_line\u200E ولا \u200Esemester_id\u200E: الحالة «request» والفصل
+            // الحالي يفرضهما الخادم، والموعد يضعه المشرف. كان \u200Estatus\u200E مقبولاً
+            // بقيم \u200Eaccept\u200E و\u200Ecomplete\u200E، والطلب يُحفظ كاملاً
             'title' => 'required|string|max:254',
             'description' => 'nullable|string|max:500',
-            'semester_id' => 'required|numeric|exists:semesters,id',
-            'supervisor_id' => 'required|numeric|exists:supervisors,id',
-            'specialize_project_id' => 'required|numeric|exists:specialize_projects,id',
-            'status' => 'nullable|in:request,accept,reject,complete', //['request', 'accept', 'reject', 'complete']
-            'date_line' => 'nullable|date',
+            'supervisor_id' => 'required|integer|exists:supervisors,id',
+            'specialize_project_id' => 'required|integer|exists:specialize_projects,id',
             'student_ids' => 'required|array|min:1',
-            'student_ids.*' => 'nullable|integer|starts_with:130,230|distinct|exists:students,university_id|min:10',
+            // \u200Erequired\u200E لا \u200Enullable\u200E: القيم الفارغة كانت تُعدّ في الحدّ الأدنى ولا تصير أعضاءً
+            'student_ids.*' => 'required|integer|starts_with:130,230|distinct|exists:students,university_id|min:10',
 
         ];
     }

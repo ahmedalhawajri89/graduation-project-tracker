@@ -9,10 +9,11 @@ use App\Models\ProjectFile;
 use App\Models\ProjectMilestone;
 use App\Models\Semester;
 use App\Notifications\ProjectActivityNotify;
+use App\Support\Audit;
+use App\Support\Discussion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ProjectManageController extends Controller
 {
@@ -30,6 +31,24 @@ class ProjectManageController extends Controller
     /** رسالة القفل الموحدة بعد التقييم */
     private const LOCKED_MSG = 'المشروع مؤرشف بعد رصد التقييم — لا يمكن تعديل مراحله أو ملفاته أو موعده. النقاش وتعديل الدرجة فقط متاحان.';
 
+    /** رسالة المشروع الذي لم يُقبل — أو رُفض */
+    private const INACTIVE_MSG = 'المشروع لم يُقبل بعد أو رُفض — المراحل والملفات والموعد تُدار بعد قبوله.';
+
+    /**
+     * هل يُمنع تعديل محتوى المشروع؟ يعيد سبب المنع أو null.
+     *
+     * كانت الملكية وحدها تُفحص: المراحل والملفات والموعد تعمل على مشروع
+     * معلّق أو مرفوض، ويُشعَر طلابه بها.
+     */
+    private function blocked(Project $project): ?string
+    {
+        if (! in_array($project->status, ['accept', 'complete'], true)) {
+            return self::INACTIVE_MSG;
+        }
+
+        return $project->is_locked ? self::LOCKED_MSG : null;
+    }
+
     /** إشعار جميع طلاب المشروع بتحديث */
     private function notifyStudents(Project $project, string $msg)
     {
@@ -44,23 +63,26 @@ class ProjectManageController extends Controller
 
     public function archive()
     {
+        // الفصول السابقة وحدها: مجموعات الفصل الحالي في اللوحة، وتكرارها
+        // هنا يجعل الأرشيف نسخة ثانية منها. ولا ترقيم: مجموعات المشرف عبر
+        // الفصول عشرات، والتجميع بالفصل لا يتعايش مع الصفحات.
         $projects = Project::where('supervisor_id', auth('supervisor')->id())
             ->whereIn('status', ['accept', 'complete'])
-            ->when(request('semester'), function ($q) {
-                $q->where('semester_id', request('semester'));
-            })
+            ->where('semester_id', '!=', Semester::current()?->id)
             ->when(request('q'), function ($q) {
-                $q->where('title', 'like', '%' . request('q') . '%');
+                // باسم الطالب أيضاً: المشرف يُسأل عن طالب قديم باسمه لا بعنوان مشروعه
+                $term = '%' . request('q') . '%';
+                $q->where(fn ($q) => $q->where('title', 'like', $term)
+                    ->orWhereHas('group.student', fn ($s) => $s->where('name', 'like', $term)
+                        ->orWhere('university_id', 'like', $term)));
             })
-            ->with(['project_type', 'semester', 'milestones'])
-            ->withCount('group')
+            ->with(['project_type', 'semester', 'group.student:id,name,university_id'])
+            ->orderByDesc('semester_id')
             ->latest()
-            ->paginate(12)
-            ->withQueryString();
+            ->get();
 
         return view('dashboard.supervisor.archive', [
-            'projects' => $projects,
-            'semesters' => Semester::latest()->get(['id', 'name']),
+            'bySemester' => $projects->groupBy('semester_id'),
         ]);
     }
 
@@ -70,16 +92,19 @@ class ProjectManageController extends Controller
     {
         $this->authorizeProject($project);
 
+        // النقاش صار تبويباً مستقلّاً: لا تعليقات هنا، عدّاد غير المقروء وحده
         $project->load([
-            'group.student.specialize',
-            'milestones',
-            'files',
-            'comments.author',
+            'group.student',
+            'milestones.stage',
+            'files.uploader',
             'project_type',
             'semester',
         ]);
 
-        return view('dashboard.supervisor.project', ['project' => $project]);
+        return view('dashboard.supervisor.project', [
+            'project' => $project,
+            'unread' => Discussion::unreadFor(auth('supervisor')->user(), [$project->id])[$project->id] ?? 0,
+        ]);
     }
 
     /* ==================== المراحل (Milestones) ==================== */
@@ -88,8 +113,8 @@ class ProjectManageController extends Controller
     {
         $this->authorizeProject($project);
 
-        if ($project->is_locked) {
-            return redirect()->back()->with('fail', self::LOCKED_MSG);
+        if ($reason = $this->blocked($project)) {
+            return redirect()->back()->with('fail', $reason);
         }
 
         $request->validate([
@@ -111,8 +136,8 @@ class ProjectManageController extends Controller
     {
         $this->authorizeProject($milestone->project);
 
-        if ($milestone->project->is_locked) {
-            return redirect()->back()->with('fail', self::LOCKED_MSG);
+        if ($reason = $this->blocked($milestone->project)) {
+            return redirect()->back()->with('fail', $reason);
         }
 
         $milestone->update([
@@ -134,8 +159,8 @@ class ProjectManageController extends Controller
     {
         $this->authorizeProject($milestone->project);
 
-        if ($milestone->project->is_locked) {
-            return redirect()->back()->with('fail', self::LOCKED_MSG);
+        if ($reason = $this->blocked($milestone->project)) {
+            return redirect()->back()->with('fail', $reason);
         }
 
         $milestone->delete();
@@ -149,8 +174,8 @@ class ProjectManageController extends Controller
     {
         $this->authorizeProject($project);
 
-        if ($project->is_locked) {
-            return redirect()->back()->with('fail', self::LOCKED_MSG);
+        if ($reason = $this->blocked($project)) {
+            return redirect()->back()->with('fail', $reason);
         }
 
         $request->validate([
@@ -181,8 +206,8 @@ class ProjectManageController extends Controller
     {
         $this->authorizeProject($file->project);
 
-        if ($file->project->is_locked) {
-            return redirect()->back()->with('fail', self::LOCKED_MSG);
+        if ($reason = $this->blocked($file->project)) {
+            return redirect()->back()->with('fail', $reason);
         }
 
         // حذف من القرص الخاص، مع دعم الملفات القديمة على العام
@@ -209,7 +234,8 @@ class ProjectManageController extends Controller
             'author_id' => auth('supervisor')->id(),
         ]);
 
-        $this->notifyStudents($project, 'تعليق جديد من المشرف: ' . Str::limit($request->body, 80));
+        // لا إشعار: عدّاد النقاش يحلّ محلّه — انظر \App\Support\Discussion
+        Discussion::markRead($project, auth('supervisor')->user());
 
         return redirect()->back()->with('success', 'تم إضافة التعليق');
     }
@@ -228,8 +254,8 @@ class ProjectManageController extends Controller
     {
         $this->authorizeProject($project);
 
-        if ($project->is_locked) {
-            return redirect()->back()->with('fail', self::LOCKED_MSG);
+        if ($reason = $this->blocked($project)) {
+            return redirect()->back()->with('fail', $reason);
         }
 
         $request->validate([
@@ -255,6 +281,13 @@ class ProjectManageController extends Controller
             return redirect()->back()->with('fail', 'لا يمكن التقييم قبل اكتمال المشروع');
         }
 
+        // الحراسة على الخادم لا في الواجهة وحدها: إخفاء النموذج لا
+        // يمنع طلباً مُلفَّقاً، والدرجة المعتمدة هي ما يُتنازَع عليه
+        if ($project->isGradeLocked()) {
+            return redirect()->back()->with('fail',
+                'الدرجة معتمدة ولا يمكن تعديلها. راجع مسؤول النظام لفكّ الاعتماد.');
+        }
+
         $request->validate([
             'grade' => ['required', 'numeric', 'min:0', 'max:100'],
             'evaluation_note' => ['nullable', 'string', 'max:2000'],
@@ -263,11 +296,20 @@ class ProjectManageController extends Controller
             'evaluation_note' => 'ملاحظات التقييم',
         ]);
 
+        $previous = $project->grade;
+
         $project->update([
             'grade' => $request->grade,
             'evaluation_note' => $request->evaluation_note,
             'evaluated_at' => now(),
+            'graded_by' => auth('supervisor')->id(),
         ]);
+
+        Audit::record(
+            is_null($previous) ? 'grade.set' : 'grade.changed',
+            $project,
+            ['grade' => ['from' => $previous, 'to' => (float) $request->grade]]
+        );
 
         $this->notifyStudents(
             $project,
@@ -275,5 +317,30 @@ class ProjectManageController extends Controller
         );
 
         return redirect()->back()->with('success', 'تم حفظ التقييم وإشعار الفريق');
+    }
+
+    /**
+     * اعتماد الدرجة — يقفلها على المشرف.
+     *
+     * فعل لا رجعة فيه من طرف المشرف: بعده يلزم مسؤول النظام. وهذا هو
+     * المقصود — الدرجة المعتمدة نتيجة معلنة لا مسوّدة.
+     */
+    public function lockGrade(Project $project)
+    {
+        $this->authorizeProject($project);
+
+        if (is_null($project->grade)) {
+            return redirect()->back()->with('fail', 'ضع الدرجة أولاً ثم اعتمدها.');
+        }
+
+        if ($project->isGradeLocked()) {
+            return redirect()->back()->with('fail', 'الدرجة معتمدة أصلاً.');
+        }
+
+        $project->update(['grade_locked_at' => now()]);
+
+        Audit::record('grade.locked', $project, ['grade' => ['to' => (float) $project->grade]]);
+
+        return redirect()->back()->with('success', 'تم اعتماد الدرجة. لم يعد بالإمكان تعديلها.');
     }
 }

@@ -1,182 +1,84 @@
 @extends('layouts.admin.admin')
-@section('title', 'طلبات المشاريع')
+@section('title', 'طلبات الإشراف')
+
+@section('crumbs')
+    <x-crumb :href="route('supervisor.dashboard')">لوحتي</x-crumb>
+    <x-crumb>طلبات الإشراف</x-crumb>
+@endsection
 
 @section('content')
 
-    <div class="page-header d-print-none mb-4">
-        <div class="row align-items-center">
-            <div class="col">
-                <div class="page-pretitle">لوحة المشرف</div>
-                <h2 class="page-title">الاشعارات التي لم يتم الرد عليها</h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-header">
-            <h3 class="card-title">
-                <i class="ti ti-bell me-2"></i>
-                إشعارات تغيير المجموعات
-            </h3>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-vcenter card-table table-striped">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>عنوان المشروع</th>
-                        <th>نص الرسالة</th>
-                        <th>تاريخ الاشعار</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (auth()->user()->notifications->where('type', 'App\Notifications\AdminChangeGroupNotify') as $notification)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $notification->data['project'] }}</td>
-                            <td>{{ $notification->data['msg'] }}</td>
-                            <td>{{ $notification->created_at }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-
     @php
-        $activityNotifications = auth()->user()->notifications
-            ->where('type', 'App\Notifications\ProjectActivityNotify')
-            ->take(10);
+        $pending = $requests->count();
+        // المقاعد هي ما يُقرَّر على أساسه — تُقال قبل الطلبات لا بعدها
+        $seatsNote = match (true) {
+            $seatsLeft < 0 => 'تجاوزت حدّك بـ' . abs($seatsLeft) . ' — لا قبول قبل رفع الحدّ من الإدارة',
+            $seatsLeft === 0 => 'اكتمل حدّك (' . $maxGroup . ' من ' . $maxGroup . ') — لا قبول قبل رفع الحدّ من الإدارة',
+            $seatsLeft === 1 => 'بقي لك مقعد واحد من ' . $maxGroup,
+            $seatsLeft === 2 => 'بقي لك مقعدان من ' . $maxGroup,
+            default => 'بقي لك ' . $seatsLeft . ' مقاعد من ' . $maxGroup,
+        };
     @endphp
-    @if ($activityNotifications->count() > 0)
-        <div class="card mb-4">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="ti ti-activity me-2"></i>
-                    آخر تحديثات المشاريع
-                </h3>
-            </div>
-            <div class="list-group list-group-flush">
-                @foreach ($activityNotifications as $notification)
-                    <div class="list-group-item d-flex gap-3">
-                        <span class="avatar avatar-sm bg-primary-lt text-primary rounded-circle">
-                            <i class="ti ti-bell"></i>
-                        </span>
-                        <div class="min-w-0">
-                            <div class="fw-bold">
-                                {{ $notification->data['project'] ?? '' }}
-                                <span class="text-secondary fw-normal small">
-                                    — {{ $notification->created_at->diffForHumans() }}
-                                </span>
-                            </div>
-                            <div class="text-secondary">
-                                {{ $notification->data['supervisor_name'] ?? '' }}: {{ $notification->data['msg'] ?? '' }}
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+
+    <x-page-header title="طلبات الإشراف" subtitle="{{ $seatsNote }}" />
+
+    {{-- ===== القرارات ===== --}}
+    @if ($pending)
+        @if ($seatsLeft === 1 && $pending > 1)
+            <p class="hint-bar mb-3" role="status">
+                <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+                <span>
+                    <b>{{ $pending }} طلبات ومقعد واحد.</b>
+                    قبول أيّها يرفض الباقي تلقائياً ويُبلَّغ أصحابها — اقرأها كلّها قبل أن تقرّر.
+                </span>
+            </p>
+        @endif
+
+        <div class="req-list mb-4">
+            @foreach ($requests as $project)
+                @include('dashboard.supervisor._request-card', [
+                    'project' => $project,
+                    'seatsLeft' => $seatsLeft,
+                    'pending' => $pending,
+                ])
+            @endforeach
+        </div>
+    @else
+        <div class="dist-panel mb-4">
+            <x-empty-state icon="ti-inbox-off" title="لا طلبات تنتظرك"
+                text="حين يختارك فريق مشرفاً لمقترحه، يظهر طلبه هنا لتقبله أو ترفضه." class="py-5" />
         </div>
     @endif
 
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">
-                <i class="ti ti-briefcase me-2"></i>
-                طلبات المشاريع الجديدة
-            </h3>
+    {{-- ===== التحديثات: كانت فوق الطلبات وتزاحمها ===== --}}
+    <section class="dist-panel">
+        <div class="dist-head">
+            <span>آخر التحديثات</span>
+            <span class="dist-head-note">نشاط المشاريع وتغييرات الإدارة</span>
         </div>
-        <div class="card-body">
-            <div class="accordion" id="accordion">
-                @foreach (auth()->user()->unreadNotifications->where('type', 'App\Notifications\SuperVisorRequestProjectNotify') as $notification)
-                    {{-- {{ dd($notification) }} --}}
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading-{{ $notification->id }}">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapse-{{ $notification->id }}" aria-expanded="false"
-                                aria-controls="collapse-{{ $notification->id }}">
-                                <span class="badge bg-primary-lt text-primary me-2">{{ $notification->data['type'] }}</span>
-                                <strong class="text-primary">{{ $notification->data['title'] }}</strong>
-                                <span class="ms-auto me-3 d-flex align-items-center gap-2 text-secondary small">
-                                    <span><i class="ti ti-users me-1"></i>{{ count($notification->data['students'] ?? []) }} طلاب</span>
-                                    <span><i class="ti ti-clock me-1"></i>{{ $notification->created_at->diffForHumans() }}</span>
-                                </span>
-                            </button>
-                        </h2>
-                        <div id="collapse-{{ $notification->id }}" class="accordion-collapse collapse"
-                            aria-labelledby="heading-{{ $notification->id }}" data-bs-parent="#accordion">
-                            <div class="accordion-body">
-                                @if ($notification->data['description'])
-                                    <h4>وصف المشروع</h4>
-                                    <p>{{ $notification->data['description'] }}</p>
-                                @endif
 
-                                <div class="table-responsive">
-                                    <table class="table table-vcenter table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>اسماء الطلبة</th>
-                                                <th>الرقم الجامعي</th>
-                                                <th>رقم الجوال</th>
-                                                <th>تخصص الجامعة</th>
-                                                <th>قائد الفريق</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($notification->data['students'] as $std)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $std['name'] }}</td>
-                                                    <td>{{ $std['university_id'] }}</td>
-                                                    <td>{{ $std['phone'] }}</td>
-                                                    <td>{{ $std['specialize']['name'] }}</td>
-                                                    <td>
-                                                        @if ($std['groups']['0']['type'] == 'leader')
-                                                            <i class="ti ti-check text-green"></i>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <div class="mt-3 pt-3 border-top">
-                                    <form
-                                        action="{{ route('supervisor.replay.project', [
-                                            'project_id' => $notification->data['project_id'],
-                                            'notify_id' => $notification->id,
-                                        ]) }}"
-                                        method="POST">
-                                        @csrf
-                                        <label class="form-label mb-1" for="reason-{{ $notification->id }}">
-                                            سبب الرفض <span class="text-secondary">(اختياري — يصل للطلاب عند الرفض فقط)</span>
-                                        </label>
-                                        <textarea id="reason-{{ $notification->id }}" name="reason" rows="2" maxlength="500"
-                                            class="form-control mb-3"
-                                            placeholder="مثال: الفكرة منفّذة سابقاً، أو تحتاج توضيحاً أكثر لنطاق المشروع.."></textarea>
-
-                                        <div class="d-flex flex-wrap gap-2">
-                                            <button name="btnAccept" value='accept' class="btn btn-success"
-                                                onclick="return confirm('قبول هذا المشروع؟')">
-                                                <i class="ti ti-check me-1"></i>
-                                                قبول المشروع
-                                            </button>
-                                            <button name="btnReject" value="reject" class="btn btn-outline-danger"
-                                                onclick="return confirm('رفض هذا المشروع؟ سيصل الطلابَ إشعارٌ بالرفض والسبب إن كتبته.')">
-                                                <i class="ti ti-x me-1"></i>
-                                                رفض المشروع
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
+        @forelse ($updates as $notification)
+            <div class="notif-brief">
+                <b>
+                    {{ $notification->data['project'] ?? '' }}
+                    @if ($notification->type === \App\Notifications\AdminChangeGroupNotify::class)
+                        <span class="cmt-role">الإدارة</span>
+                    @endif
+                </b>
+                <p>
+                    @if (! empty($notification->data['supervisor_name']))
+                        {{ $notification->data['supervisor_name'] }}:
+                    @endif
+                    {{ $notification->data['msg'] ?? '' }}
+                </p>
+                <time>{{ $notification->created_at->diffForHumans() }}</time>
             </div>
-        </div>
-    </div>
+        @empty
+            <p class="todo-clear">
+                <i class="ti ti-circle-check" aria-hidden="true"></i>
+                لا تحديثات بعد.
+            </p>
+        @endforelse
+    </section>
 
-@stop
+@endsection

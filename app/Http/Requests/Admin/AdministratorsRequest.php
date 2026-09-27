@@ -26,8 +26,12 @@ class AdministratorsRequest extends FormRequest
         return [
             'name' => 'required|string|max:70',
             'email' => 'required|email|unique:admins,email,' . $this->id,
-            'phone' => 'nullable|digits:10',
-            'password' => 'nullable|required_without:id|min:6',
+            // كان \u200Enullable\u200E هنا و\u200Erequired\u200E في النموذج — الاثنان يتناقضان
+            'phone' => 'required|digits:10',
+            // ستة أحرف بلا تأكيد لحساب يملك كل شيء في النظام. والتأكيد
+            // يمنع خطأً مطبعياً يقفل الحساب الجديد صامتاً — لا أحد
+            // يعرف كلمة المرور التي كُتبت فعلاً.
+            'password' => 'nullable|required_without:id|string|min:8|max:60|confirmed',
             'gender' => 'required|in:male,female',
         ];
     }
@@ -40,6 +44,7 @@ class AdministratorsRequest extends FormRequest
             '*.unique' => __('validation-inline.unique'),
             '*.max' => __('validation-inline.max'),
             '*.min' => __('validation-inline.min'),
+            '*.confirmed' => __('validation-inline.confirmed'),
             '*.string' => __('validation-inline.string'),
             '*.email' => __('validation-inline.email'),
             '*.digits' => __('validation-inline.digits'),

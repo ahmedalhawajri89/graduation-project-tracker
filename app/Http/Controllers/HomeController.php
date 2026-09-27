@@ -20,7 +20,8 @@ class HomeController extends Controller
     public function send(SendMessageRequest $request)
     {
         try {
-            Contact::create($request->all());
+            // الحقول صراحةً: $request->all() كان يكتب is_read فتصل الرسالة مقروءةً فلا تُرى
+            Contact::create($request->only(['name', 'email', 'subject', 'message']));
 
             $admins = Admin::select('id', 'name')->get();
             foreach ($admins as $admin) {
@@ -41,7 +42,8 @@ class HomeController extends Controller
     public function sendApi(SendMessageRequest $request)
     {
         try {
-            Contact::create($request->all());
+            // الحقول صراحةً: $request->all() كان يكتب is_read فتصل الرسالة مقروءةً فلا تُرى
+            Contact::create($request->only(['name', 'email', 'subject', 'message']));
 
             $admins = Admin::select('id', 'name')->get();
             foreach ($admins as $admin) {

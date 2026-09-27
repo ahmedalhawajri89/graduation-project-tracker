@@ -4,344 +4,274 @@
 @section('content')
     @php
         $pending = (int) ($project_status['request'] ?? 0);
+        $unreadMsgs = \App\Models\Contact::where('is_read', 0)->count();
+
+        // مصدر واحد للحالات: config/statuses.php
+        $statusOrder = config('statuses.order');
+        $statusMap = config('statuses.map');
+        $statusTotal = 0;
+        $statusRows = [];
+        foreach ($statusOrder as $st) {
+            $count = (int) ($project_status[$st] ?? 0);
+            $statusTotal += $count;
+            $statusRows[] = [
+                'key' => $st,
+                'label' => __('site.' . $st),
+                'count' => $count,
+                'hex' => $statusMap[$st]['hex'],
+            ];
+        }
+
+        $specMax = max(1, (int) $specializes->max('students_count'));
+        $typeMax = max(1, (int) $project_types->max('projects_count'));
     @endphp
 
-    <x-page-header pretitle="لوحة التحكم — الفصل: {{ $semester->name }}" title="أهلاً، {{ auth()->user()->name }} 👋">
+    {{-- الفصل الدراسي انتقل إلى السايدبار — كان يظهر هنا وفي شريحة
+         الهيدر معاً، أي مرتين في كل صفحة. --}}
+    <x-page-header title="لوحة التحكم" subtitle="نظرة عامة على الفصل الحالي">
         <x-slot:actions>
-            <a href="{{ route('site.home') }}" class="btn btn-outline-primary">
+            <a href="{{ route('site.home') }}" class="btn btn-outline-primary" target="_blank">
                 <i class="ti ti-world me-1"></i>
                 عرض الموقع
             </a>
         </x-slot:actions>
     </x-page-header>
 
-    {{-- إجراءات سريعة --}}
-    <div class="card mb-4">
-        <div class="card-body py-3 d-flex flex-wrap align-items-center gap-2">
-            <span class="text-secondary fw-bold me-2">
-                <i class="ti ti-bolt me-1"></i>
-                إجراءات سريعة:
-            </span>
-            <a href="{{ route('admin.students.index') }}" class="btn btn-sm btn-outline-primary">
-                <i class="ti ti-user-plus me-1"></i> إضافة طالب
-            </a>
-            <a href="{{ route('admin.supervisors.index') }}" class="btn btn-sm btn-outline-primary">
-                <i class="ti ti-user-star me-1"></i> إضافة مشرف
-            </a>
-            <a href="{{ route('admin.semesters.index') }}" class="btn btn-sm btn-outline-primary">
-                <i class="ti ti-calendar-plus me-1"></i> فصل دراسي
-            </a>
-            <a href="{{ route('admin.specialize.index') }}" class="btn btn-sm btn-outline-primary">
-                <i class="ti ti-category-plus me-1"></i> تخصص
-            </a>
-            <a href="{{ route('admin.groups.index') }}" class="btn btn-sm btn-outline-primary">
-                <i class="ti ti-users-group me-1"></i> المجموعات
-            </a>
-            <a href="{{ route('admin.contact.index') }}" class="btn btn-sm btn-outline-primary">
-                <i class="ti ti-mail me-1"></i> الرسائل
-            </a>
-        </div>
-    </div>
-
-    {{-- ما الذي يحتاج انتباه؟ --}}
-    @if ($not_has_group > 0 || $pending > 0)
-        <div class="row row-cards mb-4">
-            <div class="col-md-6">
-                <x-attention-card icon="ti-user-exclamation" :count="$not_has_group"
-                    title="طالب بدون مجموعة" text="لم ينضمّوا إلى أي فريق بعد ويحتاجون متابعة."
-                    :href="route('admin.students.index')" tone="warning" />
-            </div>
-            <div class="col-md-6">
-                <x-attention-card icon="ti-clock-hour-4" :count="$pending"
-                    title="طلب مشروع بانتظار المراجعة" text="طلبات مشاريع لم يُبتّ فيها بعد لهذا الفصل."
-                    :href="route('admin.groups.index')" tone="azure" cta="مراجعة الطلبات" />
-            </div>
-        </div>
-    @endif
-
-    {{-- مؤشّرات رئيسية --}}
-    <div class="row row-deck row-cards mb-4">
-        <div class="col-6 col-lg-3">
-            <x-kpi-card icon="ti-school" tone="blue" :value="$student_count" label="عدد الطلاب"
-                :href="route('admin.students.index')" :trend="$trends['students'] ?? null"
-                sub="منضمّ لفرق: {{ $has_group }} · بدون مجموعة: {{ $not_has_group }}" />
-        </div>
-        <div class="col-6 col-lg-3">
-            <x-kpi-card icon="ti-user-star" tone="purple" :value="$supervisor_count" label="عدد المشرفين"
-                :href="route('admin.supervisors.index')" :trend="$trends['supervisors'] ?? null" />
-        </div>
-        <div class="col-6 col-lg-3">
-            <x-kpi-card icon="ti-users-group" tone="orange" :value="$project_count" label="المجموعات النشطة"
-                :href="route('admin.groups.index')" :trend="$trends['groups'] ?? null"
-                sub="قيد المراجعة: {{ $pending }} طلب" />
-        </div>
-        <div class="col-6 col-lg-3">
-            <x-kpi-card icon="ti-mail" tone="red" :value="$msg_count" label="رسائل الاستفسار"
-                :href="route('admin.contact.index')" :trend="$trends['messages'] ?? null" />
-        </div>
-    </div>
-
+    {{-- ═══ لوح القيادة ═══
+         كان قسمين منفصلين: «يحتاج إجراءً» و«حالة الفصل». دُمجا لأن
+         الإجراء ناتج عن الحالة لا منفصل عنها — والطلبات المعلّقة جزء
+         من توزيع الحالات نفسه. ولوح داكن واحد وسط الفاتح يصنع البؤرة
+         التي كانت تنقص الصفحة. --}}
     @php
-        // مصدر واحد للحالات: config/statuses.php
-        $statusOrder = config('statuses.order');
-        $statusMap = config('statuses.map');
-        $statusLabels = [];
-        $statusValues = [];
-        $statusFills = [];
-        $statusTotal = 0;
-        foreach ($statusOrder as $st) {
-            $count = (int) ($project_status[$st] ?? 0);
-            $statusLabels[] = __('site.' . $st);
-            $statusValues[] = $count;
-            $statusFills[] = $statusMap[$st]['hex'];
-            $statusTotal += $count;
+        $todos = [];
+        if ($pending > 0) {
+            // يقود إلى الطلبات المعلّقة نفسها لا إلى قائمة تستثنيها
+            $todos[] = ['n' => $pending, 'label' => 'طلب بانتظار مراجعة المشرف',
+                        'href' => route('admin.groups.index', ['status' => 'request']), 'icon' => 'ti-clock-hour-4'];
         }
+        if ($not_has_group > 0) {
+            // يقود إلى الطلاب بلا فريق أنفسهم لا إلى قائمة الـ٥٠٠ كاملة
+            $todos[] = ['n' => $not_has_group, 'label' => 'طالب لم ينضمّ إلى فريق',
+                        'href' => route('admin.students.index', ['group' => 'none']), 'icon' => 'ti-user-exclamation'];
+        }
+        if ($unreadMsgs > 0) {
+            $todos[] = ['n' => $unreadMsgs, 'label' => 'رسالة لم تُقرأ',
+                        'href' => route('admin.contact.index'), 'icon' => 'ti-mail'];
+        }
+
+        $barLabel = 'توزيع حالات المشاريع: ' . collect($statusRows)
+            ->map(fn ($r) => $r['label'] . ' ' . $r['count'])
+            ->implode('، ');
     @endphp
 
-    <div class="row row-deck row-cards mb-4">
+    <section class="cmd-panel mb-4">
+        <div class="cmd-context">
+            <i class="ti ti-calendar-stats" aria-hidden="true"></i>
+            {{ $semester->name }}
+        </div>
 
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="ti ti-chart-donut me-2"></i>
-                        حالات مشاريع الفصل الحالي — {{ $semester->name }}
-                    </h3>
+        <div class="cmd-main">
+            {{-- الأرقام الحيوية --}}
+            <div class="cmd-vitals">
+                <div class="vital">
+                    <span class="vital-n">{{ $student_count }}<x-trend :value="$trends['students'] ?? null" /></span>
+                    <span class="vital-l">طالب مسجَّل</span>
+                    <span class="vital-s">{{ $has_group }} في فرق هذا الفصل</span>
                 </div>
-                <div class="card-body">
-                    @if ($statusTotal > 0)
-                        <div class="chart-wrap">
-                            <div id="chart-status"></div>
-                            <div class="chart-skeleton skeleton" data-skel="chart-status"></div>
-                        </div>
-                    @else
-                        <x-empty-state icon="ti-chart-donut" title="لا توجد مشاريع بعد"
-                            text="لا توجد مشاريع مسجّلة في هذا الفصل حتى الآن." class="py-5" />
-                    @endif
+                <div class="vital">
+                    <span class="vital-n">{{ $supervisor_count }}<x-trend :value="$trends['supervisors'] ?? null" /></span>
+                    <span class="vital-l">مشرف أكاديمي</span>
+                    <span class="vital-s">&nbsp;</span>
                 </div>
+                <div class="vital">
+                    <span class="vital-n">{{ $project_count }}<x-trend :value="$trends['groups'] ?? null" /></span>
+                    <span class="vital-l">مجموعة نشطة</span>
+                    <span class="vital-s">من {{ $statusTotal }} مشروعاً مسجَّلاً</span>
+                </div>
+            </div>
+
+            {{-- ما يحتاج إجراءً — عمود في ذيل الصفّ يفصله خط --}}
+            <div class="cmd-actions">
+                @forelse ($todos as $t)
+                    <a href="{{ $t['href'] }}" class="cmd-action">
+                        <i class="ti {{ $t['icon'] }}" aria-hidden="true"></i>
+                        <span class="cmd-action-n">{{ $t['n'] }}</span>
+                        <span class="cmd-action-l">{{ $t['label'] }}</span>
+                        <i class="ti ti-chevron-left cmd-action-go" aria-hidden="true"></i>
+                    </a>
+                @empty
+                    <p class="cmd-clear">
+                        <i class="ti ti-circle-check" aria-hidden="true"></i>
+                        لا شيء ينتظر إجراءً
+                    </p>
+                @endforelse
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="ti ti-chart-bar me-2"></i>
-                        عدد الطلبة حسب التخصص
-                    </h3>
+        @if ($statusTotal > 0)
+            <div class="cmd-status">
+                <div class="cmd-status-head">
+                    <span>توزيع حالات المشاريع</span>
+                    <b>{{ $statusTotal }} مشروعاً</b>
                 </div>
-                <div class="card-body">
-                    @if ($specializes->count() > 0)
-                        <div class="chart-wrap">
-                            <div id="chart-specialize"></div>
-                            <div class="chart-skeleton skeleton" data-skel="chart-specialize"></div>
-                        </div>
-                    @else
-                        <x-empty-state icon="ti-chart-bar" title="لا توجد تخصصات بعد"
-                            text="أضف تخصّصات لعرض توزيع الطلبة." class="py-5" />
-                    @endif
+
+                {{-- شريط مكدّس بـ CSS، بألوان hex_dark لأنه على لوح داكن --}}
+                <div class="stack-bar" role="img" aria-label="{{ $barLabel }}">
+                    @foreach ($statusRows as $r)
+                        @if ($r['count'] > 0)
+                            <span class="stack-seg"
+                                style="width: {{ round($r['count'] / $statusTotal * 100, 2) }}%; background: {{ $r['hex'] }}"
+                                title="{{ $r['label'] }}: {{ $r['count'] }}"></span>
+                        @endif
+                    @endforeach
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row row-deck row-cards">
-
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="ti ti-briefcase me-2"></i>
-                        الطلبة حسب نوع المشروع — {{ $semester->name }}
-                    </h3>
-                    <div class="card-actions">
-                        <span class="text-secondary small">{{ $project_types->count() }} أنواع</span>
-                    </div>
-                </div>
-                @if ($project_types->count() > 0)
-                    <div class="table-responsive">
-                        <table class="table table-vcenter card-table table-hover">
-                            <thead>
-                                <tr>
-                                    <th class="w-1">#</th>
-                                    <th>اسم المشروع</th>
-                                    <th>عدد المشاريع</th>
-                                    <th>عدد الطلبة</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($project_types as $type)
-                                    <tr>
-                                        <td class="text-secondary">{{ $loop->iteration }}</td>
-                                        <td class="fw-medium">{{ $type->name }}</td>
-                                        <td><span class="badge bg-orange-lt">{{ $type->projects_count }}</span></td>
-                                        <td><span class="badge bg-blue-lt">{{ $type->projects->sum('group_count') }}</span></td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <x-empty-state icon="ti-briefcase-off" title="لا توجد مشاريع بعد"
-                        text="لم تُسجّل أي مشاريع لهذا الفصل حتى الآن." class="py-5" />
-                @endif
+                <ul class="stack-key">
+                    @foreach ($statusRows as $r)
+                        <li>
+                            <span class="key-dot" style="background: {{ $r['hex'] }}"></span>
+                            {{ $r['label'] }}
+                            <b>{{ $r['count'] }}</b>
+                        </li>
+                    @endforeach
+                </ul>
             </div>
-        </div>
-
-        {{-- ودجت أحدث النشاطات --}}
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="ti ti-activity me-2"></i>
-                        أحدث الطلبات
-                    </h3>
-                </div>
-                @if ($recent_projects->count() > 0)
-                    <div class="list-group list-group-flush">
-                        @foreach ($recent_projects as $project)
-                            <div class="list-group-item">
-                                <div class="d-flex align-items-start gap-2">
-                                    <span class="avatar avatar-sm bg-primary-lt text-primary rounded-3 mt-1">
-                                        <i class="ti ti-file-text"></i>
-                                    </span>
-                                    <div class="me-auto min-w-0">
-                                        <div class="fw-medium text-truncate">{{ $project->title }}</div>
-                                        <div class="text-secondary small text-truncate">
-                                            <i class="ti ti-user-star me-1"></i>{{ $project->supervisor->name ?: 'بلا مشرف' }}
-                                        </div>
-                                        <div class="text-secondary small mt-1">
-                                            <i class="ti ti-clock me-1"></i>{{ $project->created_at?->diffForHumans() }}
-                                        </div>
-                                    </div>
-                                    <x-status-badge :status="$project->status" />
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <x-empty-state icon="ti-inbox" title="لا توجد طلبات بعد"
-                        text="ستظهر أحدث طلبات المشاريع هنا." class="py-5" />
-                @endif
-            </div>
-        </div>
-    </div>
-
-    {{-- آخر رسائل الاستفسار --}}
-    <div class="card mb-4">
-        <div class="card-header">
-            <h3 class="card-title">
-                <i class="ti ti-mail me-2"></i>
-                آخر رسائل الاستفسار
-            </h3>
-            <div class="card-actions">
-                <a href="{{ route('admin.contact.index') }}" class="btn btn-sm btn-outline-primary">
-                    عرض الكل
-                </a>
-            </div>
-        </div>
-        @if ($recent_messages->count() > 0)
-            <div class="list-group list-group-flush">
-                @foreach ($recent_messages as $message)
-                    <div class="list-group-item d-flex gap-3">
-                        <span class="avatar avatar-sm bg-cyan-lt text-cyan rounded-circle">
-                            {{ mb_substr($message->name, 0, 2) }}
-                        </span>
-                        <div class="min-w-0 me-auto">
-                            <div class="d-flex flex-wrap align-items-center gap-2">
-                                <span class="fw-bold">{{ $message->name }}</span>
-                                <span class="small text-secondary">{{ $message->email }}</span>
-                                <span class="small text-secondary">— {{ $message->created_at?->diffForHumans() }}</span>
-                            </div>
-                            <div class="fw-medium mt-1">{{ $message->subject }}</div>
-                            <div class="text-secondary small text-truncate" style="max-width: 720px;">
-                                {{ \Illuminate\Support\Str::limit($message->message, 140) }}
-                            </div>
-                        </div>
-                        <a href="mailto:{{ $message->email }}" class="btn btn-sm btn-outline-primary align-self-center"
-                            title="الرد بالبريد">
-                            <i class="ti ti-mail-forward"></i>
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <x-empty-state icon="ti-mail-off" title="لا توجد رسائل"
-                text="ستظهر رسائل التواصل من الموقع العام هنا." class="py-5" />
         @endif
-    </div>
+    </section>
+
+    {{-- ═══ ٣) الاتجاه ═══
+         هنا يستحق الرسم مكانه: الرقم يقول أين أنت، والخط يقول إلى أين
+         تتجه — والثاني هو ما يُتخذ عليه قرار. مبني SVG مباشرةً، بلا
+         مكتبة ولا CDN، فيبقى عمل الصفحة بلا إنترنت قائماً. --}}
+    <section class="dash-block mb-4">
+        <h2 class="dash-block-title">
+            <i class="ti ti-trending-up" aria-hidden="true"></i>
+            الاتجاه خلال الفصل
+        </h2>
+
+        <div class="dist-panel">
+            <div class="dist-head">
+                <span>تطوّر المجموعات والطلاب بلا فريق</span>
+                <span class="dist-head-note">لقطة يومية</span>
+            </div>
+            <div class="p-3">
+                <x-trend-chart :series="$trendSeries" />
+            </div>
+        </div>
+    </section>
+
+    {{-- ═══ ٤) التوزيع ═══
+         الرسم العمودي وجدول الأنواع كانا يقولان الشيء نفسه بطريقتين.
+         الجدول بأشرطة أدقّ (رقم ونسبة معاً) وأكثف (بلا محاور وشبكة). --}}
+    <section class="dash-block mb-4">
+        <h2 class="dash-block-title">
+            <i class="ti ti-layout-distribute-horizontal" aria-hidden="true"></i>
+            التوزيع
+        </h2>
+
+        <div class="dist-grid">
+            <div class="dist-panel">
+                <div class="dist-head">
+                    <span>الطلاب حسب التخصص</span>
+                    <a href="{{ route('admin.specialize.index') }}">إدارة التخصصات</a>
+                </div>
+                @forelse ($specializes->sortByDesc('students_count') as $spec)
+                    <div class="dist-row {{ $spec->students_count === 0 ? 'is-zero' : '' }}">
+                        <span class="dist-fill" style="width: {{ round($spec->students_count / $specMax * 100) }}%"></span>
+                        <span class="dist-name" title="{{ $spec->name }}">
+                            {{ $spec->name }}@if ($spec->isArchived())<small class="dist-archived">موقوف</small>@endif
+                        </span>
+                        <span class="dist-n">{{ $spec->students_count }}</span>
+                    </div>
+                @empty
+                    <p class="dist-empty">لم تُضَف تخصصات بعد.</p>
+                @endforelse
+
+                @if ($specializes->count())
+                    <div class="dist-foot">
+                        <span>{{ $specializes->count() }} تخصصاً</span>
+                        <span>المجموع <b>{{ $specializes->sum('students_count') }}</b> طالباً</span>
+                    </div>
+                @endif
+            </div>
+
+            <div class="dist-panel">
+                <div class="dist-head">
+                    <span>المشاريع حسب النوع</span>
+                    <a href="{{ route('admin.groups.index') }}">عرض المجموعات</a>
+                </div>
+                @forelse ($project_types->sortByDesc('projects_count') as $type)
+                    <div class="dist-row {{ $type->projects_count === 0 ? 'is-zero' : '' }}">
+                        <span class="dist-fill" style="width: {{ round($type->projects_count / $typeMax * 100) }}%"></span>
+                        <span class="dist-name" title="{{ $type->name }}">{{ $type->name }}</span>
+                        <span class="dist-n">{{ $type->projects_count }}</span>
+                    </div>
+                @empty
+                    <p class="dist-empty">لم تُضَف أنواع مشاريع بعد.</p>
+                @endforelse
+
+                @if ($project_types->count())
+                    <div class="dist-foot">
+                        <span>{{ $project_types->count() }} أنواع</span>
+                        <span>المجموع <b>{{ $project_types->sum('projects_count') }}</b> مشروعاً</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </section>
+
+    {{-- ═══ ٥) آخر النشاط ═══ --}}
+    <section class="dash-block">
+        <h2 class="dash-block-title">
+            <i class="ti ti-activity" aria-hidden="true"></i>
+            آخر النشاط
+        </h2>
+
+        <div class="dist-grid">
+            <div class="dist-panel">
+                <div class="dist-head">
+                    <span>أحدث طلبات المشاريع</span>
+                    <a href="{{ route('admin.groups.index') }}">الكل</a>
+                </div>
+                @forelse ($recent_projects as $project)
+                    <a href="{{ route('admin.groups.show', $project->id) }}" class="feed-row">
+                        <span class="feed-body">
+                            <span class="feed-title">{{ $project->title }}</span>
+                            <span class="feed-meta">
+                                {{ $project->supervisor->name ?: 'بلا مشرف' }}
+                                · {{ $project->created_at?->diffForHumans() }}
+                            </span>
+                        </span>
+                        <x-status-badge :status="$project->status" />
+                        <i class="ti ti-chevron-left feed-go" aria-hidden="true"></i>
+                    </a>
+                @empty
+                    <p class="dist-empty">لا توجد طلبات في هذا الفصل بعد.</p>
+                @endforelse
+            </div>
+
+            <div class="dist-panel">
+                <div class="dist-head">
+                    <span>آخر رسائل الاستفسار</span>
+                    <a href="{{ route('admin.contact.index') }}">الكل</a>
+                </div>
+                @forelse ($recent_messages as $message)
+                    <a href="{{ route('admin.contact.index') }}" class="feed-row">
+                        <span class="feed-body">
+                            <span class="feed-title">{{ $message->subject }}</span>
+                            <span class="feed-meta">
+                                {{ $message->name }} · {{ $message->created_at?->diffForHumans() }}
+                            </span>
+                        </span>
+                        @if (! $message->is_read)
+                            <span class="feed-new">جديد</span>
+                        @endif
+                        <i class="ti ti-chevron-left feed-go" aria-hidden="true"></i>
+                    </a>
+                @empty
+                    <p class="dist-empty">لا توجد رسائل بعد.</p>
+                @endforelse
+            </div>
+        </div>
+    </section>
 @endsection
-
-@push('js')
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (typeof ApexCharts === 'undefined') {
-                document.querySelectorAll('.chart-skeleton').forEach(function (s) {
-                    s.classList.remove('skeleton');
-                    s.innerHTML = '<div class="text-center text-secondary small p-4">تعذّر تحميل الرسوم البيانية — تحقّق من الاتصال بالإنترنت.</div>';
-                });
-                return;
-            }
-
-            var baseFont = "'IBM Plex Sans Arabic', Cairo, sans-serif";
-
-            function hideSkeleton(id) {
-                var s = document.querySelector('[data-skel="' + id + '"]');
-                if (s) s.remove();
-            }
-
-            // دونات: حالات المشاريع
-            var statusEl = document.getElementById('chart-status');
-            if (statusEl) {
-                new ApexCharts(statusEl, {
-                    chart: { type: 'donut', height: 320, fontFamily: baseFont,
-                        events: { mounted: function () { hideSkeleton('chart-status'); } } },
-                    series: @json($statusValues),
-                    labels: @json($statusLabels),
-                    colors: @json($statusFills),
-                    legend: { position: 'bottom', fontFamily: baseFont, markers: { radius: 12 } },
-                    stroke: { width: 2 },
-                    dataLabels: { enabled: true, style: { fontFamily: baseFont } },
-                    plotOptions: {
-                        pie: {
-                            donut: {
-                                size: '68%',
-                                labels: {
-                                    show: true,
-                                    value: { fontSize: '26px', fontFamily: baseFont, fontWeight: 700 },
-                                    total: { show: true, label: 'إجمالي المشاريع', fontFamily: baseFont }
-                                }
-                            }
-                        }
-                    },
-                    tooltip: { style: { fontFamily: baseFont } },
-                    responsive: [{ breakpoint: 480, options: { chart: { height: 280 }, legend: { position: 'bottom' } } }]
-                }).render();
-            }
-
-            // أعمدة: الطلبة حسب التخصص
-            var specEl = document.getElementById('chart-specialize');
-            if (specEl) {
-                new ApexCharts(specEl, {
-                    chart: { type: 'bar', height: 320, fontFamily: baseFont, toolbar: { show: false },
-                        events: { mounted: function () { hideSkeleton('chart-specialize'); } } },
-                    series: [{ name: 'عدد الطلبة', data: @json($specializes->pluck('students_count')) }],
-                    colors: ['#464eea'], // لون الهوية الموحّد
-
-                    plotOptions: { bar: { borderRadius: 6, columnWidth: '48%', distributed: false } },
-                    dataLabels: { enabled: false },
-                    xaxis: {
-                        categories: @json($specializes->pluck('name')),
-                        labels: { style: { fontFamily: baseFont, fontSize: '12px' } },
-                        axisBorder: { show: false }, axisTicks: { show: false }
-                    },
-                    yaxis: { labels: { style: { fontFamily: baseFont } } },
-                    grid: { strokeDashArray: 4, borderColor: '#eef0f6' },
-                    tooltip: { style: { fontFamily: baseFont } },
-                    responsive: [{ breakpoint: 480, options: { chart: { height: 260 } } }]
-                }).render();
-            }
-        });
-    </script>
-@endpush
