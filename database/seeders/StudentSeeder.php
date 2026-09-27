@@ -14,28 +14,22 @@ class StudentSeeder extends Seeder
      */
     public function run()
     {
-        $maleNames = ['احمد', 'محمد', 'حسن', 'حسين', 'علاء', 'محمود', 'يوسف', 'يونس', 'عبد الله', 'منير', 'تيسير', 'شمس', 'حامد', 'عمر', 'عامر', 'اشرف', 'كرم', 'نور'];
-        $femaleNames = ['علا', 'عبير', 'اسماء', 'سالي', 'ميساء', 'ايمان', 'هنادي', 'رانيا', 'اسلام'];
-
         $data = [];
+
         for ($i = 0; $i < 500; $i++) {
 
             $gender = \Arr::random(['male', 'female']);
-            if ($gender == 'male') {
-                $name = \Arr::random($maleNames) . ' ' . \Arr::random($maleNames);
-                $uId = 1300000000;
-            } else {
-                $name = \Arr::random($femaleNames) . ' ' . \Arr::random($maleNames);
-                $uId = 2300000000;
-            }
+            [$name, $slug] = NameBook::person($gender);
+            $uId = $gender === 'male' ? 1300000000 : 2300000000;
 
             $data[] = [
                 'university_id' => ($uId + $i + 1),
                 'name' => $name,
-                'email' => "student_{$i}@student.com",
+                // الرقم الجامعي يضمن عدم تكرار البريد مهما تكرّر الاسم
+                'email' => "{$slug}." . ($i + 1) . "@student.com",
                 'email_verified_at' => now(),
                 'password' => bcrypt('adminadmin'),
-                'phone' => '0599907811',
+                'phone' => NameBook::phone(),
                 'specialize_id' => random_int(1, 3),
                 'admin_id' => 1,
                 'gender' => $gender,
@@ -47,12 +41,5 @@ class StudentSeeder extends Seeder
         foreach ($chunks as $chunk) {
             Student::insert($chunk);
         }
-
-        /*
-    SELECT students.name, students.university_id, students.email, students.phone, specializes.name, students.password, students.gender
-    FROM `students` INNER JOIN specializes
-    ON students.specialize_id = specializes.id
-     */
-
     }
 }

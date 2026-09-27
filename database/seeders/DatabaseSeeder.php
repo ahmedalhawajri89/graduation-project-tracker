@@ -7,20 +7,40 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * البذور حسب البيئة.
      *
-     * @return void
+     * كانت كلّها تُزرع دائماً: admin@admin.com و٨٠٠ حساب تجريبي بكلمة سر
+     * معروفة (adminadmin)، و\u200EDemoSeeder\u200E الذي يعدّل بيانات قائمة (ينقل مشاريع
+     * إلى فصل وهمي، ويضع مواعيد فائتة). في الإنتاج: ما يلزم النظام ليعمل وحده،
+     * والأدمن الأول بـ \u200Ephp artisan admin:create\u200E.
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        $this->call(self::seedersFor(app()->environment()));
 
-        $this->call([
-            AdminSeeder::class,
+        if (app()->environment('production')) {
+            $this->command?->warn('لم يُزرع أي حساب — أنشئ الأدمن الأول بـ: php artisan admin:create');
+        }
+    }
+
+    /** @return array<int, class-string<Seeder>> */
+    public static function seedersFor(string $environment): array
+    {
+        $essential = [
             SemesterSeeder::class,
-            //SpecializeSeeder::class,
-            //SupervisorSeeder::class,
-            //StudentSeeder::class,
-        ]);
+            SpecializeSeeder::class,
+        ];
+
+        if ($environment === 'production') {
+            return $essential;
+        }
+
+        return [
+            AdminSeeder::class,
+            ...$essential,
+            SupervisorSeeder::class,
+            StudentSeeder::class,
+            DemoSeeder::class,
+        ];
     }
 }

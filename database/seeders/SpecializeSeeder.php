@@ -16,46 +16,26 @@ class SpecializeSeeder extends Seeder
     public function run()
     {
 
-        Specialize::create([
-            'name' => 'علوم الحاسوب',
-        ]);
-        Specialize::create([
-            'name' => 'تكنولوجيا الشبكات والهواتف النقالة',
-        ]);
-        Specialize::create([
-            'name' => 'تكنولوجيا المعلومات التطبيقية',
-        ]);
+        // كل تخصص يحصل على مواضيعه صراحةً — الإسناد العشوائي كان يترك تخصصاً
+        // بلا أي موضوع، فتظهر قائمة نوع المشروع فارغة عند الطالب
+        $specializes = [
+            'علوم الحاسوب' => ['برمجة ويب', 'برمجة ذكاء صناعي', 'أبحاث'],
+            'تكنولوجيا الشبكات والهواتف النقالة' => ['برمجة تطبيقات جوال', 'تدريب عملي', 'أبحاث'],
+            'تكنولوجيا المعلومات التطبيقية' => ['برمجة ويب', 'تدريب عملي', 'أبحاث'],
+        ];
 
-        SpecializeProject::create([
-            'name' => 'برمجة ويب',
-            'specialize_id' => random_int(1, 3),
-            'min' => random_int(1, 2),
-            'max' => random_int(3, 5),
-        ]);
-        SpecializeProject::create([
-            'name' => 'برمجة تطبيقات جوال',
-            'specialize_id' => random_int(1, 3),
-            'min' => random_int(1, 2),
-            'max' => random_int(3, 5),
-        ]);
-        SpecializeProject::create([
-            'name' => 'برمجة ذكاء صناعي',
-            'specialize_id' => random_int(1, 3),
-            'min' => random_int(1, 2),
-            'max' => random_int(3, 5),
-        ]);
-        SpecializeProject::create([
-            'name' => 'ابحاث',
-            'specialize_id' => random_int(1, 3),
-            'min' => random_int(1, 2),
-            'max' => random_int(3, 5),
-        ]);
-        SpecializeProject::create([
-            'name' => 'تدريب عملي',
-            'specialize_id' => random_int(1, 3),
-            'min' => random_int(1, 2),
-            'max' => random_int(3, 5),
-        ]);
+        foreach ($specializes as $name => $projects) {
+            $specialize = Specialize::create(['name' => $name]);
+
+            foreach ($projects as $project) {
+                SpecializeProject::create([
+                    'name' => $project,
+                    'specialize_id' => $specialize->id,
+                    'min' => 2,
+                    'max' => 4,
+                ]);
+            }
+        }
 
     }
 }
