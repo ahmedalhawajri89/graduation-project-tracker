@@ -89,16 +89,30 @@
         ];
     }
 
-    // رسائل لم تقرأها — النقاش صار تبويباً مستقلّاً
-    $unreadMsgs = \App\Support\Discussion::unreadFor(auth('student')->user(), [$project->id])[$project->id] ?? 0;
+    // رسائل لم تقرأها — لكل قناة سطرها ورابط تبويبها
+    // محسوبة في المتحكّم — وإلا تُحسب هنا (من يضمّن الجزء بلا المتحكّم)
+    $unreadMsgs = $unreadByChannel['supervisor']
+        ?? (\App\Support\Discussion::unreadFor(auth('student')->user(), [$project->id])[$project->id] ?? 0);
+    $unreadTeam = $unreadByChannel['team']
+        ?? (\App\Support\Discussion::unreadFor(auth('student')->user(), [$project->id], \App\Models\ProjectComment::TEAM)[$project->id] ?? 0);
 
     if ($unreadMsgs) {
         $todos[] = [
             'icon' => 'ti-message-dots',
             'tone' => '',
             'n' => $unreadMsgs,
-            'label' => $unreadMsgs === 1 ? 'رسالة جديدة في النقاش' : 'رسائل جديدة في النقاش',
+            'label' => $unreadMsgs === 1 ? 'رسالة جديدة من المشرف' : 'رسائل جديدة من المشرف',
             'href' => route('student.discussion'),
+        ];
+    }
+
+    if ($unreadTeam) {
+        $todos[] = [
+            'icon' => 'ti-users-group',
+            'tone' => '',
+            'n' => $unreadTeam,
+            'label' => $unreadTeam === 1 ? 'رسالة جديدة في نقاش الفريق' : 'رسائل جديدة في نقاش الفريق',
+            'href' => route('student.discussion', ['tab' => 'team']),
         ];
     }
 

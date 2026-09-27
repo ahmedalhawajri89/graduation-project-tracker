@@ -116,7 +116,7 @@
         <div class="stu-hero-actions">
             <a href="{{ route('student.discussion') }}" class="btn btn-outline-secondary">
                 <i class="ti ti-messages me-1" aria-hidden="true"></i>
-                النقاش مع المشرف
+                النقاش
                 @if ($unreadMsgs)
                     <span class="sidebar-count ms-1">{{ $unreadMsgs }}</span>
                 @endif

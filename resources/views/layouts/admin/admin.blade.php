@@ -35,6 +35,7 @@
                 ['icon' => 'ti-list-check', 'label' => 'مراحل المشروع', 'url' => route('student.dashboard') . '#milestones', 'keys' => 'milestones مراحل تقدم'],
                 ['icon' => 'ti-files', 'label' => 'ملفات المشروع', 'url' => route('student.dashboard') . '#files', 'keys' => 'files ملفات رفع'],
                 ['icon' => 'ti-messages', 'label' => 'النقاش مع المشرف', 'url' => route('student.discussion'), 'keys' => 'comments chat نقاش تعليق رسائل مشرف'],
+                ['icon' => 'ti-users-group', 'label' => 'نقاش الفريق', 'url' => route('student.discussion', ['tab' => 'team']), 'keys' => 'team chat فريق زملاء نقاش'],
                 ['icon' => 'ti-users-group', 'label' => 'فريق المشروع', 'url' => route('student.dashboard') . '#team', 'keys' => 'team فريق أعضاء'],
                 ['icon' => 'ti-telescope', 'label' => 'مشاريع منجزة', 'url' => route('student.projects.explore'), 'keys' => 'explore استكشاف مشاريع سابقة منجزة مكتملة أفكار'],
                 ['icon' => 'ti-bell', 'label' => 'الإشعارات', 'url' => route('student.showNotification'), 'keys' => 'notifications إشعارات ردود'],

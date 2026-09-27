@@ -96,15 +96,18 @@ class ProjectActivity
                 'href' => $projectUrl($m->project_id, '#milestone-' . $m->id),
             ]);
 
-        $comments = ProjectComment::whereIn('project_id', $projectIds)->with(['project:id,title', 'author'])
+        // المشرف: قناته وحدها — نقاش الفريق لا يصله نصّاً ولا عدداً
+        $comments = ProjectComment::whereIn('project_id', $projectIds)
+            ->when($isSupervisor, fn ($q) => $q->channel(ProjectComment::SUPERVISOR))
+            ->with(['project:id,title', 'author'])
             ->latest('id')->limit($limit)->get()
             ->map(fn ($c) => [
                 'at' => $c->created_at,
-                'icon' => 'ti-message',
+                'icon' => $c->isTeam() ? 'ti-users-group' : 'ti-message',
                 'tone' => '',
-                'text' => $who($c->author) . ': ' . Str::limit($c->body, 70),
+                'text' => $who($c->author) . ($c->isTeam() ? ' في نقاش الفريق' : '') . ': ' . Str::limit($c->body, 70),
                 'project' => $c->project,
-                'href' => $chatUrl($c->project_id),
+                'href' => $c->isTeam() ? route('student.discussion', ['tab' => 'team']) : $chatUrl($c->project_id),
             ]);
 
         // ملاحظات على الملفات: «ترك ملاحظة على…» — وحدث المعالجة بوقته

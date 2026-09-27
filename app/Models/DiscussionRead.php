@@ -11,6 +11,8 @@ class DiscussionRead extends Model
         'project_id',
         'reader_type',
         'reader_id',
+        // لكل قناة مؤشّرها — بلا هذا يُسقطه الملء فيُحفظ على قناة المشرف
+        'channel',
         'last_read_comment_id',
     ];
 

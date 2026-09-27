@@ -76,7 +76,12 @@ class DashboardController extends Controller
         $active = $student->groups->first()?->project;
         $active = $active && $active->status !== 'reject' ? $active : null;
         $data['activity'] = $active ? ProjectActivity::recent(collect([$active->id]), $student) : collect();
-        $data['unreadMsgs'] = $active ? (Discussion::unreadFor($student, [$active->id])[$active->id] ?? 0) : 0;
+        // غير المقروء لكل قناة — مرّة واحدة: زرّ «النقاش» يجمعهما، و«ماذا عليّ الآن» يفصلهما
+        $data['unreadByChannel'] = [
+            'supervisor' => $active ? (Discussion::unreadFor($student, [$active->id])[$active->id] ?? 0) : 0,
+            'team' => $active ? (Discussion::unreadFor($student, [$active->id], \App\Models\ProjectComment::TEAM)[$active->id] ?? 0) : 0,
+        ];
+        $data['unreadMsgs'] = array_sum($data['unreadByChannel']);
 
         return view('dashboard.student.index', $data);
     }

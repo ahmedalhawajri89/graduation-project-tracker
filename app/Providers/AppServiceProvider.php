@@ -86,11 +86,13 @@ class AppServiceProvider extends ServiceProvider
                         // عدّاد تبويب «النقاش» — بمعزل عن الإشعارات
                         // بنوع المستخدم المختار لا بـ\u200Eauth(guard)->check()\u200E: قد يُسجَّل
                         // أكثر من حارس في الطلب نفسه، فيُستدعى \u200Egroups()\u200E على مشرف
+                        // المشرف: قناته وحدها. الطالب: القناتان معاً — تبويب واحد يحملهما
                         if (! $user instanceof Admin) {
-                            $shared['discussionUnread'] = array_sum(Discussion::unreadFor(
-                                $user,
-                                Discussion::projectsFor($user)->pluck('id')
-                            ));
+                            $ids = Discussion::projectsFor($user)->pluck('id');
+                            $shared['discussionUnread'] = array_sum(Discussion::unreadFor($user, $ids))
+                                + ($user instanceof Student
+                                    ? array_sum(Discussion::unreadFor($user, $ids, \App\Models\ProjectComment::TEAM))
+                                    : 0);
                         }
 
                         // مشروع الطالب النشط (لبطاقة السايدبار)

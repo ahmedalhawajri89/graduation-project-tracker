@@ -106,9 +106,23 @@ class Project extends Model
         return $this->hasMany(ProjectFile::class, 'project_id', 'id')->latest();
     }
 
+    /**
+     * نقاش المشرف وحده. كل قارئ قديم (خيط المشرف وصندوقه، «مجموعة تنتظر
+     * ردّك»، صفحة الأدمن) يمرّ بهذه العلاقة — فنقاش الفريق لا يصله أبداً.
+     */
     public function comments()
     {
-        return $this->hasMany(ProjectComment::class, 'project_id', 'id')->orderBy('id');
+        return $this->hasMany(ProjectComment::class, 'project_id', 'id')
+            ->where('project_comments.channel', ProjectComment::SUPERVISOR)
+            ->orderBy('id');
+    }
+
+    /** نقاش الفريق — لأعضائه وحدهم، لا المشرف ولا الإدارة */
+    public function teamComments()
+    {
+        return $this->hasMany(ProjectComment::class, 'project_id', 'id')
+            ->where('project_comments.channel', ProjectComment::TEAM)
+            ->orderBy('id');
     }
 
     ################# end relations

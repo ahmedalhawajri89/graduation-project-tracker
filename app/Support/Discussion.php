@@ -26,7 +26,7 @@ class Discussion
      * @param  iterable<int>  $projectIds
      * @return array<int, int>  [project_id => count]، والمشروع بلا جديد غائب
      */
-    public static function unreadFor(Model $reader, iterable $projectIds): array
+    public static function unreadFor(Model $reader, iterable $projectIds, string $channel = ProjectComment::SUPERVISOR): array
     {
         $ids = collect($projectIds)->filter()->unique()->values();
 
@@ -38,11 +38,14 @@ class Discussion
         $id = $reader->getKey();
 
         return ProjectComment::query()
-            ->leftJoin('discussion_reads as dr', function ($join) use ($type, $id) {
+            ->leftJoin('discussion_reads as dr', function ($join) use ($type, $id, $channel) {
                 $join->on('dr.project_id', '=', 'project_comments.project_id')
                     ->where('dr.reader_type', $type)
-                    ->where('dr.reader_id', $id);
+                    ->where('dr.reader_id', $id)
+                    ->where('dr.channel', $channel);
             })
+            // لكل قناة عدّادها: رسائل الفريق لا تُعدّ على المشرف أبداً
+            ->channel($channel)
             ->whereIn('project_comments.project_id', $ids)
             ->where(function ($q) use ($type, $id) {
                 $q->where('project_comments.author_type', '!=', $type)
@@ -85,19 +88,23 @@ class Discussion
         return collect();
     }
 
-    /** آخر ما قرأه في هذا المشروع — لفاصل «رسائل جديدة» */
-    public static function lastReadId(Project $project, Model $reader): ?int
+    /** آخر ما قرأه في هذا المشروع وهذه القناة — لفاصل «رسائل جديدة» */
+    public static function lastReadId(Project $project, Model $reader, string $channel = ProjectComment::SUPERVISOR): ?int
     {
         return DiscussionRead::where('project_id', $project->id)
             ->where('reader_type', $reader::class)
             ->where('reader_id', $reader->getKey())
+            ->where('channel', $channel)
             ->value('last_read_comment_id');
     }
 
-    /** فتح النقاش أو الكتابة فيه يعني قراءة كل ما قبله */
-    public static function markRead(Project $project, Model $reader): void
+    /**
+     * فتح النقاش أو الكتابة فيه يعني قراءة كل ما قبله — في قناته وحدها.
+     * كان بأكبر رقم في المشروع، فقراءة قناة كانت ستعلّم الأخرى مقروءة.
+     */
+    public static function markRead(Project $project, Model $reader, string $channel = ProjectComment::SUPERVISOR): void
     {
-        $last = $project->comments()->max('id');
+        $last = ProjectComment::where('project_id', $project->id)->channel($channel)->max('id');
 
         if (! $last) {
             return;
@@ -108,6 +115,7 @@ class Discussion
                 'project_id' => $project->id,
                 'reader_type' => $reader::class,
                 'reader_id' => $reader->getKey(),
+                'channel' => $channel,
             ],
             ['last_read_comment_id' => $last]
         );

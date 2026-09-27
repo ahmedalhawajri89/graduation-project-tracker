@@ -9,7 +9,7 @@
 <li class="nav-item {{ request()->routeIs('student.discussion') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('student.discussion') }}">
         <span class="nav-link-icon"><i class="ti ti-messages"></i></span>
-        <span class="nav-link-title">النقاش مع المشرف</span>
+        <span class="nav-link-title">النقاش</span>
         @if (($layoutShared['discussionUnread'] ?? 0) > 0)
             <span class="sidebar-count">{{ $layoutShared['discussionUnread'] }}</span>
         @endif

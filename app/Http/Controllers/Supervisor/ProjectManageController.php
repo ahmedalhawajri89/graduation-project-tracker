@@ -331,6 +331,10 @@ class ProjectManageController extends Controller
     public function commentDestroy(ProjectComment $comment)
     {
         $this->authorizeProject($comment->project);
+
+        // نقاش الفريق ليس للمشرف: لا يُحذف برقمه ولا يُعترف بوجوده
+        abort_if($comment->isTeam(), 404);
+
         $comment->delete();
 
         return redirect()->back()->with('success', 'تم حذف التعليق');

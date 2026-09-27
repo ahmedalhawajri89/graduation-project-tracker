@@ -5358,13 +5358,18 @@ a:focus-visible {
     box-shadow: var(--ds-shadow-sm);
     animation: msg-in .25s var(--ds-ease) both;
 }
+/* رسائلي: تدرّج بلون الهوية بظلّ خفيف — كانت سوداء مصمتة ثقيلة على العين */
 .msg.is-mine .msg-bubble {
     border-color: transparent;
-    border-radius: 16px;
-    border-end-end-radius: 5px;
-    background: var(--ds-ink);
+    border-radius: 18px;
+    border-end-end-radius: 6px;
+    background: linear-gradient(135deg, var(--ds-brand-500) 0%, var(--ds-brand-600) 55%, var(--ds-brand-700) 100%);
+    box-shadow: 0 1px 2px rgba(29, 78, 216, .25), 0 8px 18px -10px rgba(37, 99, 235, .6);
     color: #fff;
 }
+/* رسائل الآخرين: بيضاء بحدّ ناعم، والمشرف بلمسة من لون الهوية ليُعرف بلمحة */
+.msg:not(.is-mine) .msg-bubble { border-radius: 18px; border-end-start-radius: 6px; }
+.msg.is-supervisor:not(.is-mine) .msg-bubble { border-color: var(--ds-brand-100); background: linear-gradient(180deg, #fff, var(--ds-brand-50)); }
 .msg.is-cont .msg-bubble { border-end-start-radius: 16px; }
 .msg.is-mine.is-cont .msg-bubble { border-end-end-radius: 16px; }
 .msg .cmt-text {
@@ -5384,7 +5389,126 @@ a:focus-visible {
     font-variant-numeric: tabular-nums;
     color: var(--ds-ink-mute);
 }
-.msg.is-mine .msg-time { color: rgba(255, 255, 255, .6); }
+.msg.is-mine .msg-time { color: rgba(255, 255, 255, .72); }
+.msg.is-cont:not(.is-mine) .msg-bubble { border-end-start-radius: 18px; }
+.msg.is-mine.is-cont .msg-bubble { border-end-end-radius: 18px; }
+
+/* ==================== نقاش الفريق ====================
+   قناة خاصة بالأعضاء بجانب «مع المشرف»، و@ لتنبيه زميل بعينه. */
+.chat-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    padding: 5px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface-sunk);
+}
+.chat-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 9px 12px;
+    border-radius: 12px;
+    color: var(--ds-ink-soft);
+    text-decoration: none;
+    transition: background-color var(--ds-dur-fast) ease, box-shadow var(--ds-dur-fast) ease, color var(--ds-dur-fast) ease;
+}
+.chat-tab:hover { background: rgba(255, 255, 255, .6); color: var(--ds-ink); }
+.chat-tab.is-active { background: var(--ds-surface); box-shadow: var(--ds-shadow-md); color: var(--ds-ink); }
+/* النصّ بصنفه: الأفاتار نفسه span، فكان محدِّدٌ عامّ يمدّه ليملأ التبويب */
+.chat-tab-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.chat-tab-avatar.ctx-avatar { flex: none; }
+.chat-tab b { display: inline-flex; align-items: center; gap: 5px; font-size: 13.5px; font-weight: 700; }
+.chat-tab small { font-size: 11.5px; color: var(--ds-ink-mute); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-tab-avatar.ctx-avatar { width: 32px; height: 32px; border-radius: 50%; font-size: 11px; }
+.chat-tab-stack .cell-avatar { width: 26px; height: 26px; }
+.chat-tab-lock { font-size: 13px; color: var(--ds-ink-mute); }
+.chat-tab .sidebar-count { flex: none; margin: 0; background: var(--ds-brand-600); }
+
+.chat-team-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--ds-ink);
+    color: #fff;
+    font-size: 19px;
+}
+.chat-private {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--ds-border);
+    background: var(--ds-surface-sunk);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ds-ink-mute);
+}
+.chat-private i { font-size: 14px; }
+
+/* @الاسم داخل الفقاعة */
+.mention {
+    padding: 0 5px;
+    border-radius: 6px;
+    background: var(--ds-brand-50);
+    font-weight: 700;
+    color: var(--ds-brand-700);
+}
+.msg.is-mine .mention { background: rgba(255, 255, 255, .22); color: #fff; }
+/* رسالة تذكرني */
+.msg.is-mentioned .msg-bubble { border-color: var(--ds-brand-300); box-shadow: 0 0 0 3px var(--ds-brand-50), var(--ds-shadow-sm); }
+
+/* قائمة @ فوق صندوق الكتابة */
+.chat-compose { position: relative; }
+.mention-menu {
+    position: absolute;
+    bottom: calc(100% - 4px);
+    inset-inline-start: 14px;
+    z-index: 5;
+    width: 260px;
+    max-height: 240px;
+    overflow-y: auto;
+    padding: 6px;
+    border: 1px solid var(--ds-border);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-surface);
+    box-shadow: var(--ds-shadow-lg);
+    animation: menu-in .15s var(--ds-ease);
+}
+.mention-menu-head { padding: 4px 8px 6px; font-size: 11px; font-weight: 700; color: var(--ds-ink-mute); }
+.mention-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    padding: 7px 8px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ds-ink);
+    text-align: start;
+    cursor: pointer;
+}
+.mention-option .ctx-avatar { width: 28px; height: 28px; border-radius: 50%; font-size: 10.5px; }
+.mention-option:hover, .mention-option.is-active { background: var(--ds-brand-50); color: var(--ds-brand-700); }
+
+@media (max-width: 575.98px) {
+    .chat-tab { padding: 8px; gap: 7px; }
+    .chat-tab small { display: none; }
+    .chat-tab-stack { display: none; }
+    .mention-menu { inset-inline: 12px; width: auto; }
+}
 
 /* الحذف يظهر عند المرور — لا سلّة بجانب كل رسالة */
 .msg-del { flex: none; align-self: center; opacity: 0; transition: opacity var(--ds-dur-fast) ease; }
