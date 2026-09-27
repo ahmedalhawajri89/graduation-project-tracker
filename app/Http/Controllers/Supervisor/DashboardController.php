@@ -4,10 +4,15 @@ namespace App\Http\Controllers\Supervisor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\ProjectComment;
+use App\Models\ProjectFile;
+use App\Models\ProjectMilestone;
 use App\Models\Semester;
 use App\Models\Supervisor;
 use App\Notifications\StudentReplayProjectNotify;
 use App\Support\Audit;
+use App\Support\Discussion;
+use App\Support\ProjectSimilarity;
 use App\Support\StagePlan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -45,7 +50,10 @@ class DashboardController extends Controller
                             // \u200Ereorder\u200E لا \u200Elatest()\u200E: العلاقة مرتّبة تصاعدياً، و\u200Elatest()\u200E
                             // يضيف ترتيباً ثانياً فيُعيد **أقدم** تعليق لا آخره
                             'comments' => fn ($c) => $c->reorder('id', 'desc')->limit(1),
-                        ]);
+                            'project_type',
+                        ])
+                        // آخر نشاط في البطاقة: آخر ملف مرفوع بلا تحميل الملفات
+                        ->withMax('files as last_file_at', 'created_at');
                 },
             ])
             ->first();
@@ -57,10 +65,141 @@ class DashboardController extends Controller
 
         $semester = Semester::current();
         $supervisor = $this->getInfo($semester->id);
-        $data['supervisor'] = $supervisor;
-        $data['semester'] = $semester;
+        $groups = $supervisor->projectsAccept;
+        $ids = $groups->pluck('id');
 
-        return view('dashboard.supervisor.index', $data);
+        // المتأخّر أولاً، ثم الأقرب موعداً — كان ترتيب العلاقة، فالمتأخّر والمستقرّ سواء
+        $ranked = $groups->sortBy(function ($project) {
+            $days = $project->days_left;
+
+            return [$this->lateCount($project) ? 0 : 1, is_null($days) ? 9999 : $days];
+        })->values();
+
+        // من حالة المشروع لا من الإشعار: إشعار مقروء كان يُخفي طلباً معلّقاً
+        $requests = $supervisor->pendingRequests()->with(['group.student', 'project_type'])->oldest()->get();
+
+        $unread = Discussion::unreadFor($supervisor, $ids);
+        $withStages = $groups->filter(fn ($p) => ! is_null($p->progress));
+        $late = $groups->sum(fn ($p) => $this->lateCount($p));
+
+        $stages = $supervisor->stages()->where('semester_id', $semester->id)->get();
+
+        return view('dashboard.supervisor.index', [
+            'supervisor' => $supervisor,
+            'semester' => $semester,
+            'groups' => $groups,
+            'ranked' => $ranked,
+            'requests' => $requests,
+            'unread' => $unread,
+            'kpi' => [
+                'groups' => $groups->count(),
+                'max' => (int) $supervisor->max_group,
+                'seats' => $supervisor->seatsLeft(),
+                'avg' => $withStages->isEmpty() ? null : (int) round($withStages->avg('progress')),
+                'withStages' => $withStages->count(),
+                'late' => $late,
+                'lateGroups' => $groups->filter(fn ($p) => $this->lateCount($p))->count(),
+                'unread' => array_sum($unread),
+                'completed' => $groups->where('status', 'complete')->count(),
+            ],
+            'hasPlan' => $stages->isNotEmpty(),
+            'upcoming' => $this->upcoming($stages, $groups),
+            'activity' => $this->activity($supervisor, $ids),
+        ]);
+    }
+
+    private function lateCount(Project $project): int
+    {
+        return $project->milestones->filter(
+            fn ($m) => ! $m->is_done && $m->due_date && $m->due_date->isPast()
+        )->count();
+    }
+
+    /**
+     * القادم خلال أسبوعين: مراحل الخطة، والمواعيد النهائية للمجموعات.
+     *
+     * @return \Illuminate\Support\Collection<int, array<string, mixed>>
+     */
+    private function upcoming($stages, $groups)
+    {
+        $until = today()->addDays(14);
+        $active = $groups->where('status', 'accept');
+
+        $soonStages = $stages->filter(fn ($s) => $s->due_date && $s->due_date->betweenIncluded(today(), $until));
+        $progress = StagePlan::progress($soonStages, $active);
+
+        $items = $soonStages->map(fn ($s) => [
+            'date' => $s->due_date,
+            'title' => $s->title,
+            'kind' => 'stage',
+            'done' => $progress[$s->id]['done'] ?? 0,
+            'total' => $progress[$s->id]['total'] ?? 0,
+            'href' => route('supervisor.plan'),
+        ]);
+
+        $deadlines = $active
+            ->filter(fn ($p) => $p->date_line && $p->date_line->betweenIncluded(today(), $until))
+            ->map(fn ($p) => [
+                'date' => $p->date_line,
+                'title' => 'التسليم النهائي — ' . $p->title,
+                'kind' => 'deadline',
+                'href' => route('supervisor.projects.show', $p->id),
+            ]);
+
+        return $items->concat($deadlines)->sortBy(fn ($i) => $i['date']->timestamp)->values()->take(5);
+    }
+
+    /**
+     * آخر النشاط عبر المجموعات: ملفات رُفعت، ومراحل أُنجزت، ورسائل.
+     * ثلاثة استعلامات محدودة مهما كثرت المجموعات.
+     *
+     * @return \Illuminate\Support\Collection<int, array<string, mixed>>
+     */
+    private function activity(Supervisor $supervisor, $ids)
+    {
+        if ($ids->isEmpty()) {
+            return collect();
+        }
+
+        $who = fn ($person) => $person instanceof Supervisor && $person->is($supervisor)
+            ? 'أنت'
+            : ($person?->name ?? 'عضو سابق');
+
+        $files = ProjectFile::whereIn('project_id', $ids)->with(['project:id,title', 'uploader'])
+            ->latest('id')->limit(8)->get()
+            ->map(fn ($f) => [
+                'at' => $f->created_at,
+                'icon' => 'ti-file-upload',
+                'text' => $who($f->uploader) . ' رفع «' . $f->title . '»',
+                'project' => $f->project,
+                'href' => route('supervisor.projects.show', $f->project_id) . '#files',
+            ]);
+
+        $done = ProjectMilestone::whereIn('project_id', $ids)->whereNotNull('done_at')->with('project:id,title')
+            ->latest('done_at')->limit(8)->get()
+            ->map(fn ($m) => [
+                'at' => $m->done_at,
+                'icon' => 'ti-circle-check',
+                'text' => 'أُنجزت مرحلة «' . $m->title . '»',
+                'project' => $m->project,
+                'href' => route('supervisor.projects.show', $m->project_id),
+            ]);
+
+        $comments = ProjectComment::whereIn('project_id', $ids)->with(['project:id,title', 'author'])
+            ->latest('id')->limit(8)->get()
+            ->map(fn ($c) => [
+                'at' => $c->created_at,
+                'icon' => 'ti-message',
+                'text' => $who($c->author) . ': ' . \Illuminate\Support\Str::limit($c->body, 70),
+                'project' => $c->project,
+                'href' => route('supervisor.discussion', $c->project_id),
+            ]);
+
+        return $files->concat($done)->concat($comments)
+            ->filter(fn ($a) => $a['at'] && $a['project'])
+            ->sortByDesc(fn ($a) => $a['at']->timestamp)
+            ->values()
+            ->take(8);
     }
 
     /**
@@ -106,11 +245,32 @@ class DashboardController extends Controller
             ->reject(fn ($n) => in_array((int) ($n->data['project_id'] ?? 0), $pendingIds, true))
             ->each->markAsRead();
 
+        // «هل نُفّذت هذه الفكرة؟» — يُسأل الطالب عنها وهو يكتب، والمشرف أولى
+        // بها وهو يقرّر. الطلبات المعلّقة قليلة، فاستعلام لكلٍّ مقبول
+        $similar = $requests->mapWithKeys(fn ($p) => [
+            $p->id => ProjectSimilarity::find($p->title, $p->project_type?->specialize_id, 2),
+        ]);
+
+        $semester = Semester::current();
+
+        // ما قرّره هذا الفصل: المقبول والمرفوض، الأحدث أولاً
+        $decisions = Project::where('supervisor_id', $supervisor->id)
+            ->where('semester_id', $semester->id)
+            ->whereIn('status', ['accept', 'complete', 'reject'])
+            ->with(['group' => fn ($q) => $q->where('type', 'leader')->with('student:id,name')])
+            ->latest('updated_at')
+            ->limit(8)
+            ->get(['id', 'title', 'status', 'updated_at']);
+
         return view('dashboard.supervisor.requestProjects', [
             'requests' => $requests,
             'updates' => $updates,
+            'similar' => $similar,
+            'decisions' => $decisions,
             'seatsLeft' => $supervisor->seatsLeft(),
             'maxGroup' => (int) $supervisor->max_group,
+            'acceptedCount' => $supervisor->projectsAccept()->where('semester_id', $semester->id)->count(),
+            'hasPlan' => $supervisor->stages()->where('semester_id', $semester->id)->exists(),
         ]);
     }
 

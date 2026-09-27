@@ -1,8 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Takharruj">
-  <rect width="64" height="64" rx="10" fill="#10141f"/>
-  <g fill="none" stroke="#fffdfa" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M32 18 12 26l20 8 20-8z"/>
-    <path d="M20 30v9c0 3.9 5.4 6.5 12 6.5S44 42.9 44 39v-9"/>
-    <path d="M52 26v11"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="64" height="64" role="img" aria-label="Takharruj">
+  <defs>
+    <linearGradient id="t" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#27272a"/>
+      <stop offset="1" stop-color="#09090b"/>
+    </linearGradient>
+  </defs>
+  <rect width="40" height="40" rx="11" fill="url(#t)"/>
+  <path d="M10.5 20h19" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="10.5" cy="20" r="3.4" fill="#fff"/>
+  <circle cx="20" cy="20" r="3.4" fill="#fff"/>
+  <circle cx="29.5" cy="20" r="3.4" fill="#3b82f6" stroke="#60a5fa" stroke-width="2"/>
 </svg>

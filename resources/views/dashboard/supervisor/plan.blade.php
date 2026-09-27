@@ -12,7 +12,8 @@
         $groupsCount = $projects->count();
         $activeCount = $projects->where('status', 'accept')->whereNull('grade')->count();
         $suggestions = ['المقترح', 'الفصل الأول: المقدمة', 'الفصل الثاني: الدراسات السابقة', 'التحليل والتصميم', 'التنفيذ', 'العرض النهائي'];
-        $formOpen = $stages->isEmpty() || $errors->any();
+        // \u200E?new=1\u200E: زرّ «مرحلة جديدة» في اللوحة يفتح النموذج مباشرة
+        $formOpen = $stages->isEmpty() || $errors->any() || request()->boolean('new');
     @endphp
 
     <x-page-header title="خطة المراحل"

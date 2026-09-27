@@ -7,10 +7,14 @@
     @param int                 $seatsLeft  مقاعد الفصل الحالي
     @param int                 $pending    عدد الطلبات المعلّقة كلّها — لتنبيه المقعد الأخير
     @param bool                $compact    في اللوحة: بلا وصف
+    @param \Illuminate\Support\Collection|null $similar  مشاريع مكتملة تشبهه (صفحة الطلبات وحدها)
 --}}
 
 @php
     $compact = $compact ?? false;
+    $similar = $similar ?? collect();
+    // الانتظار: بعد ثلاثة أيام يصير تنبيهاً — الفريق لا يبدأ قبل الردّ
+    $waitDays = (int) $project->created_at->diffInDays(now());
     $canAccept = $seatsLeft > 0;
     $lastSeat = $seatsLeft === 1 && $pending > 1;
     $replyUrl = route('supervisor.replay.project', ['project_id' => $project->id]);
@@ -26,14 +30,27 @@
                 · قُدّم {{ $project->created_at->diffForHumans() }}
             </span>
         </div>
-        <span class="req-waiting">
+        <span class="req-waiting {{ $waitDays >= 3 ? 'is-long' : '' }}">
             <i class="ti ti-clock-hour-4" aria-hidden="true"></i>
-            بانتظار ردّك
+            {{ $waitDays === 0 ? 'وصل اليوم' : 'ينتظر منذ ' . ($waitDays === 1 ? 'يوم' : $waitDays . ' أيام') }}
         </span>
     </header>
 
     @if (! $compact && $project->description)
         <p class="req-desc">{{ $project->description }}</p>
+    @endif
+
+    {{-- تنبيه لا منع: مطابقة كلمات، والقرار للمشرف --}}
+    @if ($similar->isNotEmpty())
+        <div class="req-similar">
+            <i class="ti ti-copy" aria-hidden="true"></i>
+            <span>
+                <b>يشبه {{ $similar->count() === 1 ? 'مشروعاً مكتملاً' : 'مشاريع مكتملة' }}:</b>
+                @foreach ($similar as $s)
+                    «{{ $s->title }}»<small> — {{ $s->semester?->name }}@if ($s->supervisor) · {{ $s->supervisor->name }}@endif</small>@if (! $loop->last)، @endif
+                @endforeach
+            </span>
+        </div>
     @endif
 
     <ul class="req-team" aria-label="الفريق">

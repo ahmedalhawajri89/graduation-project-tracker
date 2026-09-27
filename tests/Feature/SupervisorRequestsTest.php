@@ -56,6 +56,51 @@ class SupervisorRequestsTest extends TestCase
         DB::table('notifications')->whereIn('id', $snap['unread'])->update(['read_at' => null]);
     }
 
+    /** «هل نُفّذت الفكرة؟» — مشروع مكتمل بالعنوان نفسه يُنبَّه إليه في بطاقة الطلب */
+    public function test_a_request_shows_similar_completed_projects(): void
+    {
+        [$supervisor, $project, $snap] = $this->supervisorWithRequest();
+        $done = \App\Models\Project::where('status', 'complete')->first();
+
+        if (! $done) {
+            $this->markTestSkipped('لا مشروع مكتمل للمقارنة.');
+        }
+
+        $title = $done->title;
+        DB::table('projects')->where('id', $done->id)->update(['title' => $project->title]);
+
+        try {
+            $this->actingAs($supervisor, 'supervisor')
+                ->get(route('supervisor.showNotification'))
+                ->assertOk()
+                ->assertSee('يشبه');
+        } finally {
+            DB::table('projects')->where('id', $done->id)->update(['title' => $title]);
+            $this->restore($supervisor, $snap);
+        }
+    }
+
+    /** ما قرّره هذا الفصل بجانب الطلبات: المقبول والمرفوض */
+    public function test_the_page_lists_this_semesters_decisions(): void
+    {
+        [$supervisor, , $snap] = $this->supervisorWithRequest();
+        $decided = $supervisor->projects()->where('semester_id', \App\Models\Semester::current()->id)
+            ->whereIn('status', ['accept', 'complete', 'reject'])->first();
+
+        try {
+            $response = $this->actingAs($supervisor, 'supervisor')
+                ->get(route('supervisor.showNotification'))
+                ->assertOk()
+                ->assertSee('قراراتك هذا الفصل');
+
+            if ($decided) {
+                $response->assertSee($decided->title);
+            }
+        } finally {
+            $this->restore($supervisor, $snap);
+        }
+    }
+
     /** الإشعار المقروء كان يُخفي الطلب وزرّيه — والمشروع ما زال معلّقاً */
     public function test_a_request_stays_visible_after_its_notification_is_read(): void
     {

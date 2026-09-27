@@ -28,7 +28,11 @@ class DiscussionController extends Controller
         }
 
         $projects = Discussion::projectsFor($supervisor)
-            ->load(['comments' => fn ($q) => $q->reorder('id', 'desc')->limit(1)->with('author')]);
+            ->load([
+                'comments' => fn ($q) => $q->reorder('id', 'desc')->limit(1)->with('author'),
+                // أسماء الطلاب للبحث في القائمة
+                'group.student',
+            ]);
 
         $unread = Discussion::unreadFor($supervisor, $projects->pluck('id'));
 

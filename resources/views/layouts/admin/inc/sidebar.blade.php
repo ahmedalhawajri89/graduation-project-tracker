@@ -21,12 +21,27 @@
 
         {{-- الشعار --}}
         <h1 class="navbar-brand sidebar-brand">
-            <a href="{{ url('/') }}" class="d-flex align-items-center gap-2 text-decoration-none">
-                <span class="sidebar-brand-logo">
-                    <img src="{{ asset('assets/img/takharruj-logo.svg') }}" alt="شعار تخرُّج" height="22">
+            <a href="{{ url('/') }}" class="brand-link text-decoration-none" aria-label="تخرُّج — الرئيسية">
+                {{-- علامة الموقع نفسها — عقد على مسار، آخرها التخرّج. مضمّنة لا <img>:
+                     المسار يُرسم عند التحميل والعقد تضيء تباعاً، والأخيرة تمتلئ عند المرور --}}
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 40 40">
+                        <defs>
+                            <linearGradient id="bm-tile" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0" stop-color="#27272a" />
+                                <stop offset="1" stop-color="#09090b" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="40" height="40" rx="11" fill="url(#bm-tile)" />
+                        <path class="bm-rail" d="M10.5 20h19" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-linecap="round" pathLength="1" />
+                        <circle class="bm-node bm-n1" cx="10.5" cy="20" r="3.4" fill="#fff" />
+                        <circle class="bm-node bm-n2" cx="20" cy="20" r="3.4" fill="#fff" />
+                        <circle class="bm-node bm-n3" cx="29.5" cy="20" r="3.4" fill="#09090b" stroke="#fff" stroke-width="2" />
+                    </svg>
+                    <span class="brand-shine"></span>
                 </span>
                 <span class="sidebar-brand-text">
-                    <b class="d-block">تخرُّج</b>
+                    <b>تخرُّج<i class="brand-dot"></i></b>
                     <small>متابعة مشاريع التخرج</small>
                 </span>
             </a>
@@ -40,11 +55,20 @@
             {{-- مساحة العمل: الفصل النشط. داخل القائمة المطويّة لا فوقها: كانت
                  تسبق شريط التنقّل على الجوال فتأخذ ~١٤٥ بكسل قبل أي محتوى --}}
             @isset($viewSemester)
-                <div class="sidebar-context" title="{{ $viewSemester->name }}">
-                    <i class="ti ti-calendar" aria-hidden="true"></i>
+                {{-- الفصل والسنة منفصلان: كان الاسم كاملاً يلتفّ على سطرين --}}
+                @php $sbSem = $viewSemester->parts(); @endphp
+                <div class="sidebar-context sem-card" title="{{ $viewSemester->name }}">
+                    <span class="sem-icon" aria-hidden="true"><i class="ti ti-calendar-event"></i></span>
                     <span class="sidebar-context-text">
-                        <small>الفصل الحالي</small>
-                        <b>{{ $viewSemester->name }}</b>
+                        {{-- السنة في سطر التسمية لا بجانب الاسم: كانت تأخذ عرضه فيُقصّ
+                             «الفصل الأوّل» إلى «الفصل الأو…» حين يضيق الشريط --}}
+                        <small>
+                            <span class="sem-live" aria-hidden="true"></span>الفصل الحالي
+                            @if ($sbSem['year'])
+                                <span class="sem-year" dir="ltr">{{ $sbSem['year'] }}</span>
+                            @endif
+                        </small>
+                        <b>{{ $sbSem['term'] }}</b>
                     </span>
                 </div>
             @endisset

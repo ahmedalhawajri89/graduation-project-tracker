@@ -8,29 +8,86 @@
 @section('content')
 
     @php
-        $groups = $supervisor->projectsAccept;
-        $groupsCount = $groups->count();
-        $seatsLeft = max(0, $supervisor->max_group - $groupsCount);
-        $completedCount = $groups->where('status', 'complete')->count();
-
-        // من حالة المشروع لا من الإشعار: إشعار مقروء كان يُخفي طلباً معلّقاً
-        $requests = $supervisor->pendingRequests()->with(['group.student', 'project_type'])->oldest()->get();
+        $groupsCount = $kpi['groups'];
         $pendingRequests = $requests->count();
-        $seatsExact = $supervisor->seatsLeft();
 
-        // الترتيب يصير ذا معنى: المتأخّر أولاً، ثم الأقرب موعداً.
-        // كان ترتيب العلاقة — فالمتأخّر والمستقرّ سواء.
-        $ranked = $groups->sortBy(function ($project) {
-            $overdue = $project->milestones->contains(
-                fn ($m) => ! $m->is_done && $m->due_date && $m->due_date->isPast()
-            );
-            $days = $project->days_left;
+        // سطر الحال تحت الاسم: ما يعرفه المشرف في نظرة، بلا أرقام صفرية
+        $summary = [$semester->name];
+        $summary[] = $groupsCount ? ($groupsCount === 1 ? 'مجموعة واحدة' : $groupsCount . ' مجموعات') : 'لا مجموعات بعد';
+        $summary[] = $kpi['seats'] > 0
+            ? ($kpi['seats'] === 1 ? 'مقعد متبقٍ' : $kpi['seats'] . ' مقاعد متبقية') . ' من ' . $kpi['max']
+            : 'اكتملت مقاعدك';
 
-            return [$overdue ? 0 : 1, is_null($days) ? 9999 : $days];
-        })->values();
+        // حلقة السعة: المقبول من الحدّ
+        $capPct = $kpi['max'] > 0 ? min(100, (int) round($groupsCount * 100 / $kpi['max'])) : 100;
     @endphp
 
-    <x-page-header title="أهلاً، {{ $supervisor->name }}" subtitle="{{ $semester->name }}" />
+    <x-page-header title="أهلاً، {{ $supervisor->name }}" subtitle="{{ implode(' · ', $summary) }}">
+        <x-slot:actions>
+            <a href="{{ route('supervisor.discussion') }}" class="btn btn-outline-secondary">
+                <i class="ti ti-messages me-1" aria-hidden="true"></i>
+                النقاش
+                @if ($kpi['unread'])
+                    <span class="sidebar-count ms-1">{{ $kpi['unread'] }}</span>
+                @endif
+            </a>
+            <a href="{{ route('supervisor.plan', ['new' => 1]) }}#stage-new" class="btn btn-primary">
+                <i class="ti ti-plus me-1" aria-hidden="true"></i>
+                مرحلة جديدة
+            </a>
+        </x-slot:actions>
+    </x-page-header>
+
+    {{-- مؤشرات تقود إلى فعل — كانت أربعة أرقام أغلبها أصفار --}}
+    <div class="stat-strip dash-kpis mb-4">
+        <div class="stat-cell kpi-cap">
+            <span class="kpi-ring" style="--p: {{ $capPct }}" aria-hidden="true">
+                <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" /><circle cx="20" cy="20" r="17" pathLength="100" /></svg>
+            </span>
+            <span class="kpi-cap-body">
+                <span class="stat-label">السعة</span>
+                <span class="stat-value">{{ $groupsCount }}<small>/ {{ $kpi['max'] }}</small></span>
+                <span class="stat-sub">
+                    @if ($groupsCount > $kpi['max'])
+                        تجاوزتَ الحدّ بـ{{ $groupsCount - $kpi['max'] }}
+                    @elseif ($kpi['seats'] > 0)
+                        {{ $kpi['seats'] === 1 ? 'مقعد متبقٍ' : $kpi['seats'] . ' مقاعد متبقية' }}
+                    @else
+                        اكتملت المقاعد
+                    @endif
+                </span>
+            </span>
+        </div>
+
+        <div class="stat-cell">
+            <span class="stat-label">متوسط الإنجاز</span>
+            @if (is_null($kpi['avg']))
+                <span class="stat-value is-muted">—</span>
+                <span class="stat-sub">لا مراحل بعد</span>
+            @else
+                <span class="stat-value">{{ $kpi['avg'] }}%</span>
+                <span class="ms-progress kpi-bar"><span style="width: {{ $kpi['avg'] }}%"></span></span>
+            @endif
+        </div>
+
+        <div class="stat-cell">
+            <span class="stat-label">مراحل متأخّرة</span>
+            <span class="stat-value {{ $kpi['late'] ? 'is-late' : '' }}">{{ $kpi['late'] }}</span>
+            <span class="stat-sub">
+                @if ($kpi['late'])
+                    في {{ $kpi['lateGroups'] === 1 ? 'مجموعة واحدة' : $kpi['lateGroups'] . ' مجموعات' }}
+                @else
+                    كل شيء في موعده
+                @endif
+            </span>
+        </div>
+
+        <a href="{{ route('supervisor.discussion') }}" class="stat-cell">
+            <span class="stat-label">رسائل جديدة</span>
+            <span class="stat-value {{ $kpi['unread'] ? 'is-brand' : '' }}">{{ $kpi['unread'] }}</span>
+            <span class="stat-sub">{{ $kpi['unread'] ? 'في النقاش — افتحه' : 'لا جديد في النقاش' }}</span>
+        </a>
+    </div>
 
     @include('dashboard.supervisor._next-actions', [
         'groups' => $groups,
@@ -53,7 +110,7 @@
                 @foreach ($requests->take(2) as $request)
                     @include('dashboard.supervisor._request-card', [
                         'project' => $request,
-                        'seatsLeft' => $seatsExact,
+                        'seatsLeft' => $kpi['seats'],
                         'pending' => $pendingRequests,
                         'compact' => true,
                     ])
@@ -62,90 +119,98 @@
         </section>
     @endif
 
-    {{-- شريط بدل أربع بطاقات بارتفاع ١٤٠ بكسل لأربعة أرقام --}}
-    <div class="stat-strip mb-4">
-        <div class="stat-cell">
-            <span class="stat-label">مجموعاتي هذا الفصل</span>
-            <span class="stat-value">{{ $groupsCount }}</span>
-        </div>
-        <div class="stat-cell">
-            <span class="stat-label">المقاعد المتبقية</span>
-            <span class="stat-value {{ $seatsLeft === 0 ? 'is-late' : '' }}">{{ $seatsLeft }}</span>
-            {{-- «٠ من ٣» تُخفي مشرفاً بأربع مجموعات: التجاوز حالة يعرفها الأدمن فليعرفها صاحبها --}}
-            <span class="stat-sub">
-                من {{ $supervisor->max_group }}@if ($groupsCount > $supervisor->max_group) · تجاوزتَ الحدّ بـ{{ $groupsCount - $supervisor->max_group }}@endif
-            </span>
-        </div>
-        <a href="{{ route('supervisor.showNotification') }}" class="stat-cell">
-            <span class="stat-label">طلبات بانتظار ردّك</span>
-            <span class="stat-value {{ $pendingRequests > 0 ? 'is-late' : '' }}">{{ $pendingRequests }}</span>
-        </a>
-        <div class="stat-cell">
-            <span class="stat-label">مشاريع مكتملة</span>
-            <span class="stat-value">{{ $completedCount }}</span>
-        </div>
-    </div>
-
-    @if ($groupsCount === 0)
-        <div class="card">
-            <x-empty-state icon="ti-users-group" title="لا مجموعات بعد"
-                text="حين تقبل طلب مشروع، تظهر مجموعته هنا لتتابعها: المراحل والملفات والنقاش والتقييم."
-                class="py-6">
-                @if ($pendingRequests > 0)
-                    <x-slot:action>
-                        <a href="{{ route('supervisor.showNotification') }}" class="btn btn-primary">
-                            <i class="ti ti-inbox me-1" aria-hidden="true"></i>
-                            مراجعة {{ $pendingRequests }} طلباً
-                        </a>
-                    </x-slot:action>
+    <div class="dash-grid">
+        <div class="dash-main">
+            <div class="dash-section-head">
+                <h2>مجموعاتي</h2>
+                @if ($kpi['completed'])
+                    <span class="dash-section-meta">{{ $kpi['completed'] }} مكتملة</span>
                 @endif
-            </x-empty-state>
-        </div>
-    @else
-        {{-- التصفية تظهر حين تستحقّ: أربع مجموعات تُمسح بالعين --}}
-        @if ($groupsCount > 4)
-            <div class="filter-bar mb-3">
-                <div class="filter-tabs" role="group" aria-label="تصفية حسب الحالة">
-                    <button type="button" class="filter-tab is-active" data-status-filter="all">
-                        الكل
-                        <span class="filter-count">{{ $groupsCount }}</span>
-                    </button>
-                    <button type="button" class="filter-tab" data-status-filter="accept">
-                        <span class="filter-dot" style="background: {{ config('statuses.map.accept.hex') }}"></span>
-                        قيد التنفيذ
-                        <span class="filter-count">{{ $groups->where('status', 'accept')->count() }}</span>
-                    </button>
-                    <button type="button" class="filter-tab" data-status-filter="complete">
-                        <span class="filter-dot" style="background: {{ config('statuses.map.complete.hex') }}"></span>
-                        مكتملة
-                        <span class="filter-count">{{ $completedCount }}</span>
-                    </button>
-                </div>
+            </div>
 
-                <div class="filter-form">
-                    <div class="filter-field filter-field--search">
-                        <label class="form-label" for="groups-search">بحث</label>
-                        <div class="filter-search-box">
-                            <i class="ti ti-search filter-search-icon" aria-hidden="true"></i>
-                            <input type="search" id="groups-search" class="form-control"
-                                placeholder="ابحث بعنوان المشروع أو نوعه…" aria-label="بحث في المجموعات">
+            @if ($groupsCount === 0)
+                {{-- البداية: ثلاث خطوات بدل «لا مجموعات» وحدها --}}
+                <div class="card dash-start">
+                    <h3>ابدأ فصلك في ثلاث خطوات</h3>
+                    <ol class="dash-steps">
+                        <li>
+                            <span class="dash-step-n">1</span>
+                            <div>
+                                <a href="{{ route('supervisor.plan') }}">جهّز خطة المراحل</a>
+                                <p>مواعيد الفصل وقوالبه مرّة واحدة — تصل كل مجموعة تقبلها.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="dash-step-n">2</span>
+                            <div>
+                                <a href="{{ route('supervisor.showNotification') }}">راجع طلبات الإشراف</a>
+                                <p>{{ $pendingRequests ? $pendingRequests . ' بانتظار ردّك الآن.' : 'تظهر هنا حين يرسلها الطلاب.' }}</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="dash-step-n">3</span>
+                            <div>
+                                <span>تابع مجموعاتك</span>
+                                <p>التقدّم والملفات والنقاش والتقييم — كلها من هذه الصفحة.</p>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            @else
+                {{-- التصفية تظهر حين تستحقّ: أربع مجموعات تُمسح بالعين --}}
+                @if ($groupsCount > 4)
+                    <div class="filter-bar mb-3">
+                        <div class="filter-tabs" role="group" aria-label="تصفية حسب الحالة">
+                            <button type="button" class="filter-tab is-active" data-status-filter="all">
+                                الكل
+                                <span class="filter-count">{{ $groupsCount }}</span>
+                            </button>
+                            <button type="button" class="filter-tab" data-status-filter="accept">
+                                <span class="filter-dot" style="background: {{ config('statuses.map.accept.hex') }}"></span>
+                                قيد التنفيذ
+                                <span class="filter-count">{{ $groups->where('status', 'accept')->count() }}</span>
+                            </button>
+                            <button type="button" class="filter-tab" data-status-filter="complete">
+                                <span class="filter-dot" style="background: {{ config('statuses.map.complete.hex') }}"></span>
+                                مكتملة
+                                <span class="filter-count">{{ $kpi['completed'] }}</span>
+                            </button>
+                        </div>
+
+                        <div class="filter-form">
+                            <div class="filter-field filter-field--search">
+                                <label class="form-label" for="groups-search">بحث</label>
+                                <div class="filter-search-box">
+                                    <i class="ti ti-search filter-search-icon" aria-hidden="true"></i>
+                                    <input type="search" id="groups-search" class="form-control"
+                                        placeholder="ابحث بعنوان المشروع أو نوعه…" aria-label="بحث في المجموعات">
+                                </div>
+                            </div>
                         </div>
                     </div>
+                @endif
+
+                <div class="group-grid" id="groups-grid">
+                    @foreach ($ranked as $project)
+                        @include('dashboard.supervisor._group-card', [
+                            'project' => $project,
+                            'unread' => $unread[$project->id] ?? 0,
+                        ])
+                    @endforeach
                 </div>
-            </div>
-        @endif
 
-        <div class="group-grid" id="groups-grid">
-            @foreach ($ranked as $project)
-                @include('dashboard.supervisor._group-card', ['project' => $project])
-            @endforeach
+                <div class="card d-none" id="groups-no-results">
+                    <x-empty-state icon="ti-search-off" title="لا نتائج مطابقة"
+                        text="جرّب كلمة أخرى أو اعرض كل المجموعات." class="py-5" />
+                </div>
+            @endif
         </div>
 
-        <div class="card d-none" id="groups-no-results">
-            <x-empty-state icon="ti-search-off" title="لا نتائج مطابقة"
-                text="جرّب كلمة أخرى أو اعرض كل المجموعات." class="py-5" />
-        </div>
-    @endif
+        <aside class="dash-side">
+            @include('dashboard.supervisor._upcoming')
+            @include('dashboard.supervisor._activity')
+        </aside>
+    </div>
 
 @endsection
 
