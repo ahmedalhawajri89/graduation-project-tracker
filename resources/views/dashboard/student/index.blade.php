@@ -33,7 +33,10 @@
         $lastNotification = auth()->user()->notifications->first();
     @endphp
 
-    <x-page-header title="أهلاً، {{ $student->name }}" subtitle="{{ $semester->name }}" />
+    {{-- بمشروع نشط: التحية داخل بطاقة المشروع — لا ترويسة فوقها تكرّرها --}}
+    @unless ($activeProject)
+        <x-page-header title="أهلاً، {{ $student->name }}" subtitle="{{ $semester->name }}" />
+    @endunless
 
     @if ($held)
         <section class="start-panel mb-4" role="status">
@@ -47,7 +50,7 @@
             </div>
         </section>
     @elseif ($activeProject)
-        @include('dashboard.student._project', ['project' => $activeProject])
+        @include('dashboard.student._project', ['project' => $activeProject, 'student' => $student, 'semester' => $semester])
     @else
         @include('dashboard.student._no-project', [
             'lastRejected' => $lastRejected,

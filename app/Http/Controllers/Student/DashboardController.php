@@ -8,6 +8,8 @@ use App\Models\Project;
 use App\Models\Semester;
 use App\Models\Specialize;
 use App\Models\Student;
+use App\Support\Discussion;
+use App\Support\ProjectActivity;
 use App\Support\ProjectSimilarity;
 use App\Notifications\SuperVisorRequestProjectNotify;
 use App\Notifications\ProjectActivityNotify;
@@ -37,8 +39,15 @@ class DashboardController extends Controller
                     ]);
                 },
                 'groups' => function ($q) {
-                    // مع أصل كل مرحلة في خطة المشرف: قالبها وتعليماتها تُعرض في صفّها
-                    $q->with('project.milestones.stage');
+                    // مع أصل كل مرحلة في خطة المشرف: قالبها وتعليماتها تُعرض في صفّها،
+                    // وتسليماتها، والفريق والمشرف للبطاقة الرئيسية — بلا استعلام لكل صفّ
+                    $q->with([
+                        'project.milestones.stage',
+                        'project.milestones.submissions.student',
+                        'project.group.student',
+                        'project.supervisor.specialize',
+                        'project.project_type',
+                    ]);
                 },
             ])
             ->first();
@@ -57,6 +66,12 @@ class DashboardController extends Controller
         // وفي لوحة الأدمن، وفاته إصلاح الحذف الناعم في أحدهما
         $data['availableCount'] = Student::availableForTeam($student->specialize_id, $student->id)->count();
         $data['searchUrl'] = route('student.mates.search');
+
+        // المشروع النشط: أول مجموعة لم يُرفض مشروعها — ونشاطه ورسائله للبطاقة
+        $active = $student->groups->first()?->project;
+        $active = $active && $active->status !== 'reject' ? $active : null;
+        $data['activity'] = $active ? ProjectActivity::recent(collect([$active->id]), $student) : collect();
+        $data['unreadMsgs'] = $active ? (Discussion::unreadFor($student, [$active->id])[$active->id] ?? 0) : 0;
 
         return view('dashboard.student.index', $data);
     }

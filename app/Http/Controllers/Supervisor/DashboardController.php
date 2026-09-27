@@ -4,14 +4,12 @@ namespace App\Http\Controllers\Supervisor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
-use App\Models\ProjectComment;
-use App\Models\ProjectFile;
-use App\Models\ProjectMilestone;
 use App\Models\Semester;
 use App\Models\Supervisor;
 use App\Notifications\StudentReplayProjectNotify;
 use App\Support\Audit;
 use App\Support\Discussion;
+use App\Support\ProjectActivity;
 use App\Support\ProjectSimilarity;
 use App\Support\StagePlan;
 use Illuminate\Support\Facades\DB;
@@ -104,14 +102,14 @@ class DashboardController extends Controller
             ],
             'hasPlan' => $stages->isNotEmpty(),
             'upcoming' => $this->upcoming($stages, $groups),
-            'activity' => $this->activity($supervisor, $ids),
+            'activity' => ProjectActivity::recent($ids, $supervisor),
         ]);
     }
 
     private function lateCount(Project $project): int
     {
         return $project->milestones->filter(
-            fn ($m) => ! $m->is_done && $m->due_date && $m->due_date->isPast()
+            fn ($m) => $m->isLate()
         )->count();
     }
 
@@ -147,59 +145,6 @@ class DashboardController extends Controller
             ]);
 
         return $items->concat($deadlines)->sortBy(fn ($i) => $i['date']->timestamp)->values()->take(5);
-    }
-
-    /**
-     * آخر النشاط عبر المجموعات: ملفات رُفعت، ومراحل أُنجزت، ورسائل.
-     * ثلاثة استعلامات محدودة مهما كثرت المجموعات.
-     *
-     * @return \Illuminate\Support\Collection<int, array<string, mixed>>
-     */
-    private function activity(Supervisor $supervisor, $ids)
-    {
-        if ($ids->isEmpty()) {
-            return collect();
-        }
-
-        $who = fn ($person) => $person instanceof Supervisor && $person->is($supervisor)
-            ? 'أنت'
-            : ($person?->name ?? 'عضو سابق');
-
-        $files = ProjectFile::whereIn('project_id', $ids)->with(['project:id,title', 'uploader'])
-            ->latest('id')->limit(8)->get()
-            ->map(fn ($f) => [
-                'at' => $f->created_at,
-                'icon' => 'ti-file-upload',
-                'text' => $who($f->uploader) . ' رفع «' . $f->title . '»',
-                'project' => $f->project,
-                'href' => route('supervisor.projects.show', $f->project_id) . '#files',
-            ]);
-
-        $done = ProjectMilestone::whereIn('project_id', $ids)->whereNotNull('done_at')->with('project:id,title')
-            ->latest('done_at')->limit(8)->get()
-            ->map(fn ($m) => [
-                'at' => $m->done_at,
-                'icon' => 'ti-circle-check',
-                'text' => 'أُنجزت مرحلة «' . $m->title . '»',
-                'project' => $m->project,
-                'href' => route('supervisor.projects.show', $m->project_id),
-            ]);
-
-        $comments = ProjectComment::whereIn('project_id', $ids)->with(['project:id,title', 'author'])
-            ->latest('id')->limit(8)->get()
-            ->map(fn ($c) => [
-                'at' => $c->created_at,
-                'icon' => 'ti-message',
-                'text' => $who($c->author) . ': ' . \Illuminate\Support\Str::limit($c->body, 70),
-                'project' => $c->project,
-                'href' => route('supervisor.discussion', $c->project_id),
-            ]);
-
-        return $files->concat($done)->concat($comments)
-            ->filter(fn ($a) => $a['at'] && $a['project'])
-            ->sortByDesc(fn ($a) => $a['at']->timestamp)
-            ->values()
-            ->take(8);
     }
 
     /**

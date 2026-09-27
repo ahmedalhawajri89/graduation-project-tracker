@@ -2,7 +2,7 @@
     $graded = ! is_null($project->grade);
 
     // موضع المشروع على مساره
-    $stages = [
+    $steps = [
         ['key' => 'request', 'label' => 'تقديم الطلب'],
         ['key' => 'accept', 'label' => 'موافقة المشرف'],
         ['key' => 'work', 'label' => 'التنفيذ والمتابعة'],
@@ -16,28 +16,20 @@
         'complete' => $graded ? 5 : 4,
         default => 0,
     };
+    $active = in_array($project->status, ['accept', 'complete'], true);
 @endphp
 
+{{-- البطاقة الرئيسية بدل ترويسة التحيّة وشريط الأرقام ولوح المسار --}}
+@include('dashboard.student._hero', [
+    'project' => $project,
+    'student' => $student,
+    'semester' => $semester,
+    'steps' => $steps,
+    'reached' => $reached,
+    'unreadMsgs' => $unreadMsgs ?? 0,
+])
+
 @include('dashboard.student._next-actions', ['project' => $project])
-
-@include('dashboard.project._stat-strip', ['project' => $project])
-
-{{-- المسار — نفس \u200E.rail\u200E المستعمل في صفحة الأدمن --}}
-<section class="rail-card mb-4">
-    <ol class="rail-steps">
-        @foreach ($stages as $i => $stage)
-            @php $n = $i + 1; @endphp
-            <li class="rail-step {{ $n < $reached ? 'is-done' : ($n === $reached ? 'is-current' : '') }}">
-                <span class="rail-node" aria-hidden="true">
-                    @if ($n < $reached)
-                        <i class="ti ti-check"></i>
-                    @endif
-                </span>
-                <span class="rail-label">{{ $stage['label'] }}</span>
-            </li>
-        @endforeach
-    </ol>
-</section>
 
 {{-- التقييم — نفس \u200E.grade-panel\u200E، وكان تدرّجاً بنفسجياً في \u200Estyle\u200E --}}
 @if ($graded)
@@ -65,47 +57,54 @@
     </section>
 @endif
 
-{{-- عمودان: المتن ما يُعمل عليه، والجانب ما يُرجَع إليه.
-     كان كل شيء عموداً واحداً بالوزن نفسه. --}}
-<div class="work-grid">
+{{-- عمودان: المتن ما يُعمل عليه، والجانب ما يُرجَع إليه --}}
+<div class="dash-grid">
 
-    <div class="work-main">
+    <div class="dash-main">
+        {{-- ما يعمل عليه الفريق الآن: كان مخفيّاً في قائمة المراحل بالوزن نفسه --}}
+        @if ($active)
+            @include('dashboard.student._current-stage', ['project' => $project])
+        @endif
+
         @include('dashboard.project._milestones', ['project' => $project])
         @include('dashboard.project._files', ['project' => $project, 'role' => 'student'])
         {{-- النقاش تبويب مستقلّ في الشريط الجانبي — كان هنا يطول بالرسائل --}}
     </div>
 
-    {{-- بطاقتان بدل أربع: المواعيد في الشريط أعلاه، والردود في الجرس
-         و«ماذا عليّ الآن» — كان الجانب ١٢٧٠ بكسل والمتن ٧٤٠ --}}
-    <aside class="work-side">
-        <div class="ctx-card" id="project-facts">
-            <div class="ctx-head">
-                <i class="ti ti-briefcase" aria-hidden="true"></i>
-                مشروع التخرج
-            </div>
-            <div class="proj-title-cell">
-                <h3>{{ $project->title }}</h3>
-                <span>{{ $project->project_type->name }} · قُدّم {{ $project->created_at->format('Y-m-d') }}</span>
-            </div>
-            @if ($project->description)
-                @include('dashboard.project._clamp', ['text' => $project->description])
-            @endif
-
-            {{-- سحب الطلب: القائد وحده وقبل ردّ المشرف — كان الفريق يعلق إن لم يردّ --}}
-            @if ($project->status === 'request'
-                && $project->group->contains(fn ($g) => $g->type === 'leader' && (int) $g->student_id === (int) auth('student')->id()))
-                <form action="{{ route('student.project.withdraw', $project->id) }}" method="POST" class="ctx-form">
-                    @csrf
-                    <p class="withdraw-note">لم يردّ المشرف بعد؟ يمكنك سحب الطلب وتقديمه لمشرف آخر.</p>
-                    <button type="submit" class="btn btn-outline-danger w-100"
-                        onclick="return confirm('سحب الطلب يحذفه ويحرّر أعضاء الفريق، ويُبلَّغون بذلك. لا تراجع عنه. متابعة؟')">
-                        <i class="ti ti-arrow-back-up me-1" aria-hidden="true"></i>
-                        سحب الطلب
-                    </button>
-                </form>
-            @endif
-        </div>
+    <aside class="dash-side">
+        @include('dashboard.project._activity', [
+            'activity' => $activity ?? collect(),
+            'showProject' => false,
+            'emptyText' => 'يظهر هنا ما يحدث في مشروعكم: ملفات وتسليمات وردود المشرف ورسائل.',
+        ])
 
         @include('dashboard.project._team-card', ['project' => $project, 'role' => 'student'])
+
+        {{-- العنوان في البطاقة الرئيسية — هنا الوصف وحده، وسحب الطلب --}}
+        @if ($project->description || $project->status === 'request')
+            <div class="ctx-card" id="project-facts">
+                <div class="ctx-head">
+                    <i class="ti ti-file-description" aria-hidden="true"></i>
+                    عن المشروع
+                </div>
+                @if ($project->description)
+                    @include('dashboard.project._clamp', ['text' => $project->description])
+                @endif
+
+                {{-- سحب الطلب: القائد وحده وقبل ردّ المشرف — كان الفريق يعلق إن لم يردّ --}}
+                @if ($project->status === 'request'
+                    && $project->group->contains(fn ($g) => $g->type === 'leader' && (int) $g->student_id === (int) auth('student')->id()))
+                    <form action="{{ route('student.project.withdraw', $project->id) }}" method="POST" class="ctx-form">
+                        @csrf
+                        <p class="withdraw-note">لم يردّ المشرف بعد؟ يمكنك سحب الطلب وتقديمه لمشرف آخر.</p>
+                        <button type="submit" class="btn btn-outline-danger w-100"
+                            onclick="return confirm('سحب الطلب يحذفه ويحرّر أعضاء الفريق، ويُبلَّغون بذلك. لا تراجع عنه. متابعة؟')">
+                            <i class="ti ti-arrow-back-up me-1" aria-hidden="true"></i>
+                            سحب الطلب
+                        </button>
+                    </form>
+                @endif
+            </div>
+        @endif
     </aside>
 </div>

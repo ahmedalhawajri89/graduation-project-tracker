@@ -208,7 +208,9 @@
 
         <aside class="dash-side">
             @include('dashboard.supervisor._upcoming')
-            @include('dashboard.supervisor._activity')
+            @include('dashboard.project._activity', [
+                'emptyText' => $groups->isEmpty() ? 'يظهر هنا ما تفعله مجموعاتك: ملفات ومراحل ورسائل.' : 'لا نشاط بعد في مجموعاتك.',
+            ])
         </aside>
     </div>
 

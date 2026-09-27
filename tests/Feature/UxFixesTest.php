@@ -31,8 +31,9 @@ class UxFixesTest extends TestCase
 
         $html = $this->actingAs($student, 'student')->get(route('student.dashboard'))->assertOk()->getContent();
 
-        $this->assertMatchesRegularExpression('/rail-step is-current">.*?التنفيذ والمتابعة/su', $html);
-        $this->assertMatchesRegularExpression('/rail-step is-done">.*?موافقة المشرف/su', $html);
+        // المسار صار داخل بطاقة المشروع (\u200E.hero-rail\u200E) — والخطوة ضمن عنصرها وحده
+        $this->assertMatchesRegularExpression('/class="is-current"[^>]*aria-current="step"[^>]*>(?:(?!<\/li>).)*?التنفيذ والمتابعة/su', $html);
+        $this->assertMatchesRegularExpression('/class="is-done"[^>]*>(?:(?!<\/li>).)*?موافقة المشرف/su', $html);
     }
 
     public function test_the_student_notifications_page_is_a_list_that_marks_read(): void
@@ -50,12 +51,31 @@ class UxFixesTest extends TestCase
                 ->get(route('student.showNotification'))
                 ->assertOk()
                 ->assertDontSee('<table', false)
-                ->assertSee('notif-brief', false);
+                ->assertSee('notif-card', false);
 
             $this->assertSame(0, $student->unreadNotifications()->count());
         } finally {
             DB::table('notifications')->whereIn('id', $unread)->update(['read_at' => null]);
         }
+    }
+
+    /** إشعار الإدارة يُنسب إلى الإدارة — كان يحمل اسم المشرف فيبدو منه */
+    public function test_admin_notifications_are_attributed_to_the_administration(): void
+    {
+        $n = new \Illuminate\Notifications\DatabaseNotification([
+            'type' => \App\Notifications\AdminChangeGroupNotify::class,
+            'data' => ['project' => 'مشروع', 'supervisor_name' => 'د. مشرف', 'msg' => 'تغيّر المشرف'],
+        ]);
+        $view = \App\Support\NotificationView::present($n);
+
+        $this->assertSame('الإدارة', $view['sender']);
+        $this->assertSame('admin', $view['source']);
+
+        $revision = new \Illuminate\Notifications\DatabaseNotification([
+            'type' => \App\Notifications\ProjectActivityNotify::class,
+            'data' => ['supervisor_name' => 'د. مشرف', 'msg' => 'مطلوب تعديل في مرحلة «التحليل»: ينقص المخطط'],
+        ]);
+        $this->assertSame('revision', \App\Support\NotificationView::present($revision)['cat']);
     }
 
     public function test_a_student_without_notifications_sees_an_empty_state(): void
