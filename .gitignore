@@ -2,6 +2,10 @@
 /node_modules
 /public/hot
 /public/storage
+
+# الصور الشخصية التي يرفعها المستخدمون — بيانات لا شيفرة
+/public/uploads/*
+!/public/uploads/.gitkeep
 /storage/*.key
 /vendor
 .env
@@ -40,3 +44,6 @@ Thumbs.db
 /public/build
 /storage/framework/
 /storage/logs/
+
+# ملفات شخصية (سيرة ذاتية، عروض) لا تخصّ المشروع
+/docs/khamsat/

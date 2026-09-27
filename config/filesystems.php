@@ -42,6 +42,22 @@ return [
             'visibility' => 'public',
         ],
 
+        /*
+         * الصور الشخصية.
+         *
+         * جذره في \u200Epublic/\u200E مباشرةً لا في \u200Estorage/\u200E: الرابط الرمزي
+         * (\u200Estorage:link\u200E) يحتاج صلاحيات إدارية على Windows — طبقة فشل
+         * في الإعداد بلا مقابل. هنا تُخدم الملفات ساكنةً بلا PHP،
+         * ومتّسقة مع \u200Epublic/assets\u200E و\u200Epublic/vendor\u200E القائمة.
+         */
+        'avatars' => [
+            'driver' => 'local',
+            'root' => public_path('uploads/avatars'),
+            'url' => '/uploads/avatars',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -105,24 +105,32 @@ return [
     |
      */
 
+    /*
+     * جدول لكل دور لا جدول مشترك: \u200EDatabaseTokenRepository\u200E يحذف رموز
+     * البريد قبل إنشاء رمز جديد، فطلب استرجاع من حساب كان يُبطل رمز
+     * حساب آخر يحمل نفس البريد في دور مختلف — بصمت.
+     *
+     * و\u200Eexpire\u200E ٣٠ دقيقة لا ٦٠: الرابط يمنح تغيير كلمة مرور كاملاً بلا
+     * معرفة القديمة، فكلما قصر عمره قلّ ما يُستغلّ من بريد مُخترَق.
+     */
     'passwords' => [
         'students' => [
             'provider' => 'students',
-            'table' => 'password_resets',
-            'expire' => 60,
+            'table' => 'password_reset_students',
+            'expire' => 30,
             'throttle' => 60,
         ],
         'admins' => [
             'provider' => 'admins',
-            'table' => 'password_resets',
-            'expire' => 60,
+            'table' => 'password_reset_admins',
+            'expire' => 30,
             'throttle' => 60,
         ],
 
         'supervisors' => [
             'provider' => 'supervisors',
-            'table' => 'password_resets',
-            'expire' => 60,
+            'table' => 'password_reset_supervisors',
+            'expire' => 30,
             'throttle' => 60,
         ],
     ],
