@@ -207,7 +207,8 @@ return [
     |
     */
     'value_binder' => [
-        'default' => Maatwebsite\Excel\DefaultValueBinder::class,
+        // يخزّن النصّ البادئ بمحرف صيغة نصّاً — لا صيغ من بيانات المستخدمين في التصدير
+        'default' => App\Exports\SafeValueBinder::class,
     ],
 
     'cache' => [

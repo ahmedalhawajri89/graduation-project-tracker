@@ -10,6 +10,7 @@ class ProjectMilestone extends Model
 
     protected $fillable = [
         'project_id',
+        'stage_id',
         'title',
         'note',
         'due_date',
@@ -26,5 +27,11 @@ class ProjectMilestone extends Model
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+
+    /** أصلها في خطة المشرف — null لمرحلة خاصة بهذه المجموعة */
+    public function stage()
+    {
+        return $this->belongsTo(SupervisorStage::class, 'stage_id');
     }
 }

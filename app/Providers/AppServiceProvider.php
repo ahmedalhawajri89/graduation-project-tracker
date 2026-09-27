@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Admin;
 use App\Models\Semester;
+use App\Models\Student;
+use App\Models\Supervisor;
+use App\Support\Discussion;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -54,7 +58,9 @@ class AppServiceProvider extends ServiceProvider
                 'layouts.admin.inc.sidebar.supervisor',
             ],
             function ($view) {
-                static $shared = null; // memo لنفس الطلب — يمنع تكرار الاستعلامات
+                // memo على الطلب لا \u200Estatic\u200E: المتغيّر الساكن يعيش ما عاشت عملية
+                // PHP، فيرث الطلب التالي بيانات مستخدم سابق (الاختبارات، Octane)
+                $shared = request()->attributes->get('layoutShared');
 
                 if ($shared === null) {
                     $user = auth('admin')->user()
@@ -68,16 +74,35 @@ class AppServiceProvider extends ServiceProvider
                             'unreadCount' => $user->unreadNotifications()->count(),
                             'latestNotifications' => $user->notifications()->latest()->take(5)->get(),
                             'studentProject' => null,
+                            'discussionUnread' => 0,
+                            'pendingRequests' => 0,
                         ];
 
+                        // شارة «طلبات الإشراف»: الطلبات المعلّقة وحدها، لا كل الإشعارات
+                        if ($user instanceof Supervisor) {
+                            $shared['pendingRequests'] = $user->pendingRequests()->count();
+                        }
+
+                        // عدّاد تبويب «النقاش» — بمعزل عن الإشعارات
+                        // بنوع المستخدم المختار لا بـ\u200Eauth(guard)->check()\u200E: قد يُسجَّل
+                        // أكثر من حارس في الطلب نفسه، فيُستدعى \u200Egroups()\u200E على مشرف
+                        if (! $user instanceof Admin) {
+                            $shared['discussionUnread'] = array_sum(Discussion::unreadFor(
+                                $user,
+                                Discussion::projectsFor($user)->pluck('id')
+                            ));
+                        }
+
                         // مشروع الطالب النشط (لبطاقة السايدبار)
-                        if (auth('student')->check()) {
+                        if ($user instanceof Student) {
                             $group = $user->groups()->with('project.milestones')->first();
                             if ($group && $group->project && $group->project->status != 'reject') {
                                 $shared['studentProject'] = $group->project;
                             }
                         }
                     }
+
+                    request()->attributes->set('layoutShared', $shared);
                 }
 
                 if ($shared !== false) {

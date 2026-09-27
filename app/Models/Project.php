@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use HasFactory;
+    // الحذف ناعم: المشروع يُخفى ويبقى قابلاً للاسترجاع بمراحله وملفاته
+    // وتعليقاته ودرجته. كل الاستعلامات القائمة تستثني المحذوف تلقائياً.
+    use HasFactory, SoftDeletes;
 
     protected $table = 'projects';
     protected $fillable = [
@@ -21,12 +24,43 @@ class Project extends Model
         'grade',
         'evaluation_note',
         'evaluated_at',
+        'grade_locked_at',
+        'graded_by',
     ];
 
     protected $casts = [
         'date_line' => 'date',
         'evaluated_at' => 'datetime',
+        'grade_locked_at' => 'datetime',
     ];
+
+    /**
+     * الدرجة معتمدة: لا يعدّلها المشرف بعدها، ولا يفكّها إلا مسؤول
+     * النظام بسبب مكتوب.
+     */
+    public function isGradeLocked(): bool
+    {
+        return ! is_null($this->grade_locked_at);
+    }
+
+    /** لا معنى لاعتماد درجة لم تُوضع بعد */
+    public function canLockGrade(): bool
+    {
+        return ! is_null($this->grade) && ! $this->isGradeLocked();
+    }
+
+    public function grader()
+    {
+        return $this->belongsTo(Supervisor::class, 'graded_by', 'id')
+            ->withDefault([
+                'name' => '',
+            ]);
+    }
+
+    public function auditLogs()
+    {
+        return $this->morphMany(AuditLog::class, 'subject')->latest('created_at');
+    }
 
     ################# relations
 
@@ -59,7 +93,12 @@ class Project extends Model
 
     public function milestones()
     {
-        return $this->hasMany(ProjectMilestone::class, 'project_id', 'id')->orderBy('id');
+        // بالموعد ثم بالإنشاء: مراحل الخطة تُنشأ في أوقات مختلفة، والترتيب
+        // بالمعرّف كان يضع «الفصل الأول» بعد «العرض النهائي» إن أُضيف لاحقاً
+        return $this->hasMany(ProjectMilestone::class, 'project_id', 'id')
+            ->orderByRaw('due_date is null')
+            ->orderBy('due_date')
+            ->orderBy('id');
     }
 
     public function files()

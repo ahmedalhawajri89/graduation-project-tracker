@@ -4,12 +4,25 @@ namespace App\Notifications;
 
 use App\Models\Student;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SuperVisorRequestProjectNotify extends Notification
+class SuperVisorRequestProjectNotify extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    /**
+     * البريد في الطابور وبعد الالتزام: كان يُرسل داخل معاملة القرار، فتعطّل
+     * SMTP يُرجع القبول أو الرفض كلّه بعد أن يكون بعض الطلاب قد بلغهم.
+     * ونسخة المنصّة (database) فوريّة — الجرس لا ينتظر العامل.
+     */
+    // afterCommit() في المُنشئ لا خاصية: Queueable يعرّفها فيتعارض التعريفان
+
+    public function viaConnections(): array
+    {
+        return ['database' => 'sync'];
+    }
 
     private $project;
     private $groups;
@@ -17,6 +30,7 @@ class SuperVisorRequestProjectNotify extends Notification
 
     public function __construct($project, $groups, $project_type)
     {
+        $this->afterCommit();
         $this->project = $project;
         $this->groups = $groups;
         $this->project_type = $project_type;
@@ -28,23 +42,29 @@ class SuperVisorRequestProjectNotify extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
+    /**
+     * البريد هنا ليس ترفاً: المشرف الذي لا يفتح المنصّة لا يعلم أن
+     * طلباً ينتظره، فيبقى الطلب معلّقاً أسابيع بلا سبب ظاهر — وطلبة
+     * ينتظرون. وإشعار قاعدة البيانات وحده لا يصل إلى من ليس داخلاً.
+     */
     public function via($notifiable)
     {
-        return ['database'];
+        return $notifiable->email ? ['database', 'mail'] : ['database'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
     public function toMail($notifiable)
     {
+        $count = count($this->groups);
+
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+            ->subject('طلب مشروع جديد بانتظار ردّك — تخرُّج')
+            ->greeting('مرحباً ' . $notifiable->name)
+            ->line('وصلك طلب إشراف على مشروع تخرّج جديد:')
+            ->line('**' . $this->project->title . '**')
+            ->line('النوع: ' . $this->project_type . ' · عدد أعضاء الفريق: ' . $count)
+            ->action('مراجعة الطلب', route('supervisor.showNotification'))
+            ->line('الطلب يبقى معلّقاً حتى تقبله أو ترفضه، والطلبة ينتظرون ردّك.')
+            ->salutation('فريق تخرُّج');
     }
 
     /**

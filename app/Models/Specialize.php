@@ -11,7 +11,32 @@ class Specialize extends Model
 
     protected $fillable = [
         'name',
+        'archived_at',
     ];
+
+    protected $casts = [
+        'archived_at' => 'datetime',
+    ];
+
+    /**
+     * التخصص الموقوف لا يُسجَّل عليه أحد جديد، لكن طلابه ومشرفيه
+     * ومشاريعه تبقى تعمل كما كانت. \u200Eactive()\u200E لكل قائمة تُضاف منها
+     * بيانات جديدة، والقوائم التي تبحث في القائم تستعمل الكل.
+     */
+    public function scopeActive($query)
+    {
+        return $query->whereNull('archived_at');
+    }
+
+    public function scopeArchived($query)
+    {
+        return $query->whereNotNull('archived_at');
+    }
+
+    public function isArchived(): bool
+    {
+        return ! is_null($this->archived_at);
+    }
 
     ################# relations
 
