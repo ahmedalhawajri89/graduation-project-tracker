@@ -201,6 +201,106 @@ class AdminOversightTest extends TestCase
         $this->assertLessThan(40, $queries, "صفحة المجموعة نفّذت {$queries} استعلاماً.");
     }
 
+    /**
+     * المقيَّم لا يتناقض: كانت خطوة «التقييم» جارية و«المتبقّي ١٢ يوماً»
+     * لمشروع انتهى، و«بلا دور» بلون إنذار على كل عضو في مشروع مؤرشف.
+     */
+    public function test_a_graded_project_reads_as_finished(): void
+    {
+        $project = Project::where('status', 'complete')->whereNotNull('grade')->whereHas('group')->first();
+
+        if (! $project) {
+            $this->markTestSkipped('لا مشروع مقيَّم.');
+        }
+
+        GroupRole::whereIn('group_id', $project->group()->pluck('id'))->delete();
+
+        $html = $this->actingAs($this->admin, 'admin')
+            ->get(route('admin.groups.show', $project->id))
+            ->assertOk()
+            ->assertSee('اكتمل وقُيّم')
+            ->assertDontSee('المتبقّي')
+            ->assertDontSee('بلا دور')
+            ->assertDontSee('يحتاج انتباهاً')
+            ->getContent();
+
+        // الخطوات الأربع منجزة، ولا خطوة جارية
+        preg_match('/<ol class="pg-steps">(.*?)<\/ol>/s', $html, $m);
+        $this->assertSame(4, substr_count($m[1] ?? '', 'is-done'));
+        $this->assertStringNotContainsString('is-current', $m[1] ?? '');
+    }
+
+    /** شريط الانتباه بتعريفات «متابعة الفرق» — ويختفي حين تزول المشكلة */
+    public function test_the_attention_bar_follows_team_health(): void
+    {
+        // مراحل البيانات التجريبية الفائتة تُؤجَّل — لتبقى هذه وحدها سبب المؤشّر
+        $this->project->milestones()->whereIn('status', [ProjectMilestone::OPEN, ProjectMilestone::REVISION])
+            ->update(['due_date' => today()->addMonth()]);
+        $milestone = $this->milestone(['title' => 'مرحلة فائتة', 'due_date' => today()->subDays(2)]);
+        $page = fn () => $this->actingAs($this->admin, 'admin')->get(route('admin.groups.show', $this->project->id));
+
+        $page()->assertSee('يحتاج انتباهاً')->assertSee('مرحلة فات موعدها');
+
+        $milestone->update(['status' => ProjectMilestone::SUBMITTED]);
+        $this->submission($milestone, 1);
+
+        $page()->assertDontSee('مرحلة فات موعدها');
+    }
+
+    public function test_a_healthy_project_has_no_attention_bar(): void
+    {
+        $this->project->milestones()->whereIn('status', [ProjectMilestone::OPEN, ProjectMilestone::REVISION])
+            ->update(['due_date' => today()->addMonth()]);
+        $this->project->milestones()->where('status', ProjectMilestone::SUBMITTED)->delete();
+        foreach ($this->project->group()->pluck('id') as $groupId) {
+            GroupRole::create(['group_id' => $groupId, 'role_key' => 'custom', 'label' => 'منسّق']);
+        }
+        $this->submission($this->milestone(['title' => 'نشاط حديث', 'status' => ProjectMilestone::APPROVED, 'is_done' => true]), 1);
+
+        $this->assertSame([], TeamHealth::issuesFor($this->project->fresh()));
+
+        $this->actingAs($this->admin, 'admin')
+            ->get(route('admin.groups.show', $this->project->id))
+            ->assertDontSee('يحتاج انتباهاً');
+    }
+
+    /** قبل القبول لا تبويبات ولا مراحل — لوح يقول السبب */
+    public function test_a_pending_or_rejected_project_explains_why_there_is_no_work(): void
+    {
+        foreach (['request' => 'بانتظار رد المشرف', 'reject' => 'المشروع مرفوض'] as $status => $text) {
+            $project = Project::where('status', $status)->first();
+
+            if (! $project) {
+                continue;
+            }
+
+            $this->actingAs($this->admin, 'admin')
+                ->get(route('admin.groups.show', $project->id))
+                ->assertOk()
+                ->assertSee($text)
+                ->assertDontSee('role="tablist"', false);
+        }
+
+        $this->assertTrue(true);
+    }
+
+    /** الفصل بصيغته المرتّبة لا اسمه الخام بشرطة مائلة */
+    public function test_the_semester_is_shown_tidy(): void
+    {
+        $parts = $this->project->semester->parts();
+
+        $html = $this->actingAs($this->admin, 'admin')->get(route('admin.groups.show', $this->project->id))->getContent();
+
+        // سطر هوية المشروع وحده: الشريط الجانبي يعرض الفصل الحالي بصيغته
+        $this->assertSame(1, preg_match('/<div class="pg-meta[^"]*">(.*?)<\/div>/s', $html, $m));
+        $this->assertStringContainsString(e($parts['term']), $m[1]);
+
+        if ($parts['year']) {
+            $this->assertStringContainsString($parts['year'], $m[1]);
+            $this->assertStringNotContainsString(e($this->project->semester->name), $m[1]);
+        }
+    }
+
     /* ==================== متابعة الفرق ==================== */
 
     public function test_a_stage_past_its_date_marks_the_team_late(): void

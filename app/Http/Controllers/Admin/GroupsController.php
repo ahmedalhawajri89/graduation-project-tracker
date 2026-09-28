@@ -202,7 +202,12 @@ class GroupsController extends Controller
             return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
         }
 
-        return view('dashboard.admin.group.show', ['project' => $project]);
+        return view('dashboard.admin.group.show', [
+            'project' => $project,
+            // الشرط نفسه الذي عُدّ في «متابعة الفرق» — فلا يعِد الرقم بما لا تُظهره الصفحة
+            'issues' => TeamHealth::issuesFor($project),
+            'history' => $project->auditLogs()->limit(10)->get(),
+        ]);
     }
 
     public function edit($id)

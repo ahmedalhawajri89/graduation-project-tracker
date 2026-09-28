@@ -69,6 +69,23 @@ class TeamHealth
         };
     }
 
+    /**
+     * مؤشّرات مشروع واحد — لشريط «يحتاج انتباهاً» في صفحته، بالشرط نفسه
+     * الذي عدّه في الرئيسية. المقيَّم وغير المقبول لا يطابق شيئاً أصلاً.
+     *
+     * @return array<string, array{0: string, 1: string, 2: string}>
+     */
+    public static function issuesFor(\App\Models\Project $project): array
+    {
+        if ($project->status !== 'accept' || ! is_null($project->grade)) {
+            return [];
+        }
+
+        return collect(self::issues())
+            ->filter(fn ($meta, $key) => self::apply(\App\Models\Project::whereKey($project->id), $key)->exists())
+            ->all();
+    }
+
     /** عدد كل مؤشّر في فصل — استعلام عدّ لكل واحد، لا تحميل مشاريع */
     public static function counts(int $semesterId): array
     {
