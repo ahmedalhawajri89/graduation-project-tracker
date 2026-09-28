@@ -1,3 +1,6 @@
+{{-- قيم ‎old()‎ وأخطاؤها لهذه النافذة حين فشلت الإضافة وحدها: خطأ درج
+     التعديل (‎old('id')‎) كان يملؤها بقيم سجلّ آخر ويعلّم حقولها بالأحمر --}}
+@php $mine = ! old('id'); @endphp
 <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -11,63 +14,63 @@
 
                     <div class="mb-3">
                         <label for="name_create" class="form-label required">اسم الطالب</label>
-                        <input id="name_create" type="text" class="form-control @error('name') is-invalid @enderror"
-                            name="name" value="{{ old('name') }}" placeholder="اسم الطالب" required autocomplete="off"
+                        <input id="name_create" type="text" class="form-control {{ $mine && $errors->has('name') ? 'is-invalid' : '' }}"
+                            name="name" value="{{ ($mine ? old('name') : null) }}" placeholder="اسم الطالب" required autocomplete="off"
                             autofocus>
-                        @error('name')
+                        @if ($mine) @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        @enderror @endif
                     </div>
 
                     <div class="mb-3">
                         <label for="university_id_create" class="form-label required">الرقم الجامعي</label>
                         <input id="university_id_create" type="text"
-                            class="form-control @error('university_id') is-invalid @enderror" name="university_id"
-                            value="{{ old('university_id') }}" placeholder="الرقم الجامعي" required autocomplete="off">
-                        @error('university_id')
+                            class="form-control {{ $mine && $errors->has('university_id') ? 'is-invalid' : '' }}" name="university_id"
+                            value="{{ ($mine ? old('university_id') : null) }}" placeholder="الرقم الجامعي" required autocomplete="off">
+                        @if ($mine) @error('university_id')
                             <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        @enderror @endif
                     </div>
 
                     <div class="mb-3">
                         <label for="specialize_id_create" class="form-label required">التخصص</label>
-                        <select id="specialize_id_create" class="form-select @error('specialize_id') is-invalid @enderror"
+                        <select id="specialize_id_create" class="form-select {{ $mine && $errors->has('specialize_id') ? 'is-invalid' : '' }}"
                             name="specialize_id">
                             @foreach ($specializes as $specialize)
-                                <option @if (old('specialize_id') == $specialize->id) selected @endif value="{{ $specialize->id }}">
+                                <option @if (($mine ? old('specialize_id') : null) == $specialize->id) selected @endif value="{{ $specialize->id }}">
                                     {{ $specialize->name }}
                                 </option>
                             @endforeach
                         </select>
-                        @error('specialize_id')
+                        @if ($mine) @error('specialize_id')
                             <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        @enderror @endif
                     </div>
 
                     <div class="mb-3">
                         <label for="email_create" class="form-label required">البريد الالكتروني</label>
-                        <input id="email_create" type="email" class="form-control @error('email') is-invalid @enderror"
-                            name="email" value="{{ old('email') }}" placeholder="البريد الالكتروني" required
+                        <input id="email_create" type="email" class="form-control {{ $mine && $errors->has('email') ? 'is-invalid' : '' }}"
+                            name="email" value="{{ ($mine ? old('email') : null) }}" placeholder="البريد الالكتروني" required
                             autocomplete="off">
-                        @error('email')
+                        @if ($mine) @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        @enderror @endif
                     </div>
 
                     <div class="mb-3">
                         <label for="phone_create" class="form-label required">رقم الجوال</label>
-                        <input id="phone_create" type="text" class="form-control @error('phone') is-invalid @enderror"
-                            name="phone" value="{{ old('phone') }}" placeholder="رقم الجوال" required autocomplete="off">
-                        @error('phone')
+                        <input id="phone_create" type="text" class="form-control {{ $mine && $errors->has('phone') ? 'is-invalid' : '' }}"
+                            name="phone" value="{{ ($mine ? old('phone') : null) }}" placeholder="رقم الجوال" required autocomplete="off">
+                        @if ($mine) @error('phone')
                             <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        @enderror @endif
                     </div>
 
                     <div class="mb-3">
                         <label for="password_create" class="form-label required">كلمة السر</label>
                         <div class="password-wrapper">
                             <input id="password_create" type="password"
-                                class="form-control @error('password') is-invalid @enderror" name="password"
+                                class="form-control {{ $mine && $errors->has('password') ? 'is-invalid' : '' }}" name="password"
                                 placeholder="8 أحرف على الأقل" required autocomplete="new-password">
                             <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
                                 data-target="password_create">
@@ -81,14 +84,14 @@
 
                     <div class="mb-3">
                         <label for="gender_create" class="form-label required">الجنس</label>
-                        <select id="gender_create" class="form-select @error('gender') is-invalid @enderror"
+                        <select id="gender_create" class="form-select {{ $mine && $errors->has('gender') ? 'is-invalid' : '' }}"
                             name="gender">
-                            <option @if (old('gender') == 'male') selected @endif value="male">ذكر</option>
-                            <option @if (old('gender') == 'female') selected @endif value="female">أنثى</option>
+                            <option @if (($mine ? old('gender') : null) == 'male') selected @endif value="male">ذكر</option>
+                            <option @if (($mine ? old('gender') : null) == 'female') selected @endif value="female">أنثى</option>
                         </select>
-                        @error('gender')
+                        @if ($mine) @error('gender')
                             <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        @enderror @endif
                     </div>
 
                 </div>
@@ -122,3 +125,12 @@
         });
     </script>
 @endpush
+
+@if ($errors->any() && ! old('id'))
+    @push('js')
+        <script>
+            // فشلت الإضافة: تُعاد فتح النافذة بقيمها وأخطائها — كانت تُغلق فتضيع الرسالة
+            new bootstrap.Modal(document.getElementById('createModal')).show();
+        </script>
+    @endpush
+@endif

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\EditRecord;
 use App\Http\Requests\Admin\AdministratorsRequest;
 use App\Models\Admin;
 use App\Support\Audit;
@@ -70,11 +71,9 @@ class AdminController extends Controller
 
             ->addColumn('actions', function ($row) use ($currentId, $total) {
 
-                $editBtn = "<a class='btn-action btn-edit' data-bs-toggle='modal' data-bs-target='#editModal'
-                              data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' data-email='" . e($row->email) . "'
-                              data-phone='" . e($row->phone) . "' data-gender='" . e($row->gender) . "' title='تعديل'>
-                              <i class='ti ti-pencil'></i>
-                          </a>";
+                $editBtn = "<button type='button' class='btn-action btn-edit' data-bs-toggle='offcanvas' data-bs-target='#editDrawer'"
+                    . " data-record='" . EditRecord::attr(EditRecord::admin($row)) . "'"
+                    . " title='تعديل' aria-label='تعديل " . e($row->name) . "'><i class='ti ti-pencil'></i></button>";
 
                 // لا زرّ حذف على صفّك ولا على آخر حساب — والخادم يحرس
                 // الحالتين أيضاً في \u200Edestroy()\u200E، فالواجهة تريح لا تحمي

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\SupervisorsExport;
 use App\Http\Controllers\Controller;
+use App\Support\EditRecord;
 use App\Http\Requests\Admin\SupervisorRequest;
 use App\Http\Requests\UploadExcelFileRequest;
 use App\Imports\SupervisorsImport;
@@ -192,13 +193,9 @@ class SupervisorController extends Controller
 
             ->addColumn('actions', function ($row) {
 
-                $editBtn = "<a class='btn-action btn-edit' data-bs-toggle='modal' data-bs-target='#editModal'
-                              data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' data-email='" . e($row->email) . "'
-                              data-phone='" . e($row->phone) . "' data-gender='" . e($row->gender) . "' data-max_group='" . e($row->max_group) . "'
-                              data-university_id='" . e($row->university_id) . "' data-specialize_id='" . e($row->specialize_id) . "'
-                              data-has-avatar='" . ($row->avatar ? '1' : '') . "' title='تعديل'>
-                              <i class='ti ti-pencil'></i>
-                          </a>";
+                $editBtn = "<button type='button' class='btn-action btn-edit' data-bs-toggle='offcanvas' data-bs-target='#editDrawer'"
+                    . " data-record='" . EditRecord::attr(EditRecord::supervisor($row)) . "'"
+                    . " title='تعديل' aria-label='تعديل " . e($row->name) . "'><i class='ti ti-pencil'></i></button>";
 
                 $deleteBtn = "<button type='button' class='btn-action btn-action--danger btn-delete' data-bs-toggle='modal' data-bs-target='#deleteModal'
                               data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' title='حذف'>

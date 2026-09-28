@@ -1,168 +1,58 @@
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editLabel">تعديل بيانات المشرف</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
-            </div>
+{{-- تعديل مشرف — درج جانبي، انظر \u200Ex-edit-drawer\u200E --}}
+@php
+    $reopenSupervisor = old('id') ? \App\Models\Supervisor::find(old('id')) : null;
+@endphp
 
-            <form action="{{ route('admin.supervisors.update', 'test') }}" method="POST">
-                @csrf
-                @method('put')
-                <input type="hidden" name="id" id="edit-id">
-                <div class="modal-body">
+<x-edit-drawer title="تعديل بيانات المشرف" :action="route('admin.supervisors.update', 'test')" avatar-removal
+    :reopen="$reopenSupervisor ? [
+        'record' => \App\Support\EditRecord::supervisor($reopenSupervisor),
+        'old' => request()->old(),
+    ] : null">
 
-                    <div class="mb-3">
-                        <label for="name" class="form-label required">اسم المشرف</label>
-                        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror"
-                            name="name" value="{{ old('name') }}" placeholder="اسم المشرف" required autocomplete="off"
-                            autofocus>
-                        @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="university_id" class="form-label required">الرقم الجامعي</label>
-                        <input id="university_id" type="text"
-                            class="form-control @error('university_id') is-invalid @enderror" name="university_id"
-                            value="{{ old('university_id') }}" placeholder="الرقم الجامعي" required autocomplete="off">
-                        @error('university_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="specialize_id" class="form-label required">التخصص</label>
-                        <select id="specialize_id" class="form-select @error('specialize_id') is-invalid @enderror"
-                            name="specialize_id">
-                            {{-- الموقوفة معروضة هنا خلافاً لنافذة الإضافة:
-                                 مشرفٌ في تخصص موقوف لن يجد الـ select قيمته
-                                 الحالية، فيُحفظ على أول خيار — نقلٌ صامت
-                                 إلى تخصص آخر. --}}
-                            @foreach ($editSpecializes as $specialize)
-                                <option @if (old('specialize_id') == $specialize->id) selected @endif value="{{ $specialize->id }}">
-                                    {{ $specialize->name }}@if ($specialize->isArchived()) (موقوف)@endif
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('specialize_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- يظهر لمن رفع صورة وحده — مخرج الأدمن من صورة
-                         غير لائقة، بلا تدخّل في قاعدة البيانات --}}
-                    <div class="mb-3 d-none" id="remove-avatar-row">
-                        <label class="form-check">
-                            <input type="checkbox" class="form-check-input" name="remove_avatar" value="1">
-                            <span class="form-check-label">إزالة الصورة الشخصية</span>
-                        </label>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label required">البريد الالكتروني</label>
-                        <input id="email" type="text" class="form-control @error('email') is-invalid @enderror"
-                            name="email" value="{{ old('email') }}" placeholder="البريد الالكتروني" required
-                            autocomplete="off">
-                        @error('email')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="phone" class="form-label required">رقم الجوال</label>
-                        <input id="phone" type="text" class="form-control @error('phone') is-invalid @enderror"
-                            name="phone" value="{{ old('phone') }}" placeholder="رقم الجوال" required autocomplete="off">
-                        @error('phone')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label">كلمة السر</label>
-                        <input id="password" type="password"
-                            class="form-control @error('password') is-invalid @enderror" name="password"
-                            placeholder="كلمة السر" autocomplete="off">
-                        @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="gender" class="form-label required">الجنس</label>
-                        <select id="gender" class="form-select @error('gender') is-invalid @enderror" name="gender">
-                            <option value="male">ذكر</option>
-                            <option value="female">أنثى</option>
-                        </select>
-                        @error('gender')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="max_group" class="form-label">الحد الاقصى للمجموعات</label>
-                        <input id="max_group" type="text"
-                            class="form-control @error('max_group') is-invalid @enderror" name="max_group"
-                            value="{{ old('max_group') }}" placeholder="الحد الاقصى للمجموعات" autocomplete="off">
-                        @error('max_group')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal">إغلاق</button>
-                    <button type="submit" class="btn btn-primary" name="submit" value="update">
-                        <i class="ti ti-device-floppy me-1"></i>
-                        حفظ
-                    </button>
-                </div>
-            </form>
+    <fieldset class="ed-group">
+        <legend>الهوية</legend>
+        <div class="ed-grid">
+            <x-ed.field name="name" label="اسم المشرف" required wide />
+            <x-ed.field name="university_id" label="الرقم الجامعي" required dir="ltr" inputmode="numeric" />
         </div>
-    </div>
-</div>
+    </fieldset>
 
+    <fieldset class="ed-group">
+        <legend>الإشراف</legend>
+        <div class="ed-grid">
+            <x-ed.field name="specialize_id" label="التخصص" required wide>
+                {{-- الموقوفة معروضة: مشرفٌ في تخصص موقوف لن تجد القائمة قيمته فيُنقل صامتاً --}}
+                <select id="ed-specialize_id" name="specialize_id"
+                    class="form-select {{ old('id') && $errors->has('specialize_id') ? 'is-invalid' : '' }}">
+                    @foreach ($editSpecializes as $specialize)
+                        <option value="{{ $specialize->id }}">
+                            {{ $specialize->name }}@if ($specialize->isArchived()) (موقوف)@endif
+                        </option>
+                    @endforeach
+                </select>
+            </x-ed.field>
+            <x-ed.field name="max_group" label="الحدّ الأقصى للمجموعات" hint="عدد المجموعات التي يقبلها في الفصل">
+                <div class="ed-stepper">
+                    <button type="button" data-ed-step="-1" aria-label="إنقاص"><i class="ti ti-minus" aria-hidden="true"></i></button>
+                    <input id="ed-max_group" name="max_group" type="number" min="0" max="50" inputmode="numeric"
+                        class="form-control {{ old('id') && $errors->has('max_group') ? 'is-invalid' : '' }}">
+                    <button type="button" data-ed-step="1" aria-label="زيادة"><i class="ti ti-plus" aria-hidden="true"></i></button>
+                </div>
+            </x-ed.field>
+        </div>
+    </fieldset>
 
-@push('js')
-    <script>
-        $('body').on('click', '.btn-edit', function(event) {
-            event.preventDefault();
-            var button = $(this);
-            var name = button.data('name');
-            var university_id = button.data('university_id');
-            var specialize_id = button.data('specialize_id');
-            var email = button.data('email');
-            var gender = button.data('gender');
-            var max_group = button.data('max_group');
+    <fieldset class="ed-group">
+        <legend>التواصل</legend>
+        <div class="ed-grid">
+            <x-ed.field name="email" label="البريد الإلكتروني" type="email" required dir="ltr" wide />
+            <x-ed.field name="phone" label="رقم الجوال" dir="ltr" inputmode="tel" />
+        </div>
+    </fieldset>
 
-            var phone = button.data('phone');
-            var edit_id = button.data('id');
-            var modal = $('#editModal');
-            // var modal = $(this)
-            modal.find('#edit-id').val(edit_id);
-            modal.find('input[name="name"]').val(name);
-            modal.find('input[name="university_id"]').val(university_id);
-            modal.find('select[name="specialize_id"]').val(specialize_id);
-            modal.find('input[name="email"]').val(email);
-            modal.find('input[name="phone"]').val(phone);
-            modal.find('input[name="max_group"]').val(max_group);
-            modal.find('select[name="gender"]').val(gender);
-
-            // خيار إزالة الصورة يظهر لمن رفع صورة وحده
-            var row = modal.find('#remove-avatar-row');
-            row.find('input[name="remove_avatar"]').prop('checked', false);
-            row.toggleClass('d-none', !button.data('has-avatar'));
-
-            modal.find('.modal-footer').show();
-            $('.jquer-valid').remove();
-            $("#editModal form").find('*').removeClass('border-danger');
-
-            setTimeout(function() {
-                modal.find('input[name="password"]').val('');
-                modal.find('input[name="name"]').focus();
-            }, 500);
-
-        })
-    </script>
-@endpush
+    <fieldset class="ed-group">
+        <legend>الحساب</legend>
+        <x-ed.gender />
+        <x-ed.password />
+    </fieldset>
+</x-edit-drawer>
