@@ -33,6 +33,12 @@ class SendMessageRequest extends FormRequest
         ];
     }
 
+    /** خطأ التحقّق يعيد إلى النموذج نفسه — كان يعيد إلى رأس الصفحة فيُظنّ أن شيئاً لم يحدث */
+    protected function getRedirectUrl()
+    {
+        return strtok($this->redirector->getUrlGenerator()->previous(), '#') . '#contact';
+    }
+
     public function messages()
     {
         return [

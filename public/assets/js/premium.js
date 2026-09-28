@@ -83,8 +83,14 @@
       "about.title": "منصة تخرُّج",
       "about.text": "تخرُّج منصة مستقلة لإدارة مشاريع التخرج من أول تكوين الفريق واختيار المشرف، مروراً باعتماد الفكرة ومتابعة المراحل، وصولاً إلى المناقشة والتقييم النهائي — كل ذلك في مكان واحد وبسير عمل واضح لكل طرف.",
       "about.pillarsTitle": "ركائز المنصة",
-      "about.panelTitle": "التخصصات على المنصة",
+      "about.panelTitle": "المنصة الآن",
       "about.panelEmpty": "لم تُسجَّل تخصصات بعد",
+      "about.live": "مباشر",
+      "about.statStudents": "طالب",
+      "about.statSupervisors": "مشرف",
+      "about.statDone": "مشروع مكتمل",
+      "about.split": "الطلاب حسب التخصص",
+      "about.other": "تخصصات أخرى",
       "about.p1": "إدارة الفرق الطلابية والمشرفين",
       "about.p2": "خطط المراحل والتسليم والمراجعة",
       "about.p3": "المناقشة والتقييم ورصد الدرجات",
@@ -221,10 +227,25 @@
       "contact.asideText": "حسابك يُنشأ من إدارة قسمك، فإن لم تستطع الدخول برقمك الجامعي راجعها أولاً. وللأسئلة حول المواعيد وأنواع المشاريع، اكتب لنا هنا.",
       "contact.pointMail": "الرد خلال يوم عمل واحد",
       "contact.pointHours": "من الأحد إلى الخميس",
+      "contact.faqTitle": "ربما الجواب جاهز",
+      "contact.faqText": "سبعة أسئلة يسألها كل فريق قبل البدء",
+      "contact.topics": "مواضيع شائعة",
+      "contact.topic1": "مشكلة في الدخول",
+      "contact.topic2": "سؤال عن المواعيد",
+      "contact.topic3": "اقتراح للمنصة",
+      "contact.hint": "نردّ على بريدك مباشرة",
+      "contact.doneTitle": "وصلت رسالتك",
+      "contact.doneText": "سنردّ عليك خلال يوم عمل على",
+      "contact.again": "إرسال رسالة أخرى",
+      "contact.errNetwork": "تعذّر الإرسال — تحقّق من اتصالك وحاول مرة أخرى.",
+      "contact.errThrottle": "أرسلت عدّة رسائل متتالية — انتظر دقيقة ثم حاول مجدداً.",
+      "contact.errServer": "حدث خطأ من جهتنا — حاول بعد قليل.",
+      "contact.errRequired": "هذا الحقل مطلوب.",
+      "contact.errEmail": "اكتب بريداً إلكترونياً صحيحاً.",
       "form.name": "الاسم",
-      "form.email": "الايميل الخاص بك",
+      "form.email": "البريد الإلكتروني",
       "form.subject": "الموضوع",
-      "form.message": "الرسالة ..",
+      "form.message": "الرسالة",
       "form.send": "إرسال",
       "footer.made": "منصة متابعة مشاريع التخرج",
       "cta.title": "جاهز تبدأ مشروع تخرجك؟",
@@ -315,8 +336,14 @@
       "about.title": "Takharruj",
       "about.text": "Takharruj is a standalone platform for running graduation projects — from forming the team and picking a supervisor, through idea approval and phase tracking, all the way to the defense and final evaluation.",
       "about.pillarsTitle": "Platform pillars",
-      "about.panelTitle": "Specializations on the platform",
+      "about.panelTitle": "The platform now",
       "about.panelEmpty": "No specializations recorded yet",
+      "about.live": "Live",
+      "about.statStudents": "students",
+      "about.statSupervisors": "supervisors",
+      "about.statDone": "completed projects",
+      "about.split": "Students by major",
+      "about.other": "Other majors",
       "about.p1": "Student teams & supervisor management",
       "about.p2": "Stage plans, submissions and review",
       "about.p3": "Defense, evaluation & grade recording",
@@ -453,10 +480,25 @@
       "contact.asideText": "Your account is created by your department. If you cannot sign in with your university ID, check with them first. For questions about deadlines and project types, write to us here.",
       "contact.pointMail": "A reply within one business day",
       "contact.pointHours": "Sunday to Thursday",
+      "contact.faqTitle": "The answer may be ready",
+      "contact.faqText": "Seven questions every team asks before starting",
+      "contact.topics": "Common topics",
+      "contact.topic1": "Sign-in problem",
+      "contact.topic2": "Question about deadlines",
+      "contact.topic3": "Suggestion",
+      "contact.hint": "We reply straight to your email",
+      "contact.doneTitle": "Message received",
+      "contact.doneText": "We'll reply within one business day at",
+      "contact.again": "Send another message",
+      "contact.errNetwork": "Couldn't send — check your connection and try again.",
+      "contact.errThrottle": "Too many messages in a row — wait a minute and try again.",
+      "contact.errServer": "Something went wrong on our side — try again shortly.",
+      "contact.errRequired": "This field is required.",
+      "contact.errEmail": "Enter a valid email address.",
       "form.name": "Your name",
       "form.email": "Your email",
       "form.subject": "Subject",
-      "form.message": "Message ..",
+      "form.message": "Message",
       "form.send": "Send message",
       "footer.made": "Graduation Project Tracking Platform",
       "cta.title": "Ready to Start Your Graduation Project?",
@@ -773,7 +815,133 @@
        الدائمة، والجسيمات الطافية. الحركة الباقية في CSS وحدها. */
 
     initBento();
+    initContact();
   });
+
+  /* ---------- نموذج التواصل: إرسال في الخلفية ----------
+     كان يُرسل فتُعاد الصفحة من رأسها — إلى الهيرو — فلا يرى المرسل أن
+     رسالته وصلت. الآن يبقى في قسمه: الأخطاء تحت حقولها، والتأكيد مكان
+     النموذج. وبلا JavaScript يعمل النموذج كما كان ويعود الخادم إلى #contact. */
+  function initContact() {
+    var form = document.querySelector("[data-contact-form]");
+    var done = document.querySelector("[data-contact-done]");
+    if (!form || !done || !window.fetch || !window.FormData) return;
+
+    var t = function (key) { return (dict[locale] && dict[locale][key]) || dict.ar[key] || ""; };
+    var submit = form.querySelector("[data-submit]");
+    var formError = form.querySelector("[data-form-error]");
+    var message = form.querySelector('[name="message"]');
+    var subject = form.querySelector('[name="subject"]');
+    var counter = form.querySelector('[data-count-for="message"]');
+
+    function count() { if (counter) counter.textContent = message.value.length; }
+    message.addEventListener("input", count);
+    count();
+
+    // مواضيع شائعة: النقر يملأ الموضوع بنصّ الزرّ بلغة الصفحة الحالية
+    form.querySelectorAll(".subject-chips button").forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        subject.value = chip.textContent.trim();
+        form.querySelectorAll(".subject-chips button").forEach(function (c) {
+          c.setAttribute("aria-pressed", c === chip ? "true" : "false");
+        });
+        clearError("subject");
+        message.focus();
+      });
+    });
+
+    function fieldError(name, text) {
+      var input = form.querySelector('[name="' + name + '"]');
+      var slot = form.querySelector('[data-error-for="' + name + '"]');
+      if (input) { input.classList.add("is-invalid"); input.setAttribute("aria-invalid", "true"); }
+      if (slot) slot.textContent = text;
+    }
+    function clearError(name) {
+      var input = form.querySelector('[name="' + name + '"]');
+      var slot = form.querySelector('[data-error-for="' + name + '"]');
+      if (input) { input.classList.remove("is-invalid"); input.removeAttribute("aria-invalid"); }
+      if (slot) slot.textContent = "";
+    }
+    ["name", "email", "subject", "message"].forEach(function (n) {
+      var input = form.querySelector('[name="' + n + '"]');
+      if (input) input.addEventListener("input", function () { clearError(n); });
+    });
+
+    // تحقّق أوّلي في المتصفّح بنصوص المنصّة لا فقاعات المتصفّح — والخادم يبقى الحَكَم
+    function validate() {
+      var ok = true, first = null;
+      ["name", "email", "subject", "message"].forEach(function (n) {
+        var input = form.querySelector('[name="' + n + '"]');
+        var v = input.value.trim();
+        var err = !v ? t("contact.errRequired")
+          : (n === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) ? t("contact.errEmail") : "";
+        if (err) { fieldError(n, err); ok = false; first = first || input; }
+      });
+      if (first) first.focus();
+      return ok;
+    }
+
+    function busy(on) {
+      form.classList.toggle("is-sending", on);
+      submit.disabled = on;
+      submit.setAttribute("aria-busy", on ? "true" : "false");
+    }
+    function showFormError(text) {
+      formError.querySelector("span").textContent = text;
+      formError.hidden = false;
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      formError.hidden = true;
+      form.querySelectorAll(".form-alert:not([data-form-error])").forEach(function (el) { el.remove(); });
+      if (!validate()) return;
+
+      busy(true);
+      fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" },
+        credentials: "same-origin"
+      }).then(function (res) {
+        if (res.ok) return success();
+        if (res.status === 422) {
+          return res.json().then(function (body) {
+            var first = null;
+            Object.keys(body.errors || {}).forEach(function (n) {
+              fieldError(n, body.errors[n][0]);
+              first = first || form.querySelector('[name="' + n + '"]');
+            });
+            if (first) first.focus();
+          });
+        }
+        showFormError(res.status === 429 ? t("contact.errThrottle") : t("contact.errServer"));
+      }).catch(function () {
+        showFormError(t("contact.errNetwork"));
+      }).then(function () { busy(false); });
+    });
+
+    function success() {
+      done.querySelector("[data-done-email]").textContent = form.querySelector('[name="email"]').value;
+      // ارتفاع ثابت أثناء التبديل: لا قفزة في الصفحة حين يصغر المحتوى
+      var box = form.parentElement;
+      box.style.minHeight = box.offsetHeight + "px";
+      form.hidden = true;
+      done.hidden = false;
+      done.focus({ preventScroll: true });
+    }
+
+    done.querySelector("[data-contact-again]").addEventListener("click", function () {
+      subject.value = "";
+      message.value = "";
+      count();
+      form.querySelectorAll(".subject-chips button").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+      done.hidden = true;
+      form.hidden = false;
+      form.parentElement.style.minHeight = "";
+      subject.focus({ preventScroll: true });
+    });
+  }
 
   /* ---------- بنتو الهيرو: قصّة واحدة في حلقة ----------
      الفريق يكتب في نقاشه ← يُسلّم المرحلة ← المشرف يعتمدها فيرتفع الإنجاز ←

@@ -347,31 +347,71 @@
                         </a>
                     </div>
 
-                    {{-- لوح يعرض المنصة كما هي فعلاً: تخصصات بأعداد حقيقية --}}
+                    {{-- «المنصة الآن» — أرقام حقيقية لا وصف. كان ثلاثة أشرطة بلا سياق:
+                         لا يُعرف من كم، ولا ما وزن كل تخصص من الكل. صار: ثلاثة أرقام
+                         تُعدّ عند الظهور، ثم التخصصات بنسبتها من الطلاب — أشرطة على
+                         خطّ أساس واحد وبلون واحد: المقارنة بالطول، والاسم يعرّف الشريط --}}
+                    @php
+                        $panel = \Illuminate\Support\Facades\Cache::remember('site_panel_v2', 3600, function () {
+                            $specs = \App\Models\Specialize::withCount('students')->orderByDesc('students_count')->get();
+                            $top = $specs->take(3);
+                            $rest = $specs->slice(3)->sum('students_count');
+
+                            return [
+                                'students' => \App\Models\Student::count(),
+                                'supervisors' => \App\Models\Supervisor::count(),
+                                'done' => \App\Models\Project::where('status', 'complete')->count(),
+                                'rows' => $top->map(fn ($x) => ['name' => $x->name, 'n' => (int) $x->students_count])
+                                    ->when($rest > 0, fn ($c) => $c->push(['name' => null, 'n' => (int) $rest]))
+                                    ->values()->all(),
+                            ];
+                        });
+                        $panelTotal = max(1, array_sum(array_column($panel['rows'], 'n')));
+                        $panelMax = max(1, max(array_column($panel['rows'], 'n') ?: [1]));
+                    @endphp
                     <div class="about-panel reveal d1">
                         <div class="panel-head">
-                            <span data-i18n="about.panelTitle">التخصصات على المنصة</span>
-                            <span class="panel-dot" aria-hidden="true"></span>
+                            <span data-i18n="about.panelTitle">المنصة الآن</span>
+                            <span class="panel-live"><i aria-hidden="true"></i><span data-i18n="about.live">مباشر</span></span>
                         </div>
-                        @php
-                            $panelSpecializes = \Illuminate\Support\Facades\Cache::remember('site_panel_specializes', 3600, function () {
-                                return \App\Models\Specialize::withCount('students')->orderByDesc('students_count')->take(3)->get();
-                            });
-                            $panelMax = max(1, optional($panelSpecializes->first())->students_count ?? 1);
-                        @endphp
-                        @forelse ($panelSpecializes as $index => $specialize)
-                            <div class="panel-row">
-                                <span class="panel-row-name">{{ $specialize->name }}</span>
-                                <span class="panel-row-meta">{{ $specialize->students_count }} <span data-i18n="unit.students">طالباً</span></span>
-                                <span class="panel-bar" aria-hidden="true">
-                                    <i @class(['accent' => $index === 0]) style="width: {{ round($specialize->students_count / $panelMax * 100) }}%"></i>
-                                </span>
-                            </div>
-                        @empty
-                            <div class="panel-row">
-                                <span class="panel-row-name" data-i18n="about.panelEmpty">لم تُسجَّل تخصصات بعد</span>
-                            </div>
-                        @endforelse
+
+                        <div class="panel-stats">
+                            @foreach ([
+                                ['students', 'about.statStudents', 'طالب'],
+                                ['supervisors', 'about.statSupervisors', 'مشرف'],
+                                ['done', 'about.statDone', 'مشروع مكتمل'],
+                            ] as [$key, $i18n, $label])
+                                <div class="panel-stat">
+                                    <b data-count="{{ $panel[$key] }}">{{ number_format($panel[$key]) }}</b>
+                                    <span data-i18n="{{ $i18n }}">{{ $label }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="panel-split">
+                            <div class="panel-sub" data-i18n="about.split">الطلاب حسب التخصص</div>
+                            @forelse ($panel['rows'] as $row)
+                                @php $pct = round($row['n'] / $panelTotal * 100); @endphp
+                                <div class="panel-row">
+                                    @if ($row['name'])
+                                        <span class="panel-row-name">{{ $row['name'] }}</span>
+                                    @else
+                                        <span class="panel-row-name" data-i18n="about.other">تخصصات أخرى</span>
+                                    @endif
+                                    <span class="panel-row-meta">
+                                        <b>{{ $pct }}%</b>
+                                        <span><bdi>{{ $row['n'] }}</bdi> <span data-i18n="unit.students">طالباً</span></span>
+                                    </span>
+                                    <span class="panel-bar" aria-hidden="true">
+                                        <i style="--w: {{ round($row['n'] / $panelMax * 100) }}%"></i>
+                                    </span>
+                                </div>
+                            @empty
+                                <div class="panel-row">
+                                    <span class="panel-row-name" data-i18n="about.panelEmpty">لم تُسجَّل تخصصات بعد</span>
+                                </div>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>
@@ -867,6 +907,10 @@
                     $email = auth('admin')->check() ? auth('admin')->user()->email : (auth('supervisor')->check() ? auth('supervisor')->user()->email : (auth('student')->check() ? auth('student')->user()->email : ''));
                 @endphp
 
+                {{-- الإرسال في الخلفية (premium.js › initContact): تبقى الصفحة في
+                     قسمها ويحلّ تأكيد الإرسال محلّ النموذج. كان النموذج يُرسل فتُعاد
+                     الصفحة من رأسها، فلا يرى المرسل أن رسالته وصلت. وبلا JavaScript
+                     يعود الخادم إلى قسم التواصل نفسه --}}
                 <div class="contact-grid reveal">
                     <aside class="contact-aside">
                         <h3 data-i18n="contact.asideTitle">قبل أن تكتب</h3>
@@ -874,68 +918,116 @@
                             حسابك يُنشأ من إدارة قسمك، فإن لم تستطع الدخول برقمك الجامعي راجعها أولاً.
                             وللأسئلة حول المواعيد وأنواع المشاريع، اكتب لنا هنا.
                         </p>
-                        <div class="contact-point">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
-                            <span data-i18n="contact.pointMail">الرد خلال يوم عمل واحد</span>
-                        </div>
-                        <div class="contact-point">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            <span data-i18n="contact.pointHours">من الأحد إلى الخميس</span>
-                        </div>
+
+                        <ul class="contact-points">
+                            <li class="contact-point">
+                                <span class="contact-point-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></span>
+                                <span data-i18n="contact.pointMail">الرد خلال يوم عمل واحد</span>
+                            </li>
+                            <li class="contact-point">
+                                <span class="contact-point-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+                                <span data-i18n="contact.pointHours">من الأحد إلى الخميس</span>
+                            </li>
+                        </ul>
+
+                        <a href="#faq" class="contact-faq">
+                            <span>
+                                <b data-i18n="contact.faqTitle">ربما الجواب جاهز</b>
+                                <span data-i18n="contact.faqText">سبعة أسئلة يسألها كل فريق قبل البدء</span>
+                            </span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        </a>
                     </aside>
 
-                    <form action="{{ route('site.send') }}" method="post" class="contact-form">
-                        @csrf
+                    <div class="contact-main">
+                        <form action="{{ route('site.send') }}" method="post" class="contact-form" novalidate
+                            data-contact-form>
+                            @csrf
 
-                        @if (session('success'))
-                            <p class="form-alert ok" role="status">
-                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
-                                {{ session('success') }}
-                            </p>
-                        @endif
-                        @if (session('fail'))
-                            <p class="form-alert err" role="alert">
+                            @if (session('success'))
+                                <p class="form-alert ok" role="status">
+                                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+                                    {{ session('success') }}
+                                </p>
+                            @endif
+                            @if (session('fail'))
+                                <p class="form-alert err" role="alert">
+                                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                                    {{ session('fail') }}
+                                </p>
+                            @endif
+                            {{-- خطأ الإرسال في الخلفية (شبكة، أو حدّ المحاولات) --}}
+                            <p class="form-alert err" role="alert" data-form-error hidden>
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                                {{ session('fail') }}
+                                <span></span>
                             </p>
-                        @endif
-                        @if ($errors->any())
-                            <p class="form-alert err" role="alert">
-                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                                {{ $errors->first() }}
+
+                            <div class="form-row">
+                                <div class="field">
+                                    <label for="cf-name" data-i18n="form.name">الاسم</label>
+                                    <input id="cf-name" type="text" name="name" required maxlength="120" autocomplete="name"
+                                        class="@error('name') is-invalid @enderror" value="{{ old('name', $name) }}"
+                                        @if ($name) readonly @endif />
+                                    <small class="field-error" data-error-for="name">@error('name'){{ $message }}@enderror</small>
+                                </div>
+                                <div class="field">
+                                    <label for="cf-email" data-i18n="form.email">البريد الإلكتروني</label>
+                                    <input id="cf-email" type="email" name="email" required maxlength="190" autocomplete="email" dir="ltr"
+                                        class="@error('email') is-invalid @enderror" value="{{ old('email', $email) }}"
+                                        @if ($email) readonly @endif />
+                                    <small class="field-error" data-error-for="email">@error('email'){{ $message }}@enderror</small>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label for="cf-subject" data-i18n="form.subject">الموضوع</label>
+                                {{-- مواضيع شائعة بنقرة — والكتابة الحرّة متاحة دائماً --}}
+                                <div class="subject-chips" role="group" aria-label="مواضيع شائعة" data-i18n-aria="contact.topics">
+                                    <button type="button" data-i18n="contact.topic1">مشكلة في الدخول</button>
+                                    <button type="button" data-i18n="contact.topic2">سؤال عن المواعيد</button>
+                                    <button type="button" data-i18n="contact.topic3">اقتراح للمنصة</button>
+                                </div>
+                                <input id="cf-subject" type="text" name="subject" required maxlength="200"
+                                    class="@error('subject') is-invalid @enderror" value="{{ old('subject') }}" />
+                                <small class="field-error" data-error-for="subject">@error('subject'){{ $message }}@enderror</small>
+                            </div>
+
+                            <div class="field">
+                                <label for="cf-message" data-i18n="form.message">الرسالة</label>
+                                <textarea id="cf-message" name="message" rows="5" required maxlength="5000"
+                                    class="@error('message') is-invalid @enderror">{{ old('message') }}</textarea>
+                                <div class="field-foot">
+                                    <small class="field-error" data-error-for="message">@error('message'){{ $message }}@enderror</small>
+                                    <small class="field-count" dir="ltr"><bdi data-count-for="message">0</bdi> / 5000</small>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" data-submit>
+                                    <span class="btn-spinner" aria-hidden="true"></span>
+                                    <svg class="btn-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                                    <span data-i18n="form.send">إرسال</span>
+                                </button>
+                                <span class="form-hint" data-i18n="contact.hint">نردّ على بريدك مباشرة</span>
+                            </div>
+                        </form>
+
+                        {{-- تأكيد الإرسال: يحلّ محلّ النموذج في مكانه --}}
+                        <div class="contact-done" data-contact-done hidden tabindex="-1" role="status">
+                            <span class="done-mark" aria-hidden="true">
+                                <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M15 27l7 7 15-16"/></svg>
+                            </span>
+                            <h3 data-i18n="contact.doneTitle">وصلت رسالتك</h3>
+                            <p>
+                                <span data-i18n="contact.doneText">سنردّ عليك خلال يوم عمل على</span>
+                                <bdi dir="ltr" data-done-email></bdi>
                             </p>
-                        @endif
-
-                        <div class="form-row">
-                            <div class="field">
-                                <label for="cf-name" data-i18n="form.name">الاسم</label>
-                                <input id="cf-name" type="text" name="name" required
-                                    class="@error('name') is-invalid @enderror" value="{{ old('name', $name) }}"
-                                    @if ($name) readonly @endif />
-                            </div>
-                            <div class="field">
-                                <label for="cf-email" data-i18n="form.email">البريد الإلكتروني</label>
-                                <input id="cf-email" type="email" name="email" required
-                                    class="@error('email') is-invalid @enderror" value="{{ old('email', $email) }}"
-                                    @if ($email) readonly @endif />
-                            </div>
+                            <button type="button" class="contact-again" data-contact-again>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                                <span data-i18n="contact.again">إرسال رسالة أخرى</span>
+                            </button>
                         </div>
-                        <div class="field">
-                            <label for="cf-subject" data-i18n="form.subject">الموضوع</label>
-                            <input id="cf-subject" type="text" name="subject" required
-                                class="@error('subject') is-invalid @enderror" value="{{ old('subject') }}" />
-                        </div>
-                        <div class="field">
-                            <label for="cf-message" data-i18n="form.message">الرسالة</label>
-                            <textarea id="cf-message" name="message" rows="5" required
-                                class="@error('message') is-invalid @enderror">{{ old('message') }}</textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-                            <span data-i18n="form.send">إرسال</span>
-                        </button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </section>

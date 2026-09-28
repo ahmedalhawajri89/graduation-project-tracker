@@ -28,12 +28,27 @@ class HomeController extends Controller
                 Notification::send($admin, new AdminNewMessageNotify());
             }
 
-            return redirect()->back()->with('success', 'تم ارسال رسالتك. شكرا لك!');
+            // الإرسال من الصفحة بلا إعادة تحميل: الجواب JSON فيبقى القارئ في قسمه
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'sent']);
+            }
+
+            return redirect()->to($this->backToContact())->with('success', 'تم ارسال رسالتك. شكرا لك!');
 
         } catch (\Exception$ex) {
-            return redirect()->back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'error'], 500);
+            }
+
+            return redirect()->to($this->backToContact())->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
 
         }
+    }
+
+    /** بلا JavaScript: الرجوع إلى قسم التواصل لا إلى رأس الصفحة */
+    private function backToContact(): string
+    {
+        return strtok(url()->previous(), '#') . '#contact';
     }
 
     /**
