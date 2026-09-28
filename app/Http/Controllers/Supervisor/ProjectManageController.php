@@ -50,14 +50,21 @@ class ProjectManageController extends Controller
         return $project->is_locked ? self::LOCKED_MSG : null;
     }
 
-    /** إشعار جميع طلاب المشروع بتحديث */
-    private function notifyStudents(Project $project, string $msg)
+    /**
+     * إشعار جميع طلاب المشروع بتحديث — وبالبريد أيضاً إن أُعطي عنوانه:
+     * لما ينتظر تصرّفاً من الفريق وحده، لا لكل ملف ومرحلة.
+     */
+    private function notifyStudents(Project $project, string $msg, ?string $mailSubject = null, ?string $url = null)
     {
-        Notification::send($project->students(), new ProjectActivityNotify([
+        $data = [
             'project' => $project->title,
             'supervisor_name' => auth('supervisor')->user()->name,
             'msg' => $msg,
-        ]));
+        ];
+
+        Notification::send($project->students(), $mailSubject
+            ? ProjectActivityNotify::withMail($data, $mailSubject, $url)
+            : new ProjectActivityNotify($data));
     }
 
     /* ==================== أرشيف مشاريعي (كل الفصول) ==================== */
@@ -232,9 +239,18 @@ class ProjectManageController extends Controller
             'round' => ['to' => $round],
         ]);
 
-        $this->notifyStudents($milestone->project, $approve
-            ? 'اعتُمدت مرحلة «' . $milestone->title . '» ✅'
-            : 'مطلوب تعديل في مرحلة «' . $milestone->title . '»: ' . \Illuminate\Support\Str::limit($data['feedback'], 120));
+        // الاعتماد في الجرس وحده؛ طلب التعديل بالبريد أيضاً — الفريق ينتظر
+        // سببه ليكمل، وقد لا يفتح المنصّة قبل الموعد
+        if ($approve) {
+            $this->notifyStudents($milestone->project, 'اعتُمدت مرحلة «' . $milestone->title . '» ✅');
+        } else {
+            $this->notifyStudents(
+                $milestone->project,
+                'مطلوب تعديل في مرحلة «' . $milestone->title . '»: ' . \Illuminate\Support\Str::limit($data['feedback'], 120),
+                'مطلوب تعديل في «' . $milestone->title . '»',
+                route('student.dashboard') . '#milestone-' . $milestone->id
+            );
+        }
 
         return redirect()->to(url()->previous() . '#milestone-' . $milestone->id)
             ->with('success', $approve ? 'اعتُمدت المرحلة.' : 'أُرسل طلب التعديل إلى الفريق.');
@@ -405,7 +421,8 @@ class ProjectManageController extends Controller
 
         $this->notifyStudents(
             $project,
-            'تم تقييم مشروعكم — الدرجة: ' . $request->grade . ' (' . $project->fresh()->grade_label . ') 🎓'
+            'تم تقييم مشروعكم — الدرجة: ' . $request->grade . ' (' . $project->fresh()->grade_label . ') 🎓',
+            'درجة مشروعكم'
         );
 
         return redirect()->back()->with('success', 'تم حفظ التقييم وإشعار الفريق');

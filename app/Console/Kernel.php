@@ -28,6 +28,9 @@ class Kernel extends ConsoleKernel
         // لقطة إحصائيات يومية (لمؤشّرات الاتجاه في لوحة التحكم)
         $schedule->command('snapshot:capture')->dailyAt('23:55');
 
+        // تذكير الفرق بالمراحل قبل موعدها بيومين وفي يومه — صباحاً ليبقى وقت للتسليم
+        $schedule->command('milestones:remind')->dailyAt('09:00')->withoutOverlapping();
+
     }
 
     /**

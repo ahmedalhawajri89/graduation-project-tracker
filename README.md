@@ -30,7 +30,8 @@ Graduation projects are usually run on spreadsheets, email threads and paper. No
 - Excel import for students and supervisors, plus data export
 - Group formation and supervisor assignment
 - Project proposal, review, acceptance and rejection flow
-- Milestone tracking with deadlines
+- Milestone tracking with deadlines, and email reminders two days before and on the day
+- Email for what needs the student's action — changes requested, the grade — the rest stays in-app
 - File submissions per project, with a dedicated file controller
 - Threaded comments between student and supervisor
 - Final evaluation recorded against the project
@@ -108,7 +109,9 @@ vendor/bin/phpunit
    php artisan admin:create          # prompts for name, email and password
    ```
    Activate the current semester from *Admin › Semesters* before students log in.
-3. **Scheduler (required).** Mail is queued, and a daily stats snapshot feeds the dashboard trend.
+3. **Scheduler (required).** Mail is queued, teams are reminded of stage deadlines every morning
+   (`milestones:remind`: two days before and on the day), and a daily stats snapshot feeds the
+   dashboard trend.
    Add one cron entry:
    ```
    * * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1

@@ -35,6 +35,13 @@ class NotificationView
                 : self::make('accept', 'supervisor', 'ti-circle-check', 'is-success', 'قُبل مشروعك', $sender, $msg, $dash);
         }
 
+        // تذكير المنصّة بموعد مرحلة: المرسل المنصّة، والرابط إلى المرحلة نفسها
+        if (($data['kind'] ?? null) === 'reminder') {
+            $href = $dash . (isset($data['milestone_id']) ? '#milestone-' . $data['milestone_id'] : '#milestones');
+
+            return self::make('reminder', 'supervisor', 'ti-alarm', 'is-warn', 'تذكير بموعد', 'تخرُّج', $msg, $href);
+        }
+
         // نشاط المشروع: الفئة من نصّ الرسالة — الأخصّ أولاً
         return match (true) {
             // ذكر بـ@ في نقاش الفريق — من زميل

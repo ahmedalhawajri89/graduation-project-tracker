@@ -33,6 +33,7 @@ class ProjectMilestone extends Model
         'due_date' => 'date',
         'is_done' => 'boolean',
         'done_at' => 'datetime',
+        'reminded_on' => 'date',
     ];
 
     public function project()
