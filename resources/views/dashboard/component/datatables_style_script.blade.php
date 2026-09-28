@@ -20,7 +20,9 @@
             pageLength: 15,
             processing: true,
             serverSide: true,
-            ajax: "{{ $urlData }}",
+            // يُطبع JSON لا نصّاً مُهرَّباً: التهريب يحوّل الفاصل بين معاملات الرابط
+            // إلى كيان HTML داخل نصّ JS، فيصل كل فلتر بعد الأول باسم خاطئ ويُتجاهَل
+            ajax: @json($urlData),
             columns: {!! $columnsData !!},
             language: {
                 processing: "جارٍ التحميل...",

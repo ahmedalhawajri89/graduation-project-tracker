@@ -144,6 +144,7 @@
                         <th>التخصص</th>
                         <th>رقم الجوال</th>
                         <th class="w-1">عبء الإشراف</th>
+                        <th class="w-1" title="مراحل سلّمتها فرقه ولم يراجعها">بانتظار مراجعته</th>
                         <th class="w-1">إجراءات</th>
                     </tr>
                 </thead>
@@ -173,6 +174,7 @@
                 {data: 'specialize.name', name: 'specialize.name', orderable: false},
                 {data: 'phone', name: 'phone', orderable: false},
                 {data: 'projects_count', name: 'projects_count', searchable: false},
+                {data: 'pending_reviews_count', name: 'pending_reviews_count', searchable: false},
                 {data: 'actions', name: 'actions', orderable: false, searchable: false},
             ]",
 ])

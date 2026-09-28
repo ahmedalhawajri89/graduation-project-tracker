@@ -27,13 +27,7 @@ class AuditLogExport implements FromCollection, WithHeadings, WithMapping, Shoul
 
     public function collection()
     {
-        $query = AuditLog::query();
-
-        if ($this->scope === 'grade') {
-            $query->where('action', 'like', 'grade.%');
-        } elseif ($this->scope === 'lifecycle') {
-            $query->whereIn('action', ['project.deleted', 'project.restored', 'project.forceDeleted']);
-        }
+        $query = AuditLog::applyScope(AuditLog::query(), $this->scope);
 
         if ($this->action && isset(AuditLog::LABELS[$this->action])) {
             $query->where('action', $this->action);

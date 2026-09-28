@@ -41,6 +41,11 @@ class AuditLog extends Model
         'project.forceDeleted' => 'حذف مشروع نهائياً',
         'project.withdrawn' => 'سحب طلب مشروع',
         'stage.deleted' => 'حذف مرحلة من خطة',
+        'milestone.submitted' => 'تسليم مرحلة',
+        'milestone.approved' => 'اعتماد مرحلة',
+        'milestone.revision' => 'طلب تعديل على مرحلة',
+        'team.roles' => 'توزيع أدوار الفريق',
+        'file.note' => 'ملاحظة على ملف',
         'project.supervisorChanged' => 'تغيير مشرف مشروع',
         'project.statusChanged' => 'تغيير حالة مشروع',
         'project.memberAdded' => 'إضافة عضو لفريق',
@@ -53,6 +58,30 @@ class AuditLog extends Model
         'student.deleted' => 'حذف طالب',
         'supervisor.deleted' => 'حذف مشرف',
     ];
+
+    /**
+     * تبويبات السجلّ: ما يُتنازَع عليه أولاً، ثم سير العمل.
+     * تعريف واحد للصفحة والتصدير — كان كلٌّ منهما يكرّر الشروط.
+     */
+    public const SCOPES = [
+        'grade' => ['grade.%'],
+        'work' => ['milestone.%', 'team.roles', 'file.note', 'stage.deleted'],
+        'lifecycle' => ['project.deleted', 'project.restored', 'project.forceDeleted'],
+    ];
+
+    /** يقصر الاستعلام على أحداث التبويب — والتبويب المجهول لا يرشّح */
+    public static function applyScope($query, ?string $scope)
+    {
+        if (! isset(self::SCOPES[$scope])) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($scope) {
+            foreach (self::SCOPES[$scope] as $pattern) {
+                str_contains($pattern, '%') ? $q->orWhere('action', 'like', $pattern) : $q->orWhere('action', $pattern);
+            }
+        });
+    }
 
     public const ROLES = [
         'admin' => 'مسؤول النظام',

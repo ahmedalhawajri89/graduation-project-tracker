@@ -92,6 +92,13 @@ class Supervisor extends Authenticatable
             ->where('status', 'request');
     }
 
+    /** مراحل سلّمتها فرقه وتنتظر مراجعته — عبء لا يظهر في عدد المجموعات */
+    public function pendingReviews()
+    {
+        return $this->hasManyThrough(ProjectMilestone::class, Project::class, 'supervisor_id', 'project_id')
+            ->where('project_milestones.status', ProjectMilestone::SUBMITTED);
+    }
+
     /** خطة المراحل — في فصل بعينه */
     public function stages()
     {

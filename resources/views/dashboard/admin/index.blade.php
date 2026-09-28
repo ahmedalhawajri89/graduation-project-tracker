@@ -139,6 +139,31 @@
         @endif
     </section>
 
+    {{-- ═══ متابعة الفرق ═══
+         الأرقام فوق تقول كم فريقاً، لا أيّها متعثّر. أربعة مؤشّرات من مراحل
+         الفرق وتسليماتها وأدوارها، كلٌّ يفتح قائمة الفرق المعنيّة نفسها. --}}
+    <section class="dash-block mb-4">
+        <h2 class="dash-block-title">
+            <i class="ti ti-heartbeat" aria-hidden="true"></i>
+            متابعة الفرق
+        </h2>
+
+        <div class="health-grid">
+            @foreach (\App\Support\TeamHealth::issues() as $key => [$title, $text, $icon])
+                @php $n = $health[$key] ?? 0; @endphp
+                <a href="{{ route('admin.groups.index', ['issue' => $key]) }}"
+                    class="health-cell {{ $n > 0 ? 'is-alert' : 'is-clear' }}">
+                    <span class="health-top">
+                        <span class="health-icon"><i class="ti {{ $icon }}" aria-hidden="true"></i></span>
+                        <span class="health-n">{{ $n }}</span>
+                    </span>
+                    <span class="health-title">{{ $title }}</span>
+                    <span class="health-text">{{ $n > 0 ? $text : 'لا شيء هنا — جيد.' }}</span>
+                </a>
+            @endforeach
+        </div>
+    </section>
+
     {{-- ═══ ٣) الاتجاه ═══
          هنا يستحق الرسم مكانه: الرقم يقول أين أنت، والخط يقول إلى أين
          تتجه — والثاني هو ما يُتخذ عليه قرار. مبني SVG مباشرةً، بلا
@@ -149,15 +174,7 @@
             الاتجاه خلال الفصل
         </h2>
 
-        <div class="dist-panel">
-            <div class="dist-head">
-                <span>تطوّر المجموعات والطلاب بلا فريق</span>
-                <span class="dist-head-note">لقطة يومية</span>
-            </div>
-            <div class="p-3">
-                <x-trend-chart :series="$trendSeries" />
-            </div>
-        </div>
+        <x-trend-chart :series="$trendSeries" />
     </section>
 
     {{-- ═══ ٤) التوزيع ═══

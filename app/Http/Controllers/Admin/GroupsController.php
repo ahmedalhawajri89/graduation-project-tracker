@@ -13,6 +13,7 @@ use App\Models\Student;
 use App\Models\Supervisor;
 use App\Notifications\AdminChangeGroupNotify;
 use App\Support\Audit;
+use App\Support\TeamHealth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -59,10 +60,15 @@ class GroupsController extends Controller
         $data['currentStatus'] = $status;
         $data['trashedCount'] = Project::onlyTrashed()->count();
 
+        // قادم من «متابعة الفرق» في الرئيسية: الشرط نفسه الذي عُدّ هناك
+        $issue = TeamHealth::isIssue(request('issue')) ? request('issue') : null;
+        $data['currentIssue'] = $issue;
+
         // الجدول صار يُحمَّل عبر DataTables من \u200EgetData()\u200E كصفحة الطلاب،
         // فلم يبقَ هنا إلا العدّ الذي يظهر تحت العنوان
         $data['totalFiltered'] = (clone $base)
             ->when($status !== null, fn ($q) => $q->where('status', $status))
+            ->when($issue !== null, fn ($q) => TeamHealth::apply($q, $issue))
             ->count();
 
         return view('dashboard.admin.group.index', $data);
@@ -91,6 +97,7 @@ class GroupsController extends Controller
                 request()->filled('status') && in_array(request()->status, $allowed, true),
                 fn ($q) => $q->where('status', request()->status)
             )
+            ->when(TeamHealth::isIssue(request('issue')), fn ($q) => TeamHealth::apply($q, request('issue')))
             ->with(['group.student:id,name', 'supervisor:id,name', 'project_type:id,name,max'])
             ->select('projects.*');
 
@@ -180,10 +187,12 @@ class GroupsController extends Controller
         $project = Project::where('id', $id)
             ->with([
                 'group.student.specialize',
+                'group.roles',
                 'supervisor.specialize',
                 'project_type',
                 'semester',
-                'milestones',
+                'milestones.stage',
+                'milestones.submissions.student',
                 'files',
                 'comments.author',
             ])

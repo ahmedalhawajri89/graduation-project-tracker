@@ -92,12 +92,17 @@ class SupervisorController extends Controller
     {
         $semesterId = Semester::current()->id;
 
+        // \u200Eselect()\u200E قبل \u200EwithCount()\u200E لا بعده: كان بعده فيستبدل الأعمدة كلّها،
+        // فتسقط العدّادات ويظهر عبء كل مشرف ٠ مهما أشرف
         $supervisors = Supervisor::query()
+            ->select('supervisors.*')
             ->with(['specialize:id,name'])
             ->withCount(['projects' => function ($q) use ($semesterId) {
                 $q->whereIn('status', ['accept', 'complete'])->where('semester_id', $semesterId);
             }])
-            ->select('supervisors.*');
+            // ما ينتظر مراجعته، وأقدمه — المشرف البطيء في الردّ كان لا يُرى
+            ->withCount(['pendingReviews' => fn ($q) => $q->where('projects.semester_id', $semesterId)])
+            ->withMin(['pendingReviews as oldest_review_at' => fn ($q) => $q->where('projects.semester_id', $semesterId)], 'project_milestones.updated_at');
 
         // الفلاتر تُطبَّق على الخادم فلا يُحمَّل الكشف كاملاً إلى المتصفّح
         if (in_array(request('load'), ['free', 'full', 'over'], true)) {
@@ -165,6 +170,26 @@ class SupervisorController extends Controller
                     . '</a>';
             })
 
+            // التسليمات بانتظاره: «—» حين لا شيء، ولون تحذير إن طال انتظار أقدمها
+            ->editColumn('pending_reviews_count', function ($row) {
+                $n = (int) $row->pending_reviews_count;
+
+                if ($n === 0) {
+                    return '<span class="text-secondary small">—</span>';
+                }
+
+                $days = $row->oldest_review_at
+                    ? (int) \Illuminate\Support\Carbon::parse($row->oldest_review_at)->startOfDay()->diffInDays(today())
+                    : 0;
+                $late = $days > \App\Support\TeamHealth::REVIEW_DAYS;
+
+                return '<span class="review-cell' . ($late ? ' is-late' : '') . '"'
+                    . ' title="أقدمها منذ ' . e($days) . ' يوماً">'
+                    . '<b>' . e($n) . '</b>'
+                    . '<small>' . match (true) { $days === 0 => 'اليوم', $days === 1 => 'منذ أمس', default => 'منذ ' . e($days) . ' يوماً' } . '</small>'
+                    . '</span>';
+            })
+
             ->addColumn('actions', function ($row) {
 
                 $editBtn = "<a class='btn-action btn-edit' data-bs-toggle='modal' data-bs-target='#editModal'
@@ -184,7 +209,7 @@ class SupervisorController extends Controller
 
                 return $actionBtn;
             })
-            ->rawColumns(['identity', 'university_id', 'phone', 'projects_count', 'actions'])
+            ->rawColumns(['identity', 'university_id', 'phone', 'projects_count', 'pending_reviews_count', 'actions'])
             ->make(true);
     }
 

@@ -49,6 +49,12 @@
                 الدرجات
                 <span class="filter-count">{{ $countGrade }}</span>
             </a>
+            <a href="{{ route('admin.audit.index', array_merge($filterQuery, ['scope' => 'work'])) }}"
+                class="filter-tab {{ $scope === 'work' ? 'is-active' : '' }}">
+                <span class="filter-dot" style="background: #2563eb"></span>
+                سير العمل
+                <span class="filter-count">{{ $countWork }}</span>
+            </a>
             <a href="{{ route('admin.audit.index', array_merge($filterQuery, ['scope' => 'lifecycle'])) }}"
                 class="filter-tab {{ $scope === 'lifecycle' ? 'is-active' : '' }}">
                 <span class="filter-dot" style="background: #be123c"></span>

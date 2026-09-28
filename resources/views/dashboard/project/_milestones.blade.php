@@ -15,6 +15,8 @@
 
     // الطالب يسلّم في مشروع جارٍ غير مؤرشف
     $isStudent = auth('student')->check();
+    // الإدارة تقرأ فقط: لا «طلبتَ» ولا «مراجعتك» — والمهمّ عندها كم ينتظر التسليم
+    $isAdmin = auth('admin')->check();
     $canSubmit = $isStudent && in_array($project->status, ['accept', 'complete'], true) && ! $project->is_locked;
 
     // النموذج الذي فشل تحقّقه يُفتح من جديد لمرحلته
@@ -166,7 +168,7 @@
                                 <div class="ms-feedback" role="note">
                                     <i class="ti ti-message-2-exclamation" aria-hidden="true"></i>
                                     <span>
-                                        <b>{{ $isStudent ? 'طلب المشرف تعديلاً' : 'طلبتَ تعديلاً' }}</b>
+                                        <b>{{ $editable ? 'طلبتَ تعديلاً' : 'طلب المشرف تعديلاً' }}</b>
                                         <span class="ms-feedback-text">{{ $latest->feedback }}</span>
                                         <small>{{ $latest->reviewed_at?->diffForHumans() }}</small>
                                     </span>
@@ -275,7 +277,13 @@
                 {{-- الشارة للحالة التي تحتاج انتباهاً وحدها: المنجز
                      يُفهم من الخطّ فوقه ولا يحتاج إعلاناً --}}
                 @if ($milestone->isSubmitted())
-                    <span class="ms-flag is-review">{{ $editable ? 'بانتظار مراجعتك' : 'بانتظار المراجعة' }}</span>
+                    @php $waiting = $latest ? (int) $latest->created_at->startOfDay()->diffInDays(today()) : 0; @endphp
+                    <span class="ms-flag is-review">
+                        {{ $editable ? 'بانتظار مراجعتك' : ($isAdmin ? 'بانتظار المشرف' : 'بانتظار المراجعة') }}
+                        @if ($isAdmin && $waiting > 0)
+                            · {{ $waiting }} {{ $waiting === 1 ? 'يوم' : ($waiting === 2 ? 'يومان' : 'أيام') }}
+                        @endif
+                    </span>
                 @elseif ($milestone->needsRevision())
                     <span class="ms-flag is-revision">مطلوب تعديل</span>
                 @elseif ($overdue)

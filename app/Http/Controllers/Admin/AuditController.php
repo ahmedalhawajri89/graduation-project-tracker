@@ -15,15 +15,9 @@ use Maatwebsite\Excel\Facades\Excel;
  */
 class AuditController extends Controller
 {
-    /** التبويبات: ما يُتنازَع عليه أولاً */
-    private const SCOPES = [
-        'grade' => ['grade.'],
-        'lifecycle' => ['project.deleted', 'project.restored', 'project.forceDeleted'],
-    ];
-
     public function index()
     {
-        $scope = in_array(request('scope'), array_keys(self::SCOPES), true) ? request('scope') : null;
+        $scope = in_array(request('scope'), array_keys(AuditLog::SCOPES), true) ? request('scope') : null;
 
         $logs = $this->filtered($scope)
             ->latest('created_at')
@@ -35,6 +29,7 @@ class AuditController extends Controller
             'scope' => $scope,
             'countAll' => $this->filtered(null)->count(),
             'countGrade' => $this->filtered('grade')->count(),
+            'countWork' => $this->filtered('work')->count(),
             'countLifecycle' => $this->filtered('lifecycle')->count(),
             'currentAction' => request('action'),
             'currentRole' => request('role'),
@@ -63,13 +58,7 @@ class AuditController extends Controller
      */
     private function filtered(?string $scope)
     {
-        $query = AuditLog::query();
-
-        if ($scope === 'grade') {
-            $query->where('action', 'like', 'grade.%');
-        } elseif ($scope === 'lifecycle') {
-            $query->whereIn('action', self::SCOPES['lifecycle']);
-        }
+        $query = AuditLog::applyScope(AuditLog::query(), $scope);
 
         if (request()->filled('action') && isset(AuditLog::LABELS[request('action')])) {
             $query->where('action', request('action'));

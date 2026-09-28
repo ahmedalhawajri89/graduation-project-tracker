@@ -14,6 +14,7 @@
             'supervisor' => request('supervisor'),
             'type' => request('type'),
             'status' => $currentStatus,
+            'issue' => $currentIssue,
         ]);
     @endphp
 
@@ -37,6 +38,21 @@
     </x-page-header>
 
     @include('dashboard.admin.group.filter')
+
+    @if ($currentIssue)
+        @php [$issueTitle, $issueText, $issueIcon] = \App\Support\TeamHealth::issues()[$currentIssue]; @endphp
+        <div class="issue-banner mb-3" role="status">
+            <i class="ti {{ $issueIcon }}" aria-hidden="true"></i>
+            <span>
+                <b>{{ $issueTitle }}</b>
+                {{ $issueText }}
+            </span>
+            <a href="{{ route('admin.groups.index', array_diff_key($filterQuery, ['issue' => ''])) }}" class="issue-banner-clear">
+                إلغاء التصفية
+                <i class="ti ti-x" aria-hidden="true"></i>
+            </a>
+        </div>
+    @endif
 
     <div class="card">
         <div class="table-responsive">

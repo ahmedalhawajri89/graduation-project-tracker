@@ -247,6 +247,21 @@
                                 <span class="ctx-tag">قائد</span>
                             @endif
                         </span>
+                        @if ($started)
+                            {{-- الأدوار التي وزّعها القائد — أو غيابها، وهو ما يُسأل عنه --}}
+                            <span class="role-chips">
+                                @forelse ($group->roles as $role)
+                                    @php $meta = $role->meta(); @endphp
+                                    <span class="role-chip" style="--h: {{ $meta['hue'] }}">
+                                        <i class="ti {{ $meta['icon'] }}" aria-hidden="true"></i>{{ $meta['label'] }}
+                                    </span>
+                                @empty
+                                    <span class="role-chip is-flat" style="--h: 0">
+                                        <i class="ti ti-user-question" aria-hidden="true"></i>بلا دور
+                                    </span>
+                                @endforelse
+                            </span>
+                        @endif
                         <span class="ctx-person-meta">
                             <span dir="ltr">{{ $group->student?->university_id ?? '—' }}</span>
                             · {{ $group->student?->specialize->name ?? '—' }}
@@ -278,40 +293,12 @@
             </div>
         </section>
     @else
+        {{-- ═══ المراحل ═══
+             كانت «منجزة/غير منجزة» وحدها — لا يُعرف أيّها ينتظر المشرف، وأيّها
+             أُعيد بطلب تعديل ولماذا. المكوّن نفسه الذي يراه الطالب والمشرف، للقراءة --}}
+        @include('dashboard.project._milestones', ['project' => $project])
+
         <div class="dist-grid mb-4">
-            {{-- ═══ المراحل ═══ --}}
-            <div class="dist-panel">
-                <div class="dist-head">
-                    <span>مراحل المشروع</span>
-                    @if (! is_null($project->progress))
-                        <span class="dist-head-note">{{ $project->progress }}% منجز</span>
-                    @endif
-                </div>
-
-                @if ($project->milestones->count())
-                    @if (! is_null($project->progress))
-                        <div class="ms-progress">
-                            <span style="width: {{ $project->progress }}%"></span>
-                        </div>
-                    @endif
-                    @foreach ($project->milestones as $milestone)
-                        <div class="ms-row {{ $milestone->is_done ? 'is-done' : '' }}">
-                            <span class="ms-check" aria-hidden="true">
-                                @if ($milestone->is_done)<i class="ti ti-check"></i>@endif
-                            </span>
-                            <span class="ms-body">
-                                <span class="ms-title">{{ $milestone->title }}</span>
-                                @if ($milestone->due_date)
-                                    <span class="ms-due">الاستحقاق: {{ $milestone->due_date->format('Y-m-d') }}</span>
-                                @endif
-                            </span>
-                        </div>
-                    @endforeach
-                @else
-                    <p class="dist-empty">لم يضِف المشرف مراحل لهذا المشروع بعد.</p>
-                @endif
-            </div>
-
             {{-- ═══ الملفات ═══ --}}
             <div class="dist-panel">
                 <div class="dist-head">

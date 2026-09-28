@@ -12,6 +12,7 @@ use App\Models\SpecializeProject;
 use App\Models\StatSnapshot;
 use App\Models\Student;
 use App\Models\Supervisor;
+use App\Support\TeamHealth;
 
 class DashboardController extends Controller
 {
@@ -52,6 +53,9 @@ class DashboardController extends Controller
             ->latest()
             ->take(6)
             ->get();
+
+        // متابعة الفرق: أين يتعثّر الفصل — انظر \App\Support\TeamHealth
+        $data['health'] = TeamHealth::counts($last_semester->id);
 
         // آخر رسائل الاستفسار
         $data['recent_messages'] = Contact::latest()->take(5)->get();
