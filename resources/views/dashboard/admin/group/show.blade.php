@@ -140,7 +140,7 @@
                         </div>
                         <div class="audit-list">
                             @foreach ($history as $log)
-                                <x-audit-row :log="$log" />
+                                <x-audit-row :log="$log" dated />
                             @endforeach
                         </div>
                     </div>
@@ -232,7 +232,7 @@
                             @if ($history->count())
                                 <div class="audit-list">
                                     @foreach ($history as $log)
-                                        <x-audit-row :log="$log" />
+                                        <x-audit-row :log="$log" dated />
                                     @endforeach
                                 </div>
                             @else

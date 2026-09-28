@@ -1,82 +1,78 @@
-@props(['log'])
+@props([
+    'log',
+    // خارج صفحة السجلّ لا عناوين أيام — فيُكتب التاريخ مع الساعة
+    'dated' => false,
+])
 
 {{--
-    سطر في سجلّ التدقيق.
+    حدث في سجلّ التدقيق — عقدة على خطّ زمني.
 
-    مكوّن واحد لصفحة السجلّ ولشريط «تاريخ هذا المشروع» معاً — وإلا
-    انحرف الشكلان مع أول تعديل.
-
-    الأسماء تُقرأ من اللقطات النصّية (\u200Eactor_name\u200E و\u200Esubject_label\u200E) لا
-    من العلاقات: الفاعل أو الكيان قد يكون حُذف، وسطر يشير إلى صفّ
-    محذوف يصير فارغاً — وهو أوّل ما يُحتاج إليه عند التنازع.
+    مكوّن واحد لصفحة السجلّ ولتبويب «سجلّ المشروع» في صفحة المجموعة.
+    الأسماء من اللقطات النصّية (\u200Eactor_name\u200E و\u200Esubject_label\u200E) لا من العلاقات:
+    الفاعل أو الكيان قد يكون حُذف، وهو أوّل ما يُحتاج إليه عند التنازع.
+    الفئة والأيقونة والشارات من \u200EApp\Support\AuditPresenter\u200E.
 --}}
 
 @php
-    $icon = match (true) {
-        str_starts_with($log->action, 'grade.') => 'ti-award',
-        str_contains($log->action, 'Deleted') || str_ends_with($log->action, '.deleted') => 'ti-trash',
-        str_ends_with($log->action, '.restored') => 'ti-arrow-back-up',
-        str_ends_with($log->action, '.archived') => 'ti-archive',
-        str_ends_with($log->action, '.created') => 'ti-plus',
-        default => 'ti-pencil',
-    };
-
-    $tone = match (true) {
-        in_array($log->action, ['grade.locked'], true) => 'is-good',
-        in_array($log->action, ['grade.unlocked', 'project.forceDeleted'], true) => 'is-danger',
-        str_starts_with($log->action, 'grade.') => 'is-warn',
-        str_ends_with($log->action, '.deleted') => 'is-danger',
-        default => '',
-    };
-
-    $changes = $log->changes ?? [];
+    $cat = \App\Support\AuditPresenter::category($log->action);
+    $chips = \App\Support\AuditPresenter::chips($log);
+    $url = \App\Support\AuditPresenter::subjectUrl($log);
+    $reason = $log->changes['reason'] ?? null;
+    $actor = $log->relationLoaded('actor') ? $log->actor : null;
+    $initials = mb_substr(trim(preg_replace('/^\s*(أ\.د\.|د\.|أ\.)\s*/u', '', (string) $log->actor_name)) ?: '؟', 0, 2);
 @endphp
 
-<article class="audit-row {{ $tone }}">
-    <span class="audit-icon" aria-hidden="true"><i class="ti {{ $icon }}"></i></span>
+<article class="at-row" data-cat="{{ $cat }}">
+    <span class="at-node" aria-hidden="true"><i class="ti {{ \App\Support\AuditPresenter::icon($log->action) }}"></i></span>
 
-    <div class="audit-body">
-        <p class="audit-head">
+    <div class="at-body">
+        <p class="at-head">
             <b>{{ $log->action_label }}</b>
             @if ($log->subject_label)
-                <span class="audit-subject">{{ $log->subject_label }}</span>
+                @if ($url)
+                    <a href="{{ $url }}" class="at-subject">{{ $log->subject_label }}</a>
+                @else
+                    <span class="at-subject">{{ $log->subject_label }}</span>
+                @endif
             @endif
         </p>
 
-        @if (isset($changes['grade']))
-            <p class="audit-change">
-                @if (array_key_exists('from', $changes['grade']) && ! is_null($changes['grade']['from']))
-                    <span class="audit-from">{{ $changes['grade']['from'] }}</span>
-                    <i class="ti ti-arrow-left" aria-hidden="true"></i>
-                @endif
-                <span class="audit-to">{{ $changes['grade']['to'] }}</span>
-                <small>من ١٠٠</small>
-            </p>
-        @endif
-
-        @if (isset($changes['supervisor']))
-            <p class="audit-change">
-                <span class="audit-from">{{ $changes['supervisor']['from'] }}</span>
-                <i class="ti ti-arrow-left" aria-hidden="true"></i>
-                <span class="audit-to">{{ $changes['supervisor']['to'] }}</span>
-            </p>
+        @if ($chips)
+            <ul class="at-chips">
+                @foreach ($chips as $chip)
+                    <li class="at-chip">
+                        @if ($chip['label'])
+                            <span class="at-chip-label">{{ $chip['label'] }}</span>
+                        @endif
+                        @if ($chip['from'])
+                            <span class="at-from">{{ $chip['from'] }}</span>
+                            <i class="ti ti-arrow-left" aria-label="إلى"></i>
+                        @endif
+                        @if ($chip['to'])
+                            <span class="at-to">{{ $chip['to'] }}</span>
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
         @endif
 
         {{-- السبب هو ما يُقرأ عند التنازع، فيُعرض كاملاً لا مقتطعاً --}}
-        @if (! empty($changes['reason']))
-            <p class="audit-reason">
-                <i class="ti ti-quote" aria-hidden="true"></i>
-                {{ $changes['reason'] }}
-            </p>
+        @if (is_string($reason) && $reason !== '' && $reason !== 'seats_full')
+            <blockquote class="at-reason">{{ $reason }}</blockquote>
         @endif
 
-        <p class="audit-meta">
-            <span>{{ $log->actor_name ?: 'النظام' }}</span>
-            <span class="audit-role">{{ $log->role_label }}</span>
-            <span class="audit-sep" aria-hidden="true">·</span>
+        <p class="at-meta">
+            @if ($actor)
+                <x-avatar :user="$actor" class="ctx-avatar at-avatar" />
+            @else
+                <span class="ctx-avatar at-avatar" aria-hidden="true">{{ $initials }}</span>
+            @endif
+            <span class="at-actor">{{ $log->actor_name ?: 'النظام' }}</span>
+            <span class="at-role">{{ $log->role_label }}</span>
+            <span class="at-sep" aria-hidden="true">·</span>
             <time datetime="{{ $log->created_at?->toIso8601String() }}"
-                title="{{ $log->created_at?->format('Y-m-d H:i') }}">
-                {{ $log->created_at?->diffForHumans() }}
+                title="{{ $log->created_at?->locale('ar')->translatedFormat('l j F Y — H:i') }}">
+                {{ $dated ? $log->created_at?->format('Y-m-d H:i') : $log->created_at?->format('H:i') }}
             </time>
         </p>
     </div>

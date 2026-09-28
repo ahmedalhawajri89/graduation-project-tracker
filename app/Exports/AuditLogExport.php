@@ -22,12 +22,13 @@ class AuditLogExport implements FromCollection, WithHeadings, WithMapping, Shoul
         private ?string $role = null,
         private ?string $from = null,
         private ?string $to = null,
+        private ?string $period = null,
     ) {
     }
 
     public function collection()
     {
-        $query = AuditLog::applyScope(AuditLog::query(), $this->scope);
+        $query = AuditLog::applyPeriod(AuditLog::applyScope(AuditLog::query(), $this->scope), $this->period);
 
         if ($this->action && isset(AuditLog::LABELS[$this->action])) {
             $query->where('action', $this->action);

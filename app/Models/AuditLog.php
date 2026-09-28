@@ -83,6 +83,23 @@ class AuditLog extends Model
         });
     }
 
+    /** المُدد السريعة: المفتاح ← [الاسم، عدد الأيام أو null لليوم وحده] */
+    public const PERIODS = [
+        'today' => 'اليوم',
+        '7' => 'آخر 7 أيام',
+        '30' => 'آخر 30 يوماً',
+    ];
+
+    /** يقصر الاستعلام على مدّة سريعة — والمجهولة لا ترشّح (للصفحة والتصدير معاً) */
+    public static function applyPeriod($query, ?string $period)
+    {
+        return match ($period) {
+            'today' => $query->whereDate('created_at', today()),
+            '7', '30' => $query->where('created_at', '>=', today()->subDays((int) $period - 1)),
+            default => $query,
+        };
+    }
+
     public const ROLES = [
         'admin' => 'مسؤول النظام',
         'supervisor' => 'مشرف',
