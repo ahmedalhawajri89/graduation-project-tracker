@@ -108,7 +108,7 @@
 
                         <p class="avatar-card-hint" id="avatar-hint">
                             اسحب صورة إلى هنا أو انقر لاختيارها.<br>
-                            <span>JPG أو PNG أو WebP · حتى ٢ ميغابايت · تُقصّ مربّعة إلى ٢٥٦ بكسل</span>
+                            <span>JPG أو PNG أو WebP · حتى 2 ميغابايت · تُقصّ مربّعة إلى 256 بكسل</span>
                         </p>
 
                         <button type="submit" class="btn btn-primary w-100 d-none" id="avatar-save">
@@ -139,7 +139,7 @@
                 <i class="ti ti-shield-lock" aria-hidden="true"></i>
                 <div>
                     <h3>الأمان</h3>
-                    <p>كلمة السر لا تقلّ عن ٨ أحرف.</p>
+                    <p>كلمة السر لا تقلّ عن 8 أحرف.</p>
                 </div>
             </header>
 
@@ -162,7 +162,7 @@
                     <div class="password-wrapper">
                         <input id="p-current" type="password" name="current_password"
                             class="form-control @error('current_password') is-invalid @enderror"
-                            autocomplete="current-password" placeholder="••••••••">
+                            autocomplete="current-password">
                         <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
                             data-target="p-current"><i class="ti ti-eye"></i></button>
                     </div>
@@ -176,7 +176,7 @@
                     <div class="password-wrapper">
                         <input id="p-new" type="password" name="password"
                             class="form-control @error('password') is-invalid @enderror" autocomplete="new-password"
-                            minlength="8" placeholder="٨ أحرف على الأقل">
+                            minlength="8" placeholder="8 أحرف على الأقل">
                         <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
                             data-target="p-new"><i class="ti ti-eye"></i></button>
                     </div>
@@ -195,7 +195,7 @@
                     <label class="form-label" for="p-confirm">تأكيد كلمة السر</label>
                     <div class="password-wrapper">
                         <input id="p-confirm" type="password" name="password_confirmation" class="form-control"
-                            autocomplete="new-password" placeholder="••••••••">
+                            autocomplete="new-password" placeholder="أعد كتابة كلمة السر">
                         <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
                             data-target="p-confirm"><i class="ti ti-eye"></i></button>
                     </div>
@@ -267,7 +267,7 @@
                 @error('phone')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
-                <div class="form-hint">١٠ أرقام، تبدأ بصفر.</div>
+                <div class="form-hint">10 أرقام، تبدأ بصفر.</div>
             </div>
 
             @if ($canGender)
@@ -417,7 +417,7 @@
                 var lvl = levels[score(pw.value)];
                 fill.style.width = lvl.w;
                 fill.className = lvl.c;
-                label.textContent = pw.value && pw.value.length < 8 ? 'قصيرة — ٨ أحرف على الأقل' : lvl.t;
+                label.textContent = pw.value && pw.value.length < 8 ? 'قصيرة — 8 أحرف على الأقل' : lvl.t;
                 checkMatch();
             }
 

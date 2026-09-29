@@ -27,7 +27,7 @@ class CreateAdmin extends Command
         $data = [
             'name' => $this->option('name') ?: $this->ask('الاسم'),
             'email' => $this->option('email') ?: $this->ask('البريد'),
-            'password' => $this->option('password') ?: $this->secret('كلمة السر (٨ أحرف على الأقل)'),
+            'password' => $this->option('password') ?: $this->secret('كلمة السر (8 أحرف على الأقل)'),
         ];
 
         $validator = Validator::make($data, [

@@ -253,7 +253,7 @@
                             <input type="hidden" name="note_file" value="{{ $file->id }}">
                             <textarea name="body" rows="2" maxlength="1000" required
                                 class="form-control {{ $noteFor === $file->id && $errors->has('body') ? 'is-invalid' : '' }}"
-                                placeholder="ما الذي يحتاج تعديلاً في هذا الملف؟ مثال: صفحة ٣ ينقصها المرجع"
+                                placeholder="ما الذي يحتاج تعديلاً في هذا الملف؟ مثال: صفحة 3 ينقصها المرجع"
                                 aria-label="ملاحظة على {{ $file->title }}">{{ $noteFor === $file->id ? old('body') : '' }}</textarea>
                             <div class="file-note-form-row">
                                 <label class="file-note-to">

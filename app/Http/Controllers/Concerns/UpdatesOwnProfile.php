@@ -88,8 +88,8 @@ trait UpdatesOwnProfile
             'avatar.required' => 'اختر صورة أولاً.',
             'avatar.image' => 'الملف ليس صورة.',
             'avatar.mimes' => 'الصيغ المقبولة: JPG أو PNG أو WebP.',
-            'avatar.max' => 'حجم الصورة لا يتجاوز ٢ ميغابايت.',
-            'avatar.dimensions' => 'الصورة صغيرة جداً — ١٠٠×١٠٠ بكسل على الأقل.',
+            'avatar.max' => 'حجم الصورة لا يتجاوز 2 ميغابايت.',
+            'avatar.dimensions' => 'الصورة صغيرة جداً — 100×100 بكسل على الأقل.',
         ]);
 
         if (! AvatarProcessor::available()) {

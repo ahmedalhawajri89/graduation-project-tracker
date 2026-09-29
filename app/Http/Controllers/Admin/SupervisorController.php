@@ -11,6 +11,8 @@ use App\Imports\SupervisorsImport;
 use App\Models\Semester;
 use App\Models\Specialize;
 use App\Models\Supervisor;
+use App\Support\TeamHealth;
+use App\Models\Project;
 use App\Support\Audit;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
@@ -345,18 +347,48 @@ class SupervisorController extends Controller
         $semester = Semester::current();
         $supervisor = Supervisor::with('specialize')->findOrFail($id);
 
+        // المراحل تُحمَّل مع المشاريع (قليلة لكل مجموعة): التقدّم والمرحلة التالية
+        // منها بلا استعلام لكل مشروع. والمشكلات بتعريف TeamHealth نفسه.
         $projects = $semester
             ? $supervisor->projectsAccept()
                 ->where('semester_id', $semester->id)
-                ->with(['project_type', 'group.student.specialize'])
+                ->with(['project_type', 'group.student.specialize', 'milestones'])
+                ->latest()
                 ->get()
             : collect();
+
+        $projects->each(function ($p) {
+            $total = $p->milestones->count();
+            $done = $p->milestones->where('is_done', true)->count();
+            $p->setAttribute('stages_total', $total);
+            $p->setAttribute('stages_done', $done);
+            $p->setAttribute('progress', $total ? (int) round($done * 100 / $total) : 0);
+            $p->setAttribute('next_stage', $p->milestones->first(fn ($m) => ! $m->is_done));
+            $p->setAttribute('issues', TeamHealth::issuesFor($p));
+        });
+
+        // الفصول السابقة: عدد مجموعاته في كل فصل، ورابط للجدول مُصفّى
+        $past = Project::where('supervisor_id', $supervisor->id)
+            ->whereIn('status', ['accept', 'complete'])
+            ->when($semester, fn ($q) => $q->where('semester_id', '!=', $semester->id))
+            ->selectRaw('semester_id, count(*) as n')
+            ->groupBy('semester_id')
+            ->with('semester')
+            ->get()
+            ->sortByDesc(fn ($row) => $row->semester->created_at)
+            ->values();
 
         return view('dashboard.admin.supervisor.groups', [
             'supervisor' => $supervisor,
             'semester' => $semester,
             'projects' => $projects,
+            'past' => $past,
+            'summary' => [
+                'groups' => $projects->count(),
+                'students' => $projects->sum(fn ($p) => $p->group->count()),
+                'progress' => $projects->count() ? (int) round($projects->avg('progress')) : null,
+                'issues' => $projects->filter(fn ($p) => $p->issues)->count(),
+            ],
         ]);
     }
-
 }

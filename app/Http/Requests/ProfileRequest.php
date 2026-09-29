@@ -62,8 +62,8 @@ class ProfileRequest extends FormRequest
     {
         return [
             'required' => ':attribute مطلوب.',
-            'phone.digits' => 'رقم الجوال يجب أن يكون ١٠ أرقام.',
-            'password.min' => 'كلمة السر الجديدة لا تقلّ عن ٨ أحرف.',
+            'phone.digits' => 'رقم الجوال يجب أن يكون 10 أرقام.',
+            'password.min' => 'كلمة السر الجديدة لا تقلّ عن 8 أحرف.',
             'password.confirmed' => 'تأكيد كلمة السر غير مطابق.',
             'email.unique' => 'هذا البريد مستعمل في حساب آخر.',
             'current_password.required_with' => 'أدخل كلمة السر الحالية لتأكيد التغيير.',

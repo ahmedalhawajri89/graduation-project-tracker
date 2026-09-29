@@ -34,9 +34,16 @@ trait HasAvatar
     /** الأحرف الأولى: «د.» و«أ.د.» بادئة على أغلب أسماء المشرفين فلا تميّز أحداً */
     public function getInitialsAttribute(): string
     {
-        $bare = preg_replace('/^\s*(أ\.د\.|د\.|أ\.)\s*/u', '', (string) $this->name);
+        $bare = trim(preg_replace('/^\s*(أ\.د\.|د\.|أ\.)\s*/u', '', (string) $this->name));
 
-        return mb_substr(trim($bare) ?: '؟', 0, 2);
+        // الاسم اللاتيني: أول حرف من أول كلمتين بأحرف كبيرة («admin admin» ← «AA»، لا «ad»)
+        if ($bare !== '' && ! preg_match('/\p{Arabic}/u', $bare)) {
+            $words = preg_split('/\s+/u', $bare);
+
+            return mb_strtoupper(mb_substr($words[0], 0, 1) . (isset($words[1]) ? mb_substr($words[1], 0, 1) : mb_substr($words[0], 1, 1)));
+        }
+
+        return mb_substr($bare ?: '؟', 0, 2);
     }
 
     public function storeAvatar(UploadedFile $file): void

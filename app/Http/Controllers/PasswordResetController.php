@@ -85,7 +85,7 @@ class PasswordResetController extends Controller
             // تتساهل أضعف نقطة في السلسلة
             'password' => 'required|min:8|max:60|confirmed',
         ], [
-            'password.min' => 'كلمة السر لا تقلّ عن ٨ أحرف.',
+            'password.min' => 'كلمة السر لا تقلّ عن 8 أحرف.',
             'password.confirmed' => 'تأكيد كلمة السر غير مطابق.',
         ], [
             'email' => 'البريد الإلكتروني',
