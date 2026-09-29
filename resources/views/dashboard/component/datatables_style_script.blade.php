@@ -24,6 +24,10 @@
             // إلى كيان HTML داخل نصّ JS، فيصل كل فلتر بعد الأول باسم خاطئ ويُتجاهَل
             ajax: @json($urlData),
             columns: {!! $columnsData !!},
+            // على الجوال يصير الصف بطاقة: كل خلية تحمل عنوان عمودها (dashboard-mobile.js)
+            drawCallback: function () {
+                if (window.dtLabelCells) window.dtLabelCells(this.api().table().node());
+            },
             language: {
                 processing: "جارٍ التحميل...",
                 // التسمية تُفرَّغ: الحقل ينتقل إلى شريط التصفية بأيقونة

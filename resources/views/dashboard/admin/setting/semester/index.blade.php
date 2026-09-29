@@ -175,7 +175,7 @@
 
                     <div class="dropdown">
                         <button type="button" class="btn-action" data-bs-toggle="dropdown" aria-expanded="false"
-                            title="إجراءات" aria-label="إجراءات {{ $term->name }}">
+                            title="إجراءات" aria-label="إجراءات {{ $term->label }}">
                             <i class="ti ti-dots" aria-hidden="true"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
@@ -191,7 +191,7 @@
                             @if (! $hasProjects && ! $isActive)
                                 <div class="dropdown-divider"></div>
                                 <a href="#" class="dropdown-item text-danger btn-delete" data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal" data-id="{{ $term->id }}" data-name="{{ $term->name }}">
+                                    data-bs-target="#deleteModal" data-id="{{ $term->id }}" data-name="{{ $term->label }}">
                                     <i class="ti ti-trash me-2" aria-hidden="true"></i> حذف
                                 </a>
                             @elseif (! $isActive)

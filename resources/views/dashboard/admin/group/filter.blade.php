@@ -48,7 +48,7 @@
             <label class="form-label" for="f-semester">الفصل الدراسي</label>
             <select name="semester" id="f-semester" class="form-select">
                 @foreach ($semesters as $sem)
-                    <option value="{{ $sem->id }}" @selected($currentSemesterId == $sem->id)>{{ $sem->name }}</option>
+                    <option value="{{ $sem->id }}" @selected($currentSemesterId == $sem->id)>{{ $sem->label }}</option>
                 @endforeach
             </select>
         </div>

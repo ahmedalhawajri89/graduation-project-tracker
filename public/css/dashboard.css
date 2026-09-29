@@ -8820,3 +8820,241 @@ a.tm-fact:hover { color: var(--ds-brand-600); }
 }
 .auth-lang:hover { border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff; }
 .auth-lang:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+
+/* ==================== اللوحات على الجوال ====================
+   ١) الفلاتر مطوية خلف «تصفية» — ٢) صفوف الجداول بطاقات —
+   ٣) أهداف لمس لا تقلّ عن 40px. السلوك في public/js/dashboard-mobile.js */
+.filter-toggle { display: none; }
+
+@media (max-width: 768px) {
+    .filter-form.is-collapsible .filter-toggle {
+        display: inline-flex; align-items: center; gap: 8px;
+        flex: 1 1 100%; justify-content: flex-start;
+        height: 42px; padding: 0 14px;
+        border: 1px solid var(--ds-border); border-radius: 10px;
+        background: var(--ds-surface); color: var(--ds-ink-soft);
+        font-weight: 600; font-size: 13.5px;
+    }
+    .filter-toggle .filter-toggle-caret { margin-inline-start: auto; transition: transform var(--ds-dur-fast) ease; }
+    .filter-form.is-open .filter-toggle { border-color: var(--ds-brand-200); color: var(--ds-accent-strong); background: var(--ds-accent-soft); }
+    .filter-form.is-open .filter-toggle-caret { transform: rotate(180deg); }
+    .filter-toggle-count {
+        display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px;
+        border-radius: 99px; background: var(--ds-accent); color: #fff; font-size: 11.5px; font-weight: 700;
+    }
+    .filter-form.is-collapsible:not(.is-open) [data-filter-more] { display: none !important; }
+
+    /* تبويبات الحالة سطر واحد يُمرَّر أفقياً بدل ثلاثة أسطر */
+    .filter-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    .filter-tab { white-space: nowrap; flex: none; }
+}
+
+/* الجدول: كل صف بطاقة، والخلية الأولى عنوانها، وبقية الخلايا «عنوان · قيمة» */
+@media (max-width: 640px) {
+    .dataTables_wrapper table.table { display: block; width: 100% !important; border: 0; }
+    .dataTables_wrapper table.table thead { display: none; }
+    .dataTables_wrapper table.table tbody { display: grid; gap: 10px; padding: 0; }
+    /* البطاقات تقف وحدها: لا إطار بطاقة حولها فلا يتضاعف الحدّ */
+    .card:has(.dataTables_wrapper) { border: 0; background: transparent; box-shadow: none; }
+    .card:has(.dataTables_wrapper) .card-body, .card:has(.dataTables_wrapper) .table-responsive { padding: 0; }
+    .dataTables_wrapper table.table tbody tr {
+        display: block;
+        padding: 12px 14px;
+        border: 1px solid var(--ds-border); border-radius: 14px;
+        background: var(--ds-surface);
+    }
+    .dataTables_wrapper table.table tbody td {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        width: auto !important; padding: 6px 0 !important;
+        border: 0 !important; text-align: start;
+    }
+    .dataTables_wrapper table.table tbody td::before {
+        content: attr(data-label);
+        flex: none; max-width: 45%;
+        font-size: 12px; font-weight: 600; color: var(--ds-ink-mute);
+    }
+    .dataTables_wrapper table.table tbody td[data-label=""]::before { display: none; }
+    .dataTables_wrapper table.table tbody td:first-child {
+        display: block; padding-bottom: 10px !important; margin-bottom: 4px;
+        border-bottom: 1px dashed var(--ds-border) !important;
+    }
+    .dataTables_wrapper table.table tbody td:first-child::before { display: none; }
+    /* الإجراءات بلا عنوان تنزل إلى طرف البطاقة */
+    .dataTables_wrapper table.table tbody td[data-label=""]:last-child { justify-content: flex-end; padding-top: 10px !important; }
+    /* الجدول الفارغ أو «جارٍ التحميل»: خلية واحدة بلا تنسيق البطاقة */
+    .dataTables_wrapper table.table tbody td.dataTables_empty { display: block; text-align: center; border-bottom: 0 !important; }
+}
+
+/* أهداف اللمس: على الأجهزة اللمسية لا يقلّ الزر عن 40px */
+@media (pointer: coarse) {
+    .btn-action { min-width: 40px; min-height: 40px; }
+    .page-link { min-width: 40px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; }
+    .ctx-head-link { min-height: 40px; display: inline-flex; align-items: center; }
+    /* مربع المرحلة يبقى صغيراً في شكله، ومساحة النقر حوله أوسع */
+    button.ms-check { position: relative; }
+    button.ms-check::after { content: ""; position: absolute; inset: -10px; }
+    /* روابط «الكل» و«إدارة» النصّية في رؤوس البطاقات */
+    .dist-head a, .sp-types-head a { display: inline-flex; align-items: center; min-height: 40px; padding-inline: 8px; }
+}
+
+/* ==================== رسائل الاستفسار: فرز وسياق ====================
+   مؤشّرات أعلى الصفحة، موضوع مستنتج لكل رسالة، ومن هو المُرسِل في
+   المنصّة، وردود جاهزة. الأزرق للفعل، ولكل موضوع لون هادئ. */
+.cx-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.cx-stat {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface); color: inherit; text-decoration: none; min-width: 0;
+}
+a.cx-stat { transition: border-color var(--ds-dur-fast) ease, box-shadow var(--ds-dur-fast) ease; }
+a.cx-stat:hover { border-color: var(--ds-brand-200); box-shadow: 0 8px 20px -16px rgba(37, 99, 235, .5); }
+.cx-stat.is-live { border-color: var(--ds-brand-200); background: linear-gradient(180deg, var(--ds-accent-soft), var(--ds-surface) 85%); }
+.cx-stat > span:last-child { display: flex; flex-direction: column; min-width: 0; }
+.cx-stat b { font-size: 22px; font-weight: 800; line-height: 1.2; color: var(--ds-ink); font-variant-numeric: tabular-nums; }
+.cx-stat b.cx-stat-text { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-stat small { font-size: 12px; color: var(--ds-ink-mute); }
+.cx-stat-icon {
+    flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px;
+    background: var(--ds-accent-soft); color: var(--ds-accent); font-size: 19px;
+}
+.cx-stat.is-live .cx-stat-icon { background: var(--ds-accent); color: #fff; }
+
+/* ألوان المواضيع — فاتحة، والنصّ بدرجة أغمق من اللون نفسه */
+.is-rose   { --cx-bg: #fff1f2; --cx-fg: #be123c; --cx-bd: #fecdd3; }
+.is-amber  { --cx-bg: #fffbeb; --cx-fg: #b45309; --cx-bd: #fde68a; }
+.is-blue   { --cx-bg: #eff6ff; --cx-fg: #1d4ed8; --cx-bd: #bfdbfe; }
+.is-violet { --cx-bg: #f5f3ff; --cx-fg: #6d28d9; --cx-bd: #ddd6fe; }
+.is-teal   { --cx-bg: #f0fdfa; --cx-fg: #0f766e; --cx-bd: #99f6e4; }
+.is-green  { --cx-bg: #ecfdf5; --cx-fg: #047857; --cx-bd: #a7f3d0; }
+.is-gray   { --cx-bg: #f4f4f5; --cx-fg: #52525b; --cx-bd: #e4e4e7; }
+.cx-stat-icon.is-rose, .cx-stat-icon.is-amber, .cx-stat-icon.is-blue, .cx-stat-icon.is-violet,
+.cx-stat-icon.is-teal, .cx-stat-icon.is-green, .cx-stat-icon.is-gray { background: var(--cx-bg); color: var(--cx-fg); }
+
+.cx-tag {
+    display: inline-flex; align-items: center; gap: 4px; align-self: flex-start;
+    padding: 2px 8px; border-radius: 99px; margin-top: 6px;
+    background: var(--cx-bg, #f4f4f5); color: var(--cx-fg, #52525b);
+    font-size: 11px; font-weight: 600;
+}
+.cx-tag i { font-size: 12px; }
+
+.cx-topics { display: flex; gap: 6px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.cx-topics::-webkit-scrollbar { display: none; }
+.cx-topic {
+    flex: none; display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 10px; border-radius: 99px; border: 1px solid var(--ds-border);
+    background: var(--ds-surface); color: var(--ds-ink-soft); font-size: 12px; font-weight: 600;
+    text-decoration: none; white-space: nowrap;
+    transition: background-color var(--ds-dur-fast) ease, border-color var(--ds-dur-fast) ease;
+}
+.cx-topic i { color: var(--cx-fg, var(--ds-ink-mute)); font-size: 13px; }
+.cx-topic span { font-size: 11px; color: var(--ds-ink-mute); font-variant-numeric: tabular-nums; }
+.cx-topic:hover { border-color: var(--cx-bd, var(--ds-brand-200)); background: var(--cx-bg, var(--ds-accent-soft)); }
+.cx-topic.is-active { border-color: var(--cx-bd, var(--ds-accent)); background: var(--cx-bg, var(--ds-accent)); color: var(--cx-fg, #fff); }
+.cx-topic.is-active span { color: inherit; }
+
+/* فواصل الأيام في القائمة */
+.cx-day {
+    position: sticky; top: 0; z-index: 1;
+    padding: 6px 14px; font-size: 11px; font-weight: 700; letter-spacing: .02em;
+    color: var(--ds-ink-mute); background: var(--ds-surface-sunk);
+    border-bottom: 1px solid var(--ds-border);
+}
+.cx-day + .inbox-item { border-top: 0; }
+.inbox-item-body { display: flex; flex-direction: column; }
+
+/* دور المُرسِل: شارة صغيرة، وصورته الرمزية بلونه */
+.cx-role { flex: none; padding: 1px 7px; border-radius: 99px; font-size: 10.5px; font-weight: 700; margin-inline-end: auto; }
+.cx-role-student    { background: var(--ds-accent-soft); color: var(--ds-accent-strong); }
+.cx-role-supervisor { background: #f5f3ff; color: #6d28d9; }
+.cx-role-admin      { background: #ecfdf5; color: #047857; }
+.cx-role-guest      { background: var(--ds-surface-sunk); color: var(--ds-ink-mute); }
+.msg-avatar.cx-av-supervisor { background: #f5f3ff; border-color: #ddd6fe; color: #6d28d9; }
+.msg-avatar.cx-av-student { background: var(--ds-accent-soft); border-color: var(--ds-brand-100); color: var(--ds-accent-strong); }
+.inbox-item.is-unread .msg-avatar { background: var(--ds-accent); border-color: var(--ds-accent); color: #fff; }
+
+/* القارئ */
+.cx-reader-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.cx-reader-bar .inbox-back { margin-bottom: 0; }
+.cx-nav { display: inline-flex; gap: 4px; margin-inline-start: auto; }
+.cx-nav-btn {
+    display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px;
+    border: 1px solid var(--ds-border); color: var(--ds-ink-soft); text-decoration: none; background: var(--ds-surface);
+    transition: border-color var(--ds-dur-fast) ease, color var(--ds-dur-fast) ease;
+}
+.cx-nav-btn:hover { border-color: var(--ds-brand-200); color: var(--ds-accent); }
+.cx-nav-btn[aria-disabled="true"] { opacity: .4; pointer-events: none; }
+.reader-head .cx-tag { margin: 0 0 8px; }
+.reader-head .reader-time { display: block; margin-top: 4px; }
+
+.cx-sender {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 14px; margin-bottom: 18px;
+    border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); background: var(--ds-surface-sunk);
+}
+.cx-sender .msg-avatar { width: 42px; height: 42px; font-size: 13px; }
+.cx-sender-body { flex: 1 1 200px; min-width: 0; }
+.cx-sender-name { display: flex; align-items: center; gap: 8px; }
+.cx-sender-name b { font-size: 14px; color: var(--ds-ink); }
+.cx-sender-name .cx-role { margin: 0; }
+.cx-sender-mail { display: flex; align-items: center; gap: 4px; }
+.cx-copy {
+    display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px;
+    border: 0; background: transparent; color: var(--ds-ink-mute); cursor: pointer;
+}
+.cx-copy:hover { background: var(--ds-surface); color: var(--ds-accent); }
+.cx-copy.is-done { color: #047857; }
+.cx-sender-meta { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 2px; font-size: 12px; color: var(--ds-ink-mute); }
+.cx-sender-meta span + span::before { content: "·"; margin-inline-end: 10px; }
+.cx-sender-link {
+    display: grid; grid-template-columns: 1fr auto; column-gap: 10px; align-items: center;
+    max-width: 280px; padding: 9px 12px; border-radius: 12px;
+    background: var(--ds-surface); border: 1px solid var(--ds-brand-100); text-decoration: none;
+    transition: border-color var(--ds-dur-fast) ease;
+}
+.cx-sender-link small { grid-column: 1; font-size: 11px; color: var(--ds-ink-mute); }
+.cx-sender-link b { grid-column: 1; font-size: 13px; color: var(--ds-accent-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-sender-link i { grid-column: 2; grid-row: 1 / span 2; color: var(--ds-accent); }
+.cx-sender-link:hover { border-color: var(--ds-brand-200); }
+.cx-sender-link.is-muted { border-style: dashed; border-color: var(--ds-border); background: transparent; }
+
+.cx-bubble {
+    padding: 16px 18px; border-radius: 4px 16px 16px 16px;
+    background: var(--ds-surface); border: 1px solid var(--ds-border);
+    color: var(--ds-ink);
+}
+[dir="rtl"] .cx-bubble { border-radius: 16px 4px 16px 16px; }
+
+.cx-history { margin: -6px 0 20px; }
+.cx-history h3 { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: var(--ds-ink-soft); }
+.cx-history h3 span { padding: 0 7px; border-radius: 99px; background: var(--ds-surface-sunk); font-size: 11px; color: var(--ds-ink-mute); }
+.cx-history a {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 8px 12px; border: 1px solid var(--ds-border); border-radius: 10px;
+    font-size: 13px; color: var(--ds-ink-soft); text-decoration: none;
+}
+.cx-history a + a { margin-top: 6px; }
+.cx-history a:hover { border-color: var(--ds-brand-200); color: var(--ds-accent-strong); }
+.cx-history time { flex: none; font-size: 11.5px; color: var(--ds-ink-mute); }
+
+.cx-reply-menu { min-width: 260px; }
+.cx-reply-menu .dropdown-header { font-size: 11.5px; }
+.cx-suggest { margin-inline-start: auto; padding: 0 7px; border-radius: 99px; background: var(--ds-accent-soft); color: var(--ds-accent-strong); font-size: 10.5px; font-weight: 700; }
+.cx-reply-menu .dropdown-item { display: flex; align-items: center; }
+
+.cx-blank-icon { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 20px; background: var(--ds-accent-soft); color: var(--ds-accent); font-size: 30px; margin-bottom: 6px; }
+.cx-keys { margin-top: 10px; font-size: 11.5px; color: var(--ds-ink-mute); }
+.cx-keys kbd { padding: 1px 6px; border-radius: 5px; border: 1px solid var(--ds-border); background: var(--ds-surface); color: var(--ds-ink-soft); font-size: 11px; box-shadow: 0 1px 0 var(--ds-border); }
+
+@media (max-width: 991.98px) {
+    .cx-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cx-stat b.cx-stat-text { white-space: normal; font-size: 14px; line-height: 1.4; }
+    /* رسالة مفتوحة على الجوال: القارئ وحده، بلا مؤشّرات فوقه */
+    body:has(.inbox-split.has-open) .cx-stats { display: none; }
+    .cx-sender-link { max-width: none; flex: 1 1 100%; }
+}
+@media (pointer: coarse) {
+    .cx-nav-btn, .cx-copy { width: 40px; height: 40px; }
+    .cx-topic { min-height: 36px; }
+}
