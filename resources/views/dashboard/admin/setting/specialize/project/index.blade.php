@@ -41,16 +41,37 @@
         </nav>
     @endif
 
-    {{-- نوع المشروع ليس تسمية: حدّاه هما ما يقبل النظام به فريقاً أو
-         يرفضه عند التسجيل. الشرح هنا لأن الحقلين في النافذة وحدهما
-         لا يقولان أثرهما. --}}
-    <div class="hint-bar mb-3">
-        <i class="ti ti-info-circle" aria-hidden="true"></i>
-        <span>
-            حدّا الفريق يُطبَّقان عند تسجيل الطالب لمشروعه: فريق خارج المدى يُرفض.
-            وتعديلهما لا يمسّ الفرق المسجَّلة سابقاً — وتظهر هنا إن صارت خارجهما.
-        </span>
-    </div>
+    @php
+        // العدد والمعدود متوافقان: «فريق واحد، فريقان، 5 فرق، 14 فريقاً»
+        $teamsLabel = fn ($n) => match (true) { $n === 0 => 'لا فرق', $n === 1 => 'فريق واحد', $n === 2 => 'فريقان', $n <= 10 => $n . ' فرق', default => $n . ' فريقاً' };
+        $allTeams = $types->sum(fn ($t) => array_sum($t->sizes));
+        $allOutside = $types->sum('outside_count');
+    @endphp
+
+    {{-- ملخّص التخصص — من الأنواع نفسها بلا استعلام --}}
+    @if ($types->count())
+        <section class="pt-summary mb-3" aria-label="ملخّص أنواع التخصص">
+            <div class="pt-sum"><b>{{ $types->count() }}</b><span>{{ $types->count() === 1 ? 'نوع مشروع' : 'أنواع مشاريع' }}</span></div>
+            <div class="pt-sum"><b>{{ $allTeams }}</b><span>فريقاً مسجّلاً</span></div>
+            <div class="pt-sum"><b>{{ $types->sum('current_count') }}</b><span>جارٍ هذا الفصل</span></div>
+            <div class="pt-sum {{ $allOutside ? 'is-warn' : 'is-ok' }}">
+                <b>{{ $allOutside }}</b>
+                <span>
+                    <i class="ti {{ $allOutside ? 'ti-alert-triangle' : 'ti-circle-check' }}" aria-hidden="true"></i>
+                    {{ $allOutside ? 'خارج الحدود الحالية' : 'كل الفرق ضمن الحدود' }}
+                </span>
+            </div>
+        </section>
+    @endif
+
+    {{-- كان شريطاً بعرض الصفحة لمعلومة يحتاجها من يعدّل وحده — صار تفصيلاً يُفتح --}}
+    <details class="pt-help mb-3">
+        <summary><i class="ti ti-info-circle" aria-hidden="true"></i> كيف تعمل حدود الفريق؟</summary>
+        <p>
+            حدّا الفريق يُطبَّقان لحظة تسجيل الطالب لمشروعه: فريق خارج المدى يُرفض. وتعديلهما لا يمسّ
+            الفرق المسجَّلة سابقاً — فإن صارت خارجهما تظهر هنا بالبرتقالي، ولا تُرفض.
+        </p>
+    </details>
 
     @php
         // مقياس واحد لكل البطاقات فتُقارَن بالعين: أكبر حدّ أو أكبر فريق فعلي، ولا أقلّ من 5
@@ -63,8 +84,22 @@
                 @php
                     $teams = array_sum($type->sizes);
                     $peak = max(1, $type->sizes ? max($type->sizes) : 1);
-                    // العدد والمعدود متوافقان: «فريق واحد، فريقان، 5 فرق، 14 فريقاً»
-                    $teamsLabel = fn ($n) => match (true) { $n === 1 => 'فريق واحد', $n === 2 => 'فريقان', $n <= 10 => $n . ' فرق', default => $n . ' فريقاً' };
+
+                    // الخلاصة: ما يقوله التوزيع عن الحدّين
+                    $insight = null;
+                    if ($teams && ! $type->outside_count) {
+                        $top = array_search(max($type->sizes), $type->sizes);
+                        $pct = (int) round($type->sizes[$top] / $teams * 100);
+                        if (count($type->sizes) === 1 && $top === (int) $type->max && $type->min < $type->max) {
+                            $insight = ['ti-arrow-bar-to-up', 'كل الفرق بالحدّ الأعلى — قد يستحقّ رفعه'];
+                        } else {
+                            $text = 'الأكثر شيوعاً: فريق من ' . $top . ' — ' . "\u{2066}" . $pct . '%' . "\u{2069}" . ' من الفرق';
+                            if ($type->min < $type->max && empty($type->sizes[$type->min])) {
+                                $text .= ' · لا فريق بالحدّ الأدنى';
+                            }
+                            $insight = ['ti-chart-bar', $text];
+                        }
+                    }
                 @endphp
                 <article class="pt-card {{ $type->outside_count ? 'has-outside' : '' }}">
                     <header class="pt-head">
@@ -100,56 +135,66 @@
                         </div>
                     </header>
 
-                    {{-- المدى بنظرة: النقاط داخل الحدّين ممتلئة --}}
-                    <div class="pt-range">
-                        <span class="pt-dots" aria-hidden="true">
-                            @for ($i = 1; $i <= $scale; $i++)
-                                <i class="{{ $i >= $type->min && $i <= $type->max ? 'is-in' : '' }}"></i>
-                            @endfor
-                        </span>
-                        <span class="pt-range-text">
-                            الفريق من <b>{{ $type->min }}</b> إلى <b>{{ $type->max }}</b>
+                    <p class="pt-sub">
+                        <span class="pt-limit" title="حدّا الفريق">
+                            <i class="ti ti-users" aria-hidden="true"></i>
+                            {{-- معزولة LTR: داخل نصّ عربي ينقلب «1–4» إلى «4–1» --}}
+                            <bdi dir="ltr">{{ $type->min === $type->max ? $type->min : $type->min . '–' . $type->max }}</bdi>
                             {{ $type->max == 2 ? 'عضوين' : ($type->max > 2 ? 'أعضاء' : 'عضو') }}
                         </span>
-                    </div>
+                        {{ $teamsLabel($teams) }}@if ($type->current_count) · {{ $type->current_count }} جارٍ هذا الفصل@endif
+                    </p>
 
-                    {{-- الفرق الفعلية: ما يُبنى عليه تعديل الحدّين --}}
-                    <div class="pt-sizes">
-                        <div class="pt-sizes-head">
-                            <span>أحجام الفرق الفعلية</span>
-                            <span>{{ $teamsLabel($teams) }}</span>
-                        </div>
-                        @if ($teams)
-                            <div class="pt-hist" role="img"
-                                aria-label="{{ collect($type->sizes)->map(fn ($n, $size) => $n . ' بحجم ' . $size)->implode('، ') }}">
-                                @for ($i = 1; $i <= $scale; $i++)
-                                    @php $n = $type->sizes[$i] ?? 0; $out = $n && ($i < $type->min || $i > $type->max); @endphp
-                                    <span class="pt-col {{ $out ? 'is-out' : '' }} {{ $n ? '' : 'is-empty' }}"
-                                        title="{{ $n }} {{ $n === 1 ? 'فريق' : 'فرق' }} بحجم {{ $i }}">
-                                        <span class="pt-col-n">{{ $n ?: '' }}</span>
-                                        <span class="pt-col-bar" style="height: {{ $n ? max(8, round($n / $peak * 100)) : 0 }}%"></span>
-                                        <span class="pt-col-x">{{ $i }}</span>
-                                    </span>
-                                @endfor
-                            </div>
-                        @else
-                            <p class="pt-none">لم يُسجَّل عليه فريق بعد.</p>
-                        @endif
+                    {{-- رسم واحد: المدى المسموح منطقة مظلّلة خلف الأعمدة، والعمود داخلها
+                         بلون العلامة وخارجها برتقالي — كانا مقياسين تقارنهما العين بنفسها --}}
+                    <div class="pt-chart" role="img"
+                        aria-label="المسموح من {{ $type->min }} إلى {{ $type->max }}. {{ $teams ? collect($type->sizes)->map(fn ($n, $size) => $teamsLabel($n) . ' بحجم ' . $size)->implode('، ') : 'لا فرق' }}">
+                        @for ($i = 1; $i <= $scale; $i++)
+                            @php
+                                $n = $type->sizes[$i] ?? 0;
+                                $allowed = $i >= $type->min && $i <= $type->max;
+                            @endphp
+                            <span class="pt-c {{ $allowed ? 'is-allowed' : '' }} {{ $allowed && $i === (int) $type->min ? 'is-first' : '' }} {{ $allowed && $i === (int) $type->max ? 'is-last' : '' }} {{ $n && ! $allowed ? 'is-out' : '' }} {{ $n ? '' : 'is-empty' }}"
+                                title="{{ $teamsLabel($n) }} بحجم {{ $i }}{{ $allowed ? '' : ' — خارج المسموح' }}">
+                                <span class="pt-c-n">{{ $n ?: '' }}</span>
+                                <span class="pt-c-bar" style="height: {{ $n ? max(10, round($n / $peak * 100)) : 0 }}%"></span>
+                            </span>
+                        @endfor
+                    </div>
+                    <div class="pt-axis" aria-hidden="true">
+                        @for ($i = 1; $i <= $scale; $i++)
+                            <span>{{ $i }}</span>
+                        @endfor
+                    </div>
+                    <div class="pt-axis-note" aria-hidden="true">
+                        <span>حجم الفريق (أعضاء)</span>
+                        <span class="pt-key"><i class="is-allowed"></i> المسموح</span>
+                        @if ($type->outside_count)<span class="pt-key"><i class="is-out"></i> خارج الحدود</span>@endif
                     </div>
 
                     @if ($type->outside_count)
-                        <p class="pt-outside">
+                        <p class="pt-insight is-warn">
                             <i class="ti ti-alert-triangle" aria-hidden="true"></i>
                             {{ $teamsLabel($type->outside_count) }} خارج الحدود الحالية —
                             {{ $type->outside_count <= 2 ? 'سُجّل قبل تعديلها، ولا يُرفض الآن.' : 'سُجّلت قبل تعديلها، ولا تُرفض الآن.' }}
+                        </p>
+                    @elseif ($insight)
+                        <p class="pt-insight">
+                            <i class="ti {{ $insight[0] }}" aria-hidden="true"></i>
+                            {{ $insight[1] }}
+                        </p>
+                    @else
+                        <p class="pt-insight is-muted">
+                            <i class="ti ti-hourglass-empty" aria-hidden="true"></i>
+                            لم يُسجَّل عليه فريق بعد
                         </p>
                     @endif
 
                     <footer class="pt-foot">
                         @if ($type->projects_count)
                             <a href="{{ route('admin.groups.index', ['type' => $type->id]) }}">
-                                <b>{{ $type->current_count }}</b> جارٍ هذا الفصل ·
-                                <b>{{ $type->projects_count }}</b> في كل الفصول
+                                {{ $type->projects_count }} مشروعاً في كل الفصول
+                                <i class="ti ti-chevron-left" aria-hidden="true"></i>
                             </a>
                         @else
                             <span>لم يُستعمل بعد — يمكن حذفه</span>
@@ -159,9 +204,11 @@
             @endforeach
 
             <button type="button" class="pt-add btn-create" data-bs-toggle="modal" data-bs-target="#createModal">
-                <i class="ti ti-plus" aria-hidden="true"></i>
-                <b>إضافة نوع مشروع</b>
-                <span>لتخصص {{ $specialize->name }}</span>
+                <span class="pt-add-icon"><i class="ti ti-plus" aria-hidden="true"></i></span>
+                <span>
+                    <b>إضافة نوع مشروع</b>
+                    <small>لتخصص {{ $specialize->name }}</small>
+                </span>
             </button>
         </div>
     @else
