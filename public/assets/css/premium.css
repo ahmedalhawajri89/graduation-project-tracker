@@ -313,8 +313,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   font-family: var(--font-display);
   transition: background-color .25s var(--ease-expo), color .25s ease, border-color .25s ease;
 }
-.btn-primary { color: var(--paper-raised); background: var(--ink); }
-.btn-primary:hover { background: var(--accent); }
+.btn-primary { color: #fff; background: var(--accent); box-shadow: 0 10px 22px -14px rgba(37, 99, 235, .8); }
+.btn-primary:hover { background: var(--accent-deep); color: #fff; }
 .btn-ghost { color: var(--ink); border: 1px solid var(--rule-strong); background: transparent; }
 .btn-ghost:hover { border-color: var(--ink); }
 .btn-sm { padding: 9px 16px; font-size: 13px; border-radius: 8px; }
@@ -1871,10 +1871,14 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
   display: grid; gap: 24px;
   padding: 0 0 14px;
   border-bottom: 1px solid var(--rule-strong);
-  font-size: 12px; font-weight: 700; letter-spacing: .02em;
+  font-size: 13px; font-weight: 800; letter-spacing: .02em;
   color: var(--ink-mute);
 }
-.vs-head span:last-child { color: var(--accent); }
+/* شارتان فوق العمودين مباشرة: رمادية لـ«قبل» وزرقاء لـ«مع تخرُّج» */
+.vs-head span:nth-child(3),
+.vs-head span:last-child { justify-self: start; padding: 5px 12px; border-radius: 99px; }
+.vs-head span:nth-child(3) { background: var(--paper-sunk); color: var(--ink-mute); }
+.vs-head span:last-child { background: var(--accent-soft); color: var(--accent-deep); }
 .vs-before, .vs-after {
   display: flex; align-items: flex-start; gap: 10px;
   font-size: 14.5px; line-height: 1.8;
@@ -2546,4 +2550,15 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .fq-sign, .fq-item { transition: none; }
+}
+
+/* بطاقة الدرجة في الهيرو: «لم تُرصد بعد» قبل الرصد، و«ممتاز» بعده */
+.bento-grade-label.is-final { display: none; }
+.bento.is-graded .bento-grade-label.is-final { display: inline-flex; }
+.bento.is-graded .bento-grade-label.is-pending { display: none; }
+.bento-grade-label.is-pending { background: var(--paper-sunk); color: var(--ink-mute); opacity: 1; transform: none; transition: none; }
+
+/* زر الأعلى على الجوال: أصغر وأقرب للحافة */
+@media (max-width: 640px) {
+  .back-top { width: 40px; height: 40px; inset-inline-end: 14px; bottom: 14px; }
 }

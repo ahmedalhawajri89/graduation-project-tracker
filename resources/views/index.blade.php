@@ -53,8 +53,8 @@
                     <li><a href="#services" data-i18n="nav.services">الخدمات</a></li>
                     <li><a href="#features" data-i18n="nav.features">الميزات</a></li>
                     <li><a href="#roles" data-i18n="nav.roles">الأدوار</a></li>
-                    <li><a href="#faq" data-i18n="nav.faq">الأسئلة</a></li>
-                    <li><a href="#contact" data-i18n="nav.contact">اتصل بنا</a></li>
+                    <li><a href="#faq" data-i18n="nav.faq">الأسئلة الشائعة</a></li>
+                    <li><a href="#contact" data-i18n="nav.contact">تواصل معنا</a></li>
                 </ul>
             </div>
 
@@ -78,7 +78,7 @@
                     <form action="{{ route('logout') }}" method="post" id="logout-form">@csrf</form>
                 @else
                     <a href="{{ route('login') }}" class="btn btn-primary btn-sm nav-login">
-                        <span data-i18n="nav.login">تسجيل دخول</span>
+                        <span data-i18n="nav.login">تسجيل الدخول</span>
                         <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
                     </a>
                 @endif
@@ -95,12 +95,12 @@
             <a href="#services" data-i18n="nav.services">الخدمات</a>
             <a href="#features" data-i18n="nav.features">الميزات</a>
             <a href="#roles" data-i18n="nav.roles">الأدوار</a>
-            <a href="#faq" data-i18n="nav.faq">الأسئلة</a>
-            <a href="#contact" data-i18n="nav.contact">اتصل بنا</a>
+            <a href="#faq" data-i18n="nav.faq">الأسئلة الشائعة</a>
+            <a href="#contact" data-i18n="nav.contact">تواصل معنا</a>
             @if (auth()->guard('admin')->check() || auth()->guard('supervisor')->check() || auth()->guard('student')->check())
                 <a href="{{ route('login') }}" class="btn btn-primary" data-i18n="nav.dashboard">لوحة التحكم</a>
             @else
-                <a href="{{ route('login') }}" class="btn btn-primary" data-i18n="nav.login">تسجيل دخول</a>
+                <a href="{{ route('login') }}" class="btn btn-primary" data-i18n="nav.login">تسجيل الدخول</a>
             @endif
         </div>
     </header>
@@ -142,7 +142,7 @@
                 <div class="hero-copy">
                     <span class="badge stagger d1">
                         <span class="dot"></span>
-                        <span data-i18n="hero.badge">منصة ذكية لإدارة مشاريع التخرج</span>
+                        <span data-i18n="hero.badge">منصة إدارة مشاريع التخرج للجامعات</span>
                     </span>
 
                     <h1 class="stagger d2" data-i18n="hero.title" data-i18n-html>
@@ -151,8 +151,7 @@
                     </h1>
 
                     <p class="hero-sub stagger d3" data-i18n="hero.sub">
-                        منصة تخرُّج لإدارة الفرق، اختيار المشرفين، ومتابعة مراحل المشروع
-                        بتجربة عصرية وسلسة.
+                        فريقك ومشرفك ومراحل مشروعك ودرجتك — تتابعها كلها من لوحة واحدة، ويتابعها مشرفك معك.
                     </p>
 
                     <div class="hero-ctas stagger d4">
@@ -259,9 +258,11 @@
                                 <span data-i18n="bento.grade">التقييم النهائي</span>
                             </header>
                             <div class="bento-grade">
-                                <b data-grade>0</b><small>/100</small>
+                                <b data-grade>—</b><small>/100</small>
                             </div>
-                            <span class="bento-grade-label" data-i18n="bento.excellent">ممتاز</span>
+                            {{-- قبل الرصد «لم تُرصد بعد» لا «0»، فلا تبدو البطاقة معطّلة --}}
+                            <span class="bento-grade-label is-pending" data-i18n="bento.pending">لم تُرصد بعد</span>
+                            <span class="bento-grade-label is-final" data-i18n="bento.excellent">ممتاز</span>
                         </article>
                     </div>
                 </div>
@@ -300,7 +301,7 @@
                         </li>
                         <li class="step-node">
                             <span class="node" aria-hidden="true"></span>
-                            <span class="step-name" data-i18n="hero.step4">التقييم والمناقشة</span>
+                            <span class="step-name" data-i18n="hero.step4">المناقشة والتقييم</span>
                             <span class="step-meta" data-i18n="hero.step4m">درجة نهائية موثّقة</span>
                         </li>
                     </ol>
@@ -319,11 +320,9 @@
 
                 <div class="about-grid">
                     <div class="about-copy">
-                        <h2 class="reveal" data-i18n="about.title">منصة تخرُّج</h2>
+                        <h2 class="reveal" data-i18n="about.title">من تكوين الفريق حتى الدرجة</h2>
                         <p class="reveal d1" data-i18n="about.text">
-                            تخرُّج منصة مستقلة لإدارة مشاريع التخرج من أول تكوين الفريق واختيار المشرف، مروراً باعتماد
-                            الفكرة ومتابعة المراحل، وصولاً إلى المناقشة والتقييم النهائي — كل ذلك في مكان واحد
-                            وبسير عمل واضح لكل طرف.
+                            تخرُّج منصة مستقلة لإدارة مشاريع التخرج من أول تكوين الفريق واختيار المشرف، مروراً باعتماد الفكرة ومتابعة المراحل، وصولاً إلى المناقشة والتقييم النهائي — بمسار واضح لكل طرف.
                         </p>
 
                         <div class="pillars reveal d2">
@@ -487,7 +486,7 @@
                     <article class="svc-tile">
                         <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 14h6M9 17h3"/></svg></span>
                         <h3 data-i18n="svc.5.title">ملاحظات على الملفات</h3>
-                        <p data-i18n="svc.5.text">«صفحة ٣ ينقصها المرجع» — على الملف نفسه، حتى تُعالَج.</p>
+                        <p data-i18n="svc.5.text">«صفحة 3 ينقصها المرجع» — على الملف نفسه، حتى تُعالَج.</p>
                     </article>
                     <article class="svc-tile">
                         <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 9h3M15 13h3M6 16c.6-1.5 1.7-2 3-2s2.4.5 3 2"/></svg></span>
@@ -507,7 +506,7 @@
                         <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="m8.5 14.5-1.5 7 5-3 5 3-1.5-7"/></svg></span>
                         <div>
                             <h3 data-i18n="svc.8.title">درجة معتمدة لا تتغيّر</h3>
-                            <p data-i18n="svc.8.text">يرصد المشرف درجتك بالتقدير وملاحظاته، وتُقفل بعد اعتمادها.</p>
+                            <p data-i18n="svc.8.text">يرصد مشرفك الدرجة من 100 مع ملاحظاته، ويُحسب التقدير منها تلقائياً، وتُقفل بعد اعتمادها.</p>
                         </div>
                     </article>
                 </div>
@@ -553,7 +552,7 @@
                             </li>
                             <li class="fx-item">
                                 <div class="fx-text">
-                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="cell-index">03</span></span>
+                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="cell-index">02</span></span>
                                     <h3 data-i18n="features.3.title">سجلّ لا يُعدَّل</h3>
                                     <p data-i18n="features.3.text">الدرجة تُقفل بعد اعتمادها، وكل قرار مهم يُحفظ في سجلّ تدقيق — مرجع واضح عند أيّ اعتراض.</p>
                                 </div>
@@ -565,7 +564,7 @@
                             </li>
                             <li class="fx-item">
                                 <div class="fx-text">
-                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M8 9h8M8 13h5"/><circle cx="18" cy="18" r="3"/><path d="m20.2 20.2 1.8 1.8"/></svg></span><span class="cell-index">04</span></span>
+                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M8 9h8M8 13h5"/><circle cx="18" cy="18" r="3"/><path d="m20.2 20.2 1.8 1.8"/></svg></span><span class="cell-index">03</span></span>
                                     <h3 data-i18n="features.4.title">ملفات محمية</h3>
                                     <p data-i18n="features.4.text">ملفات المشروع والتسليمات على قرص خاص، لا يُنزلها إلا الفريق ومشرفه والإدارة.</p>
                                 </div>
@@ -585,7 +584,7 @@
                         <ul class="fx-list">
                             <li class="fx-item">
                                 <div class="fx-text">
-                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span><span class="cell-index">02</span></span>
+                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span><span class="cell-index">04</span></span>
                                     <h3 data-i18n="features.2.title">إشعارات بلا ضجيج</h3>
                                     <p data-i18n="features.2.text">يصلك التنبيه حين يخصّك الأمر: طلب تعديل، أو ذكرك زميل، أو اعتُمدت مرحلة — لا مع كل رسالة.</p>
                                 </div>
@@ -664,7 +663,7 @@
                     <li class="journey-step is-accent">
                         <span class="journey-node"><span class="cell-index">04</span></span>
                         <h3 data-i18n="how.4.title">ناقش واستلم درجتك</h3>
-                        <p data-i18n="how.4.text">بعد المناقشة يرصد مشرفك درجتك بالتقدير، وتُعتمد فلا تتغيّر.</p>
+                        <p data-i18n="how.4.text">بعد المناقشة يرصد مشرفك درجتك مع ملاحظاته، وتُعتمد فلا تتغيّر.</p>
                     </li>
                 </ol>
             </div>
@@ -1019,7 +1018,7 @@
                 <div class="section-head" data-num="07">
                     <div class="section-index reveal"><span data-i18n="lc.kicker">لماذا تخرُّج</span></div>
                     <div class="section-head-grid">
-                        <h2 class="reveal" data-i18n="lc.title">ما يتغيّر حين يجتمع مشروعك في مكان واحد</h2>
+                        <h2 class="reveal" data-i18n="lc.title">ما يتغيّر حين يصير مشروعك على تخرُّج</h2>
                         <p class="reveal d1" data-i18n="lc.text">
                             ستّ مشكلات يعرفها كل فريق تخرّج، وما تفعله المنصة بكلٍّ منها.
                         </p>
@@ -1152,7 +1151,7 @@
                      الأرقام توضيحية كأدلّة القسم 03 — لا بيانات حقيقية للزوّار. --}}
                 <div class="dx-head">
                     <div>
-                        <h2 class="reveal" data-i18n="dept.title">ملف الفصل الدراسي كاملاً في مكان واحد</h2>
+                        <h2 class="reveal" data-i18n="dept.title">الفصل الدراسي كله أمام القسم</h2>
                         <p class="dept-lead reveal d1" data-i18n="dept.text">
                             بدل جداول متفرقة ومجموعات محادثة، تعطي تخرُّج القسمَ صورةً واحدة: من قدّم،
                             ومن وافق، وأين وصل كل فريق، ومن لم يلتحق بمجموعة بعد.
@@ -1518,9 +1517,9 @@
 
                 <nav class="footer-col" aria-label="Help">
                     <div class="footer-col-title" data-i18n="footer.colHelp">المساعدة</div>
-                    <a href="{{ route('login') }}" data-i18n="nav.login">تسجيل دخول</a>
+                    <a href="{{ route('login') }}" data-i18n="nav.login">تسجيل الدخول</a>
                     <a href="#faq" data-i18n="nav.faq">الأسئلة الشائعة</a>
-                    <a href="#contact" data-i18n="nav.contact">اتصل بنا</a>
+                    <a href="#contact" data-i18n="nav.contact">تواصل معنا</a>
                     <span class="footer-note">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                         <span data-i18n="footer.noSignup">الحسابات تُنشأ من الإدارة</span>

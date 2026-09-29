@@ -19,10 +19,10 @@
     <div class="auth-path" aria-hidden="true">
         <span class="line"></span>
         <span class="pulse-track"><span class="pulse"></span></span>
-        <span class="node done n1"></span><span class="step n1">تقديم الطلب</span>
-        <span class="node done n2"></span><span class="step n2">موافقة المشرف</span>
-        <span class="node todo n3"></span><span class="step n3">متابعة التنفيذ</span>
-        <span class="node todo n4"></span><span class="step n4">المناقشة والتقييم</span>
+        <span class="node done n1"></span><span class="step n1" data-l="s1">تقديم الطلب</span>
+        <span class="node done n2"></span><span class="step n2" data-l="s2">موافقة المشرف</span>
+        <span class="node todo n3"></span><span class="step n3" data-l="s3">متابعة التنفيذ</span>
+        <span class="node todo n4"></span><span class="step n4" data-l="s4">المناقشة والتقييم</span>
     </div>
 
     <main class="auth-col">
@@ -37,62 +37,64 @@
                     <circle cx="26" cy="16" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
                 </svg>
             </span>
-            <span class="auth-brand-name">تخرُّج</span>
+            <span class="auth-brand-name" data-l="brand">تخرُّج</span>
+            {{-- اللغة نفسها التي اختارها الزائر في الموقع (localStorage.locale) --}}
+            <button type="button" class="auth-lang" data-auth-lang aria-label="Switch language">EN</button>
             </div>
 
-            <h2>تسجيل الدخول</h2>
+            <h2 data-l="title">تسجيل الدخول</h2>
             {{-- السطر يشرح اكتشاف الدور التلقائي في AuthController@login --}}
-            <p class="login-lead">
+            <p class="login-lead" data-l="lead">
                 ادخل بالرقم الجامعي أو بريدك الإلكتروني — وسيوجّهك النظام إلى لوحتك حسب دورك.
             </p>
 
             @if (Session::get('fail'))
-                <div class="alert" role="alert">{{ Session::get('fail') }}</div>
+                <div class="alert" role="alert" data-l-msg>{{ Session::get('fail') }}</div>
             @endif
 
             <form action="{{ route('login.check') }}" method="POST" novalidate>
                 @csrf
 
                 <div class="mb-3 auth-field">
-                    <label class="form-label" for="identify">البريد الإلكتروني أو الرقم الجامعي</label>
+                    <label class="form-label" for="identify" data-l="identify">البريد الإلكتروني أو الرقم الجامعي</label>
                     <input id="identify" type="text"
                         class="form-control @error('identify') is-invalid @enderror" name="identify"
-                        value="{{ old('identify') }}" placeholder="مثال: 2300000238" required
+                        value="{{ old('identify') }}" placeholder="مثال: 2300000238" data-l-ph="identifyPh" required
                         autocomplete="username" autofocus>
                     @error('identify')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback" data-l-msg>{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="mb-4 auth-field">
-                    <label class="form-label" for="password">كلمة السر</label>
+                    <label class="form-label" for="password" data-l="password">كلمة السر</label>
                     <div class="password-wrapper">
                         <input id="password" type="password"
                             class="form-control @error('password') is-invalid @enderror" name="password"
-                            placeholder="••••••••" required autocomplete="current-password">
+                            required autocomplete="current-password">
                         <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
                             data-target="password">
                             <i class="ti ti-eye" aria-hidden="true"></i>
                         </button>
                     </div>
                     @error('password')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                        <div class="invalid-feedback d-block" data-l-msg>{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="auth-actions">
-                    <button type="submit" class="btn btn-login">دخول</button>
+                    <button type="submit" class="btn btn-login" data-l="submit">دخول</button>
                 </div>
 
                 {{-- بلا مدخل ظاهر هنا لا قيمة لمسار الاسترجاع: من نسي
                      كلمته لا يبحث عن رابط في صفحة أخرى --}}
                 <p class="auth-forgot">
-                    <a href="{{ route('password.request') }}">نسيت كلمة السر؟</a>
+                    <a href="{{ route('password.request') }}" data-l="forgot">نسيت كلمة السر؟</a>
                 </p>
             </form>
 
             {{-- يجيب السؤال الأكثر وروداً في نموذج التواصل: أين أسجّل؟ --}}
-            <p class="auth-note">
+            <p class="auth-note" data-l="note">
                 لا يوجد تسجيل ذاتي — الحسابات تُنشئها إدارة القسم.
                 راجعهم إن تعذّر عليك الدخول.
             </p>
@@ -100,12 +102,12 @@
             <div class="text-center">
                 <a href="{{ route('site.home') }}" class="auth-back">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-                    العودة إلى الموقع
+                    <span data-l="back">العودة إلى الموقع</span>
                 </a>
             </div>
         </div>
 
-        <p class="auth-foot">© {{ date('Y') }} تخرُّج — جميع الحقوق محفوظة</p>
+        <p class="auth-foot">© {{ date('Y') }} <span data-l="rights">تخرُّج — جميع الحقوق محفوظة</span></p>
     </main>
 
     <script>
@@ -118,16 +120,63 @@
                 input.type = show ? 'text' : 'password';
                 icon.classList.toggle('ti-eye', !show);
                 icon.classList.toggle('ti-eye-off', show);
-                btn.setAttribute('aria-label', show ? 'إخفاء كلمة السر' : 'إظهار كلمة السر');
+                btn.setAttribute('aria-label', show ? window.__authText.hide : window.__authText.show);
             });
         });
+
+        // لغة الصفحة: نصوصها الثابتة ورسائل الخادم المعروفة. لوحات التحكم عربية فقط.
+        (function () {
+            var L = {
+                en: {
+                    brand: 'Takharruj', title: 'Sign in',
+                    lead: 'Use your university ID or email — the system takes you to your dashboard based on your role.',
+                    identify: 'Email or university ID', identifyPh: 'e.g. 2300000238', password: 'Password',
+                    submit: 'Sign in', forgot: 'Forgot your password?',
+                    note: 'There is no self sign-up — accounts are created by the department. Contact them if you cannot sign in.',
+                    back: 'Back to the site', rights: 'Takharruj — All rights reserved',
+                    s1: 'Request', s2: 'Supervisor approval', s3: 'Execution', s4: 'Defense & grading',
+                    docTitle: 'Sign in — Takharruj', busy: 'Signing in…', show: 'Show password', hide: 'Hide password',
+                    msgs: {
+                        'أدخل بريدك الإلكتروني أو رقمك الجامعي.': 'Enter your email or university ID.',
+                        'أدخل كلمة السر.': 'Enter your password.',
+                        'بيانات الدخول غير صحيحة. تأكد من البريد/الرقم الجامعي وكلمة السر.': 'Those details did not match. Check your email/university ID and password.'
+                    }
+                }
+            };
+            var ar = { busy: 'جارٍ الدخول…', show: 'إظهار كلمة السر', hide: 'إخفاء كلمة السر', docTitle: document.title };
+            var loc = 'ar';
+            try { loc = localStorage.getItem('locale') === 'en' ? 'en' : 'ar'; } catch (e) {}
+            // النص العربي الأصلي محفوظ للعودة إليه
+            document.querySelectorAll('[data-l]').forEach(function (el) { el.dataset.ar = el.textContent; });
+            document.querySelectorAll('[data-l-ph]').forEach(function (el) { el.dataset.ar = el.placeholder; });
+            document.querySelectorAll('[data-l-msg]').forEach(function (el) { el.dataset.ar = el.textContent.trim(); });
+
+            function apply(l) {
+                var d = L[l], html = document.documentElement, btn = document.querySelector('[data-auth-lang]');
+                html.lang = l; html.dir = l === 'en' ? 'ltr' : 'rtl';
+                document.querySelectorAll('[data-l]').forEach(function (el) { el.textContent = d ? d[el.dataset.l] : el.dataset.ar; });
+                document.querySelectorAll('[data-l-ph]').forEach(function (el) { el.placeholder = d ? d[el.dataset.lPh] : el.dataset.ar; });
+                document.querySelectorAll('[data-l-msg]').forEach(function (el) { el.textContent = (d && d.msgs[el.dataset.ar]) || el.dataset.ar; });
+                document.title = (d || ar).docTitle;
+                window.__authText = d || ar;
+                if (btn) { btn.textContent = l === 'en' ? 'ع' : 'EN'; btn.setAttribute('aria-label', l === 'en' ? 'التبديل إلى العربية' : 'Switch to English'); }
+                loc = l;
+            }
+            apply(loc);
+            var b = document.querySelector('[data-auth-lang]');
+            if (b) b.addEventListener('click', function () {
+                var next = loc === 'en' ? 'ar' : 'en';
+                try { localStorage.setItem('locale', next); } catch (e) {}
+                apply(next);
+            });
+        })();
 
         // حالة تحميل زر الدخول لمنع الإرسال المزدوج
         document.querySelector('form').addEventListener('submit', function (e) {
             var btn = e.target.querySelector('button[type="submit"]');
             if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>جارٍ الدخول…';
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>' + window.__authText.busy;
             }
         });
     </script>

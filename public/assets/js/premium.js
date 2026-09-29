@@ -16,15 +16,15 @@
       "nav.services": "الخدمات",
       "nav.features": "الميزات",
       "nav.roles": "الأدوار",
-      "nav.contact": "اتصل بنا",
-      "nav.faq": "الأسئلة",
+      "nav.contact": "تواصل معنا",
+      "nav.faq": "الأسئلة الشائعة",
       "a11y.skip": "تخطَّ إلى المحتوى",
-      "nav.login": "تسجيل دخول",
+      "nav.login": "تسجيل الدخول",
       "nav.dashboard": "لوحة التحكم",
       "nav.logout": "تسجيل خروج",
       "brand.name": "تخرُّج",
       "brand.sub": "منصة متابعة مشاريع التخرج",
-      "hero.badge": "منصة ذكية لإدارة مشاريع التخرج",
+      "hero.badge": "منصة إدارة مشاريع التخرج للجامعات",
       "bento.aria": "لمحة حيّة من المنصة",
       "bento.progress": "نسبة الإنجاز",
       "bento.project": "كشف الرسائل الاحتيالية",
@@ -44,6 +44,8 @@
       "bento.r3": "التوثيق",
       "bento.grade": "التقييم النهائي",
       "bento.excellent": "ممتاز",
+      "bento.pending": "لم تُرصد بعد",
+      "meta.title": "تخرُّج | منصة متابعة مشاريع التخرج",
       "hero.title": "<span class=\"ink-line\"><span>تتبّع مشروع تخرجك</span></span><span class=\"ink-line\"><span>من الفكرة <span class=\"text-gradient\">إلى المناقشة</span></span></span>",
       "hero.stageLabel": "مسار المشروع في المنصة",
       "hero.stageProject": "من التقديم إلى الدرجة النهائية",
@@ -53,7 +55,7 @@
       "hero.step2m": "قبول أو رفض مسبّب",
       "hero.step3": "متابعة التنفيذ",
       "hero.step3m": "مراحل وملفات ونقاش",
-      "hero.step4": "التقييم والمناقشة",
+      "hero.step4": "المناقشة والتقييم",
       "hero.step4m": "درجة نهائية موثّقة",
       "hero.fact1": "مشروع يُتابَع على المنصة",
       "hero.figuresLabel": "المنصة اليوم",
@@ -63,7 +65,7 @@
       "state.done": "مكتمل",
       "hero.fact2": "مشرف أكاديمي",
       "hero.fact3": "طالب وطالبة",
-      "hero.sub": "منصة تخرُّج لإدارة الفرق، اختيار المشرفين، ومتابعة مراحل المشروع بتجربة عصرية وسلسة.",
+      "hero.sub": "فريقك ومشرفك ومراحل مشروعك ودرجتك — تتابعها كلها من لوحة واحدة، ويتابعها مشرفك معك.",
       "hero.cta1": "ابدأ الآن",
       "hero.cta2": "اكتشف المزيد",
       "hero.dashTitle": "لوحة متابعة المشروع",
@@ -80,8 +82,8 @@
       "stats.3": "مشروع تخرج مسجل",
       "stats.4": "طالباً مسجلاً",
       "about.kicker": "عن المنصة",
-      "about.title": "منصة تخرُّج",
-      "about.text": "تخرُّج منصة مستقلة لإدارة مشاريع التخرج من أول تكوين الفريق واختيار المشرف، مروراً باعتماد الفكرة ومتابعة المراحل، وصولاً إلى المناقشة والتقييم النهائي — كل ذلك في مكان واحد وبسير عمل واضح لكل طرف.",
+      "about.title": "من تكوين الفريق حتى الدرجة",
+      "about.text": "تخرُّج منصة مستقلة لإدارة مشاريع التخرج من أول تكوين الفريق واختيار المشرف، مروراً باعتماد الفكرة ومتابعة المراحل، وصولاً إلى المناقشة والتقييم النهائي — بمسار واضح لكل طرف.",
       "about.pillarsTitle": "ركائز المنصة",
       "about.panelTitle": "المنصة الآن",
       "about.panelEmpty": "لم تُسجَّل تخصصات بعد",
@@ -114,13 +116,13 @@
       "svc.4.title": "نقاش خاص بالفريق",
       "svc.4.text": "قناة لا يراها المشرف، و@ لتنبيه زميل بعينه.",
       "svc.5.title": "ملاحظات على الملفات",
-      "svc.5.text": "«صفحة ٣ ينقصها المرجع» — على الملف نفسه، حتى تُعالَج.",
+      "svc.5.text": "«صفحة 3 ينقصها المرجع» — على الملف نفسه، حتى تُعالَج.",
       "svc.6.title": "توزيع الأدوار",
       "svc.6.text": "مَن على الواجهات ومَن على الخادم — يراه الفريق والمشرف.",
       "svc.7.title": "مستكشف المشاريع السابقة",
       "svc.7.text": "تصفّح مشاريع الدفعات السابقة بأنواعها ومشرفيها، واستلهم فكرتك.",
       "svc.8.title": "درجة معتمدة لا تتغيّر",
-      "svc.8.text": "يرصد المشرف درجتك بالتقدير وملاحظاته، وتُقفل بعد اعتمادها.",
+      "svc.8.text": "يرصد مشرفك الدرجة من 100 مع ملاحظاته، ويُحسب التقدير منها تلقائياً، وتُقفل بعد اعتمادها.",
       "features.5.title": "عربية أولاً",
       "features.5.text": "واجهة عربية كاملة من اليمين إلى اليسار، بخطوط مصمّمة للقراءة، والإنجليزية بنقرة.",
       "features.6.title": "على الجوال كما الحاسوب",
@@ -165,7 +167,7 @@
       "how.3.title": "سلّم مراحلك",
       "how.3.text": "مرحلة بعد مرحلة: تسليم، فاعتماد أو تعديل بملاحظة، ونقاش مع فريقك ومشرفك.",
       "how.4.title": "ناقش واستلم درجتك",
-      "how.4.text": "بعد المناقشة يرصد مشرفك درجتك بالتقدير، وتُعتمد فلا تتغيّر.",
+      "how.4.text": "بعد المناقشة يرصد مشرفك درجتك مع ملاحظاته، وتُعتمد فلا تتغيّر.",
       "show.kicker": "من المنصة",
       "show.title": "مشاريع أُنجزت على تخرُّج",
       "show.text": "ليست أمثلة مصنوعة — مشاريع أكملتها فرق فعلاً على المنصة، مرحلةً بعد مرحلة.",
@@ -177,7 +179,7 @@
       "show.weeks": "أسابيع",
       "show.more": "ادخل لتتصفّح أرشيف المشاريع كاملاً",
       "dept.kicker": "للأقسام والكليات",
-      "dept.title": "ملف الفصل الدراسي كاملاً في مكان واحد",
+      "dept.title": "الفصل الدراسي كله أمام القسم",
       "dept.text": "بدل جداول متفرقة ومجموعات محادثة، تعطي تخرُّج القسمَ صورةً واحدة: من قدّم، ومن وافق، وأين وصل كل فريق، ومن لم يلتحق بمجموعة بعد.",
       "dept.1.title": "توزيع المشرفين بحدّ أقصى لكل واحد",
       "dept.1.text": "تحدد للمشرف عدد المجموعات التي يقبلها، والنظام يرفض ما زاد تلقائياً.",
@@ -299,7 +301,7 @@
       "roles.scene.a.idle": "فريق متوقّف",
       "roles.scene.a.roles": "فريق بلا أدوار",
       "lc.kicker": "لماذا تخرُّج",
-      "lc.title": "ما يتغيّر حين يجتمع مشروعك في مكان واحد",
+      "lc.title": "ما يتغيّر حين يصير مشروعك على تخرُّج",
       "lc.text": "ستّ مشكلات يعرفها كل فريق تخرّج، وما تفعله المنصة بكلٍّ منها.",
       "lc.1.title": "التنسيق",
       "lc.2.title": "الملفات",
@@ -382,7 +384,7 @@
       // اسم العلامة لا يُترجم — يُنقل صوتياً كما يُكتب في الشعار
       "brand.name": "Takharruj",
       "brand.sub": "Graduation Project Tracking Platform",
-      "hero.badge": "A smart platform for graduation projects",
+      "hero.badge": "Graduation project management for universities",
       "bento.aria": "A live glimpse of the platform",
       "bento.progress": "Progress",
       "bento.project": "Fraud message detection",
@@ -402,6 +404,8 @@
       "bento.r3": "Docs",
       "bento.grade": "Final grade",
       "bento.excellent": "Excellent",
+      "bento.pending": "Not graded yet",
+      "meta.title": "Takharruj | Graduation Project Tracking",
       "hero.title": "<span class=\"ink-line\"><span>Track Your Graduation Project</span></span><span class=\"ink-line\"><span>From Idea <span class=\"text-gradient\">to Defense</span></span></span>",
       "hero.stageLabel": "The project path",
       "hero.stageProject": "From submission to final grade",
@@ -411,7 +415,7 @@
       "hero.step2m": "Accept or reject with a reason",
       "hero.step3": "Track the work",
       "hero.step3m": "Milestones, files, discussion",
-      "hero.step4": "Evaluation and defense",
+      "hero.step4": "Defense & grading",
       "hero.step4m": "A recorded final grade",
       "hero.fact1": "projects tracked",
       "hero.figuresLabel": "The platform today",
@@ -421,7 +425,7 @@
       "state.done": "Completed",
       "hero.fact2": "academic supervisors",
       "hero.fact3": "students",
-      "hero.sub": "Takharruj helps you manage teams, choose supervisors, and follow every phase of your project — with a modern, seamless experience.",
+      "hero.sub": "Your team, your supervisor, your stages and your grade — all followed from one dashboard, with your supervisor alongside you.",
       "hero.cta1": "Get started",
       "hero.cta2": "Learn more",
       "hero.dashTitle": "Project dashboard",
@@ -438,7 +442,7 @@
       "stats.3": "Registered projects",
       "stats.4": "Registered students",
       "about.kicker": "About the platform",
-      "about.title": "Takharruj",
+      "about.title": "From Team to Final Grade",
       "about.text": "Takharruj is a standalone platform for running graduation projects — from forming the team and picking a supervisor, through idea approval and phase tracking, all the way to the defense and final evaluation.",
       "about.pillarsTitle": "Platform pillars",
       "about.panelTitle": "The platform now",
@@ -478,7 +482,7 @@
       "svc.7.title": "Past projects explorer",
       "svc.7.text": "Browse previous cohorts' projects by type and supervisor, and find your idea.",
       "svc.8.title": "A grade that stays final",
-      "svc.8.text": "Your supervisor records the grade with a rating and notes, and it locks once approved.",
+      "svc.8.text": "Your supervisor records a grade out of 100 with notes, the rating is derived from it automatically, and it locks once approved.",
       "features.5.title": "Arabic first",
       "features.5.text": "A fully right-to-left Arabic interface with fonts made for reading — and English one click away.",
       "features.6.title": "Mobile as well as desktop",
@@ -535,7 +539,7 @@
       "show.weeks": "weeks",
       "show.more": "Sign in to browse the full project archive",
       "dept.kicker": "For departments",
-      "dept.title": "The Whole Semester in One Place",
+      "dept.title": "The Whole Semester, at a Glance",
       "dept.text": "Instead of scattered spreadsheets and chat groups, Takharruj gives the department a single picture: who applied, who approved, where each team stands, and who has not joined a group yet.",
       "dept.1.title": "Supervisor Capacity, Set per Supervisor",
       "dept.1.text": "You set how many groups each supervisor accepts, and the system rejects the surplus automatically.",
@@ -657,7 +661,7 @@
       "roles.scene.a.idle": "Idle teams",
       "roles.scene.a.roles": "Teams without roles",
       "lc.kicker": "Why Takharruj",
-      "lc.title": "What Changes When Your Project Lives in One Place",
+      "lc.title": "What Changes When Your Project Runs on Takharruj",
       "lc.text": "Six problems every graduation team knows — and what the platform does about each.",
       "lc.1.title": "Coordination",
       "lc.2.title": "Files",
@@ -748,6 +752,7 @@
     localStorage.setItem("locale", loc);
     document.documentElement.lang = loc;
     document.documentElement.dir = d.dir;
+    if (d["meta.title"]) document.title = d["meta.title"];
 
     document.querySelectorAll("[data-i18n]").forEach(function (el) {
       var key = el.getAttribute("data-i18n");
@@ -842,11 +847,16 @@
     // الخلفية صارت على الهيدر نفسه (بعرض الصفحة) لا على الشريط الداخلي
     var siteHeader = document.querySelector(".site-header");
     var backTop = document.querySelector(".back-top");
+    var narrow = window.matchMedia("(max-width: 640px)");
+    var lastY = window.scrollY;
     function onScroll() {
       var y = window.scrollY;
       if (siteHeader) siteHeader.classList.toggle("scrolled", y > 24);
       if (backTop) {
-        backTop.classList.toggle("show", y > 500);
+        // على الجوال يغطّي النص أثناء القراءة: يظهر فقط حين يصعد القارئ
+        var up = y < lastY;
+        backTop.classList.toggle("show", y > 500 && (!narrow.matches || up));
+        lastY = y;
         var max = document.documentElement.scrollHeight - window.innerHeight;
         backTop.style.setProperty("--p", max > 0 ? Math.min(100, (y / max) * 100).toFixed(1) + "%" : "0%");
       }
@@ -1326,7 +1336,7 @@
       typed.textContent = "";
       chat.classList.remove("is-sent");
       roles.forEach(function (li) { li.classList.remove("is-in"); });
-      grade.textContent = "0";
+      grade.textContent = "—";
       root.classList.remove("is-graded");
     }
 

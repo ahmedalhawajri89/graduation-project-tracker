@@ -4330,17 +4330,18 @@ a:focus-visible {
     font-family: var(--ds-font-display);
     font-weight: 700;
     font-size: 15px;
-    background: var(--auth-text);
+    background: #2563eb;
     color: #ffffff;
+    box-shadow: 0 12px 24px -14px rgba(37, 99, 235, .8);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     transition: background-color var(--ds-dur-fast) ease, transform var(--ds-dur-fast) ease;
 }
-.btn-login:hover, .btn-login:focus { background: #27272a; color: #fff; }
+.btn-login:hover, .btn-login:focus { background: #1d4ed8; color: #fff; }
 .btn-login:active { transform: scale(.985); }
-.btn-login:disabled { opacity: .5; background: var(--auth-text); color: #fff; }
+.btn-login:disabled { opacity: .6; background: #2563eb; color: #fff; }
 
 .auth-note {
     margin: 26px 0 0;
@@ -8806,3 +8807,16 @@ a.tm-fact:hover { color: var(--ds-brand-600); }
 @media (max-width: 767.98px) {
     .pt-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* مبدّل اللغة في صفحة الدخول — يتبع اختيار الزائر في الموقع */
+.auth-lang {
+    margin-inline-start: auto;
+    min-width: 40px; height: 32px; padding: 0 10px;
+    border: 1px solid var(--auth-line); border-radius: 99px;
+    background: transparent; color: var(--auth-text);
+    font-family: var(--ds-font-display); font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: border-color .2s ease, color .2s ease, background-color .2s ease;
+}
+.auth-lang:hover { border-color: #bfdbfe; color: #1d4ed8; background: #eff6ff; }
+.auth-lang:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }

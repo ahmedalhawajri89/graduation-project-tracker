@@ -46,7 +46,7 @@
             <label class="form-label" for="password_confirmation">تأكيد كلمة السر</label>
             <div class="password-wrapper">
                 <input id="password_confirmation" type="password" class="form-control"
-                    name="password_confirmation" placeholder="••••••••" required autocomplete="new-password">
+                    name="password_confirmation" placeholder="أعد كتابة كلمة السر" required autocomplete="new-password">
                 <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
                     data-target="password_confirmation">
                     <i class="ti ti-eye"></i>
