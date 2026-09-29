@@ -9,4 +9,4 @@
 <link href="{{ asset('vendor/tabler/css/tabler.rtl.min.css') }}" rel="stylesheet">
 <link href="{{ asset('vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet">
 @stack('css')
-<link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
+<link href="{{ asset('css/dashboard.css') }}?v={{ filemtime(public_path('css/dashboard.css')) }}" rel="stylesheet">

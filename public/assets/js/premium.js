@@ -128,6 +128,25 @@
       "features.kicker": "المميزات",
       "features.title": "مصمّمة للواقع الأكاديمي",
       "features.text": "تفاصيل لا تُرى في العرض الأول، لكنها ما يجعل الفصل الدراسي يمرّ بلا مفاجآت.",
+      "features.trust.label": "ضمانات الثقة",
+      "features.trust.text": "ما يُعتمد عليه عند الاعتراض والتدقيق",
+      "features.daily.label": "راحة كل يوم",
+      "features.daily.text": "ما يجعل العمل اليومي أخفّ",
+      "features.p1.msg": "ننهي فصل التحليل الليلة؟",
+      "features.p1.seen": "مرئي للفريق فقط",
+      "features.p1.sup": "المشرف",
+      "features.p1.adm": "الإدارة",
+      "features.p3.l1": "اعتماد درجة",
+      "features.p3.l2": "فكّ اعتماد — بسبب مكتوب",
+      "features.p3.lock": "لا تعديل ولا حذف",
+      "features.p4.who": "تنزيل للفريق ومشرفه والإدارة فقط",
+      "features.p2.a": "مطلوب تعديل في «الفصل الثالث»",
+      "features.p2.b": "ذكرك زميل في نقاش الفريق",
+      "features.p2.c": "رسالة عادية في النقاش",
+      "features.p2.muted": "بلا تنبيه",
+      "features.p5.btn": "تبديل اللغة في المثال",
+      "features.p6.stage": "الفصل الثالث",
+      "features.p6.btn": "تسليم المرحلة",
       "features.1.title": "خصوصية الفريق",
       "features.1.text": "نقاش الفريق الداخلي لا يراه المشرف ولا الإدارة — يكتب الطلاب بحرّية بدل الهروب إلى واتساب.",
       "features.2.title": "إشعارات بلا ضجيج",
@@ -425,6 +444,25 @@
       "features.kicker": "Features",
       "features.title": "Built for Academic Reality",
       "features.text": "Details you don't see at first glance — but they're what makes the term run without surprises.",
+      "features.trust.label": "Trust guarantees",
+      "features.trust.text": "What you can rely on in an appeal or an audit",
+      "features.daily.label": "Everyday comfort",
+      "features.daily.text": "What makes daily work lighter",
+      "features.p1.msg": "Finish the analysis chapter tonight?",
+      "features.p1.seen": "Visible to the team only",
+      "features.p1.sup": "Supervisor",
+      "features.p1.adm": "Admins",
+      "features.p3.l1": "Grade approved",
+      "features.p3.l2": "Approval lifted — with a reason",
+      "features.p3.lock": "No edits, no deletes",
+      "features.p4.who": "Download for the team, supervisor and admins only",
+      "features.p2.a": "Changes requested on \"Chapter 3\"",
+      "features.p2.b": "A teammate mentioned you",
+      "features.p2.c": "An ordinary chat message",
+      "features.p2.muted": "No alert",
+      "features.p5.btn": "Toggle the example language",
+      "features.p6.stage": "Chapter 3",
+      "features.p6.btn": "Submit stage",
       "features.1.title": "Team privacy",
       "features.1.text": "The internal team chat is hidden from supervisors and admins — students speak freely instead of escaping to WhatsApp.",
       "features.2.title": "Notifications without noise",
@@ -905,7 +943,25 @@
     initBento();
     initContact();
     initRoles();
+    initLangProof();
   });
+
+  /* ---------- دليل «عربية أولاً» (القسم 03) ----------
+     المفتاح يقلب جملة المثال ولغتها واتجاهها — ما يفعله مبدّل اللغة في
+     المنصة نفسها، مصغّراً. لا يمسّ لغة الصفحة. */
+  function initLangProof() {
+    var box = document.querySelector("[data-fx-lang]");
+    if (!box) return;
+    var btn = box.querySelector(".fx-lang-toggle");
+    var line = box.querySelector(".fx-lang-line");
+    btn.addEventListener("click", function () {
+      var en = btn.getAttribute("aria-pressed") !== "true";
+      btn.setAttribute("aria-pressed", en ? "true" : "false");
+      line.classList.remove("is-flip"); void line.offsetWidth; line.classList.add("is-flip");
+      line.textContent = en ? line.dataset.en : line.dataset.ar;
+      line.setAttribute("dir", en ? "ltr" : "rtl");
+    });
+  }
 
   /* ---------- مستكشف الأدوار (القسم 05) ----------
      تبويب لكل دور يبدّل لوحته، ويُضيء عقدته على خطّ «كيف تتصل الأدوار».

@@ -15,7 +15,7 @@
     <link rel="preload" href="{{ asset('assets/fonts/IBMPlexSansArabic-400-arabic.woff2') }}" as="font" type="font/woff2" crossorigin />
     <link href="{{ asset('assets/fonts/fonts.css') }}" rel="stylesheet" />
 
-    <link href="{{ asset('assets/css/premium.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/css/premium.css') }}?v={{ filemtime(public_path('assets/css/premium.css')) }}" rel="stylesheet" />
     <noscript>
         <style>
             .reveal, .stagger, .stage { opacity: 1 !important; transform: none !important; filter: none !important; }
@@ -529,37 +529,103 @@
                     </div>
                 </div>
 
-                <div class="cell-grid cols-3 feat-grid reveal">
-                    <article class="cell feat-cell">
-                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><div class="cell-index">01</div></div>
-                        <h3 data-i18n="features.1.title">خصوصية الفريق</h3>
-                        <p data-i18n="features.1.text">نقاش الفريق الداخلي لا يراه المشرف ولا الإدارة — يكتب الطلاب بحرّية بدل الهروب إلى واتساب.</p>
-                    </article>
-                    <article class="cell feat-cell">
-                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span><div class="cell-index">02</div></div>
-                        <h3 data-i18n="features.2.title">إشعارات بلا ضجيج</h3>
-                        <p data-i18n="features.2.text">يصلك التنبيه حين يخصّك الأمر: طلب تعديل، أو ذكرك زميل، أو اعتُمدت مرحلة — لا مع كل رسالة.</p>
-                    </article>
-                    <article class="cell feat-cell">
-                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><div class="cell-index">03</div></div>
-                        <h3 data-i18n="features.3.title">سجلّ لا يُعدَّل</h3>
-                        <p data-i18n="features.3.text">الدرجة تُقفل بعد اعتمادها، وكل قرار مهم يُحفظ في سجلّ تدقيق — مرجع واضح عند أيّ اعتراض.</p>
-                    </article>
-                    <article class="cell feat-cell">
-                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M8 9h8M8 13h5"/><circle cx="18" cy="18" r="3"/><path d="m20.2 20.2 1.8 1.8"/></svg></span><div class="cell-index">04</div></div>
-                        <h3 data-i18n="features.4.title">ملفات محمية</h3>
-                        <p data-i18n="features.4.text">ملفات المشروع والتسليمات على قرص خاص، لا يُنزلها إلا الفريق ومشرفه والإدارة.</p>
-                    </article>
-                    <article class="cell feat-cell">
-                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><div class="cell-index">05</div></div>
-                        <h3 data-i18n="features.5.title">عربية أولاً</h3>
-                        <p data-i18n="features.5.text">واجهة عربية كاملة من اليمين إلى اليسار، بخطوط مصمّمة للقراءة، والإنجليزية بنقرة.</p>
-                    </article>
-                    <article class="cell feat-cell">
-                        <div class="feat-top"><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></span><div class="cell-index">06</div></div>
-                        <h3 data-i18n="features.6.title">على الجوال كما الحاسوب</h3>
-                        <p data-i18n="features.6.text">سلّم مرحلة أو ردّ على مشرفك من هاتفك — كل صفحة مصمّمة للشاشة الصغيرة.</p>
-                    </article>
+                {{-- لوحتان: ضمانات الثقة (داكنة) وراحة كل يوم (فاتحة). كانت ست بطاقات متطابقة
+                     تخلط ما يُعتمد عليه عند الاعتراض بما يريح في الاستعمال، وكل ميزة ادّعاء
+                     نصّي — الآن لكلٍّ دليل مرسوم من شكلها الحقيقي في المنصة --}}
+                <div class="fx reveal">
+                    <section class="fx-panel is-trust" aria-labelledby="fx-trust-title">
+                        <header class="fx-panel-head">
+                            <span class="fx-kicker" data-i18n="features.trust.label">ضمانات الثقة</span>
+                            <h3 id="fx-trust-title" class="fx-panel-title" data-i18n="features.trust.text">ما يُعتمد عليه عند الاعتراض والتدقيق</h3>
+                        </header>
+                        <ul class="fx-list">
+                            <li class="fx-item">
+                                <div class="fx-text">
+                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="cell-index">01</span></span>
+                                    <h3 data-i18n="features.1.title">خصوصية الفريق</h3>
+                                    <p data-i18n="features.1.text">نقاش الفريق الداخلي لا يراه المشرف ولا الإدارة — يكتب الطلاب بحرّية بدل الهروب إلى واتساب.</p>
+                                </div>
+                                <div class="fx-proof fx-chat" aria-hidden="true">
+                                    <span class="fx-bubble"><i>نب</i><span data-i18n="features.p1.msg">ننهي فصل التحليل الليلة؟</span></span>
+                                    <span class="fx-seen"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="features.p1.seen">مرئي للفريق فقط</span></span>
+                                    <span class="fx-nope"><span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg><span data-i18n="features.p1.sup">المشرف</span></span><span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg><span data-i18n="features.p1.adm">الإدارة</span></span></span>
+                                </div>
+                            </li>
+                            <li class="fx-item">
+                                <div class="fx-text">
+                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="cell-index">03</span></span>
+                                    <h3 data-i18n="features.3.title">سجلّ لا يُعدَّل</h3>
+                                    <p data-i18n="features.3.text">الدرجة تُقفل بعد اعتمادها، وكل قرار مهم يُحفظ في سجلّ تدقيق — مرجع واضح عند أيّ اعتراض.</p>
+                                </div>
+                                <div class="fx-proof fx-log" aria-hidden="true">
+                                    <span class="fx-log-row"><i class="fx-dot-amber"></i><b data-i18n="features.p3.l1">اعتماد درجة</b><small dir="ltr">14:32</small></span>
+                                    <span class="fx-log-row"><i class="fx-dot-rose"></i><b data-i18n="features.p3.l2">فكّ اعتماد — بسبب مكتوب</b><small dir="ltr">09:05</small></span>
+                                    <span class="fx-seen"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="features.p3.lock">لا تعديل ولا حذف</span></span>
+                                </div>
+                            </li>
+                            <li class="fx-item">
+                                <div class="fx-text">
+                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M8 9h8M8 13h5"/><circle cx="18" cy="18" r="3"/><path d="m20.2 20.2 1.8 1.8"/></svg></span><span class="cell-index">04</span></span>
+                                    <h3 data-i18n="features.4.title">ملفات محمية</h3>
+                                    <p data-i18n="features.4.text">ملفات المشروع والتسليمات على قرص خاص، لا يُنزلها إلا الفريق ومشرفه والإدارة.</p>
+                                </div>
+                                <div class="fx-proof fx-file" aria-hidden="true">
+                                    <span class="fx-file-row"><i>PDF</i><span dir="ltr">final-report.pdf</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                                    <span class="fx-seen"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="features.p4.who">تنزيل للفريق ومشرفه والإدارة فقط</span></span>
+                                </div>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section class="fx-panel is-daily" aria-labelledby="fx-daily-title">
+                        <header class="fx-panel-head">
+                            <span class="fx-kicker" data-i18n="features.daily.label">راحة كل يوم</span>
+                            <h3 id="fx-daily-title" class="fx-panel-title" data-i18n="features.daily.text">ما يجعل العمل اليومي أخفّ</h3>
+                        </header>
+                        <ul class="fx-list">
+                            <li class="fx-item">
+                                <div class="fx-text">
+                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span><span class="cell-index">02</span></span>
+                                    <h3 data-i18n="features.2.title">إشعارات بلا ضجيج</h3>
+                                    <p data-i18n="features.2.text">يصلك التنبيه حين يخصّك الأمر: طلب تعديل، أو ذكرك زميل، أو اعتُمدت مرحلة — لا مع كل رسالة.</p>
+                                </div>
+                                <div class="fx-proof fx-notes" aria-hidden="true">
+                                    <span class="fx-note is-on"><i class="is-warn"></i><span data-i18n="features.p2.a">مطلوب تعديل في «الفصل الثالث»</span></span>
+                                    <span class="fx-note is-on"><i class="is-brand"></i><span data-i18n="features.p2.b">ذكرك زميل في نقاش الفريق</span></span>
+                                    <span class="fx-note is-off"><i></i><span data-i18n="features.p2.c">رسالة عادية في النقاش</span><small data-i18n="features.p2.muted">بلا تنبيه</small></span>
+                                </div>
+                            </li>
+                            <li class="fx-item">
+                                <div class="fx-text">
+                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><span class="cell-index">05</span></span>
+                                    <h3 data-i18n="features.5.title">عربية أولاً</h3>
+                                    <p data-i18n="features.5.text">واجهة عربية كاملة من اليمين إلى اليسار، بخطوط مصمّمة للقراءة، والإنجليزية بنقرة.</p>
+                                </div>
+                                {{-- المفتاح يقلب الجملة واتجاهها حيّاً — كما يفعل مبدّل اللغة في المنصة --}}
+                                <div class="fx-proof fx-lang" data-fx-lang>
+                                    <button type="button" class="fx-lang-toggle" aria-pressed="false" data-i18n-aria="features.p5.btn" aria-label="تبديل اللغة في المثال">
+                                        <span>ع</span><span>EN</span>
+                                    </button>
+                                    <span class="fx-lang-line" dir="rtl" data-ar="مرحباً بك في مشروعك" data-en="Welcome to your project">مرحباً بك في مشروعك</span>
+                                </div>
+                            </li>
+                            <li class="fx-item">
+                                <div class="fx-text">
+                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></span><span class="cell-index">06</span></span>
+                                    <h3 data-i18n="features.6.title">على الجوال كما الحاسوب</h3>
+                                    <p data-i18n="features.6.text">سلّم مرحلة أو ردّ على مشرفك من هاتفك — كل صفحة مصمّمة للشاشة الصغيرة.</p>
+                                </div>
+                                <div class="fx-proof fx-phone" aria-hidden="true">
+                                    <span class="fx-phone-frame">
+                                        <span class="fx-phone-notch"></span>
+                                        <small data-i18n="features.p6.stage">الفصل الثالث</small>
+                                        <span class="fx-phone-bar"><i></i></span>
+                                        <span class="fx-phone-btn" data-i18n="features.p6.btn">تسليم المرحلة</span>
+                                    </span>
+                                </div>
+                            </li>
+                        </ul>
+                    </section>
                 </div>
             </div>
         </section>
@@ -1345,7 +1411,7 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
     </a>
 
-    <script src="{{ asset('assets/js/premium.js') }}"></script>
+    <script src="{{ asset('assets/js/premium.js') }}?v={{ filemtime(public_path('assets/js/premium.js')) }}"></script>
 </body>
 
 </html>

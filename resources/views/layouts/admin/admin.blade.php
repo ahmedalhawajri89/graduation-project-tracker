@@ -99,7 +99,7 @@
 
     <script src="{{ asset('vendor/jquery/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('vendor/tabler/js/tabler.min.js') }}"></script>
-    <script src="{{ asset('js/topbar.js') }}"></script>
+    <script src="{{ asset('js/topbar.js') }}?v={{ filemtime(public_path('js/topbar.js')) }}"></script>
 
     <script>
         // إظهار/إخفاء كلمة السر (يعمل مع الحقول المضافة ديناميكياً)

@@ -91,6 +91,6 @@
 
 @once
     @push('js')
-        <script src="{{ asset('js/edit-drawer.js') }}"></script>
+        <script src="{{ asset('js/edit-drawer.js') }}?v={{ filemtime(public_path('js/edit-drawer.js')) }}"></script>
     @endpush
 @endonce

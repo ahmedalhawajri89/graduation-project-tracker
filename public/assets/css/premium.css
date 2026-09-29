@@ -980,35 +980,38 @@ section[id], [id] { scroll-margin-top: calc(var(--header-h) + 18px); }
   position: relative;
   display: flex; flex-direction: column;
   padding: 40px 34px;
+  /* فاتح بلمعة زرقاء خفيفة — كلوحة «ضمانات الثقة»، بلا خلفية غامقة */
   background:
-    radial-gradient(120% 70% at 100% 0%, rgba(37, 99, 235, .35), transparent 60%),
-    radial-gradient(90% 60% at 0% 100%, rgba(37, 99, 235, .18), transparent 60%),
-    #0b0b10;
-  color: #f4f4f5;
+    radial-gradient(120% 70% at 100% 0%, rgba(37, 99, 235, .09), transparent 60%),
+    radial-gradient(90% 60% at 0% 100%, rgba(37, 99, 235, .05), transparent 60%),
+    #f6f9ff;
+  border-inline-end: 1px solid var(--brand-100);
+  color: var(--ink);
 }
-.contact-aside h3 { font-family: var(--font-display); font-size: 20px; font-weight: 800; margin-bottom: 12px; color: #fff; }
-.contact-aside p { color: #a1a1aa; font-size: 14.5px; line-height: 1.95; margin-bottom: 26px; }
+.contact-aside h3 { font-family: var(--font-display); font-size: 20px; font-weight: 800; margin-bottom: 12px; color: var(--ink); }
+.contact-aside p { color: var(--ink-mute); font-size: 14.5px; line-height: 1.95; margin-bottom: 26px; }
 .contact-points { list-style: none; margin: 0 0 28px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.contact-point { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #e4e4e7; }
+.contact-point { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: var(--ink-soft); }
 .contact-point-icon {
   flex: none; display: grid; place-items: center;
   width: 34px; height: 34px; border-radius: 10px;
-  background: rgba(255, 255, 255, .07);
-  border: 1px solid rgba(255, 255, 255, .1);
-  color: #93c5fd;
+  background: var(--paper-raised);
+  border: 1px solid var(--brand-100);
+  color: var(--accent);
 }
 .contact-faq {
   margin-top: auto;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 16px 18px; border-radius: 14px;
-  background: rgba(255, 255, 255, .06);
-  border: 1px solid rgba(255, 255, 255, .1);
-  color: #fff;
+  background: var(--paper-raised);
+  border: 1px solid var(--brand-100);
+  color: var(--ink);
+  box-shadow: 0 10px 24px -20px rgba(37, 99, 235, .45);
   transition: background-color .2s ease, border-color .2s ease;
 }
-.contact-faq:hover { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .18); color: #fff; }
+.contact-faq:hover { background: var(--accent-soft); border-color: var(--brand-200); color: var(--accent-deep); }
 .contact-faq b { display: block; font-size: 14px; font-weight: 700; }
-.contact-faq span span { display: block; margin-top: 2px; font-size: 12.5px; color: #a1a1aa; }
+.contact-faq span span { display: block; margin-top: 2px; font-size: 12.5px; color: var(--ink-mute); }
 .contact-faq svg { flex: none; transition: transform .3s var(--ease-expo); }
 .contact-faq:hover svg { transform: translateX(-4px); }
 [dir="ltr"] .contact-faq svg { transform: scaleX(-1); }
@@ -1771,18 +1774,6 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
 }
 .scene-note b { font-size: 12px; color: #92400e; }
 
-/* ---------- المميزات: أيقونة ورقم في رأس البطاقة ---------- */
-.feat-cell { display: flex; flex-direction: column; }
-.feat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
-.feat-top .cell-index { margin: 0; }
-.feat-icon {
-  display: grid; place-items: center;
-  width: 42px; height: 42px; border-radius: 12px;
-  background: var(--ink); color: #fff;
-  transition: background-color .25s ease, transform .35s var(--ease-expo);
-}
-.feat-icon svg { width: 20px; height: 20px; }
-.feat-cell:hover .feat-icon { background: var(--accent); transform: translateY(-2px) rotate(-4deg); }
 
 /* ---------- كيف يعمل: أربع محطات على مسار واحد متّصل ---------- */
 .journey {
@@ -1842,7 +1833,7 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
   .journey-step p { max-width: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .feat-cell:hover .feat-icon, .journey-step:hover .journey-node { transform: none; }
+  .journey-step:hover .journey-node { transform: none; }
 }
 
 /* ==========================================================
@@ -2152,3 +2143,113 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
   background: var(--accent); color: #fff; box-shadow: 0 0 0 4px var(--paper-raised);
 }
 .sc-path-title { font-weight: 600; }
+
+/* ==========================================================
+   03 — لوحتان: ضمانات الثقة (داكنة) وراحة كل يوم (فاتحة)
+   لكل ميزة دليل مرسوم من شكلها الحقيقي في المنصة بجانب نصّها.
+   ========================================================== */
+.fx { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+.fx-panel { display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; }
+/* فاتحة بلمعة زرقاء خفيفة وحدّ — تتميّز عن اللوحة البيضاء بجانبها بلا لون غامق */
+.fx-panel.is-trust {
+  border: 1px solid var(--brand-200);
+  background:
+    radial-gradient(90% 60% at 100% 0%, rgba(37, 99, 235, .09), transparent 60%),
+    radial-gradient(70% 50% at 0% 100%, rgba(37, 99, 235, .05), transparent 60%),
+    #f6f9ff;
+  color: var(--ink);
+}
+.fx-panel.is-daily { border: 1px solid var(--rule); background: var(--paper-raised); }
+.fx-panel-head { padding: 26px 28px 8px; }
+.fx-kicker { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--accent); }
+.is-trust .fx-kicker { color: var(--accent); }
+.fx-kicker::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.fx-panel-title { margin: 8px 0 0; font-family: var(--font-display); font-size: 20px; font-weight: 800; line-height: 1.5; }
+.is-trust .fx-panel-title { color: var(--ink); }
+
+.fx-list { list-style: none; margin: 0; padding: 8px 28px 16px; flex: 1; display: flex; flex-direction: column; }
+.fx-item { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: center; padding: 18px 0; }
+.fx-item + .fx-item { border-top: 1px solid var(--rule); }
+.is-trust .fx-item + .fx-item { border-top-color: var(--brand-100); }
+.fx-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.fx-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--ink); color: #fff; }
+.is-trust .fx-icon { background: var(--accent); color: #fff; }
+.fx-icon svg { width: 17px; height: 17px; }
+.fx-head .cell-index { margin: 0; }
+.is-trust .fx-head .cell-index { color: var(--ink-mute); }
+.fx-text h3 { margin: 0 0 6px; font-family: var(--font-display); font-size: 16px; font-weight: 800; }
+.is-trust .fx-text h3 { color: var(--ink); }
+.fx-text p { margin: 0; font-size: 13.5px; line-height: 1.85; color: var(--ink-mute); }
+.is-trust .fx-text p { color: var(--ink-mute); }
+
+/* الأدلّة المرسومة */
+.fx-proof {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 14px; border-radius: 14px;
+  background: var(--paper); border: 1px solid var(--rule);
+  font-size: 12.5px; color: var(--ink-soft);
+}
+.is-trust .fx-proof { background: var(--paper-raised); border-color: var(--brand-100); color: var(--ink-soft); box-shadow: 0 10px 24px -20px rgba(37, 99, 235, .45); }
+.fx-seen { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: #047857; }
+.fx-seen svg { flex: none; }
+.fx-bubble { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px 12px 12px 4px; background: var(--accent-soft); color: var(--accent-deep); font-weight: 600; }
+.fx-bubble i { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-style: normal; font-size: 9.5px; font-weight: 800; }
+.fx-nope { display: flex; gap: 12px; color: #be123c; }
+.fx-nope > span { display: inline-flex; align-items: center; gap: 4px; }
+.fx-log-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 9px; background: var(--paper); border: 1px solid var(--rule); }
+.fx-log-row i { width: 8px; height: 8px; border-radius: 50%; }
+.fx-log-row i.fx-dot-amber { background: #f59e0b; }
+.fx-log-row i.fx-dot-rose { background: #f43f5e; }
+.fx-log-row b { font-weight: 600; color: var(--ink); }
+.fx-log-row small { color: var(--ink-mute); font-variant-numeric: tabular-nums; }
+.fx-file-row { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 10px; background: var(--paper); border: 1px solid var(--rule); }
+.fx-file-row i { font-style: normal; font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 5px; background: #fee2e2; color: #b91c1c; }
+.fx-file-row span { flex: 1; color: var(--ink); }
+.fx-file-row svg { color: #047857; }
+
+.fx-note { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 9px; background: var(--paper-raised); border: 1px solid var(--rule); }
+.fx-note i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--rule-strong); }
+.fx-note i.is-warn { background: #f59e0b; }
+.fx-note i.is-brand { background: var(--accent); }
+.fx-note.is-on { font-weight: 600; color: var(--ink); }
+.fx-note.is-off { opacity: .55; }
+.fx-note.is-off span { text-decoration: line-through; text-decoration-color: var(--rule-strong); }
+.fx-note small { margin-inline-start: auto; font-size: 11px; color: var(--ink-mute); white-space: nowrap; }
+
+.fx-lang { align-items: flex-start; }
+.fx-lang-toggle {
+  display: inline-flex; padding: 3px; gap: 2px; border: 1px solid var(--rule); border-radius: 99px;
+  background: var(--paper-raised); cursor: pointer; font: inherit;
+}
+.fx-lang-toggle span { padding: 3px 11px; border-radius: 99px; font-size: 12px; font-weight: 700; color: var(--ink-mute); transition: background-color .2s ease, color .2s ease; }
+.fx-lang-toggle[aria-pressed="false"] span:first-child,
+.fx-lang-toggle[aria-pressed="true"] span:last-child { background: var(--ink); color: #fff; }
+.fx-lang-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fx-lang-line { align-self: stretch; padding: 9px 11px; border-radius: 9px; background: var(--paper-raised); border: 1px solid var(--rule); font-size: 14px; font-weight: 600; color: var(--ink); }
+.fx-lang-line.is-flip { animation: fx-flip .35s var(--ease-expo); }
+@keyframes fx-flip { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.fx-phone { align-items: center; background: transparent; border: 0; padding: 0; }
+.fx-phone-frame {
+  display: flex; flex-direction: column; gap: 8px;
+  width: 128px; padding: 18px 10px 12px; border-radius: 22px;
+  border: 5px solid var(--ink); background: var(--paper-raised);
+  position: relative;
+}
+.fx-phone-notch { position: absolute; top: 5px; left: 50%; transform: translateX(-50%); width: 34px; height: 6px; border-radius: 99px; background: var(--ink); }
+.fx-phone-frame small { font-size: 11px; font-weight: 700; color: var(--ink); }
+.fx-phone-bar { display: block; height: 5px; border-radius: 99px; background: var(--paper-sunk); overflow: hidden; }
+.fx-phone-bar i { display: block; width: 60%; height: 100%; background: var(--accent); }
+.fx-phone-btn { padding: 6px 0; border-radius: 8px; background: var(--ink); color: #fff; font-size: 11px; font-weight: 700; text-align: center; }
+
+@media (max-width: 1100px) {
+  .fx { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .fx-item { grid-template-columns: 1fr; gap: 12px; }
+  .fx-panel-head { padding: 22px 20px 4px; }
+  .fx-list { padding: 4px 20px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-lang-line.is-flip { animation: none; }
+}
