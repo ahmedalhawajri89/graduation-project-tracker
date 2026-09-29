@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
             </div>
 
-            <form action="{{ route('admin.specialize.projects.update', $specialize->id) }}" method="POST">
+            <form action="{{ route('admin.specialize.projects.update', $specialize->id) }}" method="POST" data-range-form>
                 @csrf
                 @method('put')
                 <input type="hidden" value="{{ $specialize->id }}" name="specialize_id">
@@ -24,36 +24,38 @@
                     </div>
 
                     <label class="form-label required">حجم الفريق المسموح</label>
-                    <div class="row g-2 mb-2">
-                        <div class="col">
-                            <div class="input-group">
-                                <span class="input-group-text">من</span>
-                                <input id="min" type="number" min="1" step="1"
-                                    class="form-control @error('min') is-invalid @enderror" name="min"
-                                    value="{{ old('min') }}" required autocomplete="off">
-                            </div>
+                    <div class="pt-range-edit">
+                        <div class="pt-step-field">
+                            <span>من</span>
+                            <button type="button" data-step="-1" data-field="min" aria-label="إنقاص الحدّ الأدنى"><i class="ti ti-minus" aria-hidden="true"></i></button>
+                            <input type="number" min="1" max="20" step="1" inputmode="numeric" name="min"
+                                class="form-control @error('min') is-invalid @enderror" value="{{ old('min') }}" required aria-label="الحدّ الأدنى">
+                            <button type="button" data-step="1" data-field="min" aria-label="زيادة الحدّ الأدنى"><i class="ti ti-plus" aria-hidden="true"></i></button>
                         </div>
-                        <div class="col">
-                            <div class="input-group">
-                                <span class="input-group-text">إلى</span>
-                                <input id="max" type="number" min="1" step="1"
-                                    class="form-control @error('max') is-invalid @enderror" name="max"
-                                    value="{{ old('max') }}" required autocomplete="off">
-                            </div>
+                        <div class="pt-step-field">
+                            <span>إلى</span>
+                            <button type="button" data-step="-1" data-field="max" aria-label="إنقاص الحدّ الأعلى"><i class="ti ti-minus" aria-hidden="true"></i></button>
+                            <input type="number" min="1" max="20" step="1" inputmode="numeric" name="max"
+                                class="form-control @error('max') is-invalid @enderror" value="{{ old('max') }}" required aria-label="الحدّ الأعلى">
+                            <button type="button" data-step="1" data-field="max" aria-label="زيادة الحدّ الأعلى"><i class="ti ti-plus" aria-hidden="true"></i></button>
                         </div>
                     </div>
-                    {{-- الفرق المسجَّلة سابقاً لا تُعاد مراجعتها: التحقّق
-                         يقع لحظة التسجيل وحدها --}}
-                    <div class="form-hint mb-3">
-                        التعديل يسري على التسجيلات الجديدة فقط، ولا يمسّ الفرق القائمة.
+                    <div class="pt-range-preview">
+                        <span class="pt-dots is-lg" data-range-dots aria-hidden="true"></span>
+                        <span class="pt-range-live" data-range-text aria-live="polite"></span>
                     </div>
+                    {{-- التعديل لا يمسّ الفرق القائمة، لكن يُقال كم منها سيصير خارجه — قبل الحفظ --}}
+                    <p class="pt-warn" data-range-warn hidden>
+                        <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+                        <span><b></b> <span data-range-warn-text></span></span>
+                    </p>
+                    <div class="form-hint mb-3">التعديل يسري على التسجيلات الجديدة فقط، ولا يمسّ الفرق القائمة.</div>
                     @error('min')
                         <div class="text-danger small mb-2">{{ $message }}</div>
                     @enderror
                     @error('max')
                         <div class="text-danger small mb-2">{{ $message }}</div>
                     @enderror
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn" data-bs-dismiss="modal">إغلاق</button>

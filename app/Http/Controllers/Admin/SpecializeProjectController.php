@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SpecializeProjectRequest;
+use App\Models\Semester;
 use App\Models\Specialize;
 use App\Models\SpecializeProject;
+use Illuminate\Support\Facades\DB;
 
 class SpecializeProjectController extends Controller
 {
@@ -25,12 +27,42 @@ class SpecializeProjectController extends Controller
             return redirect()->route('admin.specialize.index')->with('fail', 'لا توجد بيانات!!!');
         }
 
+        $semesterId = Semester::current()->id;
+
         $types = SpecializeProject::where('specialize_id', $specialize->id)
             ->withCount('projects')
+            ->withCount(['projects as current_count' => fn ($q) => $q
+                ->whereIn('status', ['accept', 'complete'])->where('semester_id', $semesterId)])
             ->orderBy('name')
             ->get();
 
-        return view('dashboard.admin.setting.specialize.project.index', compact('specialize', 'types'));
+        // أحجام الفرق الفعلية على كل نوع — ما يُبنى عليه تعديل الحدّين، وكان
+        // التعديل يقع في العتمة. استعلام تجميع واحد: حجم كل مشروع غير مرفوض،
+        // ثم عدّ المشاريع لكل حجم ← \u200E[type_id => [size => count]]\u200E
+        $sizes = DB::table('groups')
+            ->join('projects', 'projects.id', '=', 'groups.project_id')
+            ->whereIn('projects.specialize_project_id', $types->pluck('id'))
+            ->where('projects.status', '!=', 'reject')
+            ->whereNull('projects.deleted_at')
+            ->selectRaw('projects.specialize_project_id as type_id, groups.project_id, COUNT(*) as size')
+            ->groupBy('projects.specialize_project_id', 'groups.project_id')
+            ->get()
+            ->groupBy('type_id')
+            ->map(fn ($rows) => $rows->countBy('size')->sortKeys()->all());
+
+        foreach ($types as $type) {
+            $dist = $sizes[$type->id] ?? [];
+            $type->sizes = $dist;
+            // سُجّلت قبل تعديل الحدّين: الحدّان لا يُطبَّقان رجعياً
+            $type->outside_count = collect($dist)
+                ->filter(fn ($n, $size) => $size < $type->min || $size > $type->max)
+                ->sum();
+        }
+
+        // التنقّل بين التخصصات بلا رجوع إلى صفحتها لكل واحد
+        $specializes = Specialize::active()->withCount('projects')->orderBy('name')->get(['id', 'name']);
+
+        return view('dashboard.admin.setting.specialize.project.index', compact('specialize', 'types', 'specializes'));
     }
 
     public function store(SpecializeProjectRequest $request)

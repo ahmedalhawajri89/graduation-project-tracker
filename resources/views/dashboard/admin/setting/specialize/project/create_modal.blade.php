@@ -8,7 +8,7 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
             </div>
-            <form action="{{ route('admin.specialize.projects.store', $specialize->id) }}" method="POST">
+            <form action="{{ route('admin.specialize.projects.store', $specialize->id) }}" method="POST" data-range-form>
                 @csrf
                 <input type="hidden" value="{{ $specialize->id }}" name="specialize_id">
                 <div class="modal-body">
@@ -27,34 +27,33 @@
                          صفّ واحد. و\u200Etype="number"\u200E لا \u200Etext\u200E: لوحة أرقام
                          على الهاتف، وحدّ في المتصفّح قبل الخادم. --}}
                     <label class="form-label required">حجم الفريق المسموح</label>
-                    <div class="row g-2 mb-2">
-                        <div class="col">
-                            <div class="input-group">
-                                <span class="input-group-text">من</span>
-                                <input id="min_create" type="number" min="1" step="1"
-                                    class="form-control @error('min') is-invalid @enderror" name="min"
-                                    value="{{ old('min', 2) }}" required autocomplete="off">
-                            </div>
+                    <div class="pt-range-edit">
+                        <div class="pt-step-field">
+                            <span>من</span>
+                            <button type="button" data-step="-1" data-field="min" aria-label="إنقاص الحدّ الأدنى"><i class="ti ti-minus" aria-hidden="true"></i></button>
+                            <input type="number" min="1" max="20" step="1" inputmode="numeric" name="min"
+                                class="form-control @error('min') is-invalid @enderror" value="{{ old('min', 2) }}" required aria-label="الحدّ الأدنى">
+                            <button type="button" data-step="1" data-field="min" aria-label="زيادة الحدّ الأدنى"><i class="ti ti-plus" aria-hidden="true"></i></button>
                         </div>
-                        <div class="col">
-                            <div class="input-group">
-                                <span class="input-group-text">إلى</span>
-                                <input id="max_create" type="number" min="1" step="1"
-                                    class="form-control @error('max') is-invalid @enderror" name="max"
-                                    value="{{ old('max', 3) }}" required autocomplete="off">
-                            </div>
+                        <div class="pt-step-field">
+                            <span>إلى</span>
+                            <button type="button" data-step="-1" data-field="max" aria-label="إنقاص الحدّ الأعلى"><i class="ti ti-minus" aria-hidden="true"></i></button>
+                            <input type="number" min="1" max="20" step="1" inputmode="numeric" name="max"
+                                class="form-control @error('max') is-invalid @enderror" value="{{ old('max', 3) }}" required aria-label="الحدّ الأعلى">
+                            <button type="button" data-step="1" data-field="max" aria-label="زيادة الحدّ الأعلى"><i class="ti ti-plus" aria-hidden="true"></i></button>
                         </div>
                     </div>
-                    <div class="form-hint mb-3">
-                        فريق خارج هذا المدى يُرفض عند تسجيل الطالب لمشروعه.
+                    <div class="pt-range-preview">
+                        <span class="pt-dots is-lg" data-range-dots aria-hidden="true"></span>
+                        <span class="pt-range-live" data-range-text aria-live="polite"></span>
                     </div>
+                    <div class="form-hint mb-3">فريق خارج هذا المدى يُرفض عند تسجيل الطالب لمشروعه.</div>
                     @error('min')
                         <div class="text-danger small mb-2">{{ $message }}</div>
                     @enderror
                     @error('max')
                         <div class="text-danger small mb-2">{{ $message }}</div>
                     @enderror
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn" data-bs-dismiss="modal">إغلاق</button>
