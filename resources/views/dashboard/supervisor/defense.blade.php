@@ -25,7 +25,10 @@
                 </a>
             @endif
             <a href="{{ $defense->googleCalendarUrl() }}" target="_blank" rel="noopener" class="btn btn-outline-secondary">
-                <i class="ti ti-calendar-plus me-1" aria-hidden="true"></i>تقويم Google
+                <i class="ti ti-brand-google me-1" aria-hidden="true"></i>تقويم Google
+            </a>
+            <a href="{{ route('defenses.ics', $defense->id) }}" class="btn btn-outline-secondary" title="Outlook وتقويم الجوال">
+                <i class="ti ti-calendar-down me-1" aria-hidden="true"></i>ملف التقويم
             </a>
             @if ($isOwn)
                 <a href="{{ route('supervisor.projects.show', $project->id) }}" class="btn btn-outline-secondary">صفحة المشروع</a>

@@ -9411,3 +9411,60 @@ a.df-slot { text-decoration: none; color: inherit; }
 @media (max-width: 560px) {
     .dsv-form { grid-template-columns: 1fr; }
 }
+
+/* ==================== «مناقشتك» في لوحة الطالب ==================== */
+.sdf {
+    border: 1px solid var(--ds-brand-200); border-radius: var(--ds-radius-lg); padding: 18px 20px;
+    background: radial-gradient(90% 140% at 100% 0%, rgba(37, 99, 235, .08), transparent 60%), var(--ds-surface);
+}
+.sdf-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.sdf-head h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 16px; font-weight: 800; color: var(--ds-ink); }
+.sdf-head h2 i { color: var(--ds-accent); }
+.sdf-state { padding: 3px 12px; border-radius: 99px; font-size: 12px; font-weight: 700; background: var(--ds-accent-soft); color: var(--ds-accent-strong); }
+.sdf-state.is-today, .sdf-state.is-soon { background: #fffbeb; color: #b45309; }
+.sdf-state.is-live { background: #ecfdf5; color: #047857; }
+.sdf-state.is-done { background: var(--ds-surface-sunk); color: var(--ds-ink-soft); }
+
+.sdf-body { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.sdf-when { display: flex; align-items: center; gap: 14px; }
+.sdf-date {
+    flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 64px; height: 68px; border-radius: 16px; background: var(--ds-accent); color: #fff;
+    box-shadow: 0 12px 24px -16px rgba(37, 99, 235, .9);
+}
+.sdf-date b { font-size: 26px; font-weight: 800; line-height: 1; }
+.sdf-date span { font-size: 12px; opacity: .9; margin-top: 3px; }
+.sdf-when-body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.sdf-when-body strong { font-size: 14.5px; color: var(--ds-ink); }
+.sdf-range { font-size: 18px; font-weight: 800; color: var(--ds-accent-strong); font-variant-numeric: tabular-nums; text-align: start; }
+.sdf-dur { font-size: 12px; color: var(--ds-ink-mute); }
+.sdf-countdown { margin-top: 4px; align-self: flex-start; padding: 2px 10px; border-radius: 99px; background: var(--ds-surface); border: 1px solid var(--ds-brand-100); font-size: 12px; font-weight: 700; color: var(--ds-accent-strong); }
+.sdf-countdown:empty { display: none; }
+
+.sdf-where { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.sdf-room { display: flex; flex-direction: column; }
+.sdf-room b { font-size: 14px; color: var(--ds-ink); }
+.sdf-room small { font-size: 12px; color: var(--ds-ink-mute); }
+
+.sdf-committee small { display: block; font-size: 12px; color: var(--ds-ink-mute); margin-bottom: 6px; }
+.sdf-committee ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.sdf-committee li { display: flex; align-items: center; gap: 8px; }
+.sdf-av { width: 30px !important; height: 30px !important; font-size: 10.5px; }
+.sdf-committee li > span { display: flex; flex-direction: column; }
+.sdf-committee b { font-size: 13px; color: var(--ds-ink); }
+.sdf-committee em { font-style: normal; font-size: 11.5px; color: var(--ds-ink-mute); }
+
+.sdf-notes { display: flex; gap: 6px; margin: 14px 0 0; padding: 9px 12px; border-radius: 10px; background: var(--ds-accent-soft); font-size: 13px; color: var(--ds-accent-strong); line-height: 1.7; }
+.sdf-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--ds-border); }
+.sdf-ready { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.sdf-ready li { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--ds-ink-mute); }
+.sdf-ready li.is-ok { color: #047857; }
+.sdf-cal { display: flex; gap: 6px; flex-wrap: wrap; }
+
+@media (max-width: 991.98px) {
+    .sdf-body { grid-template-columns: 1fr 1fr; }
+    .sdf-when { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+    .sdf-body { grid-template-columns: 1fr; }
+}

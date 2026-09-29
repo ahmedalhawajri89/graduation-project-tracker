@@ -139,6 +139,7 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
         //====================== start defenses
         // المناقشات: لجنة وموعد وقاعة أو رابط لكل مشروع مكتمل
         Route::get('defenses', [DefenseController::class, 'index'])->name('defenses.index');
+        Route::get('defenses/export', [DefenseController::class, 'export'])->name('defenses.export');
         Route::post('defenses', [DefenseController::class, 'store'])->name('defenses.store');
         Route::put('defenses/{defense}', [DefenseController::class, 'update'])->name('defenses.update');
         Route::post('defenses/{defense}/cancel', [DefenseController::class, 'cancel'])->name('defenses.cancel');
@@ -253,6 +254,9 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
         Route::post('/profile/avatar', [SupervisorProfileController::class, 'uploadAvatar'])->name('profile.avatar.store');
         Route::delete('/profile/avatar', [SupervisorProfileController::class, 'destroyAvatar'])->name('profile.avatar.destroy');
     });
+
+    // ملف تقويم المناقشة (.ics) — للإدارة ولجنتها وفريقها
+    Route::get('/defenses/{defense}/calendar.ics', \App\Http\Controllers\DefenseCalendarController::class)->name('defenses.ics');
 
     // تنزيل ملفات المشاريع (أدمن/مشرف المشروع/أعضاء الفريق)
     Route::get('/files/{file}/download', [FileController::class, 'download'])->name('files.download');

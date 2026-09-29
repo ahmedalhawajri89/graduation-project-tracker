@@ -1,19 +1,23 @@
 @php
     $graded = ! is_null($project->grade);
 
-    // موضع المشروع على مساره
+    // المناقشة (مجدولة أو منتهية): بطاقتها وخطوتها في المسار
+    $defense = \App\Support\DefenseGrading::defenseFor($project)?->load(['room', 'members.supervisor']);
+
+    // موضع المشروع على مساره — المناقشة خطوة بين التنفيذ والدرجة
     $steps = [
         ['key' => 'request', 'label' => 'تقديم الطلب'],
         ['key' => 'accept', 'label' => 'موافقة المشرف'],
         ['key' => 'work', 'label' => 'التنفيذ والمتابعة'],
-        ['key' => 'grade', 'label' => 'التقييم'],
+        ['key' => 'defense', 'label' => 'المناقشة'],
+        ['key' => 'grade', 'label' => 'الدرجة'],
     ];
-    // موضع الخطوة **الحالية**: ما قبلها منجز. كان يعطي رقم آخر خطوة
-    // منجزة، فالمشروع المقبول يعرض «موافقة المشرف» كأنها لم تتمّ
+    // موضع الخطوة **الحالية**: ما قبلها منجز. المكتمل ينتظر مناقشته (4)،
+    // وبعد أن تجري ينتظر درجة اللجنة (5)، والمقيَّم أنهى المسار (6)
     $reached = match ($project->status) {
         'request' => 2,
         'accept' => 3,
-        'complete' => $graded ? 5 : 4,
+        'complete' => $graded ? 6 : ($defense && $defense->endsAt()->isPast() ? 5 : 4),
         default => 0,
     };
     $active = in_array($project->status, ['accept', 'complete'], true);
@@ -28,6 +32,11 @@
     'reached' => $reached,
     'unreadMsgs' => $unreadMsgs ?? 0,
 ])
+
+{{-- بطاقة المناقشة: من جدولتها حتى رصد درجتها --}}
+@if ($defense && ! $graded)
+    @include('dashboard.student._defense', ['defense' => $defense, 'project' => $project])
+@endif
 
 @include('dashboard.student._next-actions', ['project' => $project])
 

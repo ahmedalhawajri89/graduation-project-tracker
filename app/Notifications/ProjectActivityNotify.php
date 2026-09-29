@@ -26,6 +26,9 @@ class ProjectActivityNotify extends Notification implements ShouldQueue
 
     private ?string $mailUrl = null;
 
+    /** مرفق البريد — ملف تقويم المناقشة مثلاً: [المحتوى، الاسم، النوع] */
+    private ?array $mailAttachment = null;
+
     public function __construct(array $data)
     {
         $this->data = array_merge(['kind' => 'activity'], $data);
@@ -41,6 +44,14 @@ class ProjectActivityNotify extends Notification implements ShouldQueue
         return $notification;
     }
 
+    /** يرفق ملفاً بالبريد (لا يمسّ نسخة المنصّة) */
+    public function attach(string $data, string $name, string $mime): self
+    {
+        $this->mailAttachment = [$data, $name, $mime];
+
+        return $this;
+    }
+
     /** نسخة المنصّة فوريّة — الجرس لا ينتظر العامل؛ البريد وحده في الطابور */
     public function viaConnections(): array
     {
@@ -54,13 +65,20 @@ class ProjectActivityNotify extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        $mail = (new MailMessage)
             ->subject($this->mailSubject . ' — تخرُّج')
             ->greeting('مرحباً ' . $notifiable->name)
             ->line('**' . ($this->data['project'] ?? 'مشروعك') . '**')
             ->line($this->data['msg'] ?? '')
             ->action('فتح لوحتي', $this->mailUrl ?? route('student.dashboard'))
             ->salutation('فريق تخرُّج');
+
+        if ($this->mailAttachment) {
+            [$data, $name, $mime] = $this->mailAttachment;
+            $mail->attachData($data, $name, ['mime' => $mime]);
+        }
+
+        return $mail;
     }
 
     public function toArray($notifiable)

@@ -163,6 +163,18 @@ class DefenseController extends Controller
             ->with('success', 'أُلغيت المناقشة، وعاد المشروع إلى «بانتظار الجدولة».');
     }
 
+    /** جدول المناقشات Excel — للفصل الحالي، بلا الملغاة */
+    public function export()
+    {
+        abort_unless(DefenseScheduler::enabled(), 404);
+        $semester = \App\Models\Semester::current();
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\DefensesExport($semester?->id),
+            'defenses_' . now()->format('Y-m-d') . '.xlsx'
+        );
+    }
+
     /* ==================== القاعات ==================== */
 
     public function storeRoom(Request $request)

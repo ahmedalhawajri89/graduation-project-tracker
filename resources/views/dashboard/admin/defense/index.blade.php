@@ -42,6 +42,10 @@
 
     <x-page-header title="المناقشات" subtitle="لجنة وموعد لكل مشروع مكتمل — حضورياً أو عن بُعد">
         <x-slot:actions>
+            <a href="{{ route('admin.defenses.export') }}" class="btn btn-outline-primary">
+                <i class="ti ti-file-spreadsheet me-1" aria-hidden="true"></i>
+                تصدير الجدول Excel
+            </a>
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#roomsModal">
                 <i class="ti ti-door me-1" aria-hidden="true"></i>
                 القاعات
@@ -161,7 +165,10 @@
                                         </a>
                                     @endif
                                     <a href="{{ $d->googleCalendarUrl() }}" target="_blank" rel="noopener" class="btn-action" title="أضف إلى تقويم Google" aria-label="أضف إلى تقويم Google">
-                                        <i class="ti ti-calendar-plus" aria-hidden="true"></i>
+                                        <i class="ti ti-brand-google" aria-hidden="true"></i>
+                                    </a>
+                                    <a href="{{ route('defenses.ics', $d->id) }}" class="btn-action" title="ملف التقويم (.ics) — Outlook وتقويم الجوال" aria-label="تنزيل ملف التقويم">
+                                        <i class="ti ti-calendar-down" aria-hidden="true"></i>
                                     </a>
                                     <button type="button" class="btn-action" title="تعديل الموعد" aria-label="تعديل موعد {{ $d->project->title }}"
                                         data-schedule='@json($meta($d->project))' data-defense='@json($defenseMeta($d))'>

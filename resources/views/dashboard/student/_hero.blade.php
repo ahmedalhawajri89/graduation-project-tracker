@@ -115,7 +115,7 @@
     </ol>
 
     <div class="stu-hero-foot">
-        <span class="hero-chip {{ $deadline[0] }}" @if ($defense) id="defense" @endif>
+        <span class="hero-chip {{ $deadline[0] }}">
             <i class="ti {{ $deadline[1] }}" aria-hidden="true"></i>
             {{ $deadline[2] }}
             @if ($project->date_line && $active && $project->status !== 'complete')

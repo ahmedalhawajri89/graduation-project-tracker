@@ -58,6 +58,9 @@ class DefenseNotifier
     {
         $d->loadMissing(['project.group', 'members.supervisor']);
         $project = $d->project;
+        // ملف التقويم مع البريد: يُضاف إلى أي تقويم بنقرة، والإلغاء يحذفه منه
+        $ics = DefenseIcs::make($d, $d->status === Defense::CANCELLED);
+        $withIcs = fn ($n) => $n->attach($ics, DefenseIcs::filename($d), 'text/calendar');
 
         $data = [
             'project' => $project->title,
@@ -69,14 +72,14 @@ class DefenseNotifier
         ];
 
         try {
-            Notification::send($project->students(), ProjectActivityNotify::withMail($data, $subject, route('student.dashboard') . '#defense'));
+            Notification::send($project->students(), $withIcs(ProjectActivityNotify::withMail($data, $subject, route('student.dashboard') . '#defense')));
         } catch (\Throwable $e) {
             Log::warning('defense notify (team) failed', ['defense' => $d->id, 'error' => $e->getMessage()]);
         }
 
         $committee = $d->members->pluck('supervisor')->filter(fn ($s) => $s && $s->exists);
         try {
-            Notification::send($committee, ProjectActivityNotify::withMail($data, $subject, route('supervisor.dashboard')));
+            Notification::send($committee, $withIcs(ProjectActivityNotify::withMail($data, $subject, route('supervisor.defenses.show', $d->id))));
         } catch (\Throwable $e) {
             Log::warning('defense notify (committee) failed', ['defense' => $d->id, 'error' => $e->getMessage()]);
         }
