@@ -612,75 +612,232 @@
                     <div class="section-head-grid">
                         <h2 class="reveal" data-i18n="roles.title">لكل دور مساحته الخاصة</h2>
                         <p class="reveal d1" data-i18n="roles.text">
-                            تخرُّج مبنية حول ثلاثة أدوار متكاملة، لكل منها لوحة تحكم وصلاحيات تناسب مهامه،
-                            بحيث يعرف كل طرف ما عليه بالضبط في كل مرحلة.
+                            ثلاثة أدوار، لكلٍّ لوحته وصلاحياته — ويتسلّم كلٌّ من الآخر في الوقت المناسب. اختر دوراً لترى مساحته.
                         </p>
                     </div>
                 </div>
 
-                <div class="cell-grid cols-3 reveal">
-                    <article class="cell role-cell">
-                        <div class="role-head">
-                            <span class="role-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
-                            <h3 data-i18n="roles.student.name">الطالب</h3>
-                            <p class="role-tag" data-i18n="roles.student.role">الفريق والتسليم والنقاش</p>
-                        </div>
-                        <ul class="role-points">
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.student.p1">تكوين الفريق واختيار مشرف لديه مقاعد</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.student.p2">تسليم المراحل وتعديلها بملاحظات المشرف</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.student.p3">نقاش الفريق الخاص وتوزيع الأدوار</span></li>
-                        </ul>
-                    </article>
+                {{-- مستكشف الأدوار: تبويب لكل دور، ولوحة بمشهد من شاشته الحقيقية وما يفعله
+                     وما لا يراه، وتحتها خطّ يربط الأدوار بما ينتقل بينها. كانت ثلاث بطاقات
+                     متطابقة بثلاثة أسطر لكلٍّ — قائمة ميزات لا تجربة مختلفة لكل دور.
+                     بلا JavaScript تظهر اللوحات الثلاث متتالية (premium.js › initRoles) --}}
+                <div class="rx reveal" data-role-explorer>
+                    <div class="rx-tabs" role="tablist" aria-label="أدوار المنصة" data-i18n-aria="roles.kicker">
+                        <button type="button" role="tab" class="rx-tab" id="rx-tab-student" aria-controls="rx-panel-student"
+                            aria-selected="true" data-role="student">
+                            <span class="rx-tab-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+                            <span class="rx-tab-text">
+                                <b data-i18n="roles.student.name">الطالب</b>
+                                <small data-i18n="roles.student.role">الفريق والتسليم والنقاش</small>
+                            </span>
+                        </button>
+                        <button type="button" role="tab" class="rx-tab" id="rx-tab-supervisor" aria-controls="rx-panel-supervisor"
+                            aria-selected="false" data-role="supervisor">
+                            <span class="rx-tab-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span>
+                            <span class="rx-tab-text">
+                                <b data-i18n="roles.supervisor.name">المشرف</b>
+                                <small data-i18n="roles.supervisor.role">التخطيط والمراجعة والتقييم</small>
+                            </span>
+                        </button>
+                        <button type="button" role="tab" class="rx-tab" id="rx-tab-admin" aria-controls="rx-panel-admin"
+                            aria-selected="false" data-role="admin">
+                            <span class="rx-tab-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" y1="4" x2="14" y2="4"/><line x1="10" y1="4" x2="3" y2="4"/><line x1="21" y1="12" x2="12" y2="12"/><line x1="8" y1="12" x2="3" y2="12"/><line x1="21" y1="20" x2="16" y2="20"/><line x1="12" y1="20" x2="3" y2="20"/><line x1="14" y1="2" x2="14" y2="6"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="22"/></svg></span>
+                            <span class="rx-tab-text">
+                                <b data-i18n="roles.admin.name">الإدارة</b>
+                                <small data-i18n="roles.admin.role">ضبط النظام وتنظيم الفصل</small>
+                            </span>
+                        </button>
+                    </div>
 
-                    <article class="cell role-cell">
-                        <div class="role-head">
-                            <span class="role-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span>
-                            <h3 data-i18n="roles.supervisor.name">المشرف</h3>
-                            <p class="role-tag" data-i18n="roles.supervisor.role">التخطيط والمراجعة والتقييم</p>
+                    <section class="rx-panel" id="rx-panel-student" role="tabpanel" aria-labelledby="rx-tab-student" data-panel="student">
+                        <div class="rx-scene" aria-hidden="true">
+                            <div class="rx-card">
+                                <span class="rx-card-label" data-i18n="roles.scene.s.now">ماذا عليّ الآن</span>
+                                <div class="rx-task">
+                                    <span class="rx-task-dot is-warn" aria-hidden="true"></span>
+                                    <span>
+                                        <b data-i18n="roles.scene.s.stage">الفصل الثالث — التحليل</b>
+                                        <small data-i18n="roles.scene.s.due">آخر موعد بعد يومين</small>
+                                    </span>
+                                    <span class="rx-btn is-primary" data-i18n="roles.scene.s.submit">تسليم المرحلة</span>
+                                </div>
+                            </div>
+                            <div class="rx-card">
+                                <div class="rx-progress-head">
+                                    <span data-i18n="roles.scene.s.progress">إنجاز المشروع</span>
+                                    <b dir="ltr">3 / 5</b>
+                                </div>
+                                <span class="rx-progress" aria-hidden="true"><i style="width: 60%"></i></span>
+                                <div class="rx-avatars" aria-hidden="true"><i>سا</i><i>نب</i><i>يو</i></div>
+                            </div>
                         </div>
-                        <ul class="role-points">
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.supervisor.p1">قبول طلبات الفرق حسب مقاعده</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.supervisor.p2">خطة مراحل بقوالبها لكل مجموعاته</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.supervisor.p3">مراجعة التسليمات، ورصد الدرجة واعتمادها</span></li>
-                        </ul>
-                    </article>
+                        <div class="rx-info">
+                            <h3 class="rx-title"><span data-i18n="roles.student.name">الطالب</span></h3>
+                            <ul class="rx-caps">
+                                <li>
+                                    <b data-i18n="roles.student.c1.t">تكوين الفريق</b>
+                                    <span data-i18n="roles.student.c1.d">زملاؤك من تخصصك، ومشرف لديه مقاعد متاحة</span>
+                                </li>
+                                <li>
+                                    <b data-i18n="roles.student.c2.t">تسليم المراحل</b>
+                                    <span data-i18n="roles.student.c2.d">ملف وملاحظة لكل مرحلة، وإعادة بعد التعديل</span>
+                                </li>
+                                <li>
+                                    <b data-i18n="roles.student.c3.t">نقاش الفريق</b>
+                                    <span data-i18n="roles.student.c3.d">قناة خاصة بالفريق، و@ لتنبيه زميل بعينه</span>
+                                </li>
+                                <li>
+                                    <b data-i18n="roles.student.c4.t">الأدوار والتذكير</b>
+                                    <span data-i18n="roles.student.c4.d">يوزّع القائد المسؤوليات، ويصل تذكير قبل كل موعد</span>
+                                </li>
+                            </ul>
+                            <p class="rx-private"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="roles.student.private">نقاش الفريق الخاص لا يصل المشرف ولا الإدارة</span></p>
+                        </div>
+                    </section>
 
-                    <article class="cell role-cell">
-                        <div class="role-head">
-                            <span class="role-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" y1="4" x2="14" y2="4"/><line x1="10" y1="4" x2="3" y2="4"/><line x1="21" y1="12" x2="12" y2="12"/><line x1="8" y1="12" x2="3" y2="12"/><line x1="21" y1="20" x2="16" y2="20"/><line x1="12" y1="20" x2="3" y2="20"/><line x1="14" y1="2" x2="14" y2="6"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="22"/></svg></span>
-                            <h3 data-i18n="roles.admin.name">الإدارة</h3>
-                            <p class="role-tag" data-i18n="roles.admin.role">ضبط النظام وتنظيم الفصل</p>
+                    <section class="rx-panel" id="rx-panel-supervisor" role="tabpanel" aria-labelledby="rx-tab-supervisor" data-panel="supervisor">
+                        <div class="rx-scene" aria-hidden="true">
+                            <div class="rx-card">
+                                <span class="rx-card-label" data-i18n="roles.scene.v.review">بانتظار مراجعتك</span>
+                                <div class="rx-sub">
+                                    <span class="rx-av" aria-hidden="true">تن</span>
+                                    <span>
+                                        <b data-i18n="roles.scene.v.team">فريق «التنبؤ بالتسرب»</b>
+                                        <small data-i18n="roles.scene.v.round">الفصل الثالث · الجولة 2</small>
+                                    </span>
+                                </div>
+                                <span class="rx-file"><i aria-hidden="true">PDF</i> <span dir="ltr">chapter-3.pdf</span></span>
+                                <div class="rx-actions">
+                                    <span class="rx-btn is-ok" data-i18n="roles.scene.v.approve">اعتماد</span>
+                                    <span class="rx-btn is-warn" data-i18n="roles.scene.v.revise">مطلوب تعديل</span>
+                                </div>
+                            </div>
                         </div>
-                        <ul class="role-points">
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.admin.p1">إدارة التخصصات وأنواع المشاريع والفصول</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.admin.p2">إضافة المشرفين وتوزيع المجموعات</span></li>
-                            <li><span class="role-check" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="roles.admin.p3">سجلّ تدقيق، وفتح الدرجة المعتمدة عند الحاجة</span></li>
-                        </ul>
-                    </article>
+                        <div class="rx-info">
+                            <h3 class="rx-title"><span data-i18n="roles.supervisor.name">المشرف</span></h3>
+                            <ul class="rx-caps">
+                                <li>
+                                    <b data-i18n="roles.supervisor.c1.t">قبول الطلبات</b>
+                                    <span data-i18n="roles.supervisor.c1.d">حسب مقاعده، مع تنبيه للفكرة المشابهة</span>
+                                </li>
+                                <li>
+                                    <b data-i18n="roles.supervisor.c2.t">خطة المراحل</b>
+                                    <span data-i18n="roles.supervisor.c2.d">مواعيد وقوالب تصل كل مجموعاته مرّة واحدة</span>
+                                </li>
+                                <li>
+                                    <b data-i18n="roles.supervisor.c3.t">المراجعة</b>
+                                    <span data-i18n="roles.supervisor.c3.d">اعتماد، أو «مطلوب تعديل» بسبب مكتوب</span>
+                                </li>
+                                <li>
+                                    <b data-i18n="roles.supervisor.c4.t">الدرجة</b>
+                                    <span data-i18n="roles.supervisor.c4.d">رصد بالتقدير والملاحظات، ثم اعتماد يقفلها</span>
+                                </li>
+                            </ul>
+                            <p class="rx-private"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="roles.supervisor.private">يرى مجموعاته وحدها — ونقاش الفريق الخاص يبقى للفريق</span></p>
+                        </div>
+                    </section>
+
+                    <section class="rx-panel" id="rx-panel-admin" role="tabpanel" aria-labelledby="rx-tab-admin" data-panel="admin">
+                        <div class="rx-scene" aria-hidden="true">
+                            <div class="rx-card">
+                                <span class="rx-card-label" data-i18n="roles.scene.a.health">متابعة الفرق</span>
+                                <div class="rx-health">
+                                    <span class="is-alert"><b>3</b><small data-i18n="roles.scene.a.late">مرحلة فات موعدها</small></span>
+                                    <span><b>0</b><small data-i18n="roles.scene.a.review">تسليم ينتظر المشرف</small></span>
+                                    <span class="is-alert"><b>2</b><small data-i18n="roles.scene.a.idle">فريق متوقّف</small></span>
+                                    <span><b>0</b><small data-i18n="roles.scene.a.roles">فريق بلا أدوار</small></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rx-info">
+                            <h3 class="rx-title"><span data-i18n="roles.admin.name">الإدارة</span></h3>
+                            <ul class="rx-caps">
+                                <li>
+                                    <b data-i18n="roles.admin.c1.t">إعداد الفصل</b>
+                                    <span data-i18n="roles.admin.c1.d">التخصصات وأنواع المشاريع وحدود الفرق والفصول</span>
+                                </li>
+                                <li>
+                                    <b data-i18n="roles.admin.c2.t">الحسابات</b>
+                                    <span data-i18n="roles.admin.c2.d">استيراد الطلاب والمشرفين من Excel دفعة واحدة</span>
+                                </li>
+                                <li>
+                                    <b data-i18n="roles.admin.c3.t">متابعة الفرق</b>
+                                    <span data-i18n="roles.admin.c3.d">المتأخّر والمتوقّف وما ينتظر المشرف، بنقرة</span>
+                                </li>
+                                <li>
+                                    <b data-i18n="roles.admin.c4.t">سجلّ التدقيق</b>
+                                    <span data-i18n="roles.admin.c4.d">كل قرار مسجّل، وفتح الدرجة المعتمدة بسبب مكتوب</span>
+                                </li>
+                            </ul>
+                            <p class="rx-private"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="roles.admin.private">ترى كل شيء إلا نقاش الفرق الخاص — وكل قرار لها في السجلّ</span></p>
+                        </div>
+                    </section>
+
+                    {{-- كيف تتصل الأدوار: ما ينتقل من كل دور إلى التالي --}}
+                    <ol class="rx-flow" aria-label="كيف تتصل الأدوار" data-i18n-aria="roles.flow.label">
+                        <li class="rx-node" data-node="student">
+                            <span class="rx-node-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+                            <b data-i18n="roles.student.name">الطالب</b>
+                        </li>
+                        <li class="rx-edge"><span data-i18n="roles.flow.1">يسلّم المرحلة ويعدّل</span></li>
+                        <li class="rx-node" data-node="supervisor">
+                            <span class="rx-node-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span>
+                            <b data-i18n="roles.supervisor.name">المشرف</b>
+                        </li>
+                        <li class="rx-edge"><span data-i18n="roles.flow.2">يعتمد ويرصد الدرجة</span></li>
+                        <li class="rx-node" data-node="admin">
+                            <span class="rx-node-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" y1="4" x2="14" y2="4"/><line x1="10" y1="4" x2="3" y2="4"/><line x1="21" y1="12" x2="12" y2="12"/><line x1="8" y1="12" x2="3" y2="12"/><line x1="21" y1="20" x2="16" y2="20"/><line x1="12" y1="20" x2="3" y2="20"/><line x1="14" y1="2" x2="14" y2="6"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="22"/></svg></span>
+                            <b data-i18n="roles.admin.name">الإدارة</b>
+                            <small data-i18n="roles.flow.3">تتابع الفصل كلّه</small>
+                        </li>
+                    </ol>
                 </div>
             </div>
         </section>
 
         {{-- ======= Showcase — مشاريع أُنجزت فعلاً ======= --}}
-        {{-- المكتملة المقيَّمة وحدها: الصفحة عامّة، فتعرض ما أُنجز لا عمل فرق لم
-             تُسلّم بعد. وكانت تعرض أحدث المقبولة، فظهرت بيانات تجريبية وعناوين
-             مكرّرة بلاحقة «— نسخة N» من بذور العرض — تُستبعد، ويُكتفى بعنوان واحد --}}
+        {{-- المكتملة المقيَّمة وحدها: الصفحة عامّة، فتعرض ما أُنجز لا عمل فرق لم تُسلّم.
+             كانت تُسقط كل عنوان بلاحقة «— نسخة N» (بذور العرض) فيبقى مشروعان من تسعة؛
+             الآن تُنزع اللاحقة ويُكتفى بعنوان واحد لكل مشروع. وتقول البطاقة ما مرّ به
+             المشروع على المنصة (مراحله ومدّتها) — بلا أسماء طلاب ولا درجة فريق بعينه --}}
         @php
-            $showcase = \Illuminate\Support\Facades\Cache::remember('site_showcase_v2', 3600, function () {
-                return \App\Models\Project::where('status', 'complete')
-                    ->whereNotNull('grade')
+            $showcase = \Illuminate\Support\Facades\Cache::remember('site_showcase_v4', 3600, function () {
+                $bare = fn ($title) => trim(preg_replace('/\s*—\s*نسخة\s*\d+\s*$/u', '', $title));
+                $done = fn ($q) => $q->where('status', 'complete')->whereNotNull('grade');
+
+                $projects = \App\Models\Project::query()->tap($done)
                     ->with(['project_type', 'semester'])
-                    ->withCount('group')
+                    ->withCount(['group', 'milestones as stages_done' => fn ($q) => $q->where('is_done', true)])
+                    ->withMin('milestones as first_due', 'due_date')
+                    ->withMax('milestones as last_due', 'due_date')
                     ->latest()
-                    ->take(24)
+                    ->take(40)
                     ->get()
-                    ->reject(fn ($p) => preg_match('/—\s*نسخة\s*\d+\s*$/u', $p->title))
-                    ->unique('title')
+                    ->each(fn ($p) => $p->setAttribute('bare_title', $bare($p->title)))
+                    ->unique('bare_title')
                     ->take(4)
                     ->values();
+
+                // المميّز يعرض أسماء مراحله المعتمدة — مسار المشروع على المنصة نفسه
+                $projects->first()?->load(['milestones' => fn ($q) => $q->where('is_done', true)
+                    ->select('id', 'project_id', 'title', 'due_date')]);
+
+                $all = \App\Models\Project::query()->tap($done)->withCount(['milestones as stages_done' => fn ($q) => $q->where('is_done', true)])->get(['id', 'specialize_project_id', 'grade']);
+
+                return [
+                    'projects' => $projects,
+                    'stats' => [
+                        'done' => $all->count(),
+                        'avg' => $all->count() ? round($all->avg('grade'), 1) : null,
+                        'specs' => \App\Models\SpecializeProject::whereIn('id', $all->pluck('specialize_project_id')->unique())->distinct()->count('specialize_id'),
+                        'stages' => $all->count() ? (int) round($all->avg('stages_done')) : null,
+                    ],
+                ];
             });
+            $showProjects = $showcase['projects'];
+            $showStats = $showcase['stats'];
         @endphp
-        @if ($showcase->isNotEmpty())
+        @if ($showProjects->isNotEmpty())
             <section id="showcase" class="section">
                 <div class="container">
                     <div class="section-head" data-num="06">
@@ -688,41 +845,101 @@
                         <div class="section-head-grid">
                             <h2 class="reveal" data-i18n="show.title">مشاريع أُنجزت على تخرُّج</h2>
                             <p class="reveal d1" data-i18n="show.text">
-                                ليست أمثلة مصنوعة — مشاريع أكملتها فرق فعلاً على المنصة، بتخصّصاتها وفصولها وأحجام فرقها.
+                                ليست أمثلة مصنوعة — مشاريع أكملتها فرق فعلاً على المنصة، مرحلةً بعد مرحلة.
                             </p>
                         </div>
                     </div>
 
-                    <div class="showcase reveal">
-                        @foreach ($showcase as $project)
-                            @php $sem = $project->semester?->parts(); @endphp
-                            <article class="project-cell">
-                                <div class="project-top">
-                                    <span class="project-type">{{ $project->project_type->name }}</span>
-                                    <span class="project-state done">
+                    {{-- أرقام إجمالية حقيقية — المتوسط العام لا درجة فريق بعينه --}}
+                    <div class="sc-stats reveal">
+                        <div class="sc-stat"><b>{{ $showStats['done'] }}</b><span data-i18n="show.stat.done">مشروعاً مكتملاً</span></div>
+                        @if ($showStats['avg'])
+                            <div class="sc-stat"><b>{{ $showStats['avg'] }}</b><span data-i18n="show.stat.avg">متوسط الدرجات</span></div>
+                        @endif
+                        <div class="sc-stat"><b>{{ $showStats['specs'] }}</b><span data-i18n="show.stat.specs">تخصصات</span></div>
+                        @if ($showStats['stages'])
+                            <div class="sc-stat"><b>{{ $showStats['stages'] }}</b><span data-i18n="show.stat.stages">مراحل معتمدة لكل مشروع</span></div>
+                        @endif
+                    </div>
+
+                    <div class="sc-grid is-{{ $showProjects->count() }} reveal d1">
+                        @foreach ($showProjects as $project)
+                            @php
+                                $sem = $project->semester?->parts();
+                                $weeks = $project->first_due && $project->last_due
+                                    ? max(1, (int) ceil(\Illuminate\Support\Carbon::parse($project->first_due)->diffInDays(\Illuminate\Support\Carbon::parse($project->last_due)) / 7))
+                                    : null;
+                            @endphp
+                            <article class="sc-card {{ $loop->first ? 'is-featured' : '' }}">
+                                <div class="sc-top">
+                                    <span class="sc-type" dir="auto">{{ $project->project_type->name }}</span>
+                                    <span class="sc-done">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
                                         <span data-i18n="state.done">مكتمل</span>
                                     </span>
                                 </div>
-                                <h3 class="project-title">{{ $project->title }}</h3>
-                                <div class="project-meta">
-                                    <span>
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+
+                                <h3 class="sc-title" dir="auto">{{ $project->bare_title }}</h3>
+                                @if ($project->description)
+                                    <p class="sc-desc" dir="auto">{{ \Illuminate\Support\Str::limit($project->description, $loop->first ? 170 : 110) }}</p>
+                                @endif
+
+                                @if ($loop->first && $project->relationLoaded('milestones') && $project->milestones->count())
+                                    <ol class="sc-path">
+                                        @foreach ($project->milestones->take(6) as $stage)
+                                            <li>
+                                                <span class="sc-path-node" aria-hidden="true">
+                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                                </span>
+                                                <span class="sc-path-title" dir="auto">{{ $stage->title }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ol>
+                                @endif
+
+                                {{-- ما مرّ به على المنصة: مراحله المعتمدة ومدّتها --}}
+                                @if ($project->stages_done)
+                                    <div class="sc-journey">
+                                        <span class="sc-steps" aria-hidden="true">
+                                            @for ($i = 0; $i < min($project->stages_done, 8); $i++)
+                                                <i></i>
+                                            @endfor
+                                        </span>
+                                        <span class="sc-journey-text">
+                                            <b>{{ $project->stages_done }}</b> <span data-i18n="show.stages">مراحل معتمدة</span>
+                                            @if ($weeks)
+                                                · <b>{{ $weeks }}</b> <span data-i18n="show.weeks">أسابيع</span>
+                                            @endif
+                                        </span>
+                                    </div>
+                                @endif
+
+                                <div class="sc-meta">
+                                    <span class="sc-team" title="{{ $project->group_count }}">
+                                        <span class="sc-dots" aria-hidden="true">
+                                            @for ($i = 0; $i < min($project->group_count, 5); $i++)
+                                                <i></i>
+                                            @endfor
+                                        </span>
                                         {{ $project->group_count }} <span data-i18n="unit.members">أعضاء</span>
                                     </span>
                                     @if ($sem)
                                         <span>
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
                                             {{ $sem['term'] }}
-                                            @if ($sem['year'])
-                                                · <bdi dir="ltr">{{ $sem['year'] }}</bdi>
-                                            @endif
+                                            {{-- السنة معزولة LTR: داخل نصّ عربي تنقلب «2021–22» إلى «22–2021» --}}
+                                            @if ($sem['year'])<span class="sc-sep">·</span><bdi dir="ltr">&#x2066;{{ $sem['year'] }}&#x2069;</bdi>@endif
                                         </span>
                                     @endif
                                 </div>
                             </article>
                         @endforeach
                     </div>
+
+                    <a href="{{ route('login') }}" class="link-more sc-more reveal">
+                        <span data-i18n="show.more">ادخل لتتصفّح أرشيف المشاريع كاملاً</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    </a>
                 </div>
             </section>
         @endif

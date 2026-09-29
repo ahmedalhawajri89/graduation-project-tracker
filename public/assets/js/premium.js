@@ -149,7 +149,14 @@
       "how.4.text": "بعد المناقشة يرصد مشرفك درجتك بالتقدير، وتُعتمد فلا تتغيّر.",
       "show.kicker": "من المنصة",
       "show.title": "مشاريع أُنجزت على تخرُّج",
-      "show.text": "ليست أمثلة مصنوعة — مشاريع أكملتها فرق فعلاً على المنصة، بتخصّصاتها وفصولها وأحجام فرقها.",
+      "show.text": "ليست أمثلة مصنوعة — مشاريع أكملتها فرق فعلاً على المنصة، مرحلةً بعد مرحلة.",
+      "show.stat.done": "مشروعاً مكتملاً",
+      "show.stat.avg": "متوسط الدرجات",
+      "show.stat.specs": "تخصصات",
+      "show.stat.stages": "مراحل معتمدة لكل مشروع",
+      "show.stages": "مراحل معتمدة",
+      "show.weeks": "أسابيع",
+      "show.more": "ادخل لتتصفّح أرشيف المشاريع كاملاً",
       "dept.kicker": "للأقسام والكليات",
       "dept.title": "ملف الفصل الدراسي كاملاً في مكان واحد",
       "dept.text": "بدل جداول متفرقة ومجموعات محادثة، تعطي تخرُّج القسمَ صورةً واحدة: من قدّم، ومن وافق، وأين وصل كل فريق، ومن لم يلتحق بمجموعة بعد.",
@@ -184,19 +191,56 @@
       "faq.7.text": "بعد المناقشة يرصد مشرفك الدرجة من 100 مع التقدير وملاحظاته، ويصل الإشعار للفريق كله. وبعد اعتمادها تُقفل — لا يفتحها إلا الإدارة، ويُسجَّل ذلك.",
       "roles.kicker": "أدوار المنصة",
       "roles.title": "لكل دور مساحته الخاصة",
-      "roles.text": "تخرُّج مبنية حول ثلاثة أدوار متكاملة، لكل منها لوحة تحكم وصلاحيات تناسب مهامه، بحيث يعرف كل طرف ما عليه بالضبط في كل مرحلة.",
+      "roles.text": "ثلاثة أدوار، لكلٍّ لوحته وصلاحياته — ويتسلّم كلٌّ من الآخر في الوقت المناسب. اختر دوراً لترى مساحته.",
       "roles.student.name": "الطالب", "roles.student.role": "الفريق والتسليم والنقاش",
-      "roles.student.p1": "تكوين الفريق واختيار مشرف لديه مقاعد",
-      "roles.student.p2": "تسليم المراحل وتعديلها بملاحظات المشرف",
-      "roles.student.p3": "نقاش الفريق الخاص وتوزيع الأدوار",
       "roles.supervisor.name": "المشرف", "roles.supervisor.role": "التخطيط والمراجعة والتقييم",
-      "roles.supervisor.p1": "قبول طلبات الفرق حسب مقاعده",
-      "roles.supervisor.p2": "خطة مراحل بقوالبها لكل مجموعاته",
-      "roles.supervisor.p3": "مراجعة التسليمات، ورصد الدرجة واعتمادها",
       "roles.admin.name": "الإدارة", "roles.admin.role": "ضبط النظام وتنظيم الفصل",
-      "roles.admin.p1": "إدارة التخصصات وأنواع المشاريع والفصول",
-      "roles.admin.p2": "إضافة المشرفين وتوزيع المجموعات",
-      "roles.admin.p3": "سجلّ تدقيق، وفتح الدرجة المعتمدة عند الحاجة",
+      "roles.student.c1.t": "تكوين الفريق",
+      "roles.student.c1.d": "زملاؤك من تخصصك، ومشرف لديه مقاعد متاحة",
+      "roles.student.c2.t": "تسليم المراحل",
+      "roles.student.c2.d": "ملف وملاحظة لكل مرحلة، وإعادة بعد التعديل",
+      "roles.student.c3.t": "نقاش الفريق",
+      "roles.student.c3.d": "قناة خاصة بالفريق، و@ لتنبيه زميل بعينه",
+      "roles.student.c4.t": "الأدوار والتذكير",
+      "roles.student.c4.d": "يوزّع القائد المسؤوليات، ويصل تذكير قبل كل موعد",
+      "roles.student.private": "نقاش الفريق الخاص لا يصل المشرف ولا الإدارة",
+      "roles.supervisor.c1.t": "قبول الطلبات",
+      "roles.supervisor.c1.d": "حسب مقاعده، مع تنبيه للفكرة المشابهة",
+      "roles.supervisor.c2.t": "خطة المراحل",
+      "roles.supervisor.c2.d": "مواعيد وقوالب تصل كل مجموعاته مرّة واحدة",
+      "roles.supervisor.c3.t": "المراجعة",
+      "roles.supervisor.c3.d": "اعتماد، أو «مطلوب تعديل» بسبب مكتوب",
+      "roles.supervisor.c4.t": "الدرجة",
+      "roles.supervisor.c4.d": "رصد بالتقدير والملاحظات، ثم اعتماد يقفلها",
+      "roles.supervisor.private": "يرى مجموعاته وحدها — ونقاش الفريق الخاص يبقى للفريق",
+      "roles.admin.c1.t": "إعداد الفصل",
+      "roles.admin.c1.d": "التخصصات وأنواع المشاريع وحدود الفرق والفصول",
+      "roles.admin.c2.t": "الحسابات",
+      "roles.admin.c2.d": "استيراد الطلاب والمشرفين من Excel دفعة واحدة",
+      "roles.admin.c3.t": "متابعة الفرق",
+      "roles.admin.c3.d": "المتأخّر والمتوقّف وما ينتظر المشرف، بنقرة",
+      "roles.admin.c4.t": "سجلّ التدقيق",
+      "roles.admin.c4.d": "كل قرار مسجّل، وفتح الدرجة المعتمدة بسبب مكتوب",
+      "roles.admin.private": "ترى كل شيء إلا نقاش الفرق الخاص — وكل قرار لها في السجلّ",
+      "roles.flow.label": "كيف تتصل الأدوار",
+      "roles.flow.1": "يسلّم المرحلة ويعدّل",
+      "roles.flow.2": "يعتمد ويرصد الدرجة",
+      "roles.flow.3": "تتابع الفصل كلّه",
+      "roles.scene.s.now": "ماذا عليّ الآن",
+      "roles.scene.s.stage": "الفصل الثالث — التحليل",
+      "roles.scene.s.due": "آخر موعد بعد يومين",
+      "roles.scene.s.submit": "تسليم المرحلة",
+      "roles.scene.s.progress": "إنجاز المشروع",
+      "roles.scene.v.review": "بانتظار مراجعتك",
+      "roles.scene.v.team": "فريق «التنبؤ بالتسرب»",
+      "roles.scene.v.round": "الفصل الثالث · الجولة 2",
+      "roles.scene.v.approve": "اعتماد",
+      "roles.scene.v.revise": "مطلوب تعديل",
+      "roles.scene.a.health": "متابعة الفرق",
+      "roles.scene.a.late": "مرحلة فات موعدها",
+      "roles.scene.a.review": "تسليم ينتظر المشرف",
+      "roles.scene.a.idle": "فريق متوقّف",
+      "roles.scene.a.roles": "فريق بلا أدوار",
       "lc.kicker": "لماذا تخرُّج",
       "lc.title": "ما يتغيّر حين يجتمع مشروعك في مكان واحد",
       "lc.text": "ستّ مشكلات يعرفها كل فريق تخرّج، وما تفعله المنصة بكلٍّ منها.",
@@ -402,7 +446,14 @@
       "how.4.text": "After the defense your supervisor records your grade, and once approved it's final.",
       "show.kicker": "From the platform",
       "show.title": "Projects Completed on Takharruj",
-      "show.text": "Not invented examples — projects teams actually completed on the platform, with their majors, semesters and team sizes.",
+      "show.text": "Not invented examples — projects teams actually completed on the platform, stage by stage.",
+      "show.stat.done": "completed projects",
+      "show.stat.avg": "average grade",
+      "show.stat.specs": "majors",
+      "show.stat.stages": "approved stages per project",
+      "show.stages": "approved stages",
+      "show.weeks": "weeks",
+      "show.more": "Sign in to browse the full project archive",
       "dept.kicker": "For departments",
       "dept.title": "The Whole Semester in One Place",
       "dept.text": "Instead of scattered spreadsheets and chat groups, Takharruj gives the department a single picture: who applied, who approved, where each team stands, and who has not joined a group yet.",
@@ -437,19 +488,56 @@
       "faq.7.text": "After the defense your supervisor records a grade out of 100 with a rating and notes, and the whole team is notified. Once approved it locks — only admins can reopen it, and that is logged.",
       "roles.kicker": "Platform roles",
       "roles.title": "A Dedicated Space for Every Role",
-      "roles.text": "Takharruj is built around three complementary roles, each with its own dashboard and permissions — so everyone knows exactly what's expected of them at every stage.",
+      "roles.text": "Three roles, each with its own dashboard and permissions — handing work to one another at the right moment. Pick a role to see its space.",
       "roles.student.name": "Student", "roles.student.role": "Team, submissions, discussion",
-      "roles.student.p1": "Form a team and pick a supervisor with open seats",
-      "roles.student.p2": "Submit stages and revise with supervisor feedback",
-      "roles.student.p3": "Private team chat and role assignment",
       "roles.supervisor.name": "Supervisor", "roles.supervisor.role": "Plan, review, evaluate",
-      "roles.supervisor.p1": "Accept team requests within their seats",
-      "roles.supervisor.p2": "A stage plan with templates for all groups",
-      "roles.supervisor.p3": "Review submissions, record and approve grades",
       "roles.admin.name": "Administration", "roles.admin.role": "Configure and organize the term",
-      "roles.admin.p1": "Manage specializations, project types, terms",
-      "roles.admin.p2": "Add supervisors and distribute groups",
-      "roles.admin.p3": "Audit log, and unlocking approved grades when needed",
+      "roles.student.c1.t": "Form your team",
+      "roles.student.c1.d": "Teammates from your major, and a supervisor with open seats",
+      "roles.student.c2.t": "Submit stages",
+      "roles.student.c2.d": "A file and a note per stage, resubmitted after changes",
+      "roles.student.c3.t": "Team chat",
+      "roles.student.c3.d": "A private team channel, with @ to ping a teammate",
+      "roles.student.c4.t": "Roles & reminders",
+      "roles.student.c4.d": "The leader assigns responsibilities; a reminder arrives before each deadline",
+      "roles.student.private": "The team's private chat never reaches the supervisor or admins",
+      "roles.supervisor.c1.t": "Accept requests",
+      "roles.supervisor.c1.d": "Within their seats, with a warning for similar ideas",
+      "roles.supervisor.c2.t": "Stage plan",
+      "roles.supervisor.c2.d": "Dates and templates sent to all their groups at once",
+      "roles.supervisor.c3.t": "Review",
+      "roles.supervisor.c3.d": "Approve, or \"changes requested\" with a written reason",
+      "roles.supervisor.c4.t": "Grade",
+      "roles.supervisor.c4.d": "Recorded with a rating and notes, then locked on approval",
+      "roles.supervisor.private": "Sees only their own groups — the team's private chat stays with the team",
+      "roles.admin.c1.t": "Set up the term",
+      "roles.admin.c1.d": "Majors, project types, team limits and semesters",
+      "roles.admin.c2.t": "Accounts",
+      "roles.admin.c2.d": "Import students and supervisors from Excel in one go",
+      "roles.admin.c3.t": "Team health",
+      "roles.admin.c3.d": "What's late, idle or waiting on a supervisor — one click away",
+      "roles.admin.c4.t": "Audit log",
+      "roles.admin.c4.d": "Every decision recorded; approved grades unlocked with a reason",
+      "roles.admin.private": "Sees everything except teams' private chats — and every action is logged",
+      "roles.flow.label": "How the roles connect",
+      "roles.flow.1": "Submits and revises",
+      "roles.flow.2": "Approves and grades",
+      "roles.flow.3": "Oversees the whole term",
+      "roles.scene.s.now": "What's on me now",
+      "roles.scene.s.stage": "Chapter 3 — Analysis",
+      "roles.scene.s.due": "Due in two days",
+      "roles.scene.s.submit": "Submit stage",
+      "roles.scene.s.progress": "Project progress",
+      "roles.scene.v.review": "Waiting for your review",
+      "roles.scene.v.team": "Team \"Dropout prediction\"",
+      "roles.scene.v.round": "Chapter 3 · Round 2",
+      "roles.scene.v.approve": "Approve",
+      "roles.scene.v.revise": "Request changes",
+      "roles.scene.a.health": "Team health",
+      "roles.scene.a.late": "Overdue stages",
+      "roles.scene.a.review": "Waiting on supervisor",
+      "roles.scene.a.idle": "Idle teams",
+      "roles.scene.a.roles": "Teams without roles",
       "lc.kicker": "Why Takharruj",
       "lc.title": "What Changes When Your Project Lives in One Place",
       "lc.text": "Six problems every graduation team knows — and what the platform does about each.",
@@ -816,7 +904,56 @@
 
     initBento();
     initContact();
+    initRoles();
   });
+
+  /* ---------- مستكشف الأدوار (القسم 05) ----------
+     تبويب لكل دور يبدّل لوحته، ويُضيء عقدته على خطّ «كيف تتصل الأدوار».
+     الأسهم تتنقّل بين التبويبات، ولا دوران تلقائي: القارئ يختار. بلا هذا
+     السكربت تظهر اللوحات الثلاث متتالية. */
+  function initRoles() {
+    var root = document.querySelector("[data-role-explorer]");
+    if (!root) return;
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+    var panels = root.querySelectorAll("[data-panel]");
+    var nodes = root.querySelectorAll("[data-node]");
+    root.classList.add("is-enhanced");
+
+    function show(role, focus) {
+      tabs.forEach(function (t) {
+        var on = t.dataset.role === role;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      });
+      panels.forEach(function (p) {
+        var on = p.dataset.panel === role;
+        p.hidden = !on;
+        // إعادة تشغيل حركة الدخول عند كل تبديل
+        if (on) { p.classList.remove("is-in"); void p.offsetWidth; p.classList.add("is-in"); }
+      });
+      nodes.forEach(function (n) { n.classList.toggle("is-active", n.dataset.node === role); });
+    }
+
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function () { show(t.dataset.role); });
+      t.addEventListener("keydown", function (e) {
+        // الاتجاه البصري يتبع لغة الصفحة: في RTL «اليسار» هو التالي
+        var rtl = document.documentElement.dir === "rtl";
+        var next = { ArrowLeft: rtl ? 1 : -1, ArrowRight: rtl ? -1 : 1, Home: -i, End: tabs.length - 1 - i }[e.key];
+        if (next === undefined) return;
+        e.preventDefault();
+        show(tabs[(i + next + tabs.length) % tabs.length].dataset.role, true);
+      });
+    });
+
+    // النقر على عقدة في الخطّ يفتح دورها أيضاً
+    nodes.forEach(function (n) {
+      n.addEventListener("click", function () { show(n.dataset.node); });
+    });
+
+    show(tabs[0].dataset.role);
+  }
 
   /* ---------- نموذج التواصل: إرسال في الخلفية ----------
      كان يُرسل فتُعاد الصفحة من رأسها — إلى الهيرو — فلا يرى المرسل أن
