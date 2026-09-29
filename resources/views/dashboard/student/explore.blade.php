@@ -128,7 +128,7 @@
                         </span>
                         <span class="group-fact">
                             <i class="ti ti-calendar" aria-hidden="true"></i>
-                            {{ $project->semester->name ?? '—' }}
+                            {{ $project->semester->label ?? '—' }}
                         </span>
                         <span class="group-fact">
                             <i class="ti ti-users" aria-hidden="true"></i>

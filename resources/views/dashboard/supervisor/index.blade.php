@@ -12,7 +12,7 @@
         $pendingRequests = $requests->count();
 
         // سطر الحال تحت الاسم: ما يعرفه المشرف في نظرة، بلا أرقام صفرية
-        $summary = [$semester->name];
+        $summary = [$semester->label];
         $summary[] = $groupsCount ? ($groupsCount === 1 ? 'مجموعة واحدة' : $groupsCount . ' مجموعات') : 'لا مجموعات بعد';
         $summary[] = $kpi['seats'] > 0
             ? ($kpi['seats'] === 1 ? 'مقعد متبقٍ' : $kpi['seats'] . ' مقاعد متبقية') . ' من ' . $kpi['max']

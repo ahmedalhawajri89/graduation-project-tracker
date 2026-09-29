@@ -67,7 +67,7 @@
     <section class="cmd-panel mb-4">
         <div class="cmd-context">
             <i class="ti ti-calendar-stats" aria-hidden="true"></i>
-            {{ $semester->name }}
+            {{ $semester->label }}
         </div>
 
         <div class="cmd-main">

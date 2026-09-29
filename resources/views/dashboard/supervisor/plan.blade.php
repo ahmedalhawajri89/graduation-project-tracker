@@ -17,7 +17,7 @@
     @endphp
 
     <x-page-header title="خطة المراحل"
-        subtitle="{{ $semester->name }} · المرحلة تُعرَّف مرّة فتصل إلى {{ $activeCount }} {{ $activeCount === 1 ? 'مجموعة' : 'مجموعات' }} جارية — وكل مجموعة تقبلها لاحقاً">
+        subtitle="{{ $semester->label }} · المرحلة تُعرَّف مرّة فتصل إلى {{ $activeCount }} {{ $activeCount === 1 ? 'مجموعة' : 'مجموعات' }} جارية — وكل مجموعة تقبلها لاحقاً">
         @if ($stages->isNotEmpty())
             <x-slot:actions>
                 <button type="button" class="btn btn-primary" data-plan-add aria-controls="stage-new">

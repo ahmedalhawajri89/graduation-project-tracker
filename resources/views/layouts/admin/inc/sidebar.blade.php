@@ -28,15 +28,15 @@
                     <svg viewBox="0 0 40 40">
                         <defs>
                             <linearGradient id="bm-tile" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0" stop-color="#27272a" />
-                                <stop offset="1" stop-color="#09090b" />
+                                <stop offset="0" stop-color="#3b82f6" />
+                                <stop offset="1" stop-color="#1d4ed8" />
                             </linearGradient>
                         </defs>
                         <rect width="40" height="40" rx="11" fill="url(#bm-tile)" />
                         <path class="bm-rail" d="M10.5 20h19" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-linecap="round" pathLength="1" />
                         <circle class="bm-node bm-n1" cx="10.5" cy="20" r="3.4" fill="#fff" />
                         <circle class="bm-node bm-n2" cx="20" cy="20" r="3.4" fill="#fff" />
-                        <circle class="bm-node bm-n3" cx="29.5" cy="20" r="3.4" fill="#09090b" stroke="#fff" stroke-width="2" />
+                        <circle class="bm-node bm-n3" cx="29.5" cy="20" r="3.4" fill="#1d4ed8" stroke="#fff" stroke-width="2" />
                     </svg>
                     <span class="brand-shine"></span>
                 </span>
@@ -57,7 +57,7 @@
             @isset($viewSemester)
                 {{-- الفصل والسنة منفصلان: كان الاسم كاملاً يلتفّ على سطرين --}}
                 @php $sbSem = $viewSemester->parts(); @endphp
-                <div class="sidebar-context sem-card" title="{{ $viewSemester->name }}">
+                <div class="sidebar-context sem-card" title="{{ $viewSemester->label }}">
                     <span class="sem-icon" aria-hidden="true"><i class="ti ti-calendar-event"></i></span>
                     <span class="sidebar-context-text">
                         {{-- السنة في سطر التسمية لا بجانب الاسم: كانت تأخذ عرضه فيُقصّ

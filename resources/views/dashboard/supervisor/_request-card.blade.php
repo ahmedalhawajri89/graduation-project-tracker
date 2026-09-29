@@ -47,7 +47,7 @@
             <span>
                 <b>يشبه {{ $similar->count() === 1 ? 'مشروعاً مكتملاً' : 'مشاريع مكتملة' }}:</b>
                 @foreach ($similar as $s)
-                    «{{ $s->title }}»<small> — {{ $s->semester?->name }}@if ($s->supervisor) · {{ $s->supervisor->name }}@endif</small>@if (! $loop->last)، @endif
+                    «{{ $s->title }}»<small> — {{ $s->semester?->label }}@if ($s->supervisor) · {{ $s->supervisor->name }}@endif</small>@if (! $loop->last)، @endif
                 @endforeach
             </span>
         </div>

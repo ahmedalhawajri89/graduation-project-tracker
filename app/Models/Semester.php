@@ -41,6 +41,17 @@ class Semester extends Model
      *
      * @return array{term: string, year: ?string}
      */
+    /**
+     * «الفصل الأول · 2022–23» — السنة معزولة LTR (LRI…PDI) فلا تنقلب داخل
+     * نصّ عربي إلى «2023\2022». نصّ خام يصلح داخل السمات أيضاً.
+     */
+    public function getLabelAttribute(): string
+    {
+        $p = $this->parts();
+
+        return $p['year'] ? $p['term'] . ' · ' . "\u{2066}" . $p['year'] . "\u{2069}" : $p['term'];
+    }
+
     public function parts(): array
     {
         $name = trim((string) $this->name);

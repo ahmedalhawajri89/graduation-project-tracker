@@ -37,7 +37,7 @@
                                 <td>
                                     <span class="fw-semibold">{{ $project->title }}</span>
                                     <div class="text-secondary small">
-                                        {{ $project->project_type->name }} · {{ $project->semester->name ?? '—' }}
+                                        {{ $project->project_type->name }} · {{ $project->semester->label ?? '—' }}
                                     </div>
                                 </td>
                                 <td>{{ $project->supervisor->name ?: '—' }}</td>

@@ -46,7 +46,7 @@
         @endphp
         <section class="dist-panel mb-4">
             <div class="dist-head">
-                <span>{{ $projects->first()->semester->name ?? 'فصل محذوف' }}</span>
+                <span>{{ $projects->first()->semester->label ?? 'فصل محذوف' }}</span>
                 <span class="dist-head-note">
                     {{ $projects->count() }} {{ $projects->count() === 1 ? 'مشروع' : 'مشاريع' }}
                     @if ($avg)

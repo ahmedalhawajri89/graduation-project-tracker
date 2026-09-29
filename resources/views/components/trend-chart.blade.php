@@ -179,7 +179,11 @@
                                 tooltip: {
                                     rtl: true,
                                     textDirection: 'rtl',
-                                    backgroundColor: ink,
+                                    backgroundColor: surface,
+                                    borderColor: rule,
+                                    borderWidth: 1,
+                                    titleColor: ink,
+                                    bodyColor: mute,
                                     padding: { x: 12, y: 9 },
                                     cornerRadius: 10,
                                     displayColors: false,

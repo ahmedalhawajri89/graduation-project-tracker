@@ -35,7 +35,7 @@
 
     {{-- بمشروع نشط: التحية داخل بطاقة المشروع — لا ترويسة فوقها تكرّرها --}}
     @unless ($activeProject)
-        <x-page-header title="أهلاً، {{ $student->name }}" subtitle="{{ $semester->name }}" />
+        <x-page-header title="أهلاً، {{ $student->name }}" subtitle="{{ $semester->label }}" />
     @endunless
 
     @if ($held)

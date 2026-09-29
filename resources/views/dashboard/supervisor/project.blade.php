@@ -57,7 +57,7 @@
     @endphp
 
     <x-page-header title="{{ $project->title }}"
-        subtitle="{{ $project->project_type->name }} · {{ $project->semester->name }}">
+        subtitle="{{ $project->project_type->name }} · {{ $project->semester->label }}">
         <x-slot:actions>
             <x-status-badge :status="$project->status" class="align-self-center" />
             <a href="{{ route('supervisor.discussion', $project->id) }}" class="btn btn-outline-secondary">
