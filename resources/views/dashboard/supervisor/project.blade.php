@@ -28,9 +28,18 @@
                 'href' => '#milestones'];
         }
 
+        // المناقشة المجدولة أو المنتهية: الدرجة تُرصد من لجنتها لا من هنا
+        $committee = \App\Support\DefenseGrading::defenseFor($project);
+
         if ($project->status === 'complete' && is_null($project->grade)) {
-            $todos[] = ['icon' => 'ti-award', 'tone' => 'is-warn', 'n' => null,
-                'label' => 'المشروع مكتمل ولم تُرصد درجته', 'href' => '#grade'];
+            $todos[] = $committee
+                ? ['icon' => 'ti-presentation', 'tone' => 'is-warn', 'n' => null,
+                    'label' => $committee->starts_at->isFuture()
+                        ? 'المناقشة ' . $committee->starts_at->translatedFormat('l j F') . ' · ' . $committee->starts_at->format('H:i') . ' — الدرجة من اللجنة'
+                        : 'نوقش المشروع — ارصد درجتك في اللجنة',
+                    'href' => route('supervisor.defenses.show', $committee->id) . '#grade']
+                : ['icon' => 'ti-award', 'tone' => 'is-warn', 'n' => null,
+                    'label' => 'المشروع مكتمل ولم تُرصد درجته', 'href' => '#grade'];
         }
 
         if ($unread) {
@@ -151,6 +160,19 @@
                     </div>
                 </div>
             @else
+                @if ($committee)
+                    {{-- الدرجة متوسط درجات لجنة المناقشة، تُرصد من صفحتها --}}
+                    <div class="dsv-committee-note">
+                        <i class="ti ti-presentation" aria-hidden="true"></i>
+                        <span>
+                            تُرصد الدرجة من لجنة المناقشة — متوسط درجتك ودرجة الممتحن.
+                            @if (! is_null($project->grade))
+                                الحالية <b>{{ $fmtGrade($project->grade) }}</b> ({{ $project->grade_label }}).
+                            @endif
+                        </span>
+                        <a href="{{ route('supervisor.defenses.show', $committee->id) }}#grade" class="btn btn-primary btn-sm">صفحة المناقشة</a>
+                    </div>
+                @else
                 <form action="{{ route('supervisor.project.evaluate', ['project' => $project->id]) }}" method="POST"
                     class="grade-form">
                     @csrf
@@ -173,6 +195,7 @@
                         <div class="text-danger small">{{ $message }}</div>
                     @enderror
                 </form>
+                @endif
 
                 {{-- الاعتماد فعل منفصل عن الحفظ: الدرجة تُراجَع
                      وتُعدَّل مرّات، ثم تُعتمد مرّة واحدة. --}}

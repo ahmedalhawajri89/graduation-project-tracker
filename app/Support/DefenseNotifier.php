@@ -16,9 +16,15 @@ class DefenseNotifier
     /** «الأحد 12 أكتوبر 2026 · 10:00–10:45 · قاعة 204» */
     public static function when(Defense $d): string
     {
+        // المدى معزول LTR (LRI…PDI): داخل نصّ عربي كان «10:00–10:45» يُقرأ «10:45–10:00»
         return $d->starts_at->translatedFormat('l j F Y')
-            . ' · ' . $d->starts_at->format('H:i') . '–' . $d->endsAt()->format('H:i')
+            . ' · ' . self::range($d)
             . ' · ' . $d->place_label;
+    }
+
+    public static function range(Defense $d): string
+    {
+        return "\u{2066}" . $d->starts_at->format('H:i') . '–' . $d->endsAt()->format('H:i') . "\u{2069}";
     }
 
     public static function scheduled(Defense $d): void

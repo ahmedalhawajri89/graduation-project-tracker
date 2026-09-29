@@ -91,6 +91,14 @@ class Project extends Model
         return $this->hasMany(Group::class, 'project_id', 'id');
     }
 
+    /** عضو في لجنة مناقشته (غير الملغاة) — للممتحن حقّ الاطّلاع على ملفاته */
+    public function hasCommitteeMember(int $supervisorId): bool
+    {
+        return \App\Support\DefenseScheduler::enabled()
+            && $this->defense()->where('status', '!=', Defense::CANCELLED)
+                ->whereHas('members', fn ($q) => $q->where('supervisor_id', $supervisorId))->exists();
+    }
+
     /** المناقشة: واحدة لكل مشروع (المجدولة أو المنتهية أو الملغاة) */
     public function defense()
     {

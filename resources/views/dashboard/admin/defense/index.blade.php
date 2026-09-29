@@ -193,8 +193,8 @@
                     @php
                         [$label, $tone] = match (true) {
                             $d->status === Defense::CANCELLED => ['ملغاة', 'is-muted'],
-                            $d->status === Defense::DONE => ['منتهية', 'is-done'],
-                            default => ['بانتظار الدرجة', 'is-wait'],
+                            $d->status === Defense::DONE => ['منتهية · ' . rtrim(rtrim(number_format((float) $d->project->grade, 2, '.', ''), '0'), '.'), 'is-done'],
+                            default => ['بانتظار الدرجة · ' . $d->members->whereNotNull('grade')->count() . ' من ' . $d->members->count(), 'is-wait'],
                         };
                     @endphp
                     <a href="{{ route('admin.groups.show', $d->project_id) }}" class="df-past-row">

@@ -389,6 +389,12 @@ class ProjectManageController extends Controller
             return redirect()->back()->with('fail', 'لا يمكن التقييم قبل اكتمال المشروع');
         }
 
+        // للمشروع مناقشة: الدرجة متوسط درجات لجنتها، تُرصد من صفحتها
+        if ($committee = \App\Support\DefenseGrading::defenseFor($project)) {
+            return redirect()->route('supervisor.defenses.show', $committee->id)
+                ->with('fail', 'درجة هذا المشروع تُرصد من لجنة المناقشة.');
+        }
+
         // الحراسة على الخادم لا في الواجهة وحدها: إخفاء النموذج لا
         // يمنع طلباً مُلفَّقاً، والدرجة المعتمدة هي ما يُتنازَع عليه
         if ($project->isGradeLocked()) {

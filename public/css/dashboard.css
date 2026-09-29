@@ -9324,3 +9324,90 @@ a.df-title:hover { color: var(--ds-accent); }
 /* شريحة المناقشة في بطاقة الطالب: رابط الاجتماع وإضافتها إلى التقويم */
 .hero-defense-links { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 .upcoming-item.is-defense .upcoming-title i { color: var(--ds-accent); margin-inline-end: 2px; }
+
+/* ==================== مناقشاتي (المشرف والممتحن) ==================== */
+.dsv-block { margin-bottom: 22px; }
+.dsv-title { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--ds-ink); }
+.dsv-title span { padding: 0 8px; border-radius: 99px; background: var(--ds-surface-sunk); font-size: 12px; color: var(--ds-ink-mute); }
+.dsv-title.is-warn i { color: #b45309; }
+.dsv-title.is-warn span { background: #fffbeb; color: #b45309; }
+a.df-slot { text-decoration: none; color: inherit; }
+.dsv-slot.is-warn { border-color: #fde68a; background: linear-gradient(90deg, #fffbeb, var(--ds-surface) 60%); }
+[dir="rtl"] .dsv-slot.is-warn { background: linear-gradient(270deg, #fffbeb, var(--ds-surface) 60%); }
+.dsv-role { padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; }
+.dsv-role.is-supervisor { background: var(--ds-accent-soft); color: var(--ds-accent-strong); }
+.dsv-role.is-examiner { background: #f5f3ff; color: #6d28d9; }
+
+.dsv-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+.dsv-main, .dsv-side { display: flex; flex-direction: column; gap: 14px; }
+.dsv-side { position: sticky; top: 76px; }
+.dsv-card { border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); background: var(--ds-surface); padding: 16px 18px; }
+.dsv-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.dsv-card-head > span:first-child { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 800; color: var(--ds-ink); }
+.dsv-card-head > span:first-child i { color: var(--ds-accent); }
+.dsv-progress { font-size: 12px; color: var(--ds-ink-mute); }
+
+.dsv-grade { border-color: var(--ds-brand-200); background: radial-gradient(90% 120% at 100% 0%, rgba(37, 99, 235, .06), transparent 60%), var(--ds-surface); }
+.dsv-final { display: flex; align-items: center; gap: 14px; padding: 12px 14px; margin-bottom: 12px; border-radius: 14px; background: var(--ds-accent); color: #fff; }
+.dsv-final > b { font-size: 34px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.dsv-final > span { display: flex; flex-direction: column; }
+.dsv-final strong { font-size: 13.5px; }
+.dsv-final em { font-style: normal; font-size: 12px; opacity: .85; }
+
+.dsv-members { list-style: none; margin: 0 0 12px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.dsv-members > li:not(.dsv-comment) { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--ds-border); border-radius: 12px; }
+.dsv-members > li.is-me { border-color: var(--ds-brand-200); background: var(--ds-accent-soft); }
+.dsv-av { width: 32px !important; height: 32px !important; font-size: 11px; }
+.dsv-member-body { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.dsv-member-body b { font-size: 13.5px; color: var(--ds-ink); }
+.dsv-member-body b em, .dsv-team b em { margin-inline-start: 6px; padding: 0 7px; border-radius: 99px; background: var(--ds-accent); color: #fff; font-style: normal; font-size: 10.5px; }
+.dsv-member-body small { font-size: 12px; color: var(--ds-ink-mute); }
+.dsv-state { padding: 3px 11px; border-radius: 99px; font-size: 12.5px; font-weight: 800; white-space: nowrap; }
+.dsv-state.is-wait { background: var(--ds-surface-sunk); color: var(--ds-ink-mute); font-weight: 600; }
+.dsv-state.is-done { background: #ecfdf5; color: #047857; }
+.dsv-comment { display: flex; gap: 6px; margin: -2px 12px 2px; font-size: 12.5px; color: var(--ds-ink-soft); line-height: 1.7; }
+.dsv-comment i { color: var(--ds-ink-mute); }
+.dsv-blocker { display: flex; align-items: center; gap: 8px; margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--ds-surface-sunk); font-size: 13px; color: var(--ds-ink-soft); }
+
+.dsv-form { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 12px; padding-top: 12px; border-top: 1px dashed var(--ds-border); }
+.dsv-form-score input { font-size: 20px; font-weight: 800; text-align: center; }
+.dsv-form-foot { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+.dsv-desc { margin: 0; font-size: 14px; line-height: 1.9; color: var(--ds-ink-soft); }
+.dsv-ms { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.dsv-ms li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 0; font-size: 13.5px; color: var(--ds-ink-soft); }
+.dsv-ms li + li { border-top: 1px solid var(--ds-border); }
+.dsv-ms li i { color: var(--ds-ink-mute); }
+.dsv-ms li.is-done i { color: #047857; }
+.dsv-ms small { font-size: 12px; color: var(--ds-ink-mute); }
+.dsv-files { display: flex; flex-direction: column; gap: 8px; }
+.dsv-file { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--ds-border); border-radius: 12px; text-decoration: none; color: inherit; }
+.dsv-file:hover { border-color: var(--ds-brand-200); }
+.dsv-file-ext { display: grid; place-items: center; min-width: 40px; height: 32px; padding: 0 6px; border-radius: 8px; background: #fff1f2; color: #be123c; font-size: 10.5px; font-weight: 800; }
+.dsv-file-body { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.dsv-file-body b { font-size: 13.5px; color: var(--ds-ink); }
+.dsv-file-body small { font-size: 11.5px; color: var(--ds-ink-mute); }
+.dsv-file > i { color: var(--ds-accent); }
+
+.dsv-facts { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.dsv-facts > div { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; }
+.dsv-facts dt { font-weight: 500; color: var(--ds-ink-mute); }
+.dsv-facts dd { margin: 0; font-weight: 700; color: var(--ds-ink); text-align: end; }
+.dsv-notes { display: flex; gap: 6px; margin: 12px 0 0; padding: 9px 11px; border-radius: 10px; background: var(--ds-accent-soft); font-size: 12.5px; color: var(--ds-accent-strong); line-height: 1.7; }
+.dsv-team { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.dsv-team li { display: flex; align-items: center; gap: 10px; }
+.dsv-team li > span { display: flex; flex-direction: column; min-width: 0; }
+.dsv-team b { font-size: 13.5px; color: var(--ds-ink); }
+.dsv-team small { font-size: 12px; color: var(--ds-ink-mute); }
+
+/* صفحة المشروع: الدرجة من لجنة المناقشة */
+.dsv-committee-note { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 12px; padding: 12px 14px; border-radius: 12px; background: var(--ds-accent-soft); font-size: 13px; color: var(--ds-accent-strong); }
+.dsv-committee-note .btn { margin-inline-start: auto; }
+
+@media (max-width: 991.98px) {
+    .dsv-grid { grid-template-columns: 1fr; }
+    .dsv-side { position: static; }
+}
+@media (max-width: 560px) {
+    .dsv-form { grid-template-columns: 1fr; }
+}

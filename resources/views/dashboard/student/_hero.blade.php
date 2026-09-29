@@ -26,6 +26,7 @@
         : null;
 
     $deadline = match (true) {
+        $defense && $defense->endsAt()->isPast() => ['is-done', 'ti-presentation', 'نوقش المشروع — بانتظار درجة اللجنة'],
         (bool) $defense => [$defense->starts_at->isToday() ? 'is-warn' : '', 'ti-presentation',
             'مناقشتك ' . ($defense->starts_at->isToday() ? 'اليوم' : ($defense->starts_at->isTomorrow() ? 'غداً' : $defense->starts_at->translatedFormat('l j F')))
             . ' · ' . $defense->starts_at->format('H:i') . ' · ' . $defense->place_label],

@@ -24,7 +24,9 @@ class FileController extends Controller
         if ($isAdmin) {
             $allowed = true;
         } elseif (auth('supervisor')->check()) {
-            $allowed = (int) $project->supervisor_id === (int) auth('supervisor')->id();
+            // مشرف المشروع، أو عضو لجنة مناقشته (الممتحن يحضّر من ملفاته)
+            $allowed = (int) $project->supervisor_id === (int) auth('supervisor')->id()
+                || $project->hasCommitteeMember((int) auth('supervisor')->id());
         } elseif (auth('student')->check()) {
             $allowed = $project->group()
                 ->where('student_id', auth('student')->id())
@@ -82,7 +84,8 @@ class FileController extends Controller
 
         $allowed = match (true) {
             auth('admin')->check() => true,
-            auth('supervisor')->check() => (int) $project->supervisor_id === (int) auth('supervisor')->id(),
+            auth('supervisor')->check() => (int) $project->supervisor_id === (int) auth('supervisor')->id()
+                || $project->hasCommitteeMember((int) auth('supervisor')->id()),
             auth('student')->check() => $project->group()->where('student_id', auth('student')->id())->exists(),
             default => false,
         };

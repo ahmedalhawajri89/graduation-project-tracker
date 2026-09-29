@@ -95,6 +95,8 @@ class DefenseController extends Controller
                 'scheduled_by' => auth('admin')->id(),
             ]);
             DefenseScheduler::syncMembers($defense, $project, $data['examiner_id']);
+            // مناقشة ملغاة يُعاد استعمال صفّها: لا تُحمل درجاتها القديمة إلى الجديدة
+            $defense->members()->update(['grade' => null, 'comments' => null, 'graded_at' => null]);
 
             return $defense;
         });
@@ -110,6 +112,11 @@ class DefenseController extends Controller
     public function update(Request $request, Defense $defense)
     {
         $project = $defense->project()->with('project_type')->firstOrFail();
+
+        if ($defense->members()->whereNotNull('grade')->exists()) {
+            return back()->with('fail', 'بدأت اللجنة رصد الدرجات — لا يُعدَّل موعد مناقشة جرت.');
+        }
+
         $data = $this->validated($request);
 
         if ($errors = DefenseScheduler::conflicts($project, $data, $defense)) {
@@ -137,6 +144,10 @@ class DefenseController extends Controller
 
         if ($defense->status !== Defense::SCHEDULED) {
             return back()->with('fail', 'المناقشة ليست مجدولة.');
+        }
+
+        if ($defense->members()->whereNotNull('grade')->exists()) {
+            return back()->with('fail', 'بدأت اللجنة رصد الدرجات — لا تُلغى مناقشة جرت.');
         }
 
         $defense->update(['status' => Defense::CANCELLED]);

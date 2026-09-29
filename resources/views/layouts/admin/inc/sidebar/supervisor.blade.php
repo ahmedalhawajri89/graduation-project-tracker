@@ -13,6 +13,27 @@
     </a>
 </li>
 
+{{-- مناقشاتي: لجان هو عضو فيها، والعدد ما ينتظر درجته --}}
+@if (\App\Support\DefenseScheduler::enabled())
+    @php
+        $defensesToGrade = \App\Models\DefenseMember::where('supervisor_id', auth('supervisor')->id())
+            ->whereNull('grade')
+            ->whereHas('defense', fn ($q) => $q->whereIn('status', ['scheduled', 'done'])->where('starts_at', '<=', now())
+                ->whereHas('project', fn ($p) => $p->whereNull('grade_locked_at')))
+            ->count();
+    @endphp
+    {{-- ظاهر دائماً: بلا مناقشات تشرح الصفحة متى تظهر فيها --}}
+    <li class="nav-item {{ request()->routeIs('supervisor.defenses.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('supervisor.defenses.index') }}">
+                <span class="nav-link-icon"><i class="ti ti-presentation"></i></span>
+                <span class="nav-link-title">مناقشاتي</span>
+                @if ($defensesToGrade > 0)
+                    <span class="sidebar-count">{{ $defensesToGrade }}</span>
+                @endif
+            </a>
+        </li>
+@endif
+
 {{-- النقاش تبويب لا قسم في ذيل صفحة كل مشروع --}}
 <li class="nav-item {{ request()->routeIs('supervisor.discussion') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('supervisor.discussion') }}">

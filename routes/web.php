@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DefenseController;
+use App\Http\Controllers\Supervisor\DefenseController as SupervisorDefenseController;
 use App\Http\Controllers\Admin\GroupsController;
 use App\Http\Controllers\Admin\semesterController;
 use App\Http\Controllers\Admin\SpecializeController;
@@ -208,6 +209,10 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
 
         // أرشيف مشاريعي (يجب أن يسبق مسار {project} حتى لا تُلتقط كلمة archive كمعرّف)
         Route::get('/projects/archive', [ProjectManageController::class, 'archive'])->name('projects.archive');
+        // مناقشاتي: اللجان التي هو عضو فيها — ملف المشروع ورصد الدرجة
+        Route::get('/defenses', [SupervisorDefenseController::class, 'index'])->name('defenses.index');
+        Route::get('/defenses/{defense}', [SupervisorDefenseController::class, 'show'])->name('defenses.show');
+        Route::post('/defenses/{defense}/grade', [SupervisorDefenseController::class, 'grade'])->name('defenses.grade');
 
         // صفحة إدارة المشروع
         Route::get('/projects/{project}', [ProjectManageController::class, 'show'])->name('projects.show');
