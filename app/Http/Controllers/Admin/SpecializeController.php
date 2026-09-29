@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SpecializeRequest;
+use App\Models\Project;
+use App\Models\Semester;
 use App\Models\Specialize;
 use App\Support\Audit;
 
@@ -25,29 +27,68 @@ class SpecializeController extends Controller
      */
     public function index()
     {
+        $semesterId = Semester::current()->id;
+        // المشروع الجاري: مقبول أو مكتمل في الفصل الحالي
+        // الأعمدة مؤهَّلة بجدولها: الشرط نفسه يُستعمل مع ربط جدولَي المشرفين والأنواع
+        $running = fn ($q) => $q->whereIn('projects.status', ['accept', 'complete'])->where('projects.semester_id', $semesterId);
+
         $specializes = Specialize::withCount([
             'students',
             'supervisors',
             'supervisorsAvailable',
             'projects',
+            // «كم طالباً ما زال بلا فريق؟» — وكانت البطاقة لا تجيبه. التعريف نفسه
+            // الذي يرشّح به جدول الطلاب (\u200Egroup=none\u200E) فيطابق الرقمُ القائمةَ التي يفتحها
+            'students as students_in_team_count' => fn ($q) => $q->whereHas('groups.project',
+                fn ($p) => $p->whereIn('status', ['accept', 'complete'])),
         ])
-            // الأسماء نفسها لا عددها: «ما الأنواع المعرَّفة تحته؟» سؤال
-            // كان يحتاج نقرة وانتقالاً إلى صفحة أخرى لكل تخصص
-            ->with(['projects' => fn ($q) => $q->select('id', 'specialize_id', 'name', 'min', 'max')->orderBy('name')])
+            // سعة الإشراف: مجموع حدود المشرفين، تقابلها المقاعد المشغولة أدناه
+            ->withSum('supervisors as seats_total', 'max_group')
+            // الأسماء نفسها لا عددها، وكم مشروعاً جارياً على كلٍّ منها
+            ->with(['projects' => fn ($q) => $q->select('id', 'specialize_id', 'name', 'min', 'max')
+                ->withCount(['projects as current_count' => $running])
+                ->orderBy('name')])
             // النشطة أولاً: الموقوفة أرشيف يُراجَع لا عملٌ يومي
             ->orderByRaw('archived_at is not null')
             ->orderBy('name')
             ->get();
 
+        // استعلاما تجميع لكل التخصصات معاً — لا استعلام لكل بطاقة
+        $seatsUsed = Project::query()->tap($running)
+            ->join('supervisors', 'supervisors.id', '=', 'projects.supervisor_id')
+            ->selectRaw('supervisors.specialize_id, COUNT(*) as total')
+            ->groupBy('supervisors.specialize_id')
+            ->pluck('total', 'specialize_id');
+
+        $runningProjects = Project::query()->tap($running)
+            ->join('specialize_projects', 'specialize_projects.id', '=', 'projects.specialize_project_id')
+            ->selectRaw('specialize_projects.specialize_id, COUNT(*) as total')
+            ->groupBy('specialize_projects.specialize_id')
+            ->pluck('total', 'specialize_id');
+
+        foreach ($specializes as $spec) {
+            $spec->seats_total = (int) $spec->seats_total;
+            $spec->seats_used = (int) ($seatsUsed[$spec->id] ?? 0);
+            $spec->running_count = (int) ($runningProjects[$spec->id] ?? 0);
+        }
+
         $showArchived = request('view') === 'archived';
+        $active = $specializes->reject->isArchived();
 
         return view('dashboard.admin.setting.specialize.index', [
-            'specializes' => $showArchived
-                ? $specializes->filter->isArchived()
-                : $specializes->reject->isArchived(),
-            'countActive' => $specializes->reject->isArchived()->count(),
+            'specializes' => $showArchived ? $specializes->filter->isArchived() : $active,
+            'countActive' => $active->count(),
             'countArchived' => $specializes->filter->isArchived()->count(),
             'showArchived' => $showArchived,
+            // الملخّص من المجموعات نفسها — للنشطة وحدها
+            'summary' => [
+                'students' => $active->sum('students_count'),
+                'withoutTeam' => $active->sum(fn ($s) => $s->students_count - $s->students_in_team_count),
+                'seatsFree' => $active->sum(fn ($s) => max(0, $s->seats_total - $s->seats_used)),
+                'seatsTotal' => $active->sum('seats_total'),
+                'running' => $active->sum('running_count'),
+                'ready' => $active->filter(fn ($s) => $s->projects_count > 0 && $s->supervisors_available_count > 0)->count(),
+            ],
         ]);
     }
 
