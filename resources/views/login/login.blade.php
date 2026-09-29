@@ -15,15 +15,7 @@
 </head>
 
 <body class="auth-body">
-    {{-- مسار المنصة يمرّ خلف البطاقة: مرحلتان مضتا يميناً واثنتان قادمتان يساراً --}}
-    <div class="auth-path" aria-hidden="true">
-        <span class="line"></span>
-        <span class="pulse-track"><span class="pulse"></span></span>
-        <span class="node done n1"></span><span class="step n1" data-l="s1">تقديم الطلب</span>
-        <span class="node done n2"></span><span class="step n2" data-l="s2">موافقة المشرف</span>
-        <span class="node todo n3"></span><span class="step n3" data-l="s3">متابعة التنفيذ</span>
-        <span class="node todo n4"></span><span class="step n4" data-l="s4">المناقشة والتقييم</span>
-    </div>
+    @include('login._path')
 
     <main class="auth-col">
         <div class="login-card @if (Session::get('fail') || $errors->any()) has-error @endif">
@@ -135,6 +127,7 @@
                     note: 'There is no self sign-up — accounts are created by the department. Contact them if you cannot sign in.',
                     back: 'Back to the site', rights: 'Takharruj — All rights reserved',
                     s1: 'Request', s2: 'Supervisor approval', s3: 'Execution', s4: 'Defense & grading',
+                    'st-done': 'Done', 'st-next': 'Next', 'st-todo': 'Later',
                     docTitle: 'Sign in — Takharruj', busy: 'Signing in…', show: 'Show password', hide: 'Hide password',
                     msgs: {
                         'أدخل بريدك الإلكتروني أو رقمك الجامعي.': 'Enter your email or university ID.',

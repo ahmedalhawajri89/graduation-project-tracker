@@ -22,15 +22,7 @@
 </head>
 
 <body class="auth-body">
-    {{-- مسار المنصة يمرّ خلف البطاقة: مرحلتان مضتا يميناً واثنتان قادمتان يساراً --}}
-    <div class="auth-path" aria-hidden="true">
-        <span class="line"></span>
-        <span class="pulse-track"><span class="pulse"></span></span>
-        <span class="node done n1"></span><span class="step n1">تقديم الطلب</span>
-        <span class="node done n2"></span><span class="step n2">موافقة المشرف</span>
-        <span class="node todo n3"></span><span class="step n3">متابعة التنفيذ</span>
-        <span class="node todo n4"></span><span class="step n4">المناقشة والتقييم</span>
-    </div>
+    @include('login._path')
 
     <main class="auth-col">
         <div class="login-card @if (Session::get('fail') || $errors->any()) has-error @endif">

@@ -4,7 +4,7 @@
 @section('card')
     <h2>كلمة سر جديدة</h2>
     <p class="login-lead">
-        اختر كلمة سر لا تقلّ عن ٨ أحرف. ستُستعمل للدخول بعد الحفظ مباشرةً.
+        اختر كلمة سر لا تقلّ عن 8 أحرف. ستُستعمل للدخول بعد الحفظ مباشرةً.
     </p>
 
     @if ($errors->any())
@@ -31,7 +31,7 @@
             <label class="form-label" for="password">كلمة السر الجديدة</label>
             <div class="password-wrapper">
                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror"
-                    name="password" placeholder="٨ أحرف على الأقل" required minlength="8"
+                    name="password" placeholder="8 أحرف على الأقل" required minlength="8"
                     autocomplete="new-password" autofocus>
                 <button type="button" class="toggle-password" aria-label="إظهار كلمة السر" data-target="password">
                     <i class="ti ti-eye"></i>
