@@ -151,8 +151,18 @@ class EditDrawerTest extends TestCase
         $this->assertNotSame($other->email, $student->fresh()->email);
     }
 
-    /** فشل الإضافة يعيد فتح نافذتها — كانت تُغلق فتضيع الرسالة */
-    public function test_a_failed_create_reopens_the_create_modal(): void
+    /** درج الإضافة المعاد فتحه بعد فشل، أو بعد «حفظ وإضافة آخر» */
+    private function createReopen(string $html): ?array
+    {
+        if (! preg_match('/id="createDrawer"[^>]*data-reopen="([^"]+)"/', $html, $m)) {
+            return null;
+        }
+
+        return json_decode(html_entity_decode($m[1], ENT_QUOTES), true);
+    }
+
+    /** فشل الإضافة يعيد فتح درجها بقيمها — كانت النافذة تُغلق فتضيع الرسالة */
+    public function test_a_failed_create_reopens_the_create_drawer(): void
     {
         $this->actingAs($this->admin, 'admin')
             ->from(route('admin.students.index'))
@@ -161,8 +171,68 @@ class EditDrawerTest extends TestCase
 
         $html = $this->get(route('admin.students.index'))->getContent();
 
-        $this->assertStringContainsString("getElementById('createModal')).show()", $html);
-        $this->assertStringNotContainsString('data-reopen=', $html);
+        $this->assertSame('طالب بلا بيانات', $this->createReopen($html)['old']['name'] ?? null);
+        // درج التعديل لا يُعاد فتحه لخطأ الإضافة
+        $this->assertDoesNotMatchRegularExpression('/id="editDrawer"[^>]*data-reopen=/', $html);
+    }
+
+    /** «حفظ وإضافة آخر» يحفظ ويعيد فتح الدرج فارغاً للتالي */
+    public function test_save_and_add_another_reopens_an_empty_drawer(): void
+    {
+        $specialize = \App\Models\Specialize::whereNull('archived_at')->first();
+
+        $this->actingAs($this->admin, 'admin')
+            ->from(route('admin.students.index'))
+            ->post(route('admin.students.store'), [
+                'name' => 'طالب متتالٍ',
+                'university_id' => '2300099911',
+                'specialize_id' => $specialize->id,
+                'email' => 'batch.one@student.test',
+                'phone' => '0599000222',
+                'gender' => 'male',
+                'password' => 'Batch-Pass-2026',
+                'another' => '1',
+            ])
+            ->assertSessionHas('success', 'تمت إضافة «طالب متتالٍ»')
+            ->assertSessionHas('reopen_create', true);
+
+        $this->assertTrue(Student::where('email', 'batch.one@student.test')->exists());
+
+        $reopen = $this->createReopen($this->get(route('admin.students.index'))->getContent());
+        $this->assertSame([], $reopen['record'] ?? null);
+        $this->assertNull($reopen['old']);
+    }
+
+    /** خطأ ملف الاستيراد يعيد فتح نافذة الاستيراد، لا درج الإضافة */
+    public function test_an_import_error_does_not_open_the_create_drawer(): void
+    {
+        $this->actingAs($this->admin, 'admin')
+            ->from(route('admin.students.index'))
+            ->post(route('admin.students.import'), ['attachment' => \Illuminate\Http\UploadedFile::fake()->create('x.pdf', 10)])
+            ->assertSessionHasErrors('attachment');
+
+        $html = $this->get(route('admin.students.index'))->getContent();
+
+        $this->assertNull($this->createReopen($html));
+        $this->assertStringContainsString("getElementById('importModal')).show()", $html);
+    }
+
+    /** القالب لكل نوع بأعمدة المستورِد نفسها — كان ملفاً واحداً بلا \u200Emax_group\u200E */
+    public function test_each_import_template_has_its_importers_columns(): void
+    {
+        \Maatwebsite\Excel\Facades\Excel::fake();
+        $this->actingAs($this->admin, 'admin');
+
+        $this->get(route('admin.students.template'))->assertOk();
+        \Maatwebsite\Excel\Facades\Excel::assertDownloaded('students_template.xlsx', function (\App\Exports\ImportTemplate $t) {
+            return $t->headings() === ['name', 'university_id', 'email', 'phone', 'specialization', 'gender', 'password']
+                && \App\Models\Specialize::where('name', $t->array()[0][4])->exists();
+        });
+
+        $this->get(route('admin.supervisors.template'))->assertOk();
+        \Maatwebsite\Excel\Facades\Excel::assertDownloaded('supervisors_template.xlsx', function (\App\Exports\ImportTemplate $t) {
+            return in_array('max_group', $t->headings(), true);
+        });
     }
 
     public function test_the_three_tables_open_the_drawer(): void

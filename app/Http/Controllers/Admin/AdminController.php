@@ -106,7 +106,9 @@ class AdminController extends Controller
             // إنشاء حساب بصلاحية كاملة على النظام أثرٌ يجب أن يُعرف
             Audit::record('admin.created', $created);
 
-            return redirect()->route("admin.administrators.index")->with('success', "تم اضافة السجل بنجاح");
+            return redirect()->route("admin.administrators.index")
+                ->with('success', "تمت إضافة «{$created->name}»")
+                ->with('reopen_create', $request->boolean('another'));
 
         } catch (\Exception$ex) {
 

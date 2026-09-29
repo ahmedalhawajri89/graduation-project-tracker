@@ -182,8 +182,12 @@ class StudentController extends Controller
                 $data['password'] = bcrypt($request->password);
             }
 
-            Student::create($data);
-            return redirect()->route("admin.students.index")->with('success', "تم اضافة السجل بنجاح");
+            $created = Student::create($data);
+
+            // «حفظ وإضافة آخر»: الدرج يُعاد فتحه فارغاً للتالي
+            return redirect()->route("admin.students.index")
+                ->with('success', "تمت إضافة «{$created->name}»")
+                ->with('reopen_create', $request->boolean('another'));
 
         } catch (\Exception $ex) {
 
@@ -265,6 +269,12 @@ class StudentController extends Controller
      * استيراد متزامن بتقرير: كان في الطابور بلا تحقّق، يقول «بدأت عملية الرفع
      * بنجاح» ثم يفشل بصمت إن لم يعمل عامل أو كان في الملف صفّ معطوب.
      */
+    /** قالب الاستيراد بأعمدته الصحيحة وصفّ مثال — انظر \App\Exports\ImportTemplate */
+    public function template()
+    {
+        return Excel::download(new \App\Exports\ImportTemplate('student'), 'students_template.xlsx');
+    }
+
     public function import(UploadExcelFileRequest $request)
     {
         $import = new StudentsImport(auth('admin')->id());

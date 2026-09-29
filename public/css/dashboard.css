@@ -8290,3 +8290,114 @@ a.at-subject:hover { text-decoration-color: currentColor; }
     .at-stat-n { font-size: 22px; }
 }
 
+
+/* ==================== درج الإضافة ==================== */
+.ed-avatar.is-new {
+    background: var(--ds-surface);
+    color: var(--ds-ink-mute);
+    border: 2px dashed var(--ds-border-strong);
+    box-shadow: none;
+    font-size: 22px;
+}
+.ed-who b.is-placeholder { color: var(--ds-ink-mute); font-weight: 600; }
+.ed-foot .btn-outline-primary { white-space: nowrap; }
+.ed-warning {
+    display: flex; align-items: flex-start; gap: 8px;
+    margin: 14px 0 0; padding: 10px 12px;
+    border: 1px solid #fde68a; border-radius: var(--ds-radius-md);
+    background: var(--ds-warning-bg);
+    font-size: 12.5px; line-height: 1.7; color: #92400e;
+}
+.ed-warning .ti { font-size: 17px; flex: none; margin-top: 1px; }
+
+/* ==================== نافذة الاستيراد ==================== */
+.im-modal .modal-header { align-items: flex-start; }
+.im-sub { margin: 4px 0 0; font-size: 12.5px; color: var(--ds-ink-mute); }
+.im-steps { list-style: none; margin: 0 0 14px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.im-steps li {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--ds-border); border-radius: var(--ds-radius-md);
+    background: var(--ds-surface);
+}
+.im-steps li > div { flex: 1; min-width: 0; }
+.im-steps b { display: block; font-size: 13.5px; color: var(--ds-ink); }
+.im-steps span:not(.im-step-n) { display: block; font-size: 12px; color: var(--ds-ink-mute); line-height: 1.6; }
+.im-step-n {
+    flex: none; display: grid; place-items: center;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--ds-ink); color: var(--ds-surface);
+    font-size: 12.5px; font-weight: 800;
+}
+
+.im-drop {
+    position: relative;
+    display: grid; place-items: center;
+    min-height: 150px; margin: 0; padding: 18px;
+    border: 2px dashed var(--ds-border-strong); border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface-sunk);
+    text-align: center; cursor: pointer;
+    transition: border-color var(--ds-dur-fast) var(--ds-ease), background-color var(--ds-dur-fast) var(--ds-ease);
+}
+.im-drop:hover, .im-drop.is-over { border-color: var(--ds-brand-500); background: var(--ds-brand-50); }
+.im-drop:focus-within { outline: 2px solid var(--ds-brand-500); outline-offset: 2px; }
+.im-drop.has-file { border-style: solid; border-color: var(--ds-brand-300); background: var(--ds-surface); min-height: 0; }
+.im-drop.is-invalid { border-color: var(--ds-danger); background: var(--ds-danger-bg); }
+/* الـ input يغطّي المنطقة: النقر والإفلات عليه نفسه */
+.im-drop input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.im-drop-empty { display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; }
+.im-drop-empty .ti { font-size: 34px; color: var(--ds-brand-600); margin-bottom: 4px; }
+.im-drop-empty b { font-size: 14px; color: var(--ds-ink); }
+.im-drop-empty span { font-size: 12.5px; color: var(--ds-ink-mute); }
+.im-drop-file { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; width: 100%; text-align: start; }
+.im-drop-file[hidden], .im-drop-empty[hidden] { display: none; }
+.im-file-badge {
+    flex: none; display: grid; place-items: center;
+    width: 42px; height: 42px; border-radius: var(--ds-radius-md);
+    background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 800;
+}
+.im-file-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.im-file-meta b { font-size: 13.5px; color: var(--ds-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; direction: ltr; text-align: end; }
+.im-file-meta small { font-size: 12px; color: var(--ds-ink-mute); }
+.im-drop-file .ed-link { position: relative; z-index: 2; }
+.im-drop-error { margin-top: 6px; font-size: 12.5px; color: var(--ds-danger); }
+.im-drop-error[hidden] { display: none; }
+
+.im-guide { margin-top: 14px; border: 1px solid var(--ds-border); border-radius: var(--ds-radius-md); background: var(--ds-surface); }
+.im-guide summary {
+    display: flex; align-items: center; gap: 8px;
+    padding: 11px 14px; cursor: pointer; list-style: none;
+    font-size: 13px; font-weight: 600; color: var(--ds-ink-soft);
+}
+.im-guide summary::-webkit-details-marker { display: none; }
+.im-guide summary::after { content: "\ea5f"; font-family: "tabler-icons"; margin-inline-start: auto; transition: transform var(--ds-dur-fast) var(--ds-ease); }
+.im-guide[open] summary::after { transform: rotate(180deg); }
+.im-guide table { width: 100%; font-size: 12.5px; border-top: 1px solid var(--ds-border); }
+.im-guide th { padding: 8px 14px; font-weight: 600; color: var(--ds-ink-mute); text-align: start; background: var(--ds-surface-sunk); }
+.im-guide td { padding: 8px 14px; border-top: 1px solid var(--ds-border); color: var(--ds-ink-soft); vertical-align: top; }
+.im-guide code { padding: 1px 6px; border-radius: 5px; background: var(--ds-surface-sunk); color: var(--ds-ink); font-size: 12px; }
+.im-req, .im-opt { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: var(--ds-radius-pill); white-space: nowrap; }
+.im-req { background: var(--ds-brand-50); color: var(--ds-brand-600); }
+.im-opt { background: var(--ds-surface-sunk); color: var(--ds-ink-mute); }
+.im-specs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; padding: 10px 14px; border-top: 1px solid var(--ds-border); font-size: 12px; color: var(--ds-ink-mute); }
+.im-spec { padding: 2px 9px; border-radius: var(--ds-radius-pill); border: 1px solid var(--ds-border); color: var(--ds-ink-soft); }
+[data-import-submit].is-saving .ed-spinner { display: inline-block; }
+[data-import-submit].is-saving .ti-upload { display: none; }
+
+@media (max-width: 575.98px) {
+    .im-steps { grid-template-columns: 1fr; }
+    .ed-foot { flex-wrap: wrap; }
+    .ed-foot .ed-changes { flex-basis: 100%; }
+}
+
+/* الاستيراد على الجوال: كل عمود بطاقة — الاسم وشارته، ثم الشرح تحتهما */
+@media (max-width: 575.98px) {
+    .im-guide thead { display: none; }
+    .im-guide tr { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 8px; padding: 10px 14px; border-top: 1px solid var(--ds-border); }
+    .im-guide td { padding: 0; border: 0; }
+    .im-guide td:nth-child(3) { grid-column: 1 / -1; }
+    .im-file-meta small { text-align: end; }
+}
+
+/* رأس نافذة الاستيراد بسطرين: Tabler يثبّت ارتفاع الرأس فيُقصّ العنوان */
+.im-modal .modal-header { height: auto; min-height: 3.5rem; padding-top: 16px; padding-bottom: 14px; }

@@ -10,8 +10,8 @@
     <x-page-header title="مسؤولو النظام"
         subtitle="{{ $countAll }} {{ $countAll == 1 ? 'حساب' : 'حسابات' }} بصلاحية كاملة على المنصّة">
         <x-slot:actions>
-            <button type="button" class="btn btn-primary btn-create" data-bs-toggle="modal"
-                data-bs-target="#createModal">
+            <button type="button" class="btn btn-primary btn-create" data-bs-toggle="offcanvas"
+                data-bs-target="#createDrawer">
                 <i class="ti ti-plus me-1" aria-hidden="true"></i>
                 إضافة مسؤول
             </button>

@@ -8,27 +8,33 @@
     'autocomplete' => 'off',
     'hint' => null,
     'wide' => false,
+    'placeholder' => null,
+    // edit | create — يحدّد بادئة المعرّف، وأيّ الخطأين يُعرض هنا
+    'mode' => 'edit',
 ])
 
-{{-- حقل في درج التعديل. القيمة يملؤها السكربت من السجلّ، والخطأ لا يظهر
-     إلا لخطأ التعديل (\u200Eold('id')\u200E) — لا لخطأ نافذة الإضافة في الصفحة نفسها --}}
+{{-- حقل في درج التعديل أو الإضافة. القيمة يملؤها السكربت، والخطأ يُعرض في
+     درجه وحده: خطأ التعديل يحمل \u200Eold('id')\u200E وخطأ الإضافة لا يحمله --}}
 @php
-    $invalid = old('id') && $errors->has($name);
+    $prefix = $mode === 'create' ? 'cr' : 'ed';
+    $mine = $mode === 'create' ? ! old('id') : (bool) old('id');
+    $invalid = $mine && $errors->has($name);
 @endphp
 
 <div class="ed-field {{ $wide ? 'is-wide' : '' }}" data-ed-wrap="{{ $name }}">
-    <label for="ed-{{ $name }}" class="form-label {{ $required ? 'required' : '' }}">
+    <label for="{{ $prefix }}-{{ $name }}" class="form-label {{ $required ? 'required' : '' }}">
         {{ $label }}
         <span class="ed-changed-dot" title="تغيّر" aria-hidden="true"></span>
     </label>
     @if (trim($slot) !== '')
         {{ $slot }}
     @else
-        <input id="ed-{{ $name }}" name="{{ $name }}" type="{{ $type }}"
+        <input id="{{ $prefix }}-{{ $name }}" name="{{ $name }}" type="{{ $type }}"
             class="form-control {{ $invalid ? 'is-invalid' : '' }}"
             @if ($required) required @endif
             @if ($dir) dir="{{ $dir }}" @endif
             @if ($inputmode) inputmode="{{ $inputmode }}" @endif
+            @if ($placeholder) placeholder="{{ $placeholder }}" @endif
             autocomplete="{{ $autocomplete }}">
     @endif
     @if ($invalid)

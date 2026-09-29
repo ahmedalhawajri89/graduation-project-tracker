@@ -33,8 +33,8 @@
         <x-slot:actions>
             {{-- فعل أساسي واحد بالحبر، وما عداه ثانوي بحدّ شعرة —
                  كان أزرق وأخضر يتنافسان --}}
-            <button type="button" class="btn btn-primary btn-create" data-bs-toggle="modal"
-                data-bs-target="#createModal">
+            <button type="button" class="btn btn-primary btn-create" data-bs-toggle="offcanvas"
+                data-bs-target="#createDrawer">
                 <i class="ti ti-plus me-1" aria-hidden="true"></i>
                 إضافة طالب
             </button>

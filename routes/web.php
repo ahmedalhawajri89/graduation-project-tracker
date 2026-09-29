@@ -77,6 +77,7 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
         Route::get('supervisors/data', [SupervisorController::class, 'getData'])->name('supervisors.getData');
         Route::get('supervisors/export', [SupervisorController::class, 'export'])->name('supervisors.export');
         Route::post('supervisors/import', [SupervisorController::class, 'import'])->name('supervisors.import');
+        Route::get('supervisors/import/template', [SupervisorController::class, 'template'])->name('supervisors.template');
         Route::get('supervisors/{id}/groups', [SupervisorController::class, 'groups'])->name('supervisors.groups');
         Route::resource('supervisors', SupervisorController::class)->except('create', 'edit', 'show');
         //====================== end supervisor data
@@ -84,6 +85,7 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
         //====================== start student data
         Route::get('students/data', [StudentController::class, 'getData'])->name('students.getData');
         Route::post('students/import', [StudentController::class, 'import'])->name('students.import');
+        Route::get('students/import/template', [StudentController::class, 'template'])->name('students.template');
         // الاستيراد كان بلا تصدير مقابل — نصف دورة
         Route::get('students/export', [StudentController::class, 'export'])->name('students.export');
         Route::resource('students', StudentController::class)->except('create', 'edit', 'show');
