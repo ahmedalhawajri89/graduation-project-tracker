@@ -1319,23 +1319,31 @@
 
     {{-- ======= Closing CTA ======= --}}
     <section class="cta-band">
-        <div class="container cta-inner">
+        <div class="container">
+        <div class="cta-inner">
             <div>
                 <h2 data-i18n="cta.title">جاهز تبدأ مشروع تخرجك؟</h2>
                 <p data-i18n="cta.text">
                     حسابك جاهز مسبقاً من إدارة المنصة — سجّل دخولك برقمك الجامعي، كوّن فريقك،
                     واختر مشرفك. بقية الطريق تتابعها من لوحتك.
                 </p>
+                <ol class="cta-steps">
+                    <li><i>1</i><span data-i18n="cta.step1">سجّل برقمك الجامعي</span></li>
+                    <li><i>2</i><span data-i18n="cta.step2">كوّن فريقك</span></li>
+                    <li><i>3</i><span data-i18n="cta.step3">اختر مشرفك</span></li>
+                </ol>
             </div>
             <div class="cta-actions">
                 <a href="{{ route('login') }}" class="btn btn-primary">
                     <span data-i18n="cta.button">تسجيل الدخول</span>
+                    <svg class="cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
                 </a>
                 <a href="#contact" class="btn-link">
                     <span data-i18n="cta.secondary">عندي سؤال</span>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
                 </a>
             </div>
+        </div>
         </div>
     </section>
 
@@ -1355,6 +1363,18 @@
                         المراحل والملفات والنقاش، وصولاً إلى المناقشة والتقييم النهائي.
                     </p>
                     {{-- رابط واحد حقيقي: الأربعة السابقة كانت تشير كلها إلى الحساب نفسه --}}
+                    @if ($currentSemester = \App\Models\Semester::current())
+                        @php($semParts = $currentSemester->parts())
+                        <div class="footer-live">
+                            <i aria-hidden="true"></i>
+                            <span data-i18n="footer.current">الفصل الحالي</span>
+                            <b>
+                                {{ $semParts['term'] }}
+                                {{-- السنة معزولة LTR: داخل نصّ عربي تنقلب «2022\2023» إلى «2023\2022» --}}
+                                @if ($semParts['year'])<span class="footer-live-sep">·</span><bdi dir="ltr">&#x2066;{{ $semParts['year'] }}&#x2069;</bdi>@endif
+                            </b>
+                        </div>
+                    @endif
                     <div class="footer-socials">
                         <a href="https://www.facebook.com/jamal.taroush" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
@@ -1372,9 +1392,10 @@
 
                 <nav class="footer-col" aria-label="Roles">
                     <div class="footer-col-title" data-i18n="footer.colRoles">الأدوار</div>
-                    <a href="#roles" data-i18n="roles.student.name">الطالب</a>
-                    <a href="#roles" data-i18n="roles.supervisor.name">المشرف</a>
-                    <a href="#roles" data-i18n="roles.admin.name">الإدارة</a>
+                    {{-- كل رابط يفتح تبويب دوره في القسم 05 (premium.js › initRoles) --}}
+                    <a href="#roles" data-role-link="student" data-i18n="roles.student.name">الطالب</a>
+                    <a href="#roles" data-role-link="supervisor" data-i18n="roles.supervisor.name">المشرف</a>
+                    <a href="#roles" data-role-link="admin" data-i18n="roles.admin.name">الإدارة</a>
                 </nav>
 
                 <nav class="footer-col" aria-label="Help">
@@ -1382,19 +1403,16 @@
                     <a href="{{ route('login') }}" data-i18n="nav.login">تسجيل دخول</a>
                     <a href="#faq" data-i18n="nav.faq">الأسئلة الشائعة</a>
                     <a href="#contact" data-i18n="nav.contact">اتصل بنا</a>
-                    <span class="footer-note" data-i18n="footer.noSignup">الحسابات تُنشأ من الإدارة</span>
+                    <span class="footer-note">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                        <span data-i18n="footer.noSignup">الحسابات تُنشأ من الإدارة</span>
+                    </span>
                 </nav>
             </div>
 
             <div class="footer-bar">
                 <span data-i18n="footer.rights">جميع الحقوق محفوظة — تخرُّج ©</span>
                 <div class="footer-meta">
-                    @if ($currentSemester = \App\Models\Semester::current())
-                        <span class="footer-semester">
-                            <i aria-hidden="true"></i>
-                            <span>{{ $currentSemester->name }}</span>
-                        </span>
-                    @endif
                     <a href="#hero" class="footer-up">
                         <span data-i18n="footer.top">العودة للأعلى</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -1408,6 +1426,7 @@
     </footer>
 
     <a href="#hero" class="back-top" aria-label="Back to top">
+        {{-- حلقة تقدّم التمرير: --p يحدّثه premium.js --}}
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
     </a>
 

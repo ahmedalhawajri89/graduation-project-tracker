@@ -315,6 +315,10 @@
       "cta.text": "حسابك جاهز مسبقاً من إدارة المنصة — سجّل دخولك برقمك الجامعي، كوّن فريقك، واختر مشرفك. بقية الطريق تتابعها من لوحتك.",
       "cta.button": "تسجيل الدخول",
       "cta.secondary": "عندي سؤال",
+      "cta.step1": "سجّل برقمك الجامعي",
+      "cta.step2": "كوّن فريقك",
+      "cta.step3": "اختر مشرفك",
+      "footer.current": "الفصل الحالي",
       "footer.about": "منصة لإدارة مشاريع التخرج من تكوين الفريق واعتماد الفكرة، مروراً بمتابعة المراحل والملفات والنقاش، وصولاً إلى المناقشة والتقييم النهائي.",
       "footer.colPlatform": "المنصة",
       "footer.colRoles": "الأدوار",
@@ -631,6 +635,10 @@
       "cta.text": "Your account is already created by the platform administration — sign in with your university ID, build your team and pick your supervisor. The rest you follow from your dashboard.",
       "cta.button": "Sign in",
       "cta.secondary": "I have a question",
+      "cta.step1": "Sign in with your university ID",
+      "cta.step2": "Build your team",
+      "cta.step3": "Pick your supervisor",
+      "footer.current": "Current semester",
       "footer.about": "A platform for managing graduation projects: forming the team, approving the idea, tracking milestones, files and discussion, through to the defense and final grade.",
       "footer.colPlatform": "Platform",
       "footer.colRoles": "Roles",
@@ -765,7 +773,11 @@
     function onScroll() {
       var y = window.scrollY;
       if (siteHeader) siteHeader.classList.toggle("scrolled", y > 24);
-      if (backTop) backTop.classList.toggle("show", y > 500);
+      if (backTop) {
+        backTop.classList.toggle("show", y > 500);
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        backTop.style.setProperty("--p", max > 0 ? Math.min(100, (y / max) * 100).toFixed(1) + "%" : "0%");
+      }
     }
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -1006,6 +1018,11 @@
     // النقر على عقدة في الخطّ يفتح دورها أيضاً
     nodes.forEach(function (n) {
       n.addEventListener("click", function () { show(n.dataset.node); });
+    });
+
+    // روابط الفوتر «الطالب / المشرف / الإدارة» تفتح تبويب دورها قبل النزول
+    document.querySelectorAll("[data-role-link]").forEach(function (a) {
+      a.addEventListener("click", function () { show(a.dataset.roleLink); });
     });
 
     show(tabs[0].dataset.role);
