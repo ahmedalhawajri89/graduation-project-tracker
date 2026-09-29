@@ -191,15 +191,41 @@
       "dept.5.text": "كل اعتماد وفتح درجة وتغيير مهم يُحفظ باسم صاحبه ووقته.",
       "dept.6.title": "فصول دراسية تُفتح وتُغلق",
       "dept.6.text": "تفتح فصلاً جديداً للتقديم وتغلق السابق، فتبقى مشاريع كل دفعة في فصلها.",
+      "dept.file.name": "ملف الفصل",
+      "dept.file.term": "الفصل الأول",
+      "dept.file.q1": "من قدّم؟",
+      "dept.file.q2": "من وافق؟",
+      "dept.file.q3": "أين وصل كل فريق؟",
+      "dept.file.q4": "من لم يلتحق؟",
+      "dept.file.teams": "فريقاً",
+      "dept.file.students": "طالباً",
+      "dept.file.s1": "الفكرة",
+      "dept.file.s2": "التنفيذ",
+      "dept.file.s3": "التسليم",
+      "dept.file.s4": "المناقشة",
+      "dept.p1.when": "قبل الفصل",
+      "dept.p1.name": "التجهيز",
+      "dept.p2.when": "بداية الفصل",
+      "dept.p2.name": "التوزيع",
+      "dept.p3.when": "حتى نهايته",
+      "dept.p3.name": "المتابعة والإغلاق",
+      "dept.pf.term2": "الفصل الثاني",
+      "dept.pf.accounts": "حساباً",
+      "dept.pf.type": "مشروع برمجي",
+      "dept.pf.members": "أعضاء",
+      "dept.pf.groups": "مجموعات",
+      "dept.pf.sixth": "السادسة مرفوضة",
+      "dept.pf.audit": "اعتماد فكرة مشروع",
+      "dept.pf.export": "تنزيل الكشف",
       "faq.kicker": "الأسئلة الشائعة",
       "faq.title": "كل ما يسأله الطلاب قبل البدء",
       "faq.text": "إجابات مباشرة من واقع النظام — ولأي سؤال آخر تواصل معنا من قسم الاتصال بالأسفل.",
       "faq.1.title": "كم عضواً يتكون منه الفريق؟",
       "faq.1.text": "حسب نوع المشروع الذي يحدده قسمك — كل نوع له حد أدنى وأقصى يظهران أمامك في نموذج التقديم، والنظام لا يقبل فريقاً خارج الحدود.",
       "faq.2.title": "كيف أقدم طلب مشروع؟",
-      "faq.2.text": "سجّل دخولك ← اختر نوع المشروع ومشرفاً لديه مقاعد متاحة ← اختر أعضاء فريقك من القائمة ← اكتب العنوان والوصف وأرسل. سيصل طلبك للمشرف فوراً.",
+      "faq.2.text": "أربع خطوات من لوحتك، ويصل طلبك للمشرف فوراً:",
       "faq.3.title": "كيف أعرف ردّ المشرف، وماذا لو رُفض طلبي؟",
-      "faq.3.text": "يصلك إشعار فور القبول أو الرفض. وإن رُفض فمعه السبب الذي كتبه المشرف، ويُفتح لك نموذج تقديم جديد مباشرة — عدّل فكرتك أو اختر مشرفاً آخر.",
+      "faq.3.text": "يصلك إشعار فور القبول أو الرفض، ومعه ملاحظة المشرف إن كتبها. وإن رُفض طلبك يُفتح لك نموذج تقديم جديد مباشرة — عدّل فكرتك أو اختر مشرفاً آخر.",
       "faq.4.title": "ماذا يعني «مطلوب تعديل» على مرحلة سلّمتها؟",
       "faq.4.text": "أن مشرفك راجعها وكتب ما ينقصها — لا أنها رُفضت. عدّل ملفك وأعد التسليم من الصفحة نفسها، وتبقى كل جولة وملاحظتها محفوظة.",
       "faq.5.title": "من يوزّع الأدوار في الفريق؟",
@@ -207,7 +233,19 @@
       "faq.6.title": "هل يرى المشرف نقاش الفريق؟",
       "faq.6.text": "لا. للفريق قناة خاصة لا يراها المشرف ولا الإدارة، وقناة ثانية مشتركة مع المشرف للأسئلة والملاحظات.",
       "faq.7.title": "كيف يُقيَّم مشروعي النهائي؟",
-      "faq.7.text": "بعد المناقشة يرصد مشرفك الدرجة من 100 مع التقدير وملاحظاته، ويصل الإشعار للفريق كله. وبعد اعتمادها تُقفل — لا يفتحها إلا الإدارة، ويُسجَّل ذلك.",
+      "faq.7.text": "بعد اكتمال المشروع يرصد مشرفك الدرجة من 100 مع ملاحظاته، ويُحسب التقدير منها تلقائياً، ويصل الإشعار للفريق كله. وبعد اعتمادها تُقفل — لا يفتحها إلا الإدارة بسبب مكتوب، ويُسجَّل ذلك.",
+      "faq.filters": "تصفية الأسئلة",
+      "faq.cat.all": "الكل",
+      "faq.cat.apply": "التقديم",
+      "faq.cat.team": "الفريق",
+      "faq.cat.track": "المتابعة والتقييم",
+      "faq.2.s1": "سجّل دخولك",
+      "faq.2.s2": "اختر النوع ومشرفاً لديه مقاعد",
+      "faq.2.s3": "اختر أعضاء فريقك",
+      "faq.2.s4": "اكتب العنوان والوصف وأرسل",
+      "faq.ask.title": "ما وجدت جوابك؟",
+      "faq.ask.text": "اكتب لنا سؤالك ويصلك الرد خلال يوم عمل واحد.",
+      "faq.ask.button": "راسلنا",
       "roles.kicker": "أدوار المنصة",
       "roles.title": "لكل دور مساحته الخاصة",
       "roles.text": "ثلاثة أدوار، لكلٍّ لوحته وصلاحياته — ويتسلّم كلٌّ من الآخر في الوقت المناسب. اختر دوراً لترى مساحته.",
@@ -511,15 +549,41 @@
       "dept.5.text": "Every approval, grade unlock and key change is kept with who did it and when.",
       "dept.6.title": "Semesters You Open and Close",
       "dept.6.text": "Open a new semester for submissions and close the last, so each cohort stays in its own term.",
+      "dept.file.name": "Semester file",
+      "dept.file.term": "First semester",
+      "dept.file.q1": "Who applied?",
+      "dept.file.q2": "Who approved?",
+      "dept.file.q3": "Where is each team?",
+      "dept.file.q4": "Who hasn’t joined?",
+      "dept.file.teams": "teams",
+      "dept.file.students": "students",
+      "dept.file.s1": "Idea",
+      "dept.file.s2": "Build",
+      "dept.file.s3": "Delivery",
+      "dept.file.s4": "Defense",
+      "dept.p1.when": "Before the semester",
+      "dept.p1.name": "Setup",
+      "dept.p2.when": "As it starts",
+      "dept.p2.name": "Assignment",
+      "dept.p3.when": "Through to the end",
+      "dept.p3.name": "Tracking & closing",
+      "dept.pf.term2": "Second semester",
+      "dept.pf.accounts": "accounts",
+      "dept.pf.type": "Software project",
+      "dept.pf.members": "members",
+      "dept.pf.groups": "groups",
+      "dept.pf.sixth": "Sixth rejected",
+      "dept.pf.audit": "Project idea approved",
+      "dept.pf.export": "Download sheet",
       "faq.kicker": "FAQ",
       "faq.title": "Everything Students Ask Before Starting",
       "faq.text": "Straight answers from how the system actually works — for anything else, reach us in the contact section below.",
       "faq.1.title": "How Many Members per Team?",
       "faq.1.text": "It depends on the project type set by your department — each type has a min and max shown in the submission form, and the system enforces them.",
       "faq.2.title": "How Do I Submit a Project Request?",
-      "faq.2.text": "Sign in → pick a project type and a supervisor with open seats → select your teammates from the list → write the title and description and send. Your supervisor is notified instantly.",
+      "faq.2.text": "Four steps from your dashboard, and your supervisor is notified instantly:",
       "faq.3.title": "How Do I Hear Back — and What If I'm Rejected?",
-      "faq.3.text": "You're notified the moment your request is accepted or rejected. A rejection comes with the supervisor's reason, and a new submission form opens right away — refine your idea or pick another supervisor.",
+      "faq.3.text": "You're notified the moment your request is accepted or rejected, with the supervisor's note if they wrote one. If it's rejected, a new submission form opens right away — refine your idea or pick another supervisor.",
       "faq.4.title": "What Does “Changes Requested” Mean?",
       "faq.4.text": "That your supervisor reviewed the stage and wrote what's missing — not that it was rejected. Fix your file and resubmit from the same page; every round and its note are kept.",
       "faq.5.title": "Who Assigns Roles in the Team?",
@@ -527,7 +591,19 @@
       "faq.6.title": "Can the Supervisor See the Team Chat?",
       "faq.6.text": "No. The team has a private channel hidden from supervisors and admins, plus a second channel shared with the supervisor for questions and feedback.",
       "faq.7.title": "How Is My Final Project Graded?",
-      "faq.7.text": "After the defense your supervisor records a grade out of 100 with a rating and notes, and the whole team is notified. Once approved it locks — only admins can reopen it, and that is logged.",
+      "faq.7.text": "Once the project is complete your supervisor records a grade out of 100 with notes, the rating is derived from it automatically, and the whole team is notified. Once approved it locks — only admins can reopen it, with a written reason, and that is logged.",
+      "faq.filters": "Filter questions",
+      "faq.cat.all": "All",
+      "faq.cat.apply": "Applying",
+      "faq.cat.team": "Team",
+      "faq.cat.track": "Tracking & grading",
+      "faq.2.s1": "Sign in",
+      "faq.2.s2": "Pick a type and a supervisor with seats",
+      "faq.2.s3": "Choose your teammates",
+      "faq.2.s4": "Write the title and description, send",
+      "faq.ask.title": "Didn't find your answer?",
+      "faq.ask.text": "Write to us and you will hear back within one working day.",
+      "faq.ask.button": "Message us",
       "roles.kicker": "Platform roles",
       "roles.title": "A Dedicated Space for Every Role",
       "roles.text": "Three roles, each with its own dashboard and permissions — handing work to one another at the right moment. Pick a role to see its space.",
@@ -706,10 +782,6 @@
   function remeasure() {
     moveLangThumb();
     if (typeof window.__pillToCurrent === "function") window.__pillToCurrent();
-    document.querySelectorAll(".faq-item.open .faq-body").forEach(function (body) {
-      body.style.maxHeight = "none";
-      body.style.maxHeight = body.scrollHeight + "px";
-    });
   }
 
   var switching = false;
@@ -912,41 +984,7 @@
       counters.forEach(animateCounter);
     }
 
-    /* ----- accordion (الأسئلة الشائعة) -----
-       عنصر ".step" القديم لم يعد موجوداً — الأكورديون صار في قسم FAQ */
-    document.querySelectorAll(".faq-item").forEach(function (item) {
-      var btn = item.querySelector(".faq-btn");
-      var body = item.querySelector(".faq-body");
-      if (!btn || !body) return;
-      btn.addEventListener("click", function () {
-        var isOpen = item.classList.contains("open");
-        document.querySelectorAll(".faq-item.open").forEach(function (other) {
-          other.classList.remove("open");
-          other.querySelector(".faq-body").style.maxHeight = "0px";
-          other.querySelector(".faq-btn").setAttribute("aria-expanded", "false");
-        });
-        if (!isOpen) {
-          item.classList.add("open");
-          body.style.maxHeight = body.scrollHeight + "px";
-          btn.setAttribute("aria-expanded", "true");
-        }
-      });
-    });
-    // السؤال الأول مفتوح افتراضياً حتى لا يبدو القسم صفاً من الأزرار
-    var firstFaq = document.querySelector(".faq-item");
-    if (firstFaq) {
-      firstFaq.classList.add("open");
-      var fb = firstFaq.querySelector(".faq-body");
-      if (fb) fb.style.maxHeight = fb.scrollHeight + "px";
-      var fbtn = firstFaq.querySelector(".faq-btn");
-      if (fbtn) fbtn.setAttribute("aria-expanded", "true");
-    }
-
-    // إعادة قياس الارتفاع بعد تبديل اللغة أو تغيّر العرض
-    window.addEventListener("resize", function () {
-      var open = document.querySelector(".faq-item.open .faq-body");
-      if (open) open.style.maxHeight = open.scrollHeight + "px";
-    }, { passive: true });
+    initFaq();
 
     /* حُذفت خمس سلوكيات زخرفية: بارالاكس الهيرو، إمالة البطاقات،
        الأزرار المغناطيسية، توهّج المؤشر بحلقة requestAnimationFrame
@@ -1026,6 +1064,82 @@
     });
 
     show(tabs[0].dataset.role);
+  }
+
+  /* ---------- الأسئلة الشائعة (القسم 08) ----------
+     الأسئلة <details> أصلية تعمل بلا سكربت. هنا: حركة فتح وإغلاق ناعمة،
+     سؤال واحد مفتوح في كل مرة، فلاتر الفئات، والرابط المباشر #faq-N. */
+  function initFaq() {
+    var items = Array.prototype.slice.call(document.querySelectorAll(".fq-item"));
+    if (!items.length) return;
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // السكربت يتولّى «واحد مفتوح» بنفسه كي يتحرّك الإغلاق أيضاً
+    items.forEach(function (d) { d.removeAttribute("name"); });
+
+    function toggle(d, open) {
+      var body = d.querySelector(".fq-body");
+      if (d._anim) { d._anim.cancel(); d._anim = null; }
+      if (reduce || !body.animate) { d.open = open; return; }
+      if (open) {
+        d.open = true;
+        d._anim = body.animate(
+          [{ height: "0px", opacity: 0 }, { height: body.scrollHeight + "px", opacity: 1 }],
+          { duration: 340, easing: "cubic-bezier(.16, 1, .3, 1)" }
+        );
+      } else {
+        d.classList.add("is-closing");
+        d._anim = body.animate(
+          [{ height: body.scrollHeight + "px", opacity: 1 }, { height: "0px", opacity: 0 }],
+          { duration: 240, easing: "ease" }
+        );
+        d._anim.onfinish = function () { d.open = false; d.classList.remove("is-closing"); d._anim = null; };
+      }
+    }
+
+    function openOnly(d) {
+      items.forEach(function (o) { if (o !== d && o.open) toggle(o, false); });
+      if (!d.open) toggle(d, true);
+    }
+
+    items.forEach(function (d) {
+      d.querySelector("summary").addEventListener("click", function (e) {
+        e.preventDefault();
+        if (d.open && !d.classList.contains("is-closing")) toggle(d, false);
+        else openOnly(d);
+      });
+    });
+
+    // الفلاتر: تظهر فقط حين يعمل السكربت
+    var bar = document.querySelector("[data-fq-filters]");
+    if (bar) {
+      bar.hidden = false;
+      var buttons = bar.querySelectorAll("[data-fq-filter]");
+      buttons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var cat = btn.dataset.fqFilter;
+          buttons.forEach(function (b) { b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
+          var shown = items.filter(function (d) {
+            var on = cat === "all" || d.dataset.cat === cat;
+            d.hidden = !on;
+            return on;
+          });
+          // يبقى جواب ظاهر مفتوحاً: إن اختفى المفتوح يُفتح أول الظاهرين
+          if (!shown.some(function (d) { return d.open; }) && shown[0]) openOnly(shown[0]);
+        });
+      });
+    }
+
+    // رابط مباشر لسؤال: #faq-3 يفتحه
+    function fromHash() {
+      var m = /^#faq-(\d+)$/.exec(location.hash);
+      var d = m && document.getElementById("faq-" + m[1]);
+      if (!d) return;
+      d.hidden = false;
+      openOnly(d);
+    }
+    fromHash();
+    window.addEventListener("hashchange", fromHash);
   }
 
   /* ---------- نموذج التواصل: إرسال في الخلفية ----------

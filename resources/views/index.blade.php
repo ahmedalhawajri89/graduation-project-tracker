@@ -1078,34 +1078,65 @@
             <div class="container">
                 <div class="section-head" data-num="08">
                     <div class="section-index reveal"><span data-i18n="faq.kicker">الأسئلة الشائعة</span></div>
-                    <div class="section-head-grid">
-                        <h2 class="reveal" data-i18n="faq.title">كل ما يسأله الطلاب قبل البدء</h2>
-                        <p class="reveal d1" data-i18n="faq.text">
-                            إجابات مباشرة من واقع النظام — ولأي سؤال آخر تواصل معنا من قسم الاتصال بالأسفل.
-                        </p>
-                    </div>
                 </div>
 
-                <div class="faq reveal">
-                    @foreach ([
-                        ['كم عضواً يتكون منه الفريق؟', 'حسب نوع المشروع الذي يحدده قسمك — كل نوع له حد أدنى وأقصى يظهران أمامك في نموذج التقديم، والنظام لا يقبل فريقاً خارج الحدود.'],
-                        ['كيف أقدم طلب مشروع؟', 'سجّل دخولك ← اختر نوع المشروع ومشرفاً لديه مقاعد متاحة ← اختر أعضاء فريقك من القائمة ← اكتب العنوان والوصف وأرسل. سيصل طلبك للمشرف فوراً.'],
-                        ['كيف أعرف ردّ المشرف، وماذا لو رُفض طلبي؟', 'يصلك إشعار فور القبول أو الرفض. وإن رُفض فمعه السبب الذي كتبه المشرف، ويُفتح لك نموذج تقديم جديد مباشرة — عدّل فكرتك أو اختر مشرفاً آخر.'],
-                        ['ماذا يعني «مطلوب تعديل» على مرحلة سلّمتها؟', 'أن مشرفك راجعها وكتب ما ينقصها — لا أنها رُفضت. عدّل ملفك وأعد التسليم من الصفحة نفسها، وتبقى كل جولة وملاحظتها محفوظة.'],
-                        ['من يوزّع الأدوار في الفريق؟', 'قائد الفريق: يسند لكل عضو دوره ومسؤولياته، فيراها الفريق كله ويراها المشرف — واضح من على ماذا قبل المناقشة.'],
-                        ['هل يرى المشرف نقاش الفريق؟', 'لا. للفريق قناة خاصة لا يراها المشرف ولا الإدارة، وقناة ثانية مشتركة مع المشرف للأسئلة والملاحظات.'],
-                        ['كيف يُقيَّم مشروعي النهائي؟', 'بعد المناقشة يرصد مشرفك الدرجة من 100 مع التقدير وملاحظاته، ويصل الإشعار للفريق كله. وبعد اعتمادها تُقفل — لا يفتحها إلا الإدارة، ويُسجَّل ذلك.'],
-                    ] as $i => [$question, $answer])
-                        <div class="faq-item">
-                            <button type="button" class="faq-btn" aria-expanded="false" aria-controls="faq-body-{{ $i + 1 }}">
-                                <span data-i18n="faq.{{ $i + 1 }}.title">{{ $question }}</span>
-                                <span class="faq-sign" aria-hidden="true"></span>
-                            </button>
-                            <div class="faq-body" id="faq-body-{{ $i + 1 }}">
-                                <p data-i18n="faq.{{ $i + 1 }}.text">{{ $answer }}</p>
-                            </div>
+                {{-- details أصلي: يُفتح بلا JavaScript، ولا يقرأ قارئ الشاشة إلا المفتوح.
+                     premium.js › initFaq يضيف الحركة والفلاتر والرابط المباشر #faq-N --}}
+                <div class="fq">
+                    <aside class="fq-side">
+                        <h2 class="reveal" data-i18n="faq.title">كل ما يسأله الطلاب قبل البدء</h2>
+                        <p class="fq-lead reveal d1" data-i18n="faq.text">
+                            إجابات مباشرة من واقع النظام — ولأي سؤال آخر تواصل معنا من قسم الاتصال بالأسفل.
+                        </p>
+                        <div class="fq-filters reveal d1" role="group" aria-label="تصفية الأسئلة" data-i18n-aria="faq.filters" hidden data-fq-filters>
+                            <button type="button" class="fq-filter" data-fq-filter="all" aria-pressed="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-i18n="faq.cat.all">الكل</span></button>
+                            <button type="button" class="fq-filter" data-fq-filter="apply" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg><span data-i18n="faq.cat.apply">التقديم</span></button>
+                            <button type="button" class="fq-filter" data-fq-filter="team" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span data-i18n="faq.cat.team">الفريق</span></button>
+                            <button type="button" class="fq-filter" data-fq-filter="track" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></svg><span data-i18n="faq.cat.track">المتابعة والتقييم</span></button>
                         </div>
-                    @endforeach
+                        <div class="fq-ask reveal d2">
+                            <span class="fq-ask-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+                            <div>
+                                <b data-i18n="faq.ask.title">ما وجدت جوابك؟</b>
+                                <span data-i18n="faq.ask.text">اكتب لنا سؤالك ويصلك الرد خلال يوم عمل واحد.</span>
+                            </div>
+                            <a href="#contact" class="fq-ask-btn">
+                                <span data-i18n="faq.ask.button">راسلنا</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                            </a>
+                        </div>
+                    </aside>
+
+                    <div class="fq-list reveal">
+                        @foreach ([
+                            ['cat' => 'team', 'q' => 'كم عضواً يتكون منه الفريق؟', 'a' => 'حسب نوع المشروع الذي يحدده قسمك — كل نوع له حد أدنى وأقصى يظهران أمامك في نموذج التقديم، والنظام لا يقبل فريقاً خارج الحدود.'],
+                            ['cat' => 'apply', 'q' => 'كيف أقدم طلب مشروع؟', 'a' => 'أربع خطوات من لوحتك، ويصل طلبك للمشرف فوراً:'],
+                            ['cat' => 'apply', 'q' => 'كيف أعرف ردّ المشرف، وماذا لو رُفض طلبي؟', 'a' => 'يصلك إشعار فور القبول أو الرفض، ومعه ملاحظة المشرف إن كتبها. وإن رُفض طلبك يُفتح لك نموذج تقديم جديد مباشرة — عدّل فكرتك أو اختر مشرفاً آخر.'],
+                            ['cat' => 'track', 'q' => 'ماذا يعني «مطلوب تعديل» على مرحلة سلّمتها؟', 'a' => 'أن مشرفك راجعها وكتب ما ينقصها — لا أنها رُفضت. عدّل ملفك وأعد التسليم من الصفحة نفسها، وتبقى كل جولة وملاحظتها محفوظة.'],
+                            ['cat' => 'team', 'q' => 'من يوزّع الأدوار في الفريق؟', 'a' => 'قائد الفريق: يسند لكل عضو دوره ومسؤولياته، فيراها الفريق كله ويراها المشرف — واضح من على ماذا قبل المناقشة.'],
+                            ['cat' => 'team', 'q' => 'هل يرى المشرف نقاش الفريق؟', 'a' => 'لا. للفريق قناة خاصة لا يراها المشرف ولا الإدارة، وقناة ثانية مشتركة مع المشرف للأسئلة والملاحظات.'],
+                            ['cat' => 'track', 'q' => 'كيف يُقيَّم مشروعي النهائي؟', 'a' => 'بعد اكتمال المشروع يرصد مشرفك الدرجة من 100 مع ملاحظاته، ويُحسب التقدير منها تلقائياً، ويصل الإشعار للفريق كله. وبعد اعتمادها تُقفل — لا يفتحها إلا الإدارة بسبب مكتوب، ويُسجَّل ذلك.'],
+                        ] as $i => $item)
+                            <details class="fq-item" name="faq" id="faq-{{ $i + 1 }}" data-cat="{{ $item['cat'] }}" {{ $i === 0 ? 'open' : '' }}>
+                                <summary>
+                                    <span class="fq-num">{{ sprintf('%02d', $i + 1) }}</span>
+                                    <span class="fq-q" data-i18n="faq.{{ $i + 1 }}.title">{{ $item['q'] }}</span>
+                                    <span class="fq-sign" aria-hidden="true"></span>
+                                </summary>
+                                <div class="fq-body">
+                                    <p data-i18n="faq.{{ $i + 1 }}.text">{{ $item['a'] }}</p>
+                                    @if ($i === 1)
+                                        <ol class="fq-steps">
+                                        <li><i>1</i><span data-i18n="faq.2.s1">سجّل دخولك</span></li>
+                                        <li><i>2</i><span data-i18n="faq.2.s2">اختر النوع ومشرفاً لديه مقاعد</span></li>
+                                        <li><i>3</i><span data-i18n="faq.2.s3">اختر أعضاء فريقك</span></li>
+                                        <li><i>4</i><span data-i18n="faq.2.s4">اكتب العنوان والوصف وأرسل</span></li>
+                                        </ol>
+                                    @endif
+                                </div>
+                            </details>
+                        @endforeach
+                    </div>
                 </div>
             </div>
         </section>
@@ -1117,7 +1148,9 @@
                     <div class="section-index reveal"><span data-i18n="dept.kicker">للأقسام والكليات</span></div>
                 </div>
 
-                <div class="dept-grid">
+                {{-- الرأس: العنوان، وبجانبه «ملف الفصل» مرسوماً يجيب عن أسئلة الفقرة الأربعة.
+                     الأرقام توضيحية كأدلّة القسم 03 — لا بيانات حقيقية للزوّار. --}}
+                <div class="dx-head">
                     <div>
                         <h2 class="reveal" data-i18n="dept.title">ملف الفصل الدراسي كاملاً في مكان واحد</h2>
                         <p class="dept-lead reveal d1" data-i18n="dept.text">
@@ -1126,51 +1159,136 @@
                         </p>
                     </div>
 
-                    <div class="dept-points reveal d1">
-                        <div class="dept-point">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                            <span>
-                                <b data-i18n="dept.1.title">توزيع المشرفين بحدّ أقصى لكل واحد</b>
-                                <span data-i18n="dept.1.text">تحدد للمشرف عدد المجموعات التي يقبلها، والنظام يرفض ما زاد تلقائياً.</span>
+                    <div class="dx-file reveal d2" aria-hidden="true">
+                        <div class="dx-file-top">
+                            <span class="dx-file-name"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span data-i18n="dept.file.name">ملف الفصل</span></span>
+                            <span class="dx-chip is-open"><i></i><span data-i18n="dept.file.term">الفصل الأول</span> <bdi dir="ltr">&#x2066;2022–23&#x2069;</bdi></span>
+                        </div>
+                        <div class="dx-row">
+                            <span class="dx-q" data-i18n="dept.file.q1">من قدّم؟</span>
+                            <span class="dx-bar"><i style="width:100%"></i></span>
+                            <b><bdi dir="ltr">42</bdi> <span data-i18n="dept.file.teams">فريقاً</span></b>
+                        </div>
+                        <div class="dx-row">
+                            <span class="dx-q" data-i18n="dept.file.q2">من وافق؟</span>
+                            <span class="dx-bar"><i style="width:90%"></i></span>
+                            <b><bdi dir="ltr">38 / 42</bdi></b>
+                        </div>
+                        <div class="dx-row is-stages">
+                            <span class="dx-q" data-i18n="dept.file.q3">أين وصل كل فريق؟</span>
+                            <span class="dx-stages"><i style="flex:6"></i><i style="flex:14"></i><i style="flex:12"></i><i style="flex:6"></i></span>
+                            <span class="dx-legend">
+                                <span><i></i><span data-i18n="dept.file.s1">الفكرة</span></span>
+                                <span><i></i><span data-i18n="dept.file.s2">التنفيذ</span></span>
+                                <span><i></i><span data-i18n="dept.file.s3">التسليم</span></span>
+                                <span><i></i><span data-i18n="dept.file.s4">المناقشة</span></span>
                             </span>
                         </div>
-                        <div class="dept-point">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                            <span>
-                                <b data-i18n="dept.2.title">استيراد الطلاب والمشرفين من ملف Excel</b>
-                                <span data-i18n="dept.2.text">ترفع كشف الدفعة مرة واحدة فتُنشأ الحسابات كلها بلا إدخال يدوي.</span>
-                            </span>
-                        </div>
-                        <div class="dept-point">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                            <span>
-                                <b data-i18n="dept.3.title">أنواع مشاريع بحدود فريق لكل تخصص</b>
-                                <span data-i18n="dept.3.text">تضبط لكل تخصص أنواع مشاريعه والحد الأدنى والأقصى لأعضاء الفريق.</span>
-                            </span>
-                        </div>
-                        <div class="dept-point">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                            <span>
-                                <b data-i18n="dept.4.title">تصدير كشف المجموعات إلى Excel</b>
-                                <span data-i18n="dept.4.text">تُخرج كشفاً بالمجموعات ومشرفيها ودرجاتها في أي لحظة من الفصل.</span>
-                            </span>
-                        </div>
-                        <div class="dept-point">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                            <span>
-                                <b data-i18n="dept.5.title">سجلّ تدقيق لكل قرار</b>
-                                <span data-i18n="dept.5.text">كل اعتماد وفتح درجة وتغيير مهم يُحفظ باسم صاحبه ووقته.</span>
-                            </span>
-                        </div>
-                        <div class="dept-point">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                            <span>
-                                <b data-i18n="dept.6.title">فصول دراسية تُفتح وتُغلق</b>
-                                <span data-i18n="dept.6.text">تفتح فصلاً جديداً للتقديم وتغلق السابق، فتبقى مشاريع كل دفعة في فصلها.</span>
-                            </span>
+                        <div class="dx-row is-warn">
+                            <span class="dx-q" data-i18n="dept.file.q4">من لم يلتحق؟</span>
+                            <span class="dx-faces"><i></i><i></i><i></i><i>+8</i></span>
+                            <b><bdi dir="ltr">11</bdi> <span data-i18n="dept.file.students">طالباً</span></b>
                         </div>
                     </div>
                 </div>
+
+                {{-- النقاط الست على دورة الفصل: قبله، في بدايته، وحتى إغلاقه --}}
+                <ol class="dx-phases">
+                        <li class="dx-phase reveal d1">
+                            <div class="dx-phase-head">
+                                <span class="dx-node">1</span>
+                                <div>
+                                    <small data-i18n="dept.p1.when">قبل الفصل</small>
+                                    <h3 data-i18n="dept.p1.name">التجهيز</h3>
+                                </div>
+                            </div>
+                            <div class="dx-item">
+                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+                                <div class="dx-text">
+                                    <b data-i18n="dept.6.title">فصول دراسية تُفتح وتُغلق</b>
+                                    <span data-i18n="dept.6.text">تفتح فصلاً جديداً للتقديم وتغلق السابق، فتبقى مشاريع كل دفعة في فصلها.</span>
+                                    <div class="dx-proof" aria-hidden="true">
+                                        <span class="dx-chip is-closed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="dept.pf.term2">الفصل الثاني</span> <bdi dir="ltr">&#x2066;2021–22&#x2069;</bdi></span>
+                                        <span class="dx-chip is-open"><i></i><span data-i18n="dept.file.term">الفصل الأول</span> <bdi dir="ltr">&#x2066;2022–23&#x2069;</bdi></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dx-item">
+                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg></span>
+                                <div class="dx-text">
+                                    <b data-i18n="dept.2.title">استيراد الطلاب والمشرفين من ملف Excel</b>
+                                    <span data-i18n="dept.2.text">ترفع كشف الدفعة مرة واحدة فتُنشأ الحسابات كلها بلا إدخال يدوي.</span>
+                                    <div class="dx-proof" aria-hidden="true">
+                                        <span class="dx-file-chip"><i>XLS</i><bdi dir="ltr">students.xlsx</bdi></span>
+                                        <span class="dx-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></span>
+                                        <span class="dx-count"><bdi dir="ltr">312</bdi> <span data-i18n="dept.pf.accounts">حساباً</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="dx-phase reveal d2">
+                            <div class="dx-phase-head">
+                                <span class="dx-node">2</span>
+                                <div>
+                                    <small data-i18n="dept.p2.when">بداية الفصل</small>
+                                    <h3 data-i18n="dept.p2.name">التوزيع</h3>
+                                </div>
+                            </div>
+                            <div class="dx-item">
+                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></span>
+                                <div class="dx-text">
+                                    <b data-i18n="dept.3.title">أنواع مشاريع بحدود فريق لكل تخصص</b>
+                                    <span data-i18n="dept.3.text">تضبط لكل تخصص أنواع مشاريعه والحد الأدنى والأقصى لأعضاء الفريق.</span>
+                                    <div class="dx-proof" aria-hidden="true">
+                                        <span class="dx-type" data-i18n="dept.pf.type">مشروع برمجي</span>
+                                        <span class="dx-seats"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span>
+                                        <span class="dx-range"><bdi dir="ltr">3–5</bdi> <span data-i18n="dept.pf.members">أعضاء</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dx-item">
+                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+                                <div class="dx-text">
+                                    <b data-i18n="dept.1.title">توزيع المشرفين بحدّ أقصى لكل واحد</b>
+                                    <span data-i18n="dept.1.text">تحدد للمشرف عدد المجموعات التي يقبلها، والنظام يرفض ما زاد تلقائياً.</span>
+                                    <div class="dx-proof" aria-hidden="true">
+                                        <span class="dx-meter"><i style="width:80%"></i></span>
+                                        <span class="dx-count"><bdi dir="ltr">4 / 5</bdi> <span data-i18n="dept.pf.groups">مجموعات</span></span>
+                                        <span class="dx-reject"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg><span data-i18n="dept.pf.sixth">السادسة مرفوضة</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="dx-phase reveal d3">
+                            <div class="dx-phase-head">
+                                <span class="dx-node">3</span>
+                                <div>
+                                    <small data-i18n="dept.p3.when">حتى نهايته</small>
+                                    <h3 data-i18n="dept.p3.name">المتابعة والإغلاق</h3>
+                                </div>
+                            </div>
+                            <div class="dx-item">
+                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                                <div class="dx-text">
+                                    <b data-i18n="dept.5.title">سجلّ تدقيق لكل قرار</b>
+                                    <span data-i18n="dept.5.text">كل اعتماد وفتح درجة وتغيير مهم يُحفظ باسم صاحبه ووقته.</span>
+                                    <div class="dx-proof" aria-hidden="true">
+                                        <span class="dx-log"><i></i><span data-i18n="dept.pf.audit">اعتماد فكرة مشروع</span><small><bdi dir="ltr">09:14</bdi></small><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dx-item">
+                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg></span>
+                                <div class="dx-text">
+                                    <b data-i18n="dept.4.title">تصدير كشف المجموعات إلى Excel</b>
+                                    <span data-i18n="dept.4.text">تُخرج كشفاً بالمجموعات ومشرفيها ودرجاتها في أي لحظة من الفصل.</span>
+                                    <div class="dx-proof" aria-hidden="true">
+                                        <span class="dx-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg><span data-i18n="dept.pf.export">تنزيل الكشف</span><bdi dir="ltr">.xlsx</bdi></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                </ol>
             </div>
         </section>
 
