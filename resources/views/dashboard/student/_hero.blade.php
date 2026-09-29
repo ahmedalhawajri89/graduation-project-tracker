@@ -20,7 +20,16 @@
     $firstName = \Illuminate\Support\Str::of($student->name)->explode(' ')->first();
     $active = in_array($project->status, ['accept', 'complete'], true);
 
+    // المناقشة المجدولة (إن وُجدت) — تحلّ محلّ «اكتمل المشروع» في الشريحة
+    $defense = \App\Support\DefenseScheduler::enabled() && $project->status === 'complete'
+        ? $project->defense()->where('status', 'scheduled')->with(['room', 'members.supervisor'])->first()
+        : null;
+
     $deadline = match (true) {
+        (bool) $defense => [$defense->starts_at->isToday() ? 'is-warn' : '', 'ti-presentation',
+            'مناقشتك ' . ($defense->starts_at->isToday() ? 'اليوم' : ($defense->starts_at->isTomorrow() ? 'غداً' : $defense->starts_at->translatedFormat('l j F')))
+            . ' · ' . $defense->starts_at->format('H:i') . ' · ' . $defense->place_label],
+        $project->status === 'complete' && is_null($project->grade) => ['is-done', 'ti-rosette-discount-check', 'اكتمل المشروع — بانتظار موعد المناقشة'],
         $project->status === 'complete' => ['is-done', 'ti-rosette-discount-check', 'اكتمل المشروع'],
         $project->status === 'request' => ['', 'ti-hourglass', 'بانتظار ردّ المشرف'],
         is_null($daysLeft) => ['', 'ti-calendar', 'لا موعد نهائي بعد'],
@@ -105,13 +114,26 @@
     </ol>
 
     <div class="stu-hero-foot">
-        <span class="hero-chip {{ $deadline[0] }}">
+        <span class="hero-chip {{ $deadline[0] }}" @if ($defense) id="defense" @endif>
             <i class="ti {{ $deadline[1] }}" aria-hidden="true"></i>
             {{ $deadline[2] }}
             @if ($project->date_line && $active && $project->status !== 'complete')
                 <small>{{ $project->date_line->format('Y-m-d') }}</small>
             @endif
         </span>
+        @if ($defense)
+            {{-- رابط الاجتماع حين تكون عن بُعد أو مدمجة، وإضافتها إلى التقويم --}}
+            <span class="hero-defense-links">
+                @if ($defense->needsLink() && $defense->meeting_url)
+                    <a href="{{ $defense->meeting_url }}" target="_blank" rel="noopener" class="btn btn-sm {{ $defense->isJoinable() ? 'btn-primary' : 'btn-outline-primary' }}">
+                        <i class="ti ti-video me-1" aria-hidden="true"></i>{{ $defense->isJoinable() ? 'انضم الآن' : 'رابط الاجتماع' }}
+                    </a>
+                @endif
+                <a href="{{ $defense->googleCalendarUrl() }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
+                    <i class="ti ti-calendar-plus me-1" aria-hidden="true"></i>تقويم Google
+                </a>
+            </span>
+        @endif
 
         <div class="stu-hero-actions">
             <a href="{{ route('student.discussion') }}" class="btn btn-outline-secondary">

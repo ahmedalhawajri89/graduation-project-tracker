@@ -30,6 +30,7 @@
             [null, 'الكل', $countAll, null],
             ['grade', 'الدرجات', $countGrade, 'grade'],
             ['work', 'سير العمل', $countWork, 'work'],
+            ['defense', 'المناقشات', $countDefense ?? 0, 'work'],
             ['lifecycle', 'الحذف والاسترجاع', $countLifecycle, 'danger'],
         ];
 

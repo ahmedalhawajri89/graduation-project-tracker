@@ -35,6 +35,12 @@ class NotificationView
                 : self::make('accept', 'supervisor', 'ti-circle-check', 'is-success', 'قُبل مشروعك', $sender, $msg, $dash);
         }
 
+        // المناقشة: موعدها وتعديله وإلغاؤه وتذكيرها — من الإدارة، قبل مطابقة النصّ
+        // (وإلا التقطت كلمة «موعد» الرسالة كتغيير موعد مرحلة)
+        if (($data['kind'] ?? null) === 'defense') {
+            return self::make('defense', 'admin', 'ti-presentation', 'is-brand', $data['title'] ?? 'موعد المناقشة', 'الإدارة', $msg, $dash . '#defense');
+        }
+
         // تذكير المنصّة بموعد مرحلة: المرسل المنصّة، والرابط إلى المرحلة نفسها
         if (($data['kind'] ?? null) === 'reminder') {
             $href = $dash . (isset($data['milestone_id']) ? '#milestone-' . $data['milestone_id'] : '#milestones');

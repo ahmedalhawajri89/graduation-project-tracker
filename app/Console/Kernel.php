@@ -31,6 +31,9 @@ class Kernel extends ConsoleKernel
         // تذكير الفرق بالمراحل قبل موعدها بيومين وفي يومه — صباحاً ليبقى وقت للتسليم
         $schedule->command('milestones:remind')->dailyAt('09:00')->withoutOverlapping();
 
+        // تذكير الفريق ولجنة المناقشة: قبلها بيوم وصباح يومها
+        $schedule->command('defenses:remind')->dailyAt('08:00')->withoutOverlapping();
+
     }
 
     /**

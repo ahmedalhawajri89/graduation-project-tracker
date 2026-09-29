@@ -58,6 +58,9 @@ class AuditLog extends Model
         'admin.deleted' => 'حذف مسؤول',
         'student.deleted' => 'حذف طالب',
         'supervisor.deleted' => 'حذف مشرف',
+        'defense.scheduled' => 'جدولة مناقشة',
+        'defense.rescheduled' => 'تعديل موعد مناقشة',
+        'defense.cancelled' => 'إلغاء مناقشة',
     ];
 
     /**
@@ -68,6 +71,7 @@ class AuditLog extends Model
         'grade' => ['grade.%'],
         'work' => ['milestone.%', 'team.roles', 'file.note', 'stage.deleted'],
         'lifecycle' => ['project.deleted', 'project.restored', 'project.forceDeleted'],
+        'defense' => ['defense.%'],
     ];
 
     /** يقصر الاستعلام على أحداث التبويب — والتبويب المجهول لا يرشّح */

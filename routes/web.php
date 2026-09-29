@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DefenseController;
 use App\Http\Controllers\Admin\GroupsController;
 use App\Http\Controllers\Admin\semesterController;
 use App\Http\Controllers\Admin\SpecializeController;
@@ -133,6 +134,17 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
         Route::delete('groups/{id}/members/{member}', [GroupsController::class, 'removeMember'])->name('groups.members.remove');
         Route::post('groups/{id}/members/{member}/leader', [GroupsController::class, 'setLeader'])->name('groups.members.leader');
         //====================== end groups data
+
+        //====================== start defenses
+        // المناقشات: لجنة وموعد وقاعة أو رابط لكل مشروع مكتمل
+        Route::get('defenses', [DefenseController::class, 'index'])->name('defenses.index');
+        Route::post('defenses', [DefenseController::class, 'store'])->name('defenses.store');
+        Route::put('defenses/{defense}', [DefenseController::class, 'update'])->name('defenses.update');
+        Route::post('defenses/{defense}/cancel', [DefenseController::class, 'cancel'])->name('defenses.cancel');
+        Route::post('defenses/rooms', [DefenseController::class, 'storeRoom'])->name('defenses.rooms.store');
+        Route::post('defenses/rooms/{room}/toggle', [DefenseController::class, 'toggleRoom'])->name('defenses.rooms.toggle');
+        Route::delete('defenses/rooms/{room}', [DefenseController::class, 'destroyRoom'])->name('defenses.rooms.destroy');
+        //====================== end defenses
 
         //====================== start audit log
         // قراءة وتصدير فقط: لا مسار تعديل ولا حذف. سجلّ يُعدَّل ليس سجلّاً.

@@ -42,6 +42,7 @@ class AuditController extends Controller
             'countGrade' => $this->filtered('grade')->count(),
             'countWork' => $this->filtered('work')->count(),
             'countLifecycle' => $this->filtered('lifecycle')->count(),
+            'countDefense' => $this->filtered('defense')->count(),
             'summary' => [
                 'today' => AuditLog::whereDate('created_at', today())->count(),
                 'week' => AuditLog::where('created_at', '>=', $week)->count(),

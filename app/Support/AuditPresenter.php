@@ -51,6 +51,9 @@ class AuditPresenter
         'admin.deleted' => 'ti-user-x',
         'student.deleted' => 'ti-user-x',
         'supervisor.deleted' => 'ti-user-x',
+        'defense.scheduled' => 'ti-calendar-plus',
+        'defense.rescheduled' => 'ti-calendar-time',
+        'defense.cancelled' => 'ti-calendar-x',
     ];
 
     public static function category(string $action): string
@@ -58,7 +61,7 @@ class AuditPresenter
         return match (true) {
             in_array($action, ['grade.unlocked', 'project.deleted', 'project.forceDeleted'], true) => 'danger',
             str_starts_with($action, 'grade.') => 'grade',
-            str_starts_with($action, 'milestone.'), in_array($action, ['team.roles', 'file.note', 'stage.deleted'], true) => 'work',
+            str_starts_with($action, 'milestone.'), str_starts_with($action, 'defense.'), in_array($action, ['team.roles', 'file.note', 'stage.deleted'], true) => 'work',
             str_starts_with($action, 'project.') => 'project',
             default => 'account',
         };

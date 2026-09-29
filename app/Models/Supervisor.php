@@ -108,6 +108,12 @@ class Supervisor extends Authenticatable
             ->orderBy('id');
     }
 
+    /** عضويته في لجان المناقشة — مشرفاً لمشروعه أو ممتحناً لغيره */
+    public function defenseMemberships()
+    {
+        return $this->hasMany(DefenseMember::class);
+    }
+
     ################# end relations
 
     /** مقاعد الفصل الحالي المتبقية — سالبة إن تجاوز الحدّ (يعيّنه الأدمن فوقه أحياناً) */

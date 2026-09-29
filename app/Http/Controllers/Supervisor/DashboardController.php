@@ -144,7 +144,28 @@ class DashboardController extends Controller
                 'href' => route('supervisor.projects.show', $p->id),
             ]);
 
-        return $items->concat($deadlines)->sortBy(fn ($i) => $i['date']->timestamp)->values()->take(5);
+        // مناقشاته: مشرفاً لمشروعه أو ممتحناً لغيره
+        $me = auth('supervisor')->id();
+        $defenses = \App\Support\DefenseScheduler::enabled()
+            ? \App\Models\Defense::active()
+                ->whereBetween('starts_at', [now()->startOfDay(), $until->copy()->endOfDay()])
+                ->whereHas('members', fn ($q) => $q->where('supervisor_id', $me))
+                ->with(['project', 'room', 'members'])
+                ->get()
+                ->map(fn ($d) => [
+                    'date' => $d->starts_at,
+                    'title' => 'مناقشة — ' . $d->project->title,
+                    'kind' => 'defense',
+                    'role' => optional($d->members->firstWhere('supervisor_id', $me))->role_label,
+                    'meta' => $d->starts_at->format('H:i') . ' · ' . $d->place_label,
+                    'link' => $d->needsLink() ? $d->meeting_url : null,
+                    'href' => (int) $d->project->supervisor_id === (int) $me
+                        ? route('supervisor.projects.show', $d->project_id)
+                        : $d->googleCalendarUrl(),
+                ])
+            : collect();
+
+        return $items->concat($deadlines)->concat($defenses)->sortBy(fn ($i) => $i['date']->timestamp)->values()->take(5);
     }
 
     /**

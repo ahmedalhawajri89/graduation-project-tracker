@@ -91,6 +91,12 @@ class Project extends Model
         return $this->hasMany(Group::class, 'project_id', 'id');
     }
 
+    /** المناقشة: واحدة لكل مشروع (المجدولة أو المنتهية أو الملغاة) */
+    public function defense()
+    {
+        return $this->hasOne(Defense::class, 'project_id', 'id');
+    }
+
     public function milestones()
     {
         // بالموعد ثم بالإنشاء: مراحل الخطة تُنشأ في أوقات مختلفة، والترتيب

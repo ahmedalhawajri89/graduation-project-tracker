@@ -1,5 +1,9 @@
 @php
     $newMessagesCount = \App\Models\Contact::where('is_read', 0)->count();
+    // المكتملة التي تنتظر لجنةً وموعداً — تُتخطّى قبل تشغيل ترحيل المناقشات
+    $awaitingDefense = \App\Support\DefenseScheduler::enabled()
+        ? \App\Support\DefenseScheduler::awaiting()->count()
+        : null;
 @endphp
 
 {{-- ===== المتابعة ===== --}}
@@ -18,6 +22,18 @@
         <span class="nav-link-title">بيانات المجموعات</span>
     </a>
 </li>
+
+@if (! is_null($awaitingDefense))
+    <li class="nav-item {{ request()->routeIs('admin.defenses.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.defenses.index') }}">
+            <span class="nav-link-icon"><i class="ti ti-presentation"></i></span>
+            <span class="nav-link-title">المناقشات</span>
+            @if ($awaitingDefense > 0)
+                <span class="sidebar-count">{{ $awaitingDefense }}</span>
+            @endif
+        </a>
+    </li>
+@endif
 
 <li class="nav-item {{ request()->routeIs('admin.contact.*') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('admin.contact.index') }}">
