@@ -53,6 +53,7 @@ class AuditLog extends Model
         'project.leaderChanged' => 'تغيير قائد فريق',
         'specialize.archived' => 'إيقاف تخصص',
         'specialize.restored' => 'استئناف تخصص',
+        'semester.activated' => 'تفعيل فصل دراسي',
         'admin.created' => 'إضافة مسؤول',
         'admin.deleted' => 'حذف مسؤول',
         'student.deleted' => 'حذف طالب',

@@ -27,19 +27,38 @@ class semesterController extends Controller
 
         $active = $semesters->firstWhere('is_active', true);
 
-        // توزيع حالات الفصل الحالي — من نفس مصدر بقية اللوحة
-        $statusCounts = $active
-            ? Project::where('semester_id', $active->id)
-                ->selectRaw('status, COUNT(*) as total')
-                ->groupBy('status')
-                ->pluck('total', 'status')
-            : collect();
+        // الحالات لكل الفصول باستعلام تجميع واحد، والدرجات بآخر — لا استعلام لكل فصل
+        $byStatus = Project::selectRaw('semester_id, status, COUNT(*) as total')
+            ->groupBy('semester_id', 'status')
+            ->get()
+            ->groupBy('semester_id')
+            ->map(fn ($rows) => $rows->pluck('total', 'status'));
+
+        $grades = Project::whereNotNull('grade')
+            ->selectRaw('semester_id, AVG(grade) as avg_grade, COUNT(*) as graded')
+            ->groupBy('semester_id')
+            ->get()
+            ->keyBy('semester_id');
+
+        // ما يُقرأ من كل فصل في الخطّ الزمني: الإكمال من المقبولة، ومتوسط الدرجة
+        foreach ($semesters as $term) {
+            $counts = $byStatus[$term->id] ?? collect();
+            $accepted = (int) ($counts['accept'] ?? 0) + (int) ($counts['complete'] ?? 0);
+
+            $term->status_counts = $counts;
+            $term->accepted_count = $accepted;
+            $term->complete_count = (int) ($counts['complete'] ?? 0);
+            $term->completion = $accepted ? (int) round($term->complete_count / $accepted * 100) : null;
+            $term->avg_grade = isset($grades[$term->id]) ? round((float) $grades[$term->id]->avg_grade, 1) : null;
+            $term->graded_count = (int) ($grades[$term->id]->graded ?? 0);
+        }
 
         return view('dashboard.admin.setting.semester.index', [
             'semesters' => $semesters,
             'active' => $active,
             'archive' => $semesters->where('is_active', false)->values(),
-            'statusCounts' => $statusCounts,
+            'statusCounts' => $active?->status_counts ?? collect(),
+            'maxProjects' => max(1, (int) $semesters->max('projects_count')),
         ]);
     }
 
@@ -75,10 +94,17 @@ class semesterController extends Controller
         }
 
         try {
+            $previous = Semester::where('is_active', true)->value('name');
+
             \DB::transaction(function () use ($semester) {
                 Semester::query()->update(['is_active' => false]);
                 $semester->update(['is_active' => true]);
             });
+
+            // أخطر مفتاح في النظام — يُعرف من قلبه ومتى، كما تُعرف الدرجات
+            \App\Support\Audit::record('semester.activated', $semester, [
+                'semester' => ['from' => $previous, 'to' => $semester->name],
+            ]);
 
             return redirect()->back()->with('success', "تم التفعيل — النظام الآن يعمل على: {$semester->name}");
 

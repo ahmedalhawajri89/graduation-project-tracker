@@ -21,7 +21,7 @@ class AuditPresenter
         'work' => 'سير العمل',
         'project' => 'المشاريع والفرق',
         'danger' => 'حذف وفكّ اعتماد',
-        'account' => 'الحسابات والتخصصات',
+        'account' => 'الإعداد والحسابات',
     ];
 
     private const ICONS = [
@@ -46,6 +46,7 @@ class AuditPresenter
         'project.forceDeleted' => 'ti-trash-x',
         'specialize.archived' => 'ti-archive',
         'specialize.restored' => 'ti-archive-off',
+        'semester.activated' => 'ti-calendar-check',
         'admin.created' => 'ti-user-plus',
         'admin.deleted' => 'ti-user-x',
         'student.deleted' => 'ti-user-x',
@@ -118,6 +119,11 @@ class AuditPresenter
         if (isset($c['supervisor'])) {
             [$from, $to] = $pair($c['supervisor']);
             $add('المشرف', $from, $to);
+        }
+
+        if (isset($c['semester'])) {
+            [$from, $to] = $pair($c['semester']);
+            $add('الفصل', $from, $to);
         }
 
         if (isset($c['member'])) {
