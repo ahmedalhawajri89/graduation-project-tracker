@@ -31,7 +31,12 @@ class MilestoneSubmissionController extends Controller
 
         abort_unless($project->group()->where('student_id', $student->id)->exists(), 403);
 
-        if (! in_array($project->status, ['accept', 'complete'], true)) {
+        // بعد الاكتمال لا تُطلب مراحل: التالي المناقشة والدرجة
+        if ($project->status === 'complete') {
+            return back()->with('fail', 'اكتمل المشروع — لا تسليمات بعده. التالي المناقشة.');
+        }
+
+        if ($project->status !== 'accept') {
             return back()->with('fail', 'تُسلَّم المراحل بعد قبول المشروع.');
         }
 

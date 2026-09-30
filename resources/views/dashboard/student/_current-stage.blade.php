@@ -9,9 +9,10 @@
 
 @php
     $milestones = $project->milestones;
-    $current = $milestones->first(fn ($m) => $m->needsRevision())
-        ?? $milestones->first(fn ($m) => ! $m->is_done);
-    $canSubmit = ! $project->is_locked;
+    // المكتمل لا «مرحلة حالية» له: مراحله انتهى وقتها والتالي المناقشة
+    $current = $project->status === 'complete' ? null : ($milestones->first(fn ($m) => $m->needsRevision())
+        ?? $milestones->first(fn ($m) => ! $m->is_done));
+    $canSubmit = ! $project->is_locked && $project->status === 'accept';
 
     if ($current) {
         $latest = $current->submissions->first();
@@ -51,8 +52,16 @@
         <span class="spotlight-icon" aria-hidden="true"><i class="ti ti-confetti"></i></span>
         <div class="spotlight-body">
             <span class="spotlight-kicker">مراحل المشروع</span>
-            <h2>أنجزتم المراحل كلّها</h2>
-            <p>{{ $project->status === 'complete' ? 'اكتمل المشروع — التقييم أدناه حين يُرصد.' : 'بقي تقييم المشرف. تابعوا النقاش لأي ملاحظة أخيرة.' }}</p>
+            @if ($project->status === 'complete')
+                <h2>اكتمل المشروع</h2>
+                <p>
+                    أنجزتم {{ $milestones->where('is_done', true)->count() }} من {{ $milestones->count() }} مراحل.
+                    لا تسليمات بعد الاكتمال — التالي المناقشة ثم درجة اللجنة.
+                </p>
+            @else
+                <h2>أنجزتم المراحل كلّها</h2>
+                <p>بقي تقييم المشرف. تابعوا النقاش لأي ملاحظة أخيرة.</p>
+            @endif
         </div>
     </section>
 @else

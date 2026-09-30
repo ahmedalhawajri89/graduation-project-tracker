@@ -141,6 +141,7 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
         Route::get('defenses', [DefenseController::class, 'index'])->name('defenses.index');
         Route::get('defenses/export', [DefenseController::class, 'export'])->name('defenses.export');
         Route::post('defenses', [DefenseController::class, 'store'])->name('defenses.store');
+        Route::post('defenses/plan', [DefenseController::class, 'planStore'])->name('defenses.plan.store');
         Route::put('defenses/{defense}', [DefenseController::class, 'update'])->name('defenses.update');
         Route::post('defenses/{defense}/cancel', [DefenseController::class, 'cancel'])->name('defenses.cancel');
         Route::post('defenses/rooms', [DefenseController::class, 'storeRoom'])->name('defenses.rooms.store');

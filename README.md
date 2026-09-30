@@ -110,8 +110,9 @@ vendor/bin/phpunit
    ```
    Activate the current semester from *Admin › Semesters* before students log in.
 3. **Scheduler (required).** Mail is queued, teams are reminded of stage deadlines every morning
-   (`milestones:remind`: two days before and on the day), and a daily stats snapshot feeds the
-   dashboard trend.
+   (`milestones:remind` at 09:00: two days before and on the day), teams and committees are reminded
+   of their defense (`defenses:remind` at 08:00: the day before and on the day — the email carries
+   an `.ics` calendar file), and a daily stats snapshot feeds the dashboard trend.
    Add one cron entry:
    ```
    * * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1
@@ -125,6 +126,13 @@ vendor/bin/phpunit
 5. **PHP upload limits.** Project files accept up to 10 MB and Excel imports up to 5 MB:
    set `upload_max_filesize = 12M` and `post_max_size = 16M`.
 6. **Caches.** `php artisan config:cache && php artisan route:cache && php artisan view:cache`.
+7. **Defenses.** Add the defense rooms from *Admin › Defenses › Rooms*; the planner suggests a slot,
+   room and examiner for each completed project within the working hours in `config/defenses.php`
+   (Sunday–Thursday, 09:00–15:00 by default). Online and hybrid defenses take a meeting link (the
+   dialog has a *Create Google Meet* shortcut) — no Google API credentials are needed.
+8. **Readiness check.** `php artisan deploy:check` verifies what can be checked automatically
+   (environment, security, mail, queue, migrations, first admin, active semester, writable paths,
+   upload limits, caches) and exits non-zero on anything critical. Run it after each deploy.
 
 ### Next.js front end
 

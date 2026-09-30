@@ -127,6 +127,125 @@ class DefenseScheduler
             ->values();
     }
 
+    /**
+     * خانات الدوام القادمة بالترتيب: من بعد مهلة الإشعار حتى أفق البحث،
+     * في أيام العمل، من أول الدوام حتى آخر خانة تنتهي قبل نهايته.
+     *
+     * @return \Generator<int, Carbon>
+     */
+    public static function slots(?Carbon $from = null): \Generator
+    {
+        $cfg = config('defenses');
+        $day = ($from ?? today()->addDays($cfg['lead_days']))->copy()->startOfDay();
+        $until = today()->addDays($cfg['horizon_days']);
+
+        for (; $day->lte($until); $day->addDay()) {
+            if (! in_array($day->dayOfWeek, $cfg['days'], true)) {
+                continue;
+            }
+            $slot = $day->copy()->setTimeFromTimeString($cfg['start']);
+            $end = $day->copy()->setTimeFromTimeString($cfg['end']);
+            for (; $slot->copy()->addMinutes($cfg['slot'])->lte($end); $slot->addMinutes($cfg['slot'])) {
+                if ($slot->isFuture()) {
+                    yield $slot->copy();
+                }
+            }
+        }
+    }
+
+    /**
+     * جدول مقترح لمجموعة مشاريع — بلا حفظ.
+     *
+     * لكل مشروع أول خانة يكون فيها مشرفه حرّاً، وقاعة متاحة، وممتحن حرّ (من
+     * تخصص المشروع أولاً ثم الأقلّ مناقشاتٍ، محسوباً معها ما اقتُرح للتوّ
+     * فيتوزّع الحمل). ما يُقترح لمشروع يُحجز في الذاكرة فلا يتعارض اقتراحان.
+     * الاقتراح حضوري: رابط الاجتماع لا يُخترَع. والحفظ يمرّ بـ conflicts() نفسها.
+     *
+     * @param  Collection<int, Project>  $projects
+     * @return array<int, ?array{starts_at: Carbon, duration_minutes: int, room_id: int, room: string, examiner_id: int, examiner: string, same_specialize: bool}>
+     */
+    public static function planAll(Collection $projects): array
+    {
+        $plan = $projects->mapWithKeys(fn ($p) => [$p->id => null])->all();
+        $rooms = DefenseRoom::where('is_active', true)->orderBy('name')->get();
+        if ($projects->isEmpty() || $rooms->isEmpty()) {
+            return $plan;
+        }
+
+        $duration = (int) config('defenses.slot');
+
+        // المشغول الآن: لكل قاعة ولكل مشرف فتراته القادمة
+        $busyRoom = [];
+        $busyPerson = [];
+        $load = [];
+        foreach (Defense::active()->where('starts_at', '>=', now()->startOfDay())->with('members')->get() as $d) {
+            $span = [$d->starts_at, $d->endsAt()];
+            if ($d->room_id) {
+                $busyRoom[$d->room_id][] = $span;
+            }
+            foreach ($d->members as $m) {
+                $busyPerson[$m->supervisor_id][] = $span;
+                $load[$m->supervisor_id] = ($load[$m->supervisor_id] ?? 0) + 1;
+            }
+        }
+
+        $free = function (array $spans, Carbon $from, Carbon $to): bool {
+            foreach ($spans as [$a, $b]) {
+                if ($a->lt($to) && $b->gt($from)) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
+        $supervisors = Supervisor::orderBy('name')->get(['id', 'name', 'specialize_id']);
+
+        foreach ($projects as $project) {
+            $specializeId = $project->project_type?->specialize_id;
+            // المرشّحون: التخصص أولاً، ثم الأقلّ حملاً (مع ما اقتُرح في هذا الجدول)
+            $candidates = $supervisors->where('id', '!=', $project->supervisor_id)
+                ->sortBy(fn ($s) => [$specializeId && (int) $s->specialize_id === (int) $specializeId ? 0 : 1, $load[$s->id] ?? 0, $s->name])
+                ->values();
+
+            foreach (self::slots() as $from) {
+                $to = $from->copy()->addMinutes($duration);
+
+                if (! $free($busyPerson[$project->supervisor_id] ?? [], $from, $to)) {
+                    continue;
+                }
+                $room = $rooms->first(fn ($r) => $free($busyRoom[$r->id] ?? [], $from, $to));
+                $examiner = $room ? $candidates->first(fn ($s) => $free($busyPerson[$s->id] ?? [], $from, $to)) : null;
+                if (! $room || ! $examiner) {
+                    continue;
+                }
+
+                $plan[$project->id] = [
+                    'starts_at' => $from,
+                    'duration_minutes' => $duration,
+                    'room_id' => $room->id,
+                    'room' => $room->name,
+                    'examiner_id' => $examiner->id,
+                    'examiner' => $examiner->name,
+                    'same_specialize' => $specializeId && (int) $examiner->specialize_id === (int) $specializeId,
+                ];
+                $busyRoom[$room->id][] = [$from, $to];
+                $busyPerson[$project->supervisor_id][] = [$from, $to];
+                $busyPerson[$examiner->id][] = [$from, $to];
+                $load[$examiner->id] = ($load[$examiner->id] ?? 0) + 1;
+                break;
+            }
+        }
+
+        return $plan;
+    }
+
+    /** اقتراح لمشروع واحد */
+    public static function suggestSlot(Project $project): ?array
+    {
+        return self::planAll(collect([$project]))[$project->id] ?? null;
+    }
+
     /** اللجنة: المشرف ثم الممتحن */
     public static function syncMembers(Defense $defense, Project $project, int $examinerId): void
     {

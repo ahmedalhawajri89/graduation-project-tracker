@@ -62,8 +62,35 @@ class DefenseController extends Controller
                 'load' => $s->upcoming_defenses,
             ])->values();
 
+        // مخطِّط الأسبوع: أيام الدوام × خانات الدوام، وما جُدول فيها
+        // لكل مشروع منتظر اقتراح جاهز (خانة + قاعة + ممتحن) — لا يتعارض اقتراحان
+        $plan = DefenseScheduler::planAll($awaiting);
+
+        $cfg = config('defenses');
+        $weekStart = rescue(fn () => Carbon::createFromFormat('Y-m-d', (string) request('week'))->startOfDay(), null, false)
+            ?? $this->defaultWeek($upcoming, $plan);
+        $weekStart = $weekStart->copy()->startOfWeek(Carbon::SUNDAY);
+        $days = collect(range(0, 6))->map(fn ($i) => $weekStart->copy()->addDays($i))
+            ->filter(fn ($d) => in_array($d->dayOfWeek, $cfg['days'], true))->values();
+        $times = [];
+        for ($t = Carbon::parse($cfg['start']), $end = Carbon::parse($cfg['end']); $t->copy()->addMinutes($cfg['slot'])->lte($end); $t->addMinutes($cfg['slot'])) {
+            $times[] = $t->format('H:i');
+        }
+        $weekDefenses = Defense::whereIn('status', [Defense::SCHEDULED, Defense::DONE])
+            ->whereBetween('starts_at', [$weekStart, $weekStart->copy()->addDays(7)])
+            ->with($with)->orderBy('starts_at')->get();
+
         return view('dashboard.admin.defense.index', [
-            'tab' => $tab ?? ($awaiting->count() ? 'awaiting' : 'upcoming'),
+            'plan' => $plan,
+            'week' => ['start' => $weekStart, 'days' => $days, 'times' => $times, 'defenses' => $weekDefenses,
+                'prev' => $weekStart->copy()->subWeek()->format('Y-m-d'), 'next' => $weekStart->copy()->addWeek()->format('Y-m-d')],
+            'pipeline' => [
+                'awaiting' => $awaiting->count(),
+                'scheduled' => $upcoming->count(),
+                'grading' => $past->filter(fn ($d) => $d->status === Defense::SCHEDULED)->count(),
+                'done' => Defense::where('status', Defense::DONE)->count(),
+            ],
+            'tab' => $tab ?? 'awaiting',
             'awaiting' => $awaiting,
             'upcoming' => $upcoming,
             'past' => $past,
@@ -78,6 +105,16 @@ class DefenseController extends Controller
         ]);
     }
 
+    /** الأسبوع الذي يفتح عليه المخطِّط: أسبوع أقرب مناقشة قادمة، وإلا أول أسبوع يُقترح فيه */
+    private function defaultWeek($upcoming, array $plan): Carbon
+    {
+        $firstSuggested = collect($plan)->filter()->min(fn ($s) => $s['starts_at']);
+
+        return $upcoming->first()?->starts_at->copy()
+            ?? $firstSuggested?->copy()
+            ?? today()->addDays((int) config('defenses.lead_days'));
+    }
+
     /** جدولة مناقشة لمشروع مكتمل — أو إعادة جدولة الملغاة منها */
     public function store(Request $request)
     {
@@ -88,6 +125,66 @@ class DefenseController extends Controller
             return $this->back($errors, $project->id);
         }
 
+        $defense = $this->schedule($project, $data);
+
+        return redirect()->route('admin.defenses.index', ['tab' => 'awaiting', 'week' => $defense->starts_at->format('Y-m-d')])
+            ->with('success', 'جُدولت المناقشة وأُشعر الفريق واللجنة.');
+    }
+
+    /**
+     * اعتماد الجدول المقترح كله: البنود كما عُرضت في المعاينة، وكل بند يمرّ
+     * بقواعد التعارض نفسها — وما سبقه في الاعتماد محسوب عليه. ما تعذّر يبقى
+     * في «بانتظار الجدولة» ويُذكر سببه.
+     */
+    public function planStore(Request $request)
+    {
+        $request->validate([
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.date' => ['required', 'date_format:Y-m-d'],
+            'items.*.time' => ['required', 'date_format:H:i'],
+            'items.*.room_id' => ['required', 'integer', 'exists:defense_rooms,id'],
+            'items.*.examiner_id' => ['required', 'integer', 'exists:supervisors,id'],
+        ]);
+
+        $done = 0;
+        $skipped = [];
+        $first = null;
+
+        foreach ($request->input('items') as $projectId => $item) {
+            $project = Project::with('project_type')->find($projectId);
+            if (! $project) {
+                continue;
+            }
+            $data = [
+                'starts_at' => Carbon::createFromFormat('Y-m-d H:i', $item['date'] . ' ' . $item['time']),
+                'duration_minutes' => (int) config('defenses.slot'),
+                'mode' => 'in_person',
+                'room_id' => (int) $item['room_id'],
+                'meeting_url' => null,
+                'examiner_id' => (int) $item['examiner_id'],
+                'notes' => null,
+            ];
+
+            if ($errors = DefenseScheduler::conflicts($project, $data)) {
+                $skipped[] = $project->title . ' (' . collect($errors)->first() . ')';
+
+                continue;
+            }
+
+            $defense = $this->schedule($project, $data);
+            $first ??= $defense->starts_at;
+            $done++;
+        }
+
+        return redirect()->route('admin.defenses.index', array_filter(['tab' => 'awaiting', 'week' => $first?->format('Y-m-d')]))
+            ->with($done ? 'success' : 'fail', $done
+                ? "جُدولت {$done} مناقشات وأُشعرت فرقها ولجانها." . ($skipped ? ' تعذّر: ' . implode('؛ ', $skipped) : '')
+                : 'لم تُجدول أي مناقشة: ' . implode('؛ ', $skipped));
+    }
+
+    /** الحفظ والتدقيق والإشعار — لبند واحد صحّ تحقّقه */
+    private function schedule(Project $project, array $data): Defense
+    {
         $defense = DB::transaction(function () use ($project, $data) {
             $defense = Defense::updateOrCreate(['project_id' => $project->id], $this->attributes($data) + [
                 'status' => Defense::SCHEDULED,
@@ -104,8 +201,7 @@ class DefenseController extends Controller
         Audit::record('defense.scheduled', $project, ['defense' => ['to' => DefenseNotifier::when($defense->fresh('room'))]]);
         DefenseNotifier::scheduled($defense->fresh(['room', 'members.supervisor', 'project.group']));
 
-        return redirect()->route('admin.defenses.index', ['tab' => 'upcoming'])
-            ->with('success', 'جُدولت المناقشة وأُشعر الفريق واللجنة.');
+        return $defense;
     }
 
     /** إعادة جدولة: موعد أو مكان أو ممتحن آخر */
@@ -134,7 +230,7 @@ class DefenseController extends Controller
         Audit::record('defense.rescheduled', $project, ['defense' => ['from' => $before, 'to' => DefenseNotifier::when($defense)]]);
         DefenseNotifier::rescheduled($defense, $before);
 
-        return redirect()->route('admin.defenses.index', ['tab' => 'upcoming'])
+        return redirect()->route('admin.defenses.index', ['tab' => 'awaiting', 'week' => $defense->starts_at->format('Y-m-d')])
             ->with('success', 'عُدّل موعد المناقشة وأُشعر الفريق واللجنة.');
     }
 

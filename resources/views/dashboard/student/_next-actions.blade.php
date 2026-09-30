@@ -12,7 +12,9 @@
     $todos = [];
 
     // طلب تعديل من المشرف: أعلى من المتأخّر — فيه ما يجب فعله بالضبط
-    $revisions = $project->milestones->filter(fn ($m) => $m->needsRevision());
+    // بعد الاكتمال لا تعديل ولا متأخّر: ما بقي المناقشة والدرجة
+    $running = $project->status === 'accept';
+    $revisions = $running ? $project->milestones->filter(fn ($m) => $m->needsRevision()) : collect();
 
     if ($revisions->count()) {
         $todos[] = [
@@ -28,9 +30,9 @@
 
     // المتأخّر أولاً: هو ما يُكلِّف إن أُهمل
     // المعادة بطلب تعديل في سطرها أعلاه — لا تُعدّ مرّتين
-    $overdue = $project->milestones->filter(
+    $overdue = $running ? $project->milestones->filter(
         fn ($m) => $m->isLate() && ! $m->needsRevision()
-    );
+    ) : collect();
 
     if ($overdue->count()) {
         $todos[] = [

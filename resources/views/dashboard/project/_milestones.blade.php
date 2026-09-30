@@ -17,7 +17,8 @@
     $isStudent = auth('student')->check();
     // الإدارة تقرأ فقط: لا «طلبتَ» ولا «مراجعتك» — والمهمّ عندها كم ينتظر التسليم
     $isAdmin = auth('admin')->check();
-    $canSubmit = $isStudent && in_array($project->status, ['accept', 'complete'], true) && ! $project->is_locked;
+    // التسليم في مشروع جارٍ فقط: المكتمل ينتظر مناقشته، ومراحله للعرض
+    $canSubmit = $isStudent && $project->status === 'accept' && ! $project->is_locked;
 
     // النموذج الذي فشل تحقّقه يُفتح من جديد لمرحلته
     $failedFor = (int) old('milestone_ref');
@@ -69,7 +70,8 @@
 
         @foreach ($project->milestones as $milestone)
             @php
-                $overdue = $milestone->isLate();
+                // «متأخرة» لا معنى لها بعد اكتمال المشروع
+                $overdue = $milestone->isLate() && $project->status === 'accept';
                 $icon = match (true) {
                     $milestone->is_done => 'ti-check',
                     $milestone->isSubmitted() => 'ti-inbox',

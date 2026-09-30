@@ -23,7 +23,8 @@
             'team' => $p->group->map(fn ($g) => $g->student?->name)->filter()->implode('، '),
         ];
         $projectsMeta = $awaiting->mapWithKeys(fn ($p) => [$p->id => $meta($p)])
-            ->union($upcoming->mapWithKeys(fn ($d) => [$d->project_id => $meta($d->project)]));
+            ->union($upcoming->mapWithKeys(fn ($d) => [$d->project_id => $meta($d->project)]))
+            ->union($week['defenses']->mapWithKeys(fn ($d) => [$d->project_id => $meta($d->project)]));
 
         $defenseMeta = fn ($d) => [
             'id' => $d->id,
@@ -40,51 +41,71 @@
         $dayLabel = fn ($date) => $date->isToday() ? 'اليوم' : ($date->isTomorrow() ? 'غداً' : $date->translatedFormat('l j F'));
     @endphp
 
+    @php
+        $planned = collect($plan)->filter();
+        $slotMinutes = (int) config('defenses.slot');
+        // ما يُعرض في خانة: مناقشات تبدأ داخلها، واقتراحات هذا الأسبوع أشباحاً
+        $inSlot = fn ($day, $time) => $week['defenses']->filter(function ($d) use ($day, $time, $slotMinutes) {
+            $from = $day->copy()->setTimeFromTimeString($time);
+
+            return $d->starts_at->gte($from) && $d->starts_at->lt($from->copy()->addMinutes($slotMinutes));
+        });
+        $ghosts = fn ($day, $time) => $planned->filter(fn ($s) => $s['starts_at']->format('Y-m-d H:i') === $day->format('Y-m-d') . ' ' . $time);
+        $suggestionMeta = fn ($s) => [
+            'date' => $s['starts_at']->format('Y-m-d'), 'time' => $s['starts_at']->format('H:i'),
+            'duration_minutes' => $s['duration_minutes'], 'mode' => 'in_person',
+            'room_id' => $s['room_id'], 'examiner_id' => $s['examiner_id'],
+        ];
+    @endphp
+
     <x-page-header title="المناقشات" subtitle="لجنة وموعد لكل مشروع مكتمل — حضورياً أو عن بُعد">
         <x-slot:actions>
             <a href="{{ route('admin.defenses.export') }}" class="btn btn-outline-primary">
                 <i class="ti ti-file-spreadsheet me-1" aria-hidden="true"></i>
-                تصدير الجدول Excel
+                تصدير Excel
             </a>
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#roomsModal">
                 <i class="ti ti-door me-1" aria-hidden="true"></i>
                 القاعات
                 <span class="df-count">{{ $activeRooms->count() }}</span>
             </button>
+            @if ($planned->count() >= 2)
+                {{-- جدول مقترح للكل يُعرض معاينةً ولا يُحفظ قبل الاعتماد --}}
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#planModal">
+                    <i class="ti ti-wand me-1" aria-hidden="true"></i>
+                    جدولة الكل تلقائياً
+                </button>
+            @endif
         </x-slot:actions>
     </x-page-header>
 
-    {{-- ═══ المؤشّرات ═══ --}}
-    <section class="df-stats" aria-label="ملخّص المناقشات">
-        <a href="{{ route('admin.defenses.index', ['tab' => 'awaiting']) }}" class="df-stat {{ $stats['awaiting'] ? 'is-live' : '' }}">
-            <span class="df-stat-icon"><i class="ti ti-hourglass" aria-hidden="true"></i></span>
-            <span><b>{{ $stats['awaiting'] }}</b><small>بانتظار الجدولة</small></span>
-        </a>
-        <div class="df-stat">
-            <span class="df-stat-icon"><i class="ti ti-calendar-event" aria-hidden="true"></i></span>
-            <span><b>{{ $stats['today'] }}</b><small>اليوم</small></span>
-        </div>
-        <div class="df-stat">
-            <span class="df-stat-icon"><i class="ti ti-calendar-week" aria-hidden="true"></i></span>
-            <span><b>{{ $stats['week'] }}</b><small>خلال 7 أيام</small></span>
-        </div>
-        <button type="button" class="df-stat" data-bs-toggle="modal" data-bs-target="#roomsModal">
-            <span class="df-stat-icon"><i class="ti ti-door" aria-hidden="true"></i></span>
-            <span><b>{{ $stats['rooms'] }}</b><small>قاعات متاحة</small></span>
-        </button>
-    </section>
+    {{-- ═══ مسار المناقشات: أين يقف كل مشروع ═══ --}}
+    <nav class="df-pipe" aria-label="مسار المناقشات">
+        @foreach ([
+            ['awaiting', 'بانتظار الجدولة', 'ti-hourglass', $pipeline['awaiting'], 'awaiting', true],
+            ['scheduled', 'مجدولة', 'ti-calendar-event', $pipeline['scheduled'], 'upcoming', false],
+            ['grading', 'بانتظار الدرجة', 'ti-award', $pipeline['grading'], 'past', false],
+            ['done', 'منتهية', 'ti-circle-check', $pipeline['done'], 'past', false],
+        ] as [$key, $label, $icon, $n, $to, $action])
+            <a href="{{ route('admin.defenses.index', ['tab' => $to]) }}"
+                class="df-pipe-step is-{{ $key }} {{ $n ? 'has-items' : '' }} {{ $action && $n ? 'is-action' : '' }}">
+                <span class="df-pipe-icon"><i class="ti {{ $icon }}" aria-hidden="true"></i></span>
+                <span class="df-pipe-body"><b>{{ $n }}</b><small>{{ $label }}</small></span>
+            </a>
+        @endforeach
+    </nav>
 
     @if (! $activeRooms->count())
         <div class="df-note">
             <i class="ti ti-info-circle" aria-hidden="true"></i>
-            لا قاعات بعد — المناقشات عن بُعد متاحة الآن، وللحضورية
+            لا قاعات بعد — الاقتراح التلقائي يحتاج قاعة، والمناقشات عن بُعد متاحة يدوياً.
             <button type="button" class="btn btn-link p-0 align-baseline" data-bs-toggle="modal" data-bs-target="#roomsModal">أضف قاعة</button>.
         </div>
     @endif
 
     {{-- ═══ التبويبات ═══ --}}
     <div class="filter-tabs df-tabs mb-3" role="tablist">
-        @foreach (['awaiting' => ['بانتظار الجدولة', $awaiting->count()], 'upcoming' => ['القادمة', $upcoming->count()], 'past' => ['السابقة', $past->count()]] as $key => [$label, $n])
+        @foreach (['awaiting' => ['المخطِّط', $awaiting->count()], 'upcoming' => ['القادمة', $upcoming->count()], 'past' => ['السابقة', $past->count()]] as $key => [$label, $n])
             <a href="{{ route('admin.defenses.index', ['tab' => $key]) }}" class="filter-tab {{ $tab === $key ? 'is-active' : '' }}"
                 @if ($tab === $key) aria-current="page" @endif>
                 {{ $label }} <span class="filter-count">{{ $n }}</span>
@@ -92,20 +113,24 @@
         @endforeach
     </div>
 
-    {{-- ═══ بانتظار الجدولة ═══ --}}
+    {{-- ═══ المخطِّط: قائمة الانتظار باقتراحاتها + أسبوع الدوام ═══ --}}
     @if ($tab === 'awaiting')
-        @if ($awaiting->count())
-            <div class="df-grid">
-                @foreach ($awaiting as $p)
+        <div class="df-plan">
+            <aside class="df-queue" aria-labelledby="df-queue-title">
+                <h2 id="df-queue-title">بانتظار الجدولة <span>{{ $awaiting->count() }}</span></h2>
+
+                @forelse ($awaiting as $p)
+                    @php $s = $plan[$p->id] ?? null; @endphp
                     <article class="df-card">
                         <header>
                             <a href="{{ route('admin.groups.show', $p->id) }}" class="df-title">{{ $p->title }}</a>
-                            <span class="df-sub">{{ $p->project_type->name ?? '—' }} · المشرف {{ $p->supervisor->name }}</span>
+                            <span class="df-sub">{{ $p->project_type->name ?? '—' }}</span>
                         </header>
-                        <div class="df-team">
-                            @foreach ($p->group as $g)
-                                <span><x-avatar :user="$g->student" class="cell-avatar df-av" />{{ $g->student?->name }}</span>
-                            @endforeach
+                        <div class="df-people">
+                            <span class="df-person"><x-avatar :user="$p->supervisor" class="cell-avatar df-av" />{{ $p->supervisor->name }} <em>المشرف</em></span>
+                            <span class="df-person is-team" title="{{ $p->group->map(fn ($g) => $g->student?->name)->filter()->implode('، ') }}">
+                                <i class="ti ti-users" aria-hidden="true"></i>{{ $p->group->count() }} طلاب
+                            </span>
                         </div>
                         <div class="df-facts">
                             <span><i class="ti ti-list-check" aria-hidden="true"></i>{{ $p->milestones_done }} من {{ $p->milestones_count }} مراحل</span>
@@ -114,21 +139,124 @@
                                 <span class="is-warn"><i class="ti ti-calendar-x" aria-hidden="true"></i>أُلغيت مناقشته السابقة</span>
                             @endif
                         </div>
-                        <footer>
-                            <button type="button" class="btn btn-primary btn-sm" data-schedule='@json($meta($p))'>
-                                <i class="ti ti-calendar-plus me-1" aria-hidden="true"></i>
-                                جدولة المناقشة
-                            </button>
-                        </footer>
+
+                        @if ($s)
+                            {{-- الاقتراح: أول خانة يكون فيها المشرف والقاعة وممتحن أحراراً --}}
+                            <div class="df-suggest">
+                                <small><i class="ti ti-sparkles" aria-hidden="true"></i> اقتراح</small>
+                                <b>{{ $s['starts_at']->translatedFormat('l j F') }} · <bdi dir="ltr">{{ $s['starts_at']->format('H:i') }}</bdi></b>
+                                <span>{{ $s['room'] }} · الممتحن {{ $s['examiner'] }}@if ($s['same_specialize']) <em>من التخصص</em>@endif</span>
+                            </div>
+                            <footer>
+                                <form action="{{ route('admin.defenses.store') }}" method="post">
+                                    @csrf
+                                    <input type="hidden" name="project_id" value="{{ $p->id }}">
+                                    @foreach ($suggestionMeta($s) as $k => $v)
+                                        <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+                                    @endforeach
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="ti ti-calendar-check me-1" aria-hidden="true"></i>جدولة بهذا الاقتراح
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-outline-secondary" data-schedule='@json($meta($p))' data-defense='@json($suggestionMeta($s))'>
+                                    تعديل
+                                </button>
+                            </footer>
+                        @else
+                            <footer>
+                                <button type="button" class="btn btn-primary" data-schedule='@json($meta($p))'>
+                                    <i class="ti ti-calendar-plus me-1" aria-hidden="true"></i>جدولة المناقشة
+                                </button>
+                            </footer>
+                        @endif
                     </article>
-                @endforeach
-            </div>
-        @else
-            <div class="dist-panel">
-                <x-empty-state icon="ti-circle-check" title="لا مشاريع بانتظار الجدولة"
-                    text="حين يضغط المشرف «اكتمال المشروع» يظهر هنا لتُشكَّل لجنته ويُحدَّد موعده." class="py-6" />
-            </div>
-        @endif
+                @empty
+                    <div class="df-queue-empty">
+                        <i class="ti ti-circle-check" aria-hidden="true"></i>
+                        <b>لا مشاريع بانتظار الجدولة</b>
+                        <span>حين يضغط المشرف «اكتمال المشروع» يظهر هنا لتُشكَّل لجنته ويُحدَّد موعده.</span>
+                    </div>
+                @endforelse
+            </aside>
+
+            {{-- أسبوع الدوام: ما جُدول كتلاً، وما اقتُرح أشباحاً، والخانة الفارغة تُجدول بنقرة --}}
+            <section class="df-week" aria-labelledby="df-week-title">
+                <header class="df-week-head">
+                    <h2 id="df-week-title">
+                        {{-- «إلى» لا شرطة: المدى بشرطة يُقرأ معكوساً داخل نصّ عربي --}}
+                        أسبوع {{ $week['days']->first()->translatedFormat($week['days']->first()->month === $week['days']->last()->month ? 'j' : 'j F') }}
+                        إلى {{ $week['days']->last()->translatedFormat('j F Y') }}
+                    </h2>
+                    <div class="df-week-nav">
+                        <a href="{{ route('admin.defenses.index', ['tab' => 'awaiting', 'week' => $week['prev']]) }}" class="btn-action" aria-label="الأسبوع السابق" title="الأسبوع السابق"><i class="ti ti-chevron-right" aria-hidden="true"></i></a>
+                        <a href="{{ route('admin.defenses.index', ['tab' => 'awaiting']) }}" class="btn btn-sm btn-outline-secondary">الأقرب</a>
+                        <a href="{{ route('admin.defenses.index', ['tab' => 'awaiting', 'week' => $week['next']]) }}" class="btn-action" aria-label="الأسبوع التالي" title="الأسبوع التالي"><i class="ti ti-chevron-left" aria-hidden="true"></i></a>
+                    </div>
+                </header>
+
+                <div class="df-grid-scroll">
+                    <table class="df-cal">
+                        <thead>
+                            <tr>
+                                <th class="df-cal-time" scope="col"><span class="visually-hidden">الوقت</span></th>
+                                @foreach ($week['days'] as $day)
+                                    <th scope="col" class="{{ $day->isToday() ? 'is-today' : '' }}">
+                                        <b>{{ $day->translatedFormat('l') }}</b>
+                                        <small dir="ltr">{{ $day->format('j/n') }}</small>
+                                    </th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($week['times'] as $time)
+                                <tr>
+                                    <th scope="row" class="df-cal-time" dir="ltr">{{ $time }}</th>
+                                    @foreach ($week['days'] as $day)
+                                        @php
+                                            $items = $inSlot($day, $time);
+                                            $ghost = $ghosts($day, $time);
+                                            $gone = $day->copy()->setTimeFromTimeString($time)->isPast();
+                                        @endphp
+                                        <td class="{{ $gone ? 'is-past' : '' }}">
+                                            @foreach ($items as $d)
+                                                @php $editable = $d->status === Defense::SCHEDULED && ! $d->members->whereNotNull('grade')->count(); @endphp
+                                                <button type="button" class="df-block is-{{ $d->mode }} {{ $d->status === Defense::DONE ? 'is-done' : '' }}"
+                                                    @if ($editable) data-schedule='@json($meta($d->project))' data-defense='@json($defenseMeta($d))' @else disabled @endif
+                                                    title="{{ $d->project->title }} — {{ $d->members->map(fn ($m) => $m->supervisor->name)->implode('، ') }}">
+                                                    <b>{{ $d->project->title }}</b>
+                                                    <small><bdi dir="ltr">{{ $d->starts_at->format('H:i') }}</bdi> · {{ $d->place_label }}</small>
+                                                </button>
+                                            @endforeach
+                                            @foreach ($ghost as $pid => $g)
+                                                <button type="button" class="df-block is-ghost" data-schedule='@json($projectsMeta[$pid])' data-defense='@json($suggestionMeta($g))'
+                                                    title="اقتراح — انقر للمراجعة والجدولة">
+                                                    <b>{{ $projectsMeta[$pid]['title'] }}</b>
+                                                    <small>مقترح · {{ $g['room'] }}</small>
+                                                </button>
+                                            @endforeach
+                                            @if (! $gone && $awaiting->count())
+                                                <button type="button" class="df-add" data-slot-date="{{ $day->format('Y-m-d') }}" data-slot-time="{{ $time }}"
+                                                    aria-label="جدولة في {{ $day->translatedFormat('l') }} {{ $time }}">
+                                                    <i class="ti ti-plus" aria-hidden="true"></i>
+                                                </button>
+                                            @endif
+                                        </td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <footer class="df-legend">
+                    <span><i class="is-in_person"></i>حضوري</span>
+                    <span><i class="is-online"></i>عن بُعد</span>
+                    <span><i class="is-hybrid"></i>مدمج</span>
+                    <span><i class="is-ghost"></i>مقترح</span>
+                    <small>انقر خانة فارغة للجدولة فيها، أو مناقشة لتعديلها.</small>
+                </footer>
+            </section>
+        </div>
     @endif
 
     {{-- ═══ القادمة: أجندة باليوم ═══ --}}
@@ -233,6 +361,11 @@
                     <div>
                         <h2 class="modal-title" id="defenseModalTitle">جدولة المناقشة</h2>
                         <div class="df-form-project" data-f="project"></div>
+                        <select class="form-select form-select-sm df-pick" data-f="pick" aria-label="المشروع" hidden>
+                            @foreach ($awaiting as $p)
+                                <option value="{{ $p->id }}">{{ $p->title }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                 </div>
@@ -343,6 +476,53 @@
             </form>
         </div>
     </div>
+
+    {{-- ═══════════ جدولة الكل: معاينة ثم اعتماد ═══════════ --}}
+    @if ($planned->count() >= 2)
+        <div class="modal fade" id="planModal" tabindex="-1" aria-labelledby="planModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                <form class="modal-content" method="post" action="{{ route('admin.defenses.plan.store') }}">
+                    @csrf
+                    <div class="modal-header">
+                        <div>
+                            <h2 class="modal-title" id="planModalTitle">جدول مقترح لـ{{ $planned->count() }} مناقشات</h2>
+                            <div class="df-form-project">لا شيء يُحفظ قبل الاعتماد. كل مناقشة حضورية {{ $slotMinutes }} دقيقة، بلا تعارض في القاعات ولا اللجان.</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <table class="table df-plan-table mb-0">
+                            <thead><tr><th>المشروع</th><th>الموعد</th><th>القاعة</th><th>الممتحن</th></tr></thead>
+                            <tbody>
+                                @foreach ($planned->sortBy(fn ($x) => $x['starts_at']) as $pid => $x)
+                                    <tr>
+                                        <td>
+                                            <b>{{ $projectsMeta[$pid]['title'] }}</b>
+                                            <small>المشرف {{ $projectsMeta[$pid]['supervisor'] }}</small>
+                                            @foreach (['date' => $x['starts_at']->format('Y-m-d'), 'time' => $x['starts_at']->format('H:i'), 'room_id' => $x['room_id'], 'examiner_id' => $x['examiner_id']] as $k => $v)
+                                                <input type="hidden" name="items[{{ $pid }}][{{ $k }}]" value="{{ $v }}">
+                                            @endforeach
+                                        </td>
+                                        <td>{{ $x['starts_at']->translatedFormat('l j F') }}<small dir="ltr">{{ $x['starts_at']->format('H:i') }}–{{ $x['starts_at']->copy()->addMinutes($x['duration_minutes'])->format('H:i') }}</small></td>
+                                        <td>{{ $x['room'] }}</td>
+                                        <td>{{ $x['examiner'] }}@if ($x['same_specialize'])<small>من تخصص المشروع</small>@endif</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        @if ($planned->count() < $awaiting->count())
+                            <p class="df-plan-left"><i class="ti ti-info-circle" aria-hidden="true"></i> {{ $awaiting->count() - $planned->count() }} مشاريع بلا خانة متاحة ضمن أوقات الدوام — جدولها يدوياً.</p>
+                        @endif
+                    </div>
+                    <div class="modal-footer">
+                        <span class="df-foot-note"><i class="ti ti-bell" aria-hidden="true"></i> يُشعَر كل فريق ولجنته عند الاعتماد</span>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="submit" class="btn btn-primary"><i class="ti ti-checks me-1" aria-hidden="true"></i>اعتماد الجدول</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
 
     {{-- ═══════════ نافذة الإلغاء ═══════════ --}}
     <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalTitle" aria-hidden="true">
@@ -485,9 +665,22 @@
                 modal.show();
             }
 
+            var pick = f('pick');
             document.querySelectorAll('[data-schedule]').forEach(function (btn) {
                 btn.addEventListener('click', function () {
+                    if (pick) pick.hidden = true;
                     open(JSON.parse(btn.dataset.schedule), btn.dataset.defense ? JSON.parse(btn.dataset.defense) : null, false);
+                });
+            });
+
+            // خانة فارغة في المخطِّط: الوقت معلوم، والمشروع يُختار من المنتظرين
+            document.querySelectorAll('[data-slot-date]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (!pick || !pick.options.length) return;
+                    var slot = { date: btn.dataset.slotDate, time: btn.dataset.slotTime };
+                    pick.hidden = false;
+                    pick.onchange = function () { open(PROJECTS[pick.value], { date: field('date').value, time: field('time').value, mode: (form.querySelector('input[name="mode"]:checked') || {}).value, room_id: field('room_id').value }, false); };
+                    open(PROJECTS[pick.value], slot, false);
                 });
             });
 
