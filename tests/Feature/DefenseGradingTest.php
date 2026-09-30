@@ -91,6 +91,21 @@ class DefenseGradingTest extends TestCase
         }
     }
 
+    public function test_three_member_committee_waits_for_all_and_averages_them(): void
+    {
+        $third = Supervisor::whereNotIn('id', [$this->supervisor->id, $this->examiner->id])->firstOrFail();
+        DefenseMember::create(['defense_id' => $this->defense->id, 'supervisor_id' => $third->id, 'role' => 'examiner']);
+
+        $this->grade($this->supervisor, 90);
+        $this->grade($this->examiner, 80);
+        $this->assertNull($this->project->fresh()->grade, 'لا نهائية قبل الممتحن الثالث');
+        $this->assertSame('scheduled', $this->defense->fresh()->status);
+
+        $this->grade($third, 70)->assertSessionHas('success');
+        $this->assertSame(80.0, (float) $this->project->fresh()->grade);
+        $this->assertSame('done', $this->defense->fresh()->status);
+    }
+
     public function test_grading_opens_only_when_the_defense_starts(): void
     {
         $this->defense->update(['starts_at' => now()->addDay()]);

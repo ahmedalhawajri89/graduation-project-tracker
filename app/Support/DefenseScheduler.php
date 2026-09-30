@@ -57,7 +57,7 @@ class DefenseScheduler
     /**
      * أخطاء التعارض بمفتاح الحقل — فارغة إن صحّت الجدولة.
      *
-     * @param  array{starts_at: Carbon, duration_minutes: int, mode: string, room_id: ?int, examiner_id: int}  $d
+     * @param  array{starts_at: Carbon, duration_minutes: int, mode: string, room_id: ?int, examiner_ids: int[]}  $d
      * @return array<string, string>
      */
     public static function conflicts(Project $project, array $d, ?Defense $ignore = null): array
@@ -75,8 +75,12 @@ class DefenseScheduler
             $errors['time'] = 'موعد المناقشة يجب أن يكون في المستقبل.';
         }
 
-        if ((int) $d['examiner_id'] === (int) $project->supervisor_id) {
+        // اقتراح planAll يحمل ممتحناً واحداً (examiner_id)، والنافذة قائمة
+        $examinerIds = array_map('intval', $d['examiner_ids'] ?? [$d['examiner_id']]);
+        if (in_array((int) $project->supervisor_id, $examinerIds, true)) {
             $errors['examiner_id'] = 'مشرف المشروع عضو في اللجنة أصلاً — اختر ممتحناً غيره.';
+        } elseif (count($examinerIds) !== count(array_unique($examinerIds))) {
+            $errors['examiner_id'] = 'الممتحن نفسه مكرّر في اللجنة.';
         }
 
         if (in_array($d['mode'], ['in_person', 'hybrid'], true)) {
@@ -89,16 +93,23 @@ class DefenseScheduler
             }
         }
 
-        // كل عضو (المشرف والممتحن) لا يكون في لجنة أخرى في الوقت نفسه
-        foreach (['supervisor' => $project->supervisor_id, 'examiner_id' => $d['examiner_id']] as $field => $supervisorId) {
-            if (! $supervisorId || isset($errors[$field])) {
-                continue;
-            }
-            $clash = $others()->whereHas('members', fn ($q) => $q->where('supervisor_id', $supervisorId))->with('project')->first();
-            if ($clash) {
-                $who = $field === 'supervisor' ? 'مشرف المشروع' : 'الممتحن';
-                $errors[$field === 'supervisor' ? 'time' : $field] = $who . ' في لجنة مناقشة «' . $clash->project?->title . '» في هذا الوقت ('
-                    . $clash->starts_at->format('H:i') . '–' . $clash->endsAt()->format('H:i') . ').';
+        // كل عضو (المشرف والممتحنون) لا يكون في لجنة أخرى في الوقت نفسه
+        $busy = fn ($supervisorId) => $others()->whereHas('members', fn ($q) => $q->where('supervisor_id', $supervisorId))->with('project')->first();
+        $span = fn ($clash) => ' في لجنة مناقشة «' . $clash->project?->title . '» في هذا الوقت ('
+            . $clash->starts_at->format('H:i') . '–' . $clash->endsAt()->format('H:i') . ').';
+
+        if ($project->supervisor_id && ($clash = $busy($project->supervisor_id))) {
+            $errors['time'] = 'مشرف المشروع' . $span($clash);
+        }
+
+        if (! isset($errors['examiner_id'])) {
+            foreach ($examinerIds as $examinerId) {
+                if ($clash = $busy($examinerId)) {
+                    // مع أكثر من ممتحن يُسمّى المشغول منهم
+                    $who = count($examinerIds) > 1 ? 'الممتحن ' . Supervisor::find($examinerId)?->name : 'الممتحن';
+                    $errors['examiner_id'] = $who . $span($clash);
+                    break;
+                }
             }
         }
 
@@ -246,18 +257,24 @@ class DefenseScheduler
         return self::planAll(collect([$project]))[$project->id] ?? null;
     }
 
-    /** اللجنة: المشرف ثم الممتحن */
-    public static function syncMembers(Defense $defense, Project $project, int $examinerId): void
+    /**
+     * اللجنة: المشرف ثم الممتحنون. من خرج منها يُحذف، ومن بقي يبقى صفّه.
+     *
+     * @param  int[]  $examinerIds
+     */
+    public static function syncMembers(Defense $defense, Project $project, array $examinerIds): void
     {
-        $defense->members()->whereNotIn('supervisor_id', [$project->supervisor_id, $examinerId])->delete();
+        $defense->members()->whereNotIn('supervisor_id', [$project->supervisor_id, ...$examinerIds])->delete();
 
         DefenseMember::updateOrCreate(
             ['defense_id' => $defense->id, 'supervisor_id' => $project->supervisor_id],
             ['role' => 'supervisor']
         );
-        DefenseMember::updateOrCreate(
-            ['defense_id' => $defense->id, 'supervisor_id' => $examinerId],
-            ['role' => 'examiner']
-        );
+        foreach ($examinerIds as $examinerId) {
+            DefenseMember::updateOrCreate(
+                ['defense_id' => $defense->id, 'supervisor_id' => $examinerId],
+                ['role' => 'examiner']
+            );
+        }
     }
 }

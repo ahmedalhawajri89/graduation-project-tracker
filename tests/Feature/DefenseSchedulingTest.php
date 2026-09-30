@@ -151,6 +151,74 @@ class DefenseSchedulingTest extends TestCase
             ->assertSessionHasErrors('examiner_id');
     }
 
+    /** ممتحنان آخران غير المشرف والممتحن الأول */
+    private function moreExaminers(int $n = 1): array
+    {
+        $ids = Supervisor::whereNotIn('id', [$this->project->supervisor_id, $this->examiner->id])->limit($n)->pluck('id')->all();
+        if (count($ids) < $n) {
+            $this->markTestSkipped('لا مشرفين كفاية للجنة موسّعة.');
+        }
+
+        return $ids;
+    }
+
+    public function test_a_committee_can_have_several_examiners(): void
+    {
+        [$second] = $this->moreExaminers();
+
+        $this->schedule(['examiner_id' => null, 'examiner_ids' => [$this->examiner->id, $second]])->assertSessionHas('success');
+
+        $defense = Defense::where('project_id', $this->project->id)->with('members')->firstOrFail();
+        $this->assertEqualsCanonicalizing(
+            [$this->project->supervisor_id, $this->examiner->id, $second],
+            $defense->members->pluck('supervisor_id')->all()
+        );
+        $this->assertSame(2, $defense->members->where('role', 'examiner')->count());
+        Notification::assertSentTo(Supervisor::find($second), ProjectActivityNotify::class);
+    }
+
+    public function test_examiners_must_be_distinct_within_the_limit_and_not_the_supervisor(): void
+    {
+        $this->schedule(['examiner_ids' => [$this->examiner->id, $this->examiner->id]])->assertSessionHasErrors('examiner_ids.0');
+        $this->schedule(['examiner_ids' => [$this->examiner->id, $this->project->supervisor_id]])->assertSessionHasErrors('examiner_id');
+        $this->schedule(['examiner_ids' => []])->assertSessionHasErrors('examiner_ids');
+
+        config(['defenses.max_examiners' => 2]);
+        $this->schedule(['examiner_ids' => [$this->examiner->id, ...$this->moreExaminers(2)]])->assertSessionHasErrors('examiner_ids');
+
+        $this->assertFalse(Defense::where('project_id', $this->project->id)->exists());
+    }
+
+    public function test_a_busy_second_examiner_is_named_in_the_conflict(): void
+    {
+        [$second] = $this->moreExaminers();
+        $other = $this->otherProject();
+        $room2 = DefenseRoom::create(['name' => 'قاعة ثانية ' . uniqid(), 'is_active' => true]);
+        if (in_array($other->supervisor_id, [$second, $this->project->supervisor_id], true)) {
+            $this->markTestSkipped('المشروع الآخر يشارك عضواً.');
+        }
+        $this->schedule(['project_id' => $other->id, 'room_id' => $room2->id, 'examiner_id' => $second])->assertSessionHas('success');
+
+        $this->schedule(['time' => '10:15', 'examiner_ids' => [$this->examiner->id, $second]])->assertSessionHasErrors('examiner_id');
+        $this->assertStringContainsString(Supervisor::find($second)->name, session('errors')->first('examiner_id'));
+    }
+
+    public function test_rescheduling_swaps_committee_members(): void
+    {
+        [$second, $third] = $this->moreExaminers(2);
+        $this->schedule(['examiner_ids' => [$this->examiner->id, $second]])->assertSessionHas('success');
+        $d = Defense::where('project_id', $this->project->id)->firstOrFail();
+
+        $this->actingAs($this->admin, 'admin')
+            ->put(route('admin.defenses.update', $d->id), $this->payload(['examiner_ids' => [$this->examiner->id, $third]]))
+            ->assertSessionHas('success');
+
+        $this->assertEqualsCanonicalizing(
+            [$this->project->supervisor_id, $this->examiner->id, $third],
+            $d->members()->pluck('supervisor_id')->all()
+        );
+    }
+
     public function test_online_defense_needs_a_valid_link_and_no_room(): void
     {
         $this->schedule(['mode' => 'online', 'room_id' => null])->assertSessionHasErrors('meeting_url');

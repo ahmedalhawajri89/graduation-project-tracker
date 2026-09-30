@@ -9690,6 +9690,13 @@ a.df-slot { text-decoration: none; color: inherit; }
 .dm-member.is-pick { background: var(--ds-surface); border-color: var(--ds-border-strong); }
 .dm-member.is-pick:focus-within { border-color: var(--ds-accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, .14); }
 .dm-member-field label { margin: 0; }
+/* ممتحن إضافي: زر بحجم بطاقة العضو، وإزالة هادئة داخل البطاقة */
+.dm-member-add { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 60px; border: 1.5px dashed var(--ds-border-strong); border-radius: 12px; background: transparent; color: var(--ds-ink-soft); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; transition: border-color var(--ds-dur-fast) ease, color var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease; }
+.dm-member-add:hover, .dm-member-add:focus-visible { border-color: var(--ds-accent); color: var(--ds-accent-strong); background: var(--ds-accent-soft); outline: 0; }
+.dm-member-add[hidden], .dm-member-remove[hidden] { display: none; }
+.dm-member-remove { flex: none; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--ds-ink-mute); cursor: pointer; }
+.dm-member-remove:hover, .dm-member-remove:focus-visible { background: #fff1f2; color: #be123c; outline: 0; }
+.dm-member-field select option:disabled { color: var(--ds-border-strong); }
 .dm-member-field select { width: 100%; border: 0; outline: 0; background: transparent; padding: 0; font: inherit; font-size: 14px; font-weight: 700; color: var(--ds-ink); cursor: pointer; text-overflow: ellipsis; }
 
 .df-form .dm-foot { display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-top: 1px solid var(--ds-border); background: var(--ds-surface); }

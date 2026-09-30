@@ -94,7 +94,7 @@
                         @if ($d->status === 'done')
                             <span class="df-status is-done">النهائية {{ $fmt($d->project->grade) }}</span>
                         @else
-                            <span class="df-status is-wait">بانتظار زميلك</span>
+                            <span class="df-status is-wait">بانتظار بقية اللجنة</span>
                         @endif
                     </a>
                 @endforeach

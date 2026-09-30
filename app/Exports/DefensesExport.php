@@ -30,12 +30,13 @@ class DefensesExport implements FromCollection, WithHeadings, WithMapping, Shoul
 
     public function headings(): array
     {
-        return ['التاريخ', 'اليوم', 'من', 'إلى', 'المشروع', 'النوع', 'الفريق', 'المشرف', 'الممتحن', 'المكان', 'رابط الاجتماع', 'الحالة', 'الدرجة'];
+        return ['التاريخ', 'اليوم', 'من', 'إلى', 'المشروع', 'النوع', 'الفريق', 'المشرف', 'الممتحنون', 'المكان', 'رابط الاجتماع', 'الحالة', 'الدرجة'];
     }
 
     public function map($d): array
     {
-        $member = fn ($role) => optional($d->members->firstWhere('role', $role))->supervisor?->name;
+        // اللجنة قد تضمّ أكثر من ممتحن
+        $member = fn ($role) => $d->members->where('role', $role)->map(fn ($m) => $m->supervisor?->name)->filter()->implode('، ');
         $graded = $d->members->whereNotNull('grade')->count();
 
         return [

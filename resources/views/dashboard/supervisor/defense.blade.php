@@ -98,7 +98,7 @@
                         <div class="dsv-form-foot">
                             <span class="text-secondary small">
                                 <i class="ti ti-eye-off" aria-hidden="true"></i>
-                                تقييم مستقلّ — لا ترى درجة زميلك قبل أن ترصد درجتك. النهائية متوسط الدرجتين.
+                                تقييم مستقلّ — لا ترى درجات بقية اللجنة قبل أن ترصد درجتك. النهائية متوسط درجات الأعضاء.
                             </span>
                             <button type="submit" class="btn btn-primary">
                                 <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>{{ is_null($mine->grade) ? 'رصد درجتي' : 'تحديث درجتي' }}

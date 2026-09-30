@@ -161,7 +161,7 @@ class DefenseController extends Controller
                 'mode' => 'in_person',
                 'room_id' => (int) $item['room_id'],
                 'meeting_url' => null,
-                'examiner_id' => (int) $item['examiner_id'],
+                'examiner_ids' => [(int) $item['examiner_id']],
                 'notes' => null,
             ];
 
@@ -191,7 +191,7 @@ class DefenseController extends Controller
                 'reminded_on' => null,
                 'scheduled_by' => auth('admin')->id(),
             ]);
-            DefenseScheduler::syncMembers($defense, $project, $data['examiner_id']);
+            DefenseScheduler::syncMembers($defense, $project, $data['examiner_ids']);
             // مناقشة ملغاة يُعاد استعمال صفّها: لا تُحمل درجاتها القديمة إلى الجديدة
             $defense->members()->update(['grade' => null, 'comments' => null, 'graded_at' => null]);
 
@@ -223,7 +223,7 @@ class DefenseController extends Controller
 
         DB::transaction(function () use ($defense, $project, $data) {
             $defense->update($this->attributes($data) + ['status' => Defense::SCHEDULED, 'reminded_on' => null]);
-            DefenseScheduler::syncMembers($defense, $project, $data['examiner_id']);
+            DefenseScheduler::syncMembers($defense, $project, $data['examiner_ids']);
         });
 
         $defense = $defense->fresh(['room', 'members.supervisor', 'project.group']);
@@ -313,6 +313,12 @@ class DefenseController extends Controller
 
     private function validated(Request $request): array
     {
+        // الممتحن المفرد (نماذج الاقتراح السريع) يُقرأ قائمةً من واحد
+        if (! $request->has('examiner_ids') && $request->filled('examiner_id')) {
+            $request->merge(['examiner_ids' => [$request->input('examiner_id')]]);
+        }
+        $max = (int) config('defenses.max_examiners', 3);
+
         $v = $request->validate([
             'date' => ['required', 'date_format:Y-m-d'],
             'time' => ['required', 'date_format:H:i'],
@@ -320,21 +326,25 @@ class DefenseController extends Controller
             'mode' => ['required', Rule::in(array_keys(Defense::MODES))],
             'room_id' => ['nullable', 'integer', 'exists:defense_rooms,id'],
             'meeting_url' => ['nullable', 'required_if:mode,online,hybrid', 'url:http,https', 'max:500'],
-            'examiner_id' => ['required', 'integer', 'exists:supervisors,id'],
+            'examiner_ids' => ['required', 'array', 'min:1', 'max:' . $max],
+            'examiner_ids.*' => ['required', 'integer', 'distinct', 'exists:supervisors,id'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ], [
+            'examiner_ids.required' => 'اختر ممتحناً واحداً على الأقل.',
+            'examiner_ids.max' => "اللجنة لا تزيد على {$max} ممتحنين.",
+            'examiner_ids.*.distinct' => 'الممتحن نفسه مكرّر في اللجنة.',
             'meeting_url.required_if' => 'رابط الاجتماع مطلوب للمناقشة عن بُعد أو المدمجة.',
             'meeting_url.url' => 'رابط الاجتماع غير صالح — انسخه كاملاً من Google Meet أو غيره.',
         ], [
             'date' => 'التاريخ', 'time' => 'الوقت', 'duration_minutes' => 'المدة', 'mode' => 'النوع',
-            'room_id' => 'القاعة', 'meeting_url' => 'رابط الاجتماع', 'examiner_id' => 'الممتحن', 'notes' => 'الملاحظات',
+            'room_id' => 'القاعة', 'meeting_url' => 'رابط الاجتماع', 'examiner_ids' => 'الممتحنون', 'examiner_ids.*' => 'الممتحن', 'notes' => 'الملاحظات',
         ]);
 
         $v['starts_at'] = Carbon::createFromFormat('Y-m-d H:i', $v['date'] . ' ' . $v['time']);
         $v['duration_minutes'] = (int) $v['duration_minutes'];
         $v['room_id'] = in_array($v['mode'], ['in_person', 'hybrid'], true) ? ($v['room_id'] ?? null) : null;
         $v['meeting_url'] = in_array($v['mode'], ['online', 'hybrid'], true) ? ($v['meeting_url'] ?? null) : null;
-        $v['examiner_id'] = (int) $v['examiner_id'];
+        $v['examiner_ids'] = array_values(array_map('intval', $v['examiner_ids']));
 
         return $v;
     }
@@ -354,7 +364,7 @@ class DefenseController extends Controller
     /** أخطاء التعارض تحت حقولها، والنافذة تُفتح من جديد على المشروع نفسه */
     private function back(array $errors, int $projectId, ?int $defenseId = null)
     {
-        $map = ['project' => 'date', 'supervisor' => 'time'];
+        $map = ['project' => 'date'];
         $bag = [];
         foreach ($errors as $key => $msg) {
             $bag[$map[$key] ?? $key] = $msg;

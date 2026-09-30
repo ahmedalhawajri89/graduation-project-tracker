@@ -34,7 +34,7 @@
             'mode' => $d->mode,
             'room_id' => $d->room_id,
             'meeting_url' => $d->meeting_url,
-            'examiner_id' => optional($d->members->firstWhere('role', 'examiner'))->supervisor_id,
+            'examiner_ids' => $d->members->where('role', 'examiner')->pluck('supervisor_id')->values(),
             'notes' => $d->notes,
         ];
 
@@ -527,15 +527,14 @@
                                 <span><small>المشرف</small><b data-f="supervisor">—</b></span>
                                 <i class="ti ti-lock" aria-hidden="true" title="مشرف المشروع عضو ثابت في اللجنة"></i>
                             </div>
-                            <div class="dm-member is-pick">
-                                <span class="dm-member-av is-examiner" aria-hidden="true"><i class="ti ti-user-search"></i></span>
-                                <span class="dm-member-field">
-                                    <label for="df-examiner"><small>الممتحن <em>*</em></small></label>
-                                    <select id="df-examiner" name="examiner_id" class="@error('examiner_id') is-invalid @enderror" required></select>
-                                </span>
-                            </div>
+                            {{-- صفوف الممتحنين يبنيها السكربت: واحد على الأقل، وحتى الحدّ الأقصى --}}
+                            <button type="button" class="dm-member-add" data-f="add-examiner">
+                                <i class="ti ti-user-plus" aria-hidden="true"></i> إضافة ممتحن
+                            </button>
                         </div>
-                        @error('examiner_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        @foreach (['examiner_id', 'examiner_ids', 'examiner_ids.*'] as $key)
+                            @error($key)<div class="invalid-feedback d-block">{{ $message }}</div>@break @enderror
+                        @endforeach
                         <div class="form-hint" data-f="examiner-hint">مرتّبون: من تخصص المشروع أولاً، ثم الأقلّ مناقشاتٍ قادمة.</div>
                     </section>
 
@@ -734,9 +733,64 @@
             form.querySelectorAll('input[name="mode"]').forEach(function (r) { r.addEventListener('change', syncMode); });
 
             // الممتحنون: بلا مشرف المشروع، التخصص نفسه أولاً ثم الأقلّ حملاً
+            var MAX_EXAMINERS = {{ (int) config('defenses.max_examiners', 3) }};
+            var addBtn = f('add-examiner');
+            var examinerSelects = function () { return Array.prototype.slice.call(form.querySelectorAll('select[name="examiner_ids[]"]')); };
+
+            function examinerRow(p, selected) {
+                var row = document.createElement('div');
+                row.className = 'dm-member is-pick';
+                row.innerHTML = '<span class="dm-member-av is-examiner" aria-hidden="true"><i class="ti ti-user-search"></i></span>'
+                    + '<span class="dm-member-field"><label><small></small></label><select name="examiner_ids[]" required></select></span>'
+                    + '<button type="button" class="dm-member-remove" title="إزالة من اللجنة"><i class="ti ti-x" aria-hidden="true"></i></button>';
+                var sel = row.querySelector('select');
+                fillOptions(sel, p);
+                var taken = examinerSelects().map(function (s) { return s.value; });
+                if (selected != null && sel.querySelector('option[value="' + selected + '"]')) {
+                    sel.value = String(selected);
+                } else {
+                    // الافتراضي: أول مرشّح لم يُختر في صفّ آخر
+                    var free = Array.prototype.filter.call(sel.options, function (o) { return taken.indexOf(o.value) === -1; })[0];
+                    if (free) sel.value = free.value;
+                }
+                row.querySelector('.dm-member-remove').addEventListener('click', function () { row.remove(); syncExaminers(); refresh(); });
+                addBtn.parentNode.insertBefore(row, addBtn);
+                return row;
+            }
+
+            // الترقيم، ومنع اختيار الممتحن نفسه مرتين، وإظهار «إضافة» حتى الحدّ الأقصى
+            function syncExaminers() {
+                var sels = examinerSelects();
+                sels.forEach(function (sel, i) {
+                    var row = sel.closest('.dm-member');
+                    sel.id = 'df-examiner-' + i;
+                    row.querySelector('label').htmlFor = sel.id;
+                    row.querySelector('small').innerHTML = (sels.length > 1 ? 'الممتحن ' + (i + 1) : 'الممتحن') + ' <em>*</em>';
+                    row.querySelector('.dm-member-remove').hidden = sels.length < 2;
+                    row.querySelector('.dm-member-remove').setAttribute('aria-label', 'إزالة الممتحن ' + (i + 1));
+                    Array.prototype.forEach.call(sel.options, function (o) {
+                        o.disabled = sels.some(function (other) { return other !== sel && other.value === o.value; });
+                    });
+                });
+                var candidates = sels.length ? sels[0].options.length : 0;
+                addBtn.hidden = sels.length >= MAX_EXAMINERS || sels.length >= candidates;
+            }
+
             function fillExaminers(p, selected) {
-                var sel = field('examiner_id');
-                sel.innerHTML = '';
+                examinerSelects().forEach(function (s) { s.closest('.dm-member').remove(); });
+                var ids = (selected || []).slice(0, MAX_EXAMINERS);
+                if (!ids.length) ids = [null];
+                ids.forEach(function (id) { examinerRow(p, id); });
+                addBtn.onclick = function () {
+                    var row = examinerRow(p, null);
+                    syncExaminers();
+                    refresh();
+                    row.querySelector('select').focus();
+                };
+                syncExaminers();
+            }
+
+            function fillOptions(sel, p) {
                 var list = EXAMINERS.filter(function (e) { return e.id !== p.supervisor_id; })
                     .sort(function (a, b) {
                         var sa = a.specialize_id === p.specialize_id ? 0 : 1, sb = b.specialize_id === p.specialize_id ? 0 : 1;
@@ -752,7 +806,6 @@
                         var o = document.createElement('option');
                         o.value = e.id;
                         o.textContent = e.name + (e.load ? ' — ' + e.load + ' مناقشات قادمة' : ' — لا مناقشات قادمة');
-                        if (String(e.id) === String(selected)) o.selected = true;
                         og.appendChild(o);
                     });
                     sel.appendChild(og);
@@ -784,7 +837,10 @@
                     form.querySelectorAll('.is-invalid').forEach(function (el) { el.classList.remove('is-invalid'); });
                     form.querySelectorAll('.invalid-feedback, .alert-danger').forEach(function (el) { el.remove(); });
                 }
-                fillExaminers(p, keepOld ? @json(old('examiner_id')) : (d && d.examiner_id));
+                // المجدولة تحمل لجنتها كلها، والاقتراح ممتحناً واحداً
+                fillExaminers(p, keepOld
+                    ? @json(old('examiner_ids', old('examiner_id') ? [old('examiner_id')] : []))
+                    : (d && (d.examiner_ids || (d.examiner_id ? [d.examiner_id] : []))));
                 syncMode();
                 refresh();
                 modal.show();
@@ -843,15 +899,26 @@
                 if (mode !== 'online' && room.value) place.push(room.options[room.selectedIndex].text.split(' — ')[0].trim());
                 if (mode !== 'in_person') place.push(provider || 'عن بُعد');
                 if (place.length) parts.push(place.join(' + '));
-                var ex = field('examiner_id'), opt = ex.options[ex.selectedIndex];
-                if (opt) parts.push('الممتحن ' + opt.textContent.split(' — ')[0]);
+                syncExaminers();
+                var opts = examinerSelects().map(function (s) { return s.options[s.selectedIndex]; }).filter(Boolean);
+                var opt = opts[0];
+                var sameOf = function (o) { return o.parentNode && o.parentNode.label === 'من تخصص المشروع'; };
+                if (opts.length) {
+                    parts.push((opts.length > 1 ? 'الممتحنون ' : 'الممتحن ')
+                        + opts.map(function (o) { return o.textContent.split(' — ')[0]; }).join('، '));
+                }
                 f('summary').textContent = parts.length ? parts.join(' · ') : '—';
 
                 var hint = f('examiner-hint');
-                if (hint && opt) {
-                    var same = opt.parentNode && opt.parentNode.label === 'من تخصص المشروع';
+                if (hint && opts.length === 1) {
+                    var same = sameOf(opt);
                     hint.textContent = (same ? 'من تخصص المشروع' : 'من تخصص آخر') + ' · ' + (opt.textContent.split(' — ')[1] || '');
                     hint.classList.toggle('is-same', same);
+                } else if (hint && opts.length > 1) {
+                    var n = opts.filter(sameOf).length;
+                    hint.textContent = 'لجنة من ' + (opts.length + 1) + ' أعضاء · ' + (n ? n + ' من الممتحنين من تخصص المشروع' : 'لا ممتحن من تخصص المشروع')
+                        + ' · الدرجة متوسط درجاتهم';
+                    hint.classList.toggle('is-same', n > 0);
                 }
             }
             form.addEventListener('input', refresh);
@@ -958,8 +1025,10 @@
                 });
             });
             document.querySelectorAll('.df-tslot[data-slot-date]').forEach(function (td) {
+                td.addEventListener('dragenter', function (e) { e.preventDefault(); td.classList.add('is-drop'); });
                 td.addEventListener('dragover', function (e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; td.classList.add('is-drop'); });
-                td.addEventListener('dragleave', function () { td.classList.remove('is-drop'); });
+                // الانتقال إلى عنصر داخل الخانة ليس خروجاً منها
+                td.addEventListener('dragleave', function (e) { if (e.relatedTarget && !td.contains(e.relatedTarget)) td.classList.remove('is-drop'); });
                 td.addEventListener('drop', function (e) {
                     e.preventDefault();
                     td.classList.remove('is-drop');
@@ -969,7 +1038,7 @@
             });
 
             // خطأ من الخادم: تُفتح النافذة من جديد بما أُدخل
-            @if ($errors->hasAny(['date', 'time', 'duration_minutes', 'mode', 'room_id', 'meeting_url', 'examiner_id', 'notes']) && old('project_id'))
+            @if ($errors->hasAny(['date', 'time', 'duration_minutes', 'mode', 'room_id', 'meeting_url', 'examiner_id', 'examiner_ids', 'examiner_ids.*', 'notes']) && old('project_id'))
                 (function () {
                     var p = PROJECTS[@json((int) old('project_id'))];
                     if (p) open(p, @json(old('defense_id') ? ['id' => (int) old('defense_id')] : null), true);
