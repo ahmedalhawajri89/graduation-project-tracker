@@ -21,6 +21,11 @@
     };
     $msDone = $project->milestones->where('is_done', true)->count();
     $msTotal = $project->milestones->count();
+
+    // العرض التقديمي: يرفعه القائد (أو أي عضو إن لم يكن للفريق قائد) حتى بدء المناقشة
+    $slides = $project->presentation;
+    $myRow = $project->group->firstWhere('student_id', auth('student')->id());
+    $canUpload = ! $ended && ! $live && $myRow && ($myRow->type === 'leader' || ! $project->group->contains('type', 'leader'));
 @endphp
 
 <section class="sdf mb-4" id="defense" aria-labelledby="sdf-title">
@@ -80,6 +85,41 @@
         <p class="sdf-notes"><i class="ti ti-info-circle" aria-hidden="true"></i> {{ $defense->notes }}</p>
     @endif
 
+    {{-- العرض التقديمي: تجده اللجنة أعلى صفحة المناقشة --}}
+    @if ($slides || ! $ended)
+        <div class="sdf-slides {{ $slides ? 'is-ok' : '' }}" id="presentation">
+            <span class="sdf-slides-icon" aria-hidden="true"><i class="ti {{ $slides ? 'ti-presentation-analytics' : 'ti-presentation' }}"></i></span>
+            <div class="sdf-slides-body">
+                <b>العرض التقديمي</b>
+                @if ($slides)
+                    <small>
+                        {{ strtoupper(pathinfo($slides->path, PATHINFO_EXTENSION)) }} · {{ $slides->human_size }} ·
+                        رُفع {{ $slides->created_at?->diffForHumans() }} — تراه اللجنة
+                    </small>
+                @else
+                    <small>{{ $canUpload ? 'ارفعه قبل الموعد لتطّلع عليه اللجنة — PDF أو PowerPoint حتى 20 ميغابايت.' : 'لم يُرفع بعد — يرفعه قائد الفريق قبل الموعد.' }}</small>
+                @endif
+                @error('presentation')<small class="text-danger d-block">{{ $message }}</small>@enderror
+            </div>
+            <div class="sdf-slides-actions">
+                @if ($slides)
+                    <a href="{{ route('files.download', $slides->id) }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="ti ti-download me-1" aria-hidden="true"></i>تنزيل
+                    </a>
+                @endif
+                @if ($canUpload)
+                    <form action="{{ route('student.presentation.store', $defense->id) }}" method="post" enctype="multipart/form-data" data-slides-form>
+                        @csrf
+                        <input type="file" name="presentation" id="sdf-slides-file" class="visually-hidden" accept=".pdf,.ppt,.pptx" required>
+                        <label for="sdf-slides-file" class="btn {{ $slides ? 'btn-outline-primary' : 'btn-primary' }} btn-sm m-0">
+                            <i class="ti ti-upload me-1" aria-hidden="true"></i>{{ $slides ? 'استبدال' : 'رفع العرض' }}
+                        </label>
+                    </form>
+                @endif
+            </div>
+        </div>
+    @endif
+
     @unless ($ended)
         <footer class="sdf-foot">
             {{-- قبل المناقشة: ما يُطمئن الفريق أنه جاهز --}}
@@ -90,7 +130,8 @@
                 </li>
                 <li class="{{ $project->files->count() ? 'is-ok' : '' }}">
                     <i class="ti {{ $project->files->count() ? 'ti-circle-check' : 'ti-circle-dashed' }}" aria-hidden="true"></i>
-                    {{ $project->files->count() ? $project->files->count() . ' ملفات مرفوعة تراها اللجنة' : 'لا ملفات — اللجنة تحضّر من ملفاتكم' }}
+                    @php $nf = $project->files->count(); @endphp
+                    {{ match (true) { $nf === 0 => 'لا ملفات — اللجنة تحضّر من ملفاتكم', $nf === 1 => 'ملف واحد مرفوع تراه اللجنة', $nf === 2 => 'ملفان مرفوعان تراهما اللجنة', $nf <= 10 => $nf . ' ملفات مرفوعة تراها اللجنة', default => $nf . ' ملفاً مرفوعاً تراها اللجنة' } }}
                 </li>
             </ul>
             <div class="sdf-cal">
@@ -124,6 +165,19 @@
             }
             tick();
             setInterval(tick, 30000);
+        })();
+
+        // العرض التقديمي: اختيار الملف يرفعه مباشرة
+        (function () {
+            var form = document.querySelector('[data-slides-form]');
+            if (!form) return;
+            form.querySelector('input[type=file]').addEventListener('change', function () {
+                if (!this.files.length) return;
+                var label = form.querySelector('label');
+                label.classList.add('disabled');
+                label.textContent = 'جارٍ الرفع…';
+                form.submit();
+            });
         })();
     </script>
 @endpush

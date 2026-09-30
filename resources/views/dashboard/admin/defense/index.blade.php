@@ -261,7 +261,7 @@
                 <div class="df-cal">
                     @foreach ($week['days'] as $day)
                         @php $key = $day->format('Y-m-d'); @endphp
-                        <div class="df-agenda" id="df-day-{{ $key }}" role="tabpanel" aria-labelledby="df-tab-{{ $key }}" data-day-panel="{{ $key }}" @if ($key !== $activeDay) hidden @endif>
+                        <div class="df-tday" id="df-day-{{ $key }}" role="tabpanel" aria-labelledby="df-tab-{{ $key }}" data-day-panel="{{ $key }}" @if ($key !== $activeDay) hidden @endif>
                             @foreach ($week['times'] as $time)
                                 @php
                                     $items = $inSlot($day, $time);
@@ -283,6 +283,9 @@
                                                     <small>
                                                         <span><i class="ti ti-clock" aria-hidden="true"></i><bdi dir="ltr">{{ $d->starts_at->format('H:i') }}–{{ $d->endsAt()->format('H:i') }}</bdi></span>
                                                         <span><i class="ti ti-map-pin" aria-hidden="true"></i>{{ $d->place_label }}</span>
+                                                        @if ($d->project->presentation)
+                                                            <span class="df-slides-mark" title="رفع الفريق العرض التقديمي"><i class="ti ti-presentation-analytics" aria-hidden="true"></i>العرض جاهز</span>
+                                                        @endif
                                                     </small>
                                                 </span>
                                                 <span class="df-who">@foreach ($initials($d) as $i)<i>{{ $i }}</i>@endforeach</span>
@@ -342,6 +345,13 @@
                                         @foreach ($d->members as $m)
                                             <span class="df-member"><x-avatar :user="$m->supervisor" class="cell-avatar df-av" />{{ $m->supervisor->name }} <em>{{ $m->role_label }}</em></span>
                                         @endforeach
+                                        @if ($d->project->presentation)
+                                            <a href="{{ route('files.download', $d->project->presentation->id) }}" class="df-member df-slides-mark" title="تنزيل العرض التقديمي">
+                                                <i class="ti ti-presentation-analytics" aria-hidden="true"></i>العرض جاهز
+                                            </a>
+                                        @else
+                                            <span class="df-member" title="لم يرفع الفريق العرض التقديمي بعد"><i class="ti ti-presentation-off" aria-hidden="true"></i>لا عرض بعد</span>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="df-actions">

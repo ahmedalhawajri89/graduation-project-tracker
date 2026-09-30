@@ -54,6 +54,10 @@ class RemindDefenses extends Command
             try {
                 DefenseNotifier::reminder($defense, $defense->starts_at->isToday());
                 $sent++;
+                // قبلها بيوم: من لم يرفع عرضه يُنبَّه وفي الوقت متّسع
+                if (! $defense->starts_at->isToday() && ! $defense->project?->presentation) {
+                    DefenseNotifier::presentationMissing($defense);
+                }
             } catch (\Throwable $e) {
                 Log::warning('تعذّر التذكير بمناقشة', ['defense' => $defense->id, 'exception' => $e->getMessage()]);
             }

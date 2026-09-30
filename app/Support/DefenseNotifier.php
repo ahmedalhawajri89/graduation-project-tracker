@@ -48,6 +48,44 @@ class DefenseNotifier
         self::send($d, $today ? 'المناقشة اليوم' : 'المناقشة غداً', $lead . self::when($d) . self::link($d), $today ? 'المناقشة اليوم' : 'تذكير بموعد المناقشة');
     }
 
+    /** اللجنة تعرف أن العرض صار جاهزاً للتحضير منه */
+    public static function presentationUploaded(Defense $d, string $by, bool $replaced): void
+    {
+        $d->loadMissing(['project', 'members.supervisor']);
+
+        try {
+            Notification::send($d->members->pluck('supervisor')->filter(fn ($s) => $s && $s->exists), new ProjectActivityNotify([
+                'project' => $d->project->title,
+                'supervisor_name' => $by,
+                'msg' => ($replaced ? 'استبدل الفريق العرض التقديمي لمناقشة «' : 'رفع الفريق العرض التقديمي لمناقشة «') . $d->project->title . '».',
+                'kind' => 'defense',
+                'title' => 'العرض التقديمي',
+                'defense_id' => $d->id,
+            ]));
+        } catch (\Throwable $e) {
+            Log::warning('presentation notify failed', ['defense' => $d->id, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /** قبل المناقشة بيوم والعرض لم يُرفع: تنبيه للفريق وحده */
+    public static function presentationMissing(Defense $d): void
+    {
+        $d->loadMissing('project.group');
+
+        try {
+            Notification::send($d->project->students(), new ProjectActivityNotify([
+                'project' => $d->project->title,
+                'supervisor_name' => 'الإدارة',
+                'msg' => 'لم يُرفع العرض التقديمي بعد — ارفعوه من بطاقة «مناقشتك» لتطّلع عليه اللجنة قبل الموعد.',
+                'kind' => 'defense',
+                'title' => 'العرض التقديمي',
+                'defense_id' => $d->id,
+            ]));
+        } catch (\Throwable $e) {
+            Log::warning('presentation reminder failed', ['defense' => $d->id, 'error' => $e->getMessage()]);
+        }
+    }
+
     private static function link(Defense $d): string
     {
         return $d->needsLink() && $d->meeting_url ? ' — رابط الاجتماع: ' . $d->meeting_url : '';

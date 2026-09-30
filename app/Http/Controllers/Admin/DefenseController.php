@@ -35,7 +35,7 @@ class DefenseController extends Controller
             ->latest('updated_at')
             ->get();
 
-        $with = ['project.group.student', 'project.project_type', 'members.supervisor', 'room'];
+        $with = ['project.group.student', 'project.project_type', 'project.presentation', 'members.supervisor', 'room'];
 
         $upcoming = Defense::active()
             ->whereRaw('DATE_ADD(starts_at, INTERVAL duration_minutes MINUTE) >= ?', [now()])

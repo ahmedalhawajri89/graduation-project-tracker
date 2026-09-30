@@ -17,6 +17,17 @@ class ProjectFile extends Model
         'size',
     ];
 
+    /**
+     * العرض التقديمي للمناقشة ملف مشروع كغيره (التنزيل والصلاحيات نفسها)،
+     * يميّزه مجلّده — فلا عمود جديد ولا ترحيل.
+     */
+    public const PRESENTATION_DIR = 'defense_presentations';
+
+    public function isPresentation(): bool
+    {
+        return str_starts_with((string) $this->path, self::PRESENTATION_DIR . '/');
+    }
+
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');

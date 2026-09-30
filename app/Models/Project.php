@@ -105,6 +105,14 @@ class Project extends Model
         return $this->hasOne(Defense::class, 'project_id', 'id');
     }
 
+    /** العرض التقديمي الذي رفعه الفريق للمناقشة — واحد، والرفع الجديد يستبدله */
+    public function presentation()
+    {
+        return $this->hasOne(ProjectFile::class, 'project_id', 'id')
+            ->where('path', 'like', ProjectFile::PRESENTATION_DIR . '/%')
+            ->latestOfMany();
+    }
+
     public function milestones()
     {
         // بالموعد ثم بالإنشاء: مراحل الخطة تُنشأ في أوقات مختلفة، والترتيب

@@ -186,6 +186,8 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
         // ملفات المشروع
         Route::post('/projects/{project}/files', [StudentProjectFileController::class, 'store'])->name('files.store');
         Route::delete('/files/{file}', [StudentProjectFileController::class, 'destroy'])->name('files.destroy');
+        // العرض التقديمي للمناقشة — يرفعه القائد حتى بدئها
+        Route::post('/defenses/{defense}/presentation', [\App\Http\Controllers\Student\DefensePresentationController::class, 'store'])->name('presentation.store');
 
         // الفريق والأدوار: صفحة يراها كل الفريق، ويوزّع فيها القائد وحده
         Route::get('/team', [StudentTeamRolesController::class, 'index'])->name('team');

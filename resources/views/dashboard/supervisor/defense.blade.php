@@ -14,6 +14,9 @@
         $msLabel = ['open' => 'مفتوحة', 'submitted' => 'سُلّمت', 'revision' => 'مطلوب تعديل', 'approved' => 'اعتُمدت'];
         $done = $defense->status === 'done';
         $gradedCount = $defense->members->whereNotNull('grade')->count();
+        // العرض التقديمي يُعرض وحده أعلى الصفحة، لا بين ملفات المشروع
+        $slides = $project->files->first(fn ($f) => $f->isPresentation());
+        $otherFiles = $project->files->reject(fn ($f) => $f->isPresentation());
     @endphp
 
     <x-page-header title="{{ $project->title }}"
@@ -38,6 +41,26 @@
 
     <div class="dsv-grid">
         <div class="dsv-main">
+
+            {{-- ═══ العرض التقديمي ═══ --}}
+            @if ($slides)
+                <a href="{{ route('files.download', $slides->id) }}" class="dsv-slides is-ok">
+                    <span class="dsv-slides-icon" aria-hidden="true"><i class="ti ti-presentation-analytics"></i></span>
+                    <span class="dsv-slides-body">
+                        <b>العرض التقديمي</b>
+                        <small>{{ strtoupper(pathinfo($slides->path, PATHINFO_EXTENSION)) }} · {{ $slides->human_size }} · رفعه {{ $slides->uploader?->name ?? 'الفريق' }} {{ $slides->created_at?->diffForHumans() }}</small>
+                    </span>
+                    <span class="btn btn-primary btn-sm"><i class="ti ti-download me-1" aria-hidden="true"></i>تنزيل</span>
+                </a>
+            @elseif (! $done)
+                <div class="dsv-slides">
+                    <span class="dsv-slides-icon" aria-hidden="true"><i class="ti ti-presentation"></i></span>
+                    <span class="dsv-slides-body">
+                        <b>العرض التقديمي</b>
+                        <small>لم يرفعه الفريق بعد — يصلك إشعار حين يُرفع.</small>
+                    </span>
+                </div>
+            @endif
 
             {{-- ═══ الدرجة ═══ --}}
             <section class="dsv-card dsv-grade" id="grade">
@@ -133,9 +156,9 @@
 
             <section class="dsv-card">
                 <header class="dsv-card-head"><span><i class="ti ti-folder" aria-hidden="true"></i> الملفات</span>
-                    <span class="dsv-progress">{{ $project->files->count() }}</span></header>
+                    <span class="dsv-progress">{{ $otherFiles->count() }}</span></header>
                 <div class="dsv-files">
-                    @forelse ($project->files->sortByDesc('created_at') as $file)
+                    @forelse ($otherFiles->sortByDesc('created_at') as $file)
                         <a href="{{ route('files.download', $file->id) }}" class="dsv-file">
                             <span class="dsv-file-ext">{{ strtoupper(pathinfo($file->path, PATHINFO_EXTENSION)) ?: 'ملف' }}</span>
                             <span class="dsv-file-body"><b>{{ $file->title }}</b><small>{{ $file->created_at?->format('Y-m-d') }} · {{ $file->human_size }}</small></span>
