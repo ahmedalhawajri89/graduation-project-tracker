@@ -363,6 +363,9 @@
                                     <a href="{{ $d->googleCalendarUrl() }}" target="_blank" rel="noopener" class="btn-action" title="أضف إلى تقويم Google" aria-label="أضف إلى تقويم Google">
                                         <i class="ti ti-brand-google" aria-hidden="true"></i>
                                     </a>
+                                    <a href="{{ route('defenses.minutes', $d->id) }}" class="btn-action" title="مسودة المحضر — تُطبع للتوقيع يوم المناقشة" aria-label="محضر مناقشة {{ $d->project->title }}">
+                                        <i class="ti ti-file-certificate" aria-hidden="true"></i>
+                                    </a>
                                     <a href="{{ route('defenses.ics', $d->id) }}" class="btn-action" title="ملف التقويم (.ics) — Outlook وتقويم الجوال" aria-label="تنزيل ملف التقويم">
                                         <i class="ti ti-calendar-down" aria-hidden="true"></i>
                                     </a>
@@ -400,12 +403,20 @@
                             default => ['بانتظار الدرجة · ' . $d->members->whereNotNull('grade')->count() . ' من ' . $d->members->count(), 'is-wait'],
                         };
                     @endphp
-                    <a href="{{ route('admin.groups.show', $d->project_id) }}" class="df-past-row">
+                    {{-- الصفّ كلّه رابط إلى المشروع، وزر المحضر فوقه --}}
+                    <div class="df-past-row">
                         <span class="df-past-date" dir="ltr">{{ $d->starts_at->format('Y-m-d H:i') }}</span>
-                        <b>{{ $d->project->title }}</b>
+                        <a href="{{ route('admin.groups.show', $d->project_id) }}" class="df-past-link"><b>{{ $d->project->title }}</b></a>
                         <span class="df-sub">{{ $d->place_label }} · {{ $d->members->map(fn ($m) => $m->supervisor->name)->implode('، ') }}</span>
                         <span class="df-status {{ $tone }}">{{ $label }}</span>
-                    </a>
+                        @if ($d->status !== Defense::CANCELLED)
+                            <a href="{{ route('defenses.minutes', $d->id) }}" class="btn-action df-past-minutes" title="محضر المناقشة — طباعة أو PDF" aria-label="محضر مناقشة {{ $d->project->title }}">
+                                <i class="ti ti-file-certificate" aria-hidden="true"></i>
+                            </a>
+                        @else
+                            <span></span>
+                        @endif
+                    </div>
                 @endforeach
             </div>
         @else

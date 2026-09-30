@@ -1097,7 +1097,7 @@
                             <span class="fq-ask-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
                             <div>
                                 <b data-i18n="faq.ask.title">ما وجدت جوابك؟</b>
-                                <span data-i18n="faq.ask.text">اكتب لنا سؤالك ويصلك الرد خلال يوم عمل واحد.</span>
+                                <span data-i18n="faq.ask.text">اكتب لنا سؤالك ونردّ عليك على بريدك في أقرب وقت.</span>
                             </div>
                             <a href="#contact" class="fq-ask-btn">
                                 <span data-i18n="faq.ask.button">راسلنا</span>
@@ -1322,7 +1322,7 @@
                         <ul class="contact-points">
                             <li class="contact-point">
                                 <span class="contact-point-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></span>
-                                <span data-i18n="contact.pointMail">الرد خلال يوم عمل واحد</span>
+                                <span data-i18n="contact.pointMail">الرد على بريدك الإلكتروني</span>
                             </li>
                             <li class="contact-point">
                                 <span class="contact-point-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
@@ -1419,7 +1419,7 @@
                             </span>
                             <h3 data-i18n="contact.doneTitle">وصلت رسالتك</h3>
                             <p>
-                                <span data-i18n="contact.doneText">سنردّ عليك خلال يوم عمل على</span>
+                                <span data-i18n="contact.doneText">سنردّ عليك في أقرب وقت على</span>
                                 <bdi dir="ltr" data-done-email></bdi>
                             </p>
                             <button type="button" class="contact-again" data-contact-again>

@@ -33,6 +33,9 @@
             <a href="{{ route('defenses.ics', $defense->id) }}" class="btn btn-outline-secondary" title="Outlook وتقويم الجوال">
                 <i class="ti ti-calendar-down me-1" aria-hidden="true"></i>ملف التقويم
             </a>
+            <a href="{{ route('defenses.minutes', $defense->id) }}" class="btn btn-outline-secondary" title="{{ $done ? 'المحضر المكتمل — طباعة أو PDF' : 'مسودة المحضر — تُطبع للتوقيع يوم المناقشة' }}">
+                <i class="ti ti-file-certificate me-1" aria-hidden="true"></i>المحضر
+            </a>
             @if ($isOwn)
                 <a href="{{ route('supervisor.projects.show', $project->id) }}" class="btn btn-outline-secondary">صفحة المشروع</a>
             @endif

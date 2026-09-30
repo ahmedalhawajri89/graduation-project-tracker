@@ -260,6 +260,7 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
 
     // ملف تقويم المناقشة (.ics) — للإدارة ولجنتها وفريقها
     Route::get('/defenses/{defense}/calendar.ics', \App\Http\Controllers\DefenseCalendarController::class)->name('defenses.ics');
+    Route::get('/defenses/{defense}/minutes', \App\Http\Controllers\DefenseMinutesController::class)->name('defenses.minutes');
 
     // تنزيل ملفات المشاريع (أدمن/مشرف المشروع/أعضاء الفريق)
     Route::get('/files/{file}/download', [FileController::class, 'download'])->name('files.download');
