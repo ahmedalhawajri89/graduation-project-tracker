@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\Supervisor;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * قواعد جدولة المناقشات — مكانها هنا وحده.
@@ -81,6 +82,11 @@ class DefenseScheduler
             $errors['examiner_id'] = 'مشرف المشروع عضو في اللجنة أصلاً — اختر ممتحناً غيره.';
         } elseif (count($examinerIds) !== count(array_unique($examinerIds))) {
             $errors['examiner_id'] = 'الممتحن نفسه مكرّر في اللجنة.';
+        }
+
+        // الرئيس من أعضاء هذه اللجنة
+        if (! empty($d['chair_id']) && ! in_array((int) $d['chair_id'], [(int) $project->supervisor_id, ...$examinerIds], true)) {
+            $errors['chair_id'] = 'رئيس اللجنة يكون المشرف أو أحد ممتحنيها.';
         }
 
         if (in_array($d['mode'], ['in_person', 'hybrid'], true)) {
@@ -260,9 +266,11 @@ class DefenseScheduler
     /**
      * اللجنة: المشرف ثم الممتحنون. من خرج منها يُحذف، ومن بقي يبقى صفّه.
      *
+     * الرئيس عضو واحد: المختار، وإلا المشرف.
+     *
      * @param  int[]  $examinerIds
      */
-    public static function syncMembers(Defense $defense, Project $project, array $examinerIds): void
+    public static function syncMembers(Defense $defense, Project $project, array $examinerIds, ?int $chairId = null): void
     {
         $defense->members()->whereNotIn('supervisor_id', [$project->supervisor_id, ...$examinerIds])->delete();
 
@@ -275,6 +283,11 @@ class DefenseScheduler
                 ['defense_id' => $defense->id, 'supervisor_id' => $examinerId],
                 ['role' => 'examiner']
             );
+        }
+
+        if (DefenseMember::chairSupported()) {
+            $chairId = in_array($chairId, $examinerIds, true) ? $chairId : (int) $project->supervisor_id;
+            $defense->members()->update(['is_chair' => DB::raw('supervisor_id = ' . (int) $chairId)]);
         }
     }
 }

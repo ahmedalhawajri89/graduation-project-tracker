@@ -74,7 +74,7 @@
                 @foreach ($defense->members as $m)
                     <li>
                         <x-avatar :user="$m->supervisor" class="cell-avatar sdf-av" />
-                        <span><b>{{ $m->supervisor->name }}</b><em>{{ $m->role_label }}</em></span>
+                        <span><b>{{ $m->supervisor->name }}</b><em>{{ $defense->roleOf($m) }}</em></span>
                     </li>
                 @endforeach
             </ul>

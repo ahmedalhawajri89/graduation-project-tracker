@@ -219,6 +219,39 @@ class DefenseSchedulingTest extends TestCase
         );
     }
 
+    private function needChairColumn(): void
+    {
+        if (! \App\Models\DefenseMember::chairSupported()) {
+            $this->markTestSkipped('عمود is_chair غير موجود — شغّل الترحيل ثم test:prepare --force.');
+        }
+    }
+
+    public function test_the_chair_defaults_to_the_supervisor_and_can_be_an_examiner(): void
+    {
+        $this->needChairColumn();
+        [$second] = $this->moreExaminers();
+
+        $this->schedule(['examiner_ids' => [$this->examiner->id, $second]])->assertSessionHas('success');
+        $d = Defense::where('project_id', $this->project->id)->with('members')->firstOrFail();
+        $this->assertSame($this->project->supervisor_id, $d->chair()->supervisor_id);
+        $this->assertSame(1, $d->members->where('is_chair', true)->count());
+
+        $this->actingAs($this->admin, 'admin')
+            ->put(route('admin.defenses.update', $d->id), $this->payload(['examiner_ids' => [$this->examiner->id, $second], 'chair_id' => $second]))
+            ->assertSessionHas('success');
+        $d = $d->fresh('members');
+        $this->assertSame($second, $d->chair()->supervisor_id);
+        $this->assertSame(1, $d->members->where('is_chair', true)->count());
+    }
+
+    public function test_the_chair_must_sit_on_the_committee(): void
+    {
+        [$outsider] = $this->moreExaminers();
+
+        $this->schedule(['chair_id' => $outsider])->assertSessionHasErrors('chair_id');
+        $this->assertFalse(Defense::where('project_id', $this->project->id)->exists());
+    }
+
     public function test_online_defense_needs_a_valid_link_and_no_room(): void
     {
         $this->schedule(['mode' => 'online', 'room_id' => null])->assertSessionHasErrors('meeting_url');

@@ -61,7 +61,8 @@ class DefenseGrading
                 return ['final' => false, 'grade' => null];
             }
 
-            $final = round($members->avg('grade'), 2);
+            $weights = self::weights($members);
+            $final = round($members->sum(fn ($m) => $m->grade * $weights[$m->id]) / 100, 2);
             $note = $members->filter(fn ($m) => filled($m->comments))
                 ->map(fn ($m) => $m->role_label . ' (' . $m->supervisor->name . '): ' . $m->comments)
                 ->implode("\n");
@@ -90,6 +91,33 @@ class DefenseGrading
         }
 
         return $result;
+    }
+
+    /** نسبة المشرف من الدرجة (1–99)، أو null = متوسط متساوٍ بين الأعضاء */
+    public static function supervisorWeight(): ?float
+    {
+        $w = config('defenses.supervisor_weight');
+
+        return is_numeric($w) && $w > 0 && $w < 100 ? (float) $w : null;
+    }
+
+    /**
+     * وزن كل عضو من 100. بلا إعداد: بالتساوي. بإعداد: المشرف نسبته، والباقي
+     * يُقسم على الممتحنين بالتساوي (لجنة بلا ممتحن: المشرف وحده 100).
+     *
+     * @param  \Illuminate\Support\Collection<int, DefenseMember>  $members
+     * @return array<int, float> مفتاحه معرّف العضو
+     */
+    public static function weights($members): array
+    {
+        $w = self::supervisorWeight();
+        $examiners = $members->where('role', 'examiner')->count();
+
+        return $members->mapWithKeys(fn ($m) => [$m->id => match (true) {
+            $w === null || ! $examiners => 100 / max(1, $members->count()),
+            $m->role === 'supervisor' => $w,
+            default => (100 - $w) / $examiners,
+        }])->all();
     }
 
     private static function notifyTeam(Project $project, float $grade, bool $updated): void

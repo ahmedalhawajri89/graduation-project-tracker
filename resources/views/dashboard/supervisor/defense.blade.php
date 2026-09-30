@@ -14,6 +14,10 @@
         $msLabel = ['open' => 'مفتوحة', 'submitted' => 'سُلّمت', 'revision' => 'مطلوب تعديل', 'approved' => 'اعتُمدت'];
         $done = $defense->status === 'done';
         $gradedCount = $defense->members->whereNotNull('grade')->count();
+        // الوزن يُعرض حين تضبطه الإدارة؛ وإلا فالنهائية متوسط متساوٍ
+        $weighted = \App\Support\DefenseGrading::supervisorWeight() !== null;
+        $weights = \App\Support\DefenseGrading::weights($defense->members);
+        $pct = fn ($w) => rtrim(rtrim(number_format($w, 1, '.', ''), '0'), '.') . '%';
         // العرض التقديمي يُعرض وحده أعلى الصفحة، لا بين ملفات المشروع
         $slides = $project->files->first(fn ($f) => $f->isPresentation());
         $otherFiles = $project->files->reject(fn ($f) => $f->isPresentation());
@@ -76,7 +80,7 @@
                     <div class="dsv-final">
                         <b>{{ $fmt($project->grade) }}</b>
                         <span>
-                            <strong>الدرجة النهائية — متوسط درجات اللجنة</strong>
+                            <strong>الدرجة النهائية — {{ $weighted ? 'بأوزان أعضاء اللجنة' : 'متوسط درجات اللجنة' }}</strong>
                             <em>{{ $project->grade_label }} · {{ $project->isGradeLocked() ? 'معتمدة' : 'لم تُعتمد بعد — ' . ($isOwn ? 'اعتمدها من صفحة المشروع' : 'يعتمدها المشرف') }}</em>
                         </span>
                     </div>
@@ -89,7 +93,7 @@
                             <x-avatar :user="$m->supervisor" class="cell-avatar dsv-av" />
                             <span class="dsv-member-body">
                                 <b>{{ $m->supervisor->name }} @if ($m->id === $mine->id)<em>أنت</em>@endif</b>
-                                <small>{{ $m->role_label }}</small>
+                                <small>{{ $defense->roleOf($m) }}@if ($weighted) · وزنه {{ $pct($weights[$m->id]) }}@endif</small>
                             </span>
                             @if (is_null($m->grade))
                                 <span class="dsv-state is-wait">لم يرصد</span>
@@ -124,7 +128,7 @@
                         <div class="dsv-form-foot">
                             <span class="text-secondary small">
                                 <i class="ti ti-eye-off" aria-hidden="true"></i>
-                                تقييم مستقلّ — لا ترى درجات بقية اللجنة قبل أن ترصد درجتك. النهائية متوسط درجات الأعضاء.
+                                تقييم مستقلّ — لا ترى درجات بقية اللجنة قبل أن ترصد درجتك. النهائية {{ $weighted ? 'بأوزان الأعضاء' : 'متوسط درجات الأعضاء' }}.
                             </span>
                             <button type="submit" class="btn btn-primary">
                                 <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>{{ is_null($mine->grade) ? 'رصد درجتي' : 'تحديث درجتي' }}

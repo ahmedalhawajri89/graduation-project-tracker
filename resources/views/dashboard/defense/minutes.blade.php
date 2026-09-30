@@ -12,6 +12,11 @@
     $fmt = fn ($g) => is_null($g) ? '' : rtrim(rtrim(number_format((float) $g, 2, '.', ''), '0'), '.');
     $team = $project->group->sortBy(fn ($g) => $g->type === 'leader' ? 0 : 1);
     $isolate = fn ($s) => "\u{2066}" . $s . "\u{2069}";
+    $chair = $defense->chair();
+    $members = $defense->members->sortBy(fn ($m) => $m->id === $chair?->id ? 0 : 1)->values();
+    $weighted = \App\Support\DefenseGrading::supervisorWeight() !== null;
+    $weights = \App\Support\DefenseGrading::weights($defense->members);
+    $pct = fn ($w) => rtrim(rtrim(number_format($w, 1, '.', ''), '0'), '.') . '%';
 @endphp
 <!doctype html>
 <html lang="ar" dir="rtl">
@@ -70,6 +75,7 @@
         td.mn-num { width: 96px; text-align: center; font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
         td.mn-num:empty::after { content: ''; display: block; height: 22px; }
         td.mn-sign { width: 130px; }
+        td.mn-weight { width: 64px; text-align: center; color: var(--soft); font-variant-numeric: tabular-nums; }
         td small { display: block; color: var(--mute); font-size: 11px; }
         td.mn-notes { font-size: 12px; color: var(--soft); white-space: pre-line; }
         tr { break-inside: avoid; }
@@ -161,13 +167,14 @@
             <div class="mn-table-wrap">
                 <table>
                     <thead>
-                        <tr><th>العضو</th><th>الدرجة من 100</th><th>الملاحظات</th><th>التوقيع</th></tr>
+                        <tr><th>العضو</th><th>الدرجة من 100</th>@if ($weighted)<th>الوزن</th>@endif<th>الملاحظات</th><th>التوقيع</th></tr>
                     </thead>
                     <tbody>
-                        @foreach ($defense->members as $m)
+                        @foreach ($members as $m)
                             <tr>
-                                <td><b>{{ $m->supervisor->name }}</b><small>{{ $m->role_label }}</small></td>
+                                <td><b>{{ $m->supervisor->name }}</b>@if ($m->id === $chair?->id)<span class="mn-lead">رئيس اللجنة</span>@endif<small>{{ $m->role_label }}</small></td>
                                 <td class="mn-num">{{ $fmt($m->grade) }}</td>
+                                @if ($weighted)<td class="mn-weight">{{ $pct($weights[$m->id]) }}</td>@endif
                                 <td class="mn-notes">{{ $m->comments }}</td>
                                 <td class="mn-sign"></td>
                             </tr>
@@ -179,7 +186,7 @@
             <div class="mn-result {{ $draft ? 'is-draft' : '' }}">
                 <b>{{ $draft ? '—' : $fmt($project->grade) }}</b>
                 <span>
-                    <strong>الدرجة النهائية — متوسط درجات اللجنة</strong>
+                    <strong>الدرجة النهائية — {{ $weighted ? 'بأوزان أعضاء اللجنة' : 'متوسط درجات اللجنة' }}</strong>
                     @if ($draft)
                         <em>تُحسب حين يرصد كل الأعضاء درجاتهم.</em>
                     @else
@@ -191,8 +198,8 @@
         </section>
 
         <div class="mn-signs">
-            <div>رئيس القسم</div>
-            <div>ختم القسم</div>
+            <div>رئيس لجنة المناقشة@if ($chair) — {{ $chair->supervisor->name }}@endif</div>
+            <div>رئيس القسم والختم</div>
         </div>
 
         <footer class="mn-foot">

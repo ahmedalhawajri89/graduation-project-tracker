@@ -11,6 +11,8 @@
 
     @php
         $activeRooms = $rooms->where('is_active', true)->values();
+        // اختيار رئيس اللجنة يظهر بعد ترحيل عموده
+        $chairs = \App\Models\DefenseMember::chairSupported();
 
         // بيانات كل مشروع للنافذة: تُملأ منها عند الجدولة، وعند إعادة فتحها بعد خطأ
         $meta = fn ($p) => [
@@ -35,6 +37,7 @@
             'room_id' => $d->room_id,
             'meeting_url' => $d->meeting_url,
             'examiner_ids' => $d->members->where('role', 'examiner')->pluck('supervisor_id')->values(),
+            'chair_id' => $d->chair()?->supervisor_id,
             'notes' => $d->notes,
         ];
 
@@ -343,7 +346,7 @@
                                     <div class="df-chips">
                                         <span class="df-mode is-{{ $d->mode }}"><i class="ti {{ $d->mode_icon }}" aria-hidden="true"></i>{{ $d->place_label }}</span>
                                         @foreach ($d->members as $m)
-                                            <span class="df-member"><x-avatar :user="$m->supervisor" class="cell-avatar df-av" />{{ $m->supervisor->name }} <em>{{ $m->role_label }}</em></span>
+                                            <span class="df-member"><x-avatar :user="$m->supervisor" class="cell-avatar df-av" />{{ $m->supervisor->name }} <em>{{ $d->roleOf($m) }}</em></span>
                                         @endforeach
                                         @if ($d->project->presentation)
                                             <a href="{{ route('files.download', $d->project->presentation->id) }}" class="df-member df-slides-mark" title="تنزيل العرض التقديمي">
@@ -546,14 +549,20 @@
                             <div class="dm-member">
                                 <span class="dm-member-av" data-f="sup-av" aria-hidden="true"></span>
                                 <span><small>المشرف</small><b data-f="supervisor">—</b></span>
-                                <i class="ti ti-lock" aria-hidden="true" title="مشرف المشروع عضو ثابت في اللجنة"></i>
+                                @if ($chairs)
+                                    <label class="dm-chair" title="رئيس اللجنة: يدير الجلسة ويوقّع المحضر أولاً">
+                                        <input type="radio" name="chair_id" value="" data-f="chair-sup" checked><span><i class="ti ti-crown" aria-hidden="true"></i>رئيس</span>
+                                    </label>
+                                @else
+                                    <i class="ti ti-lock" aria-hidden="true" title="مشرف المشروع عضو ثابت في اللجنة"></i>
+                                @endif
                             </div>
                             {{-- صفوف الممتحنين يبنيها السكربت: واحد على الأقل، وحتى الحدّ الأقصى --}}
                             <button type="button" class="dm-member-add" data-f="add-examiner">
                                 <i class="ti ti-user-plus" aria-hidden="true"></i> إضافة ممتحن
                             </button>
                         </div>
-                        @foreach (['examiner_id', 'examiner_ids', 'examiner_ids.*'] as $key)
+                        @foreach (['examiner_id', 'examiner_ids', 'examiner_ids.*', 'chair_id'] as $key)
                             @error($key)<div class="invalid-feedback d-block">{{ $message }}</div>@break @enderror
                         @endforeach
                         <div class="form-hint" data-f="examiner-hint">مرتّبون: من تخصص المشروع أولاً، ثم الأقلّ مناقشاتٍ قادمة.</div>
@@ -755,6 +764,20 @@
 
             // الممتحنون: بلا مشرف المشروع، التخصص نفسه أولاً ثم الأقلّ حملاً
             var MAX_EXAMINERS = {{ (int) config('defenses.max_examiners', 3) }};
+            var CHAIRS = @json($chairs);
+
+            // الرئيس: المشرف افتراضياً، أو الممتحن الذي تحمله المناقشة
+            function setChair(p, chairId) {
+                if (!CHAIRS) return;
+                var sup = f('chair-sup');
+                sup.value = p.supervisor_id;
+                sup.checked = true;
+                if (chairId && String(chairId) !== String(p.supervisor_id)) {
+                    examinerSelects().forEach(function (s) {
+                        if (s.value === String(chairId)) s.closest('.dm-member').querySelector('input[name="chair_id"]').checked = true;
+                    });
+                }
+            }
             var addBtn = f('add-examiner');
             var examinerSelects = function () { return Array.prototype.slice.call(form.querySelectorAll('select[name="examiner_ids[]"]')); };
 
@@ -763,6 +786,7 @@
                 row.className = 'dm-member is-pick';
                 row.innerHTML = '<span class="dm-member-av is-examiner" aria-hidden="true"><i class="ti ti-user-search"></i></span>'
                     + '<span class="dm-member-field"><label><small></small></label><select name="examiner_ids[]" required></select></span>'
+                    + (CHAIRS ? '<label class="dm-chair" title="رئيس اللجنة: يدير الجلسة ويوقّع المحضر أولاً"><input type="radio" name="chair_id"><span><i class="ti ti-crown" aria-hidden="true"></i>رئيس</span></label>' : '')
                     + '<button type="button" class="dm-member-remove" title="إزالة من اللجنة"><i class="ti ti-x" aria-hidden="true"></i></button>';
                 var sel = row.querySelector('select');
                 fillOptions(sel, p);
@@ -774,7 +798,12 @@
                     var free = Array.prototype.filter.call(sel.options, function (o) { return taken.indexOf(o.value) === -1; })[0];
                     if (free) sel.value = free.value;
                 }
-                row.querySelector('.dm-member-remove').addEventListener('click', function () { row.remove(); syncExaminers(); refresh(); });
+                row.querySelector('.dm-member-remove').addEventListener('click', function () {
+                    // إزالة الرئيس تعيد الرئاسة إلى المشرف
+                    var radio = row.querySelector('input[name="chair_id"]');
+                    if (radio && radio.checked) f('chair-sup').checked = true;
+                    row.remove(); syncExaminers(); refresh();
+                });
                 addBtn.parentNode.insertBefore(row, addBtn);
                 return row;
             }
@@ -784,6 +813,8 @@
                 var sels = examinerSelects();
                 sels.forEach(function (sel, i) {
                     var row = sel.closest('.dm-member');
+                    var radio = row.querySelector('input[name="chair_id"]');
+                    if (radio) radio.value = sel.value;
                     sel.id = 'df-examiner-' + i;
                     row.querySelector('label').htmlFor = sel.id;
                     row.querySelector('small').innerHTML = (sels.length > 1 ? 'الممتحن ' + (i + 1) : 'الممتحن') + ' <em>*</em>';
@@ -862,6 +893,8 @@
                 fillExaminers(p, keepOld
                     ? @json(old('examiner_ids', old('examiner_id') ? [old('examiner_id')] : []))
                     : (d && (d.examiner_ids || (d.examiner_id ? [d.examiner_id] : []))));
+                syncExaminers();
+                setChair(p, keepOld ? @json(old('chair_id')) : (d && d.chair_id));
                 syncMode();
                 refresh();
                 modal.show();
@@ -928,6 +961,12 @@
                     parts.push((opts.length > 1 ? 'الممتحنون ' : 'الممتحن ')
                         + opts.map(function (o) { return o.textContent.split(' — ')[0]; }).join('، '));
                 }
+                var chair = form.querySelector('input[name="chair_id"]:checked');
+                if (chair && opts.length) {
+                    var chairRow = chair.closest('.dm-member'), chairSel = chairRow.querySelector('select');
+                    var chairName = chairSel ? chairSel.options[chairSel.selectedIndex].textContent.split(' — ')[0] : f('supervisor').textContent;
+                    parts.push('الرئيس ' + chairName);
+                }
                 f('summary').textContent = parts.length ? parts.join(' · ') : '—';
 
                 var hint = f('examiner-hint');
@@ -938,7 +977,7 @@
                 } else if (hint && opts.length > 1) {
                     var n = opts.filter(sameOf).length;
                     hint.textContent = 'لجنة من ' + (opts.length + 1) + ' أعضاء · ' + (n ? n + ' من الممتحنين من تخصص المشروع' : 'لا ممتحن من تخصص المشروع')
-                        + ' · الدرجة متوسط درجاتهم';
+                        + (@json(\App\Support\DefenseGrading::supervisorWeight() !== null) ? ' · الدرجة بأوزان الأعضاء' : ' · الدرجة متوسط درجاتهم');
                     hint.classList.toggle('is-same', n > 0);
                 }
             }
@@ -1059,7 +1098,7 @@
             });
 
             // خطأ من الخادم: تُفتح النافذة من جديد بما أُدخل
-            @if ($errors->hasAny(['date', 'time', 'duration_minutes', 'mode', 'room_id', 'meeting_url', 'examiner_id', 'examiner_ids', 'examiner_ids.*', 'notes']) && old('project_id'))
+            @if ($errors->hasAny(['date', 'time', 'duration_minutes', 'mode', 'room_id', 'meeting_url', 'examiner_id', 'examiner_ids', 'examiner_ids.*', 'chair_id', 'notes']) && old('project_id'))
                 (function () {
                     var p = PROJECTS[@json((int) old('project_id'))];
                     if (p) open(p, @json(old('defense_id') ? ['id' => (int) old('defense_id')] : null), true);

@@ -12,12 +12,21 @@ class DefenseMember extends Model
         'examiner' => 'الممتحن',
     ];
 
-    protected $fillable = ['defense_id', 'supervisor_id', 'role', 'grade', 'comments', 'graded_at'];
+    protected $fillable = ['defense_id', 'supervisor_id', 'role', 'is_chair', 'grade', 'comments', 'graded_at'];
 
     protected $casts = [
         'grade' => 'float',
+        'is_chair' => 'boolean',
         'graded_at' => 'datetime',
     ];
+
+    private static ?bool $chairSupported = null;
+
+    /** عمود الرئاسة موجود — قبل ترحيله يُخفى اختيار الرئيس ويُعدّ المشرف رئيساً */
+    public static function chairSupported(): bool
+    {
+        return self::$chairSupported ??= \Illuminate\Support\Facades\Schema::hasColumn('defense_members', 'is_chair');
+    }
 
     public function defense()
     {

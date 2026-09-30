@@ -106,6 +106,32 @@ class DefenseGradingTest extends TestCase
         $this->assertSame('done', $this->defense->fresh()->status);
     }
 
+    public function test_a_supervisor_weight_splits_the_rest_between_examiners(): void
+    {
+        config(['defenses.supervisor_weight' => 40]);
+        $third = Supervisor::whereNotIn('id', [$this->supervisor->id, $this->examiner->id])->firstOrFail();
+        DefenseMember::create(['defense_id' => $this->defense->id, 'supervisor_id' => $third->id, 'role' => 'examiner']);
+
+        $this->grade($this->supervisor, 90);
+        $this->grade($this->examiner, 80);
+        $this->grade($third, 70);
+
+        // 90×40% + 80×30% + 70×30% = 81 (المتوسط العادي 80)
+        $this->assertSame(81.0, (float) $this->project->fresh()->grade);
+        $this->actingAs($this->supervisor, 'supervisor')->get(route('supervisor.defenses.show', $this->defense->id))
+            ->assertSee('وزنه 40%')->assertSee('وزنه 30%');
+    }
+
+    public function test_an_invalid_weight_falls_back_to_the_average(): void
+    {
+        config(['defenses.supervisor_weight' => 150]);
+
+        $this->grade($this->supervisor, 90);
+        $this->grade($this->examiner, 80);
+
+        $this->assertSame(85.0, (float) $this->project->fresh()->grade);
+    }
+
     public function test_grading_opens_only_when_the_defense_starts(): void
     {
         $this->defense->update(['starts_at' => now()->addDay()]);

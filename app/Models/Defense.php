@@ -51,6 +51,18 @@ class Defense extends Model
         return $this->hasMany(DefenseMember::class)->orderByRaw("role = 'examiner'");
     }
 
+    /** رئيس اللجنة: العضو المعلَّم، وإلا مشرف المشروع */
+    public function chair(): ?DefenseMember
+    {
+        return $this->members->firstWhere('is_chair', true) ?? $this->members->firstWhere('role', 'supervisor');
+    }
+
+    /** «الممتحن · رئيس اللجنة» — صفة العضو كما تُعرض */
+    public function roleOf(DefenseMember $m): string
+    {
+        return $m->role_label . ($this->chair()?->id === $m->id ? ' · رئيس اللجنة' : '');
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', self::SCHEDULED);

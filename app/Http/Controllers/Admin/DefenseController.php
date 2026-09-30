@@ -191,7 +191,7 @@ class DefenseController extends Controller
                 'reminded_on' => null,
                 'scheduled_by' => auth('admin')->id(),
             ]);
-            DefenseScheduler::syncMembers($defense, $project, $data['examiner_ids']);
+            DefenseScheduler::syncMembers($defense, $project, $data['examiner_ids'], $data['chair_id'] ?? null);
             // مناقشة ملغاة يُعاد استعمال صفّها: لا تُحمل درجاتها القديمة إلى الجديدة
             $defense->members()->update(['grade' => null, 'comments' => null, 'graded_at' => null]);
 
@@ -223,7 +223,7 @@ class DefenseController extends Controller
 
         DB::transaction(function () use ($defense, $project, $data) {
             $defense->update($this->attributes($data) + ['status' => Defense::SCHEDULED, 'reminded_on' => null]);
-            DefenseScheduler::syncMembers($defense, $project, $data['examiner_ids']);
+            DefenseScheduler::syncMembers($defense, $project, $data['examiner_ids'], $data['chair_id'] ?? null);
         });
 
         $defense = $defense->fresh(['room', 'members.supervisor', 'project.group']);
@@ -328,6 +328,7 @@ class DefenseController extends Controller
             'meeting_url' => ['nullable', 'required_if:mode,online,hybrid', 'url:http,https', 'max:500'],
             'examiner_ids' => ['required', 'array', 'min:1', 'max:' . $max],
             'examiner_ids.*' => ['required', 'integer', 'distinct', 'exists:supervisors,id'],
+            'chair_id' => ['nullable', 'integer'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ], [
             'examiner_ids.required' => 'اختر ممتحناً واحداً على الأقل.',
@@ -345,6 +346,7 @@ class DefenseController extends Controller
         $v['room_id'] = in_array($v['mode'], ['in_person', 'hybrid'], true) ? ($v['room_id'] ?? null) : null;
         $v['meeting_url'] = in_array($v['mode'], ['online', 'hybrid'], true) ? ($v['meeting_url'] ?? null) : null;
         $v['examiner_ids'] = array_values(array_map('intval', $v['examiner_ids']));
+        $v['chair_id'] = isset($v['chair_id']) ? (int) $v['chair_id'] : null;
 
         return $v;
     }

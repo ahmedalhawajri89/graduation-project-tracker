@@ -95,6 +95,21 @@ class DefenseMinutesTest extends TestCase
             ->assertSee('DEF-' . str_pad($this->defense->id, 4, '0', STR_PAD_LEFT));
     }
 
+    public function test_minutes_name_the_chair_and_show_weights_only_when_set(): void
+    {
+        $url = route('defenses.minutes', $this->defense->id);
+
+        $this->actingAs(Admin::first(), 'admin')->get($url)
+            ->assertSee('رئيس اللجنة')
+            ->assertSee('رئيس لجنة المناقشة — ' . $this->supervisor->name)
+            ->assertDontSee('<th>الوزن</th>', false);
+
+        config(['defenses.supervisor_weight' => 40]);
+        $this->actingAs(Admin::first(), 'admin')->get($url)
+            ->assertSee('<th>الوزن</th>', false)->assertSee('40%')->assertSee('60%')
+            ->assertSee('بأوزان أعضاء اللجنة');
+    }
+
     public function test_only_admin_and_committee_can_open_it(): void
     {
         $outsider = Supervisor::whereNotIn('id', [$this->supervisor->id, $this->examiner->id])->firstOrFail();

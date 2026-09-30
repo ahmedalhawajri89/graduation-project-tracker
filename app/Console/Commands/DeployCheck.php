@@ -126,8 +126,9 @@ class DeployCheck extends Command
         };
         $upload = (string) ini_get('upload_max_filesize');
         $post = (string) ini_get('post_max_size');
-        $this->row($bytes($upload) >= 12 * 1024 ** 2 ? true : 'warn', 'الرفع', 'upload_max_filesize ≥ 12M', $upload . ' (الملفات حتى 10MB)');
-        $this->row($bytes($post) >= 16 * 1024 ** 2 ? true : 'warn', 'الرفع', 'post_max_size ≥ 16M', $post);
+        // العرض التقديمي للمناقشة حتى 20MB، وبقية الملفات حتى 10MB
+        $this->row($bytes($upload) >= 22 * 1024 ** 2 ? true : 'warn', 'الرفع', 'upload_max_filesize ≥ 22M', $upload . ' (العرض التقديمي حتى 20MB)');
+        $this->row($bytes($post) >= 26 * 1024 ** 2 ? true : 'warn', 'الرفع', 'post_max_size ≥ 26M', $post);
     }
 
     private function caches(): void

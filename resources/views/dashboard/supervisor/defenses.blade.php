@@ -29,7 +29,7 @@
                         </div>
                         <div class="df-slot-body">
                             <span class="df-title">{{ $d->project->title }}</span>
-                            <span class="df-sub">نوقش {{ $d->starts_at->diffForHumans() }} · دورك: {{ $d->mine->role_label }}
+                            <span class="df-sub">نوقش {{ $d->starts_at->diffForHumans() }} · دورك: {{ $d->roleOf($d->mine) }}
                                 · رصد {{ $d->members->whereNotNull('grade')->count() }} من {{ $d->members->count() }}</span>
                         </div>
                         <span class="btn btn-primary btn-sm">رصد درجتي</span>
@@ -56,7 +56,7 @@
                             <span class="df-sub">{{ $d->project->group->map(fn ($g) => $g->student?->name)->filter()->implode('، ') }}</span>
                             <div class="df-chips">
                                 <span class="df-mode is-{{ $d->mode }}"><i class="ti {{ $d->mode_icon }}" aria-hidden="true"></i>{{ $d->place_label }}</span>
-                                <span class="dsv-role is-{{ $d->mine->role }}">{{ $d->mine->role_label }}</span>
+                                <span class="dsv-role is-{{ $d->mine->role }}">{{ $d->roleOf($d->mine) }}</span>
                             </div>
                         </div>
                         <div class="df-actions">
@@ -90,7 +90,7 @@
                     <a href="{{ route('supervisor.defenses.show', $d->id) }}" class="df-past-row">
                         <span class="df-past-date" dir="ltr">{{ $d->starts_at->format('Y-m-d') }}</span>
                         <b>{{ $d->project->title }}</b>
-                        <span class="df-sub">درجتك {{ $fmt($d->mine->grade) }} · {{ $d->mine->role_label }}</span>
+                        <span class="df-sub">درجتك {{ $fmt($d->mine->grade) }} · {{ $d->roleOf($d->mine) }}</span>
                         @if ($d->status === 'done')
                             <span class="df-status is-done">النهائية {{ $fmt($d->project->grade) }}</span>
                         @else

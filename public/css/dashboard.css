@@ -9718,6 +9718,13 @@ a.dsv-slides:hover { border-color: #34d399; }
 .dm-member-remove { flex: none; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--ds-ink-mute); cursor: pointer; }
 .dm-member-remove:hover, .dm-member-remove:focus-visible { background: #fff1f2; color: #be123c; outline: 0; }
 .dm-member-field select option:disabled { color: var(--ds-border-strong); }
+/* رئيس اللجنة: شارة اختيار واحدة على بطاقات الأعضاء */
+.dm-chair { flex: none; position: relative; margin: 0; cursor: pointer; }
+.dm-chair input { position: absolute; opacity: 0; pointer-events: none; }
+.dm-chair span { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border: 1px solid var(--ds-border); border-radius: 99px; background: var(--ds-surface); color: var(--ds-ink-mute); font-size: 11.5px; font-weight: 700; transition: background-color var(--ds-dur-fast) ease, color var(--ds-dur-fast) ease, border-color var(--ds-dur-fast) ease; }
+.dm-chair:hover span { border-color: #fcd34d; color: #b45309; }
+.dm-chair input:checked + span { border-color: #f59e0b; background: #fffbeb; color: #b45309; }
+.dm-chair input:focus-visible + span { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
 .dm-member-field select { width: 100%; border: 0; outline: 0; background: transparent; padding: 0; font: inherit; font-size: 14px; font-weight: 700; color: var(--ds-ink); cursor: pointer; text-overflow: ellipsis; }
 
 .df-form .dm-foot { display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-top: 1px solid var(--ds-border); background: var(--ds-surface); }

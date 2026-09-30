@@ -123,13 +123,16 @@ vendor/bin/phpunit
 4. **Writable paths:** `storage/`, `bootstrap/cache/` and `public/uploads/` (avatars).
    Project files are stored privately in `storage/app` and served only through an
    authorized download route — `storage:link` is not needed.
-5. **PHP upload limits.** Project files accept up to 10 MB and Excel imports up to 5 MB:
-   set `upload_max_filesize = 12M` and `post_max_size = 16M`.
+5. **PHP upload limits.** Project files accept up to 10 MB, defense presentations up to 20 MB and
+   Excel imports up to 5 MB: set `upload_max_filesize = 22M` and `post_max_size = 26M`.
 6. **Caches.** `php artisan config:cache && php artisan route:cache && php artisan view:cache`.
 7. **Defenses.** Add the defense rooms from *Admin › Defenses › Rooms*; the planner suggests a slot,
    room and examiner for each completed project within the working hours in `config/defenses.php`
    (Sunday–Thursday, 09:00–15:00 by default). Online and hybrid defenses take a meeting link (the
-   dialog has a *Create Google Meet* shortcut) — no Google API credentials are needed.
+   dialog has a *Create Google Meet* shortcut) — no Google API credentials are needed. A committee is
+   the supervisor plus up to three examiners, one of them its chair. The final grade is the members'
+   average; set `DEFENSE_SUPERVISOR_WEIGHT=40` (for example) to give the supervisor 40% and split the
+   rest evenly between the examiners.
 8. **Readiness check.** `php artisan deploy:check` verifies what can be checked automatically
    (environment, security, mail, queue, migrations, first admin, active semester, writable paths,
    upload limits, caches) and exits non-zero on anything critical. Run it after each deploy.

@@ -30,7 +30,7 @@ class DefensesExport implements FromCollection, WithHeadings, WithMapping, Shoul
 
     public function headings(): array
     {
-        return ['التاريخ', 'اليوم', 'من', 'إلى', 'المشروع', 'النوع', 'الفريق', 'المشرف', 'الممتحنون', 'المكان', 'رابط الاجتماع', 'الحالة', 'الدرجة'];
+        return ['التاريخ', 'اليوم', 'من', 'إلى', 'المشروع', 'النوع', 'الفريق', 'المشرف', 'الممتحنون', 'رئيس اللجنة', 'المكان', 'رابط الاجتماع', 'الحالة', 'الدرجة'];
     }
 
     public function map($d): array
@@ -49,6 +49,7 @@ class DefensesExport implements FromCollection, WithHeadings, WithMapping, Shoul
             $d->project->group->map(fn ($g) => $g->student?->name)->filter()->implode('، '),
             $member('supervisor'),
             $member('examiner'),
+            $d->chair()?->supervisor?->name,
             $d->place_label . ($d->room?->location ? ' — ' . $d->room->location : ''),
             $d->needsLink() ? $d->meeting_url : '',
             match (true) {

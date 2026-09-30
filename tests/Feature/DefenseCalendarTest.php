@@ -139,7 +139,8 @@ class DefenseCalendarTest extends TestCase
         $row = (new DefensesExport())->map($this->defense->fresh(['project.group.student', 'project.project_type', 'members.supervisor', 'room']));
         $this->assertSame('10:00', $row[2]);
         $this->assertSame($this->examiner->name, $row[8]);
-        $this->assertSame('مجدولة', $row[11]);
+        $this->assertSame($this->project->supervisor->name, $row[9], 'بلا رئيس معلَّم: المشرف رئيس اللجنة');
+        $this->assertSame('مجدولة', $row[12]);
 
         $this->actingAs(Admin::first(), 'admin')->get(route('admin.defenses.export'))->assertOk();
     }
