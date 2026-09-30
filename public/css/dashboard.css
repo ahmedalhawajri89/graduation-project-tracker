@@ -9470,97 +9470,114 @@ a.df-slot { text-decoration: none; color: inherit; }
 }
 
 /* ==================== المناقشات: مسار + مخطِّط الأسبوع ====================
-   شريط يحكي أين يقف كل مشروع، ثم لوحان: قائمة الانتظار باقتراح جاهز لكل
-   مشروع، وأسبوع الدوام بما جُدول (كتل) وما اقتُرح (أشباح). */
-.df-pipe { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-bottom: 16px; border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); background: var(--ds-surface); overflow: hidden; }
-.df-pipe-step { position: relative; display: flex; align-items: center; gap: 12px; padding: 14px 18px; color: inherit; text-decoration: none; transition: background-color var(--ds-dur-fast) ease; }
-.df-pipe-step + .df-pipe-step { border-inline-start: 1px solid var(--ds-border); }
-/* سهم يصل المحطة بالتي بعدها */
-.df-pipe-step + .df-pipe-step::before {
-    content: ""; position: absolute; top: 50%; inset-inline-start: -7px; width: 12px; height: 12px;
-    background: var(--ds-surface); border: 1px solid var(--ds-border); border-width: 1px 1px 0 0;
-    transform: translateY(-50%) rotate(45deg); z-index: 1;
-}
-[dir="rtl"] .df-pipe-step + .df-pipe-step::before { transform: translateY(-50%) rotate(-135deg); }
-.df-pipe-step:hover { background: var(--ds-surface-sunk); }
-.df-pipe-icon { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; background: var(--ds-surface-sunk); color: var(--ds-ink-mute); font-size: 18px; }
-.df-pipe-body { display: flex; flex-direction: column; min-width: 0; }
-.df-pipe-body b { font-size: 21px; font-weight: 800; line-height: 1.15; color: var(--ds-ink-mute); font-variant-numeric: tabular-nums; }
-.df-pipe-body small { font-size: 12px; color: var(--ds-ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.df-pipe-step.has-items .df-pipe-body b { color: var(--ds-ink); }
-.df-pipe-step.has-items .df-pipe-icon { background: var(--ds-accent-soft); color: var(--ds-accent); }
-.df-pipe-step.is-grading.has-items .df-pipe-icon { background: #fffbeb; color: #b45309; }
-.df-pipe-step.is-done.has-items .df-pipe-icon { background: #ecfdf5; color: #047857; }
-/* ما ينتظر فعلاً من الإدارة */
-.df-pipe-step.is-action { background: linear-gradient(180deg, var(--ds-accent-soft), var(--ds-surface) 90%); }
-.df-pipe-step.is-action .df-pipe-icon { background: var(--ds-accent); color: #fff; }
+   خطّ مراحل يحكي أين يقف كل مشروع، ثم لوحان: قائمة الانتظار باقتراح جاهز
+   لكل مشروع (تُسحب بطاقاتها)، وأسبوع الدوام تقويماً لا جدول بيانات — ما
+   جُدول كتلاً وما اقتُرح أشباحاً، والمرور على بطاقة يُضيء شبحها. */
 
-.df-plan { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start; }
-.df-queue { display: flex; flex-direction: column; gap: 12px; }
+/* ---- المسار: أربع محطات على خطّ واحد، بلا صناديق ---- */
+.df-pipe { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 18px; padding: 16px 8px 14px; border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); background: var(--ds-surface); }
+.df-pipe-step { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 0 8px; color: inherit; text-decoration: none !important; text-align: center; }
+/* الخطّ الواصل إلى المحطة السابقة، من مركز إلى مركز */
+.df-pipe-step + .df-pipe-step::before { content: ""; position: absolute; top: 19px; inset-inline-end: 50%; width: 100%; height: 2px; background: var(--ds-border); }
+.df-pipe-step.has-items + .df-pipe-step::before { background: linear-gradient(to left, var(--ds-brand-200), var(--ds-border)); }
+[dir="ltr"] .df-pipe-step.has-items + .df-pipe-step::before { background: linear-gradient(to right, var(--ds-brand-200), var(--ds-border)); }
+.df-pipe-icon { position: relative; z-index: 1; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--ds-surface); border: 2px solid var(--ds-border); color: var(--ds-ink-mute); font-size: 18px; box-shadow: 0 0 0 5px var(--ds-surface); transition: transform var(--ds-dur-fast) var(--ds-ease), border-color var(--ds-dur-fast) ease; }
+.df-pipe-step:hover .df-pipe-icon { transform: translateY(-2px); border-color: var(--ds-brand-200); }
+.df-pipe-body { display: flex; align-items: baseline; gap: 6px; }
+.df-pipe-body b { font-size: 20px; font-weight: 800; line-height: 1; color: var(--ds-border-strong); font-variant-numeric: tabular-nums; }
+.df-pipe-body small { font-size: 12.5px; font-weight: 600; color: var(--ds-ink-mute); }
+.df-pipe-step.has-items .df-pipe-body b { color: var(--ds-ink); }
+.df-pipe-step.has-items .df-pipe-body small { color: var(--ds-ink-soft); }
+.df-pipe-step.has-items .df-pipe-icon { border-color: var(--ds-accent); color: var(--ds-accent); }
+.df-pipe-step.is-grading.has-items .df-pipe-icon { border-color: #f59e0b; color: #b45309; }
+.df-pipe-step.is-done.has-items .df-pipe-icon { border-color: #10b981; color: #047857; }
+/* ما ينتظر فعلاً من الإدارة: محطة مملوءة */
+.df-pipe-step.is-action .df-pipe-icon { background: var(--ds-accent); border-color: var(--ds-accent); color: #fff; box-shadow: 0 0 0 5px var(--ds-surface), 0 10px 20px -10px rgba(37, 99, 235, .8); }
+.df-pipe-step.is-action .df-pipe-body b { color: var(--ds-accent-strong); }
+
+/* ---- اللوحان ---- */
+.df-plan { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 16px; align-items: start; }
+.df-queue { display: flex; flex-direction: column; gap: 10px; position: sticky; top: 72px; max-height: calc(100vh - 88px); overflow-y: auto; padding-inline-end: 2px; scrollbar-width: thin; }
 .df-queue h2, .df-week-head h2 { margin: 0; font-size: 15px; font-weight: 800; color: var(--ds-ink); }
-.df-queue h2 span { margin-inline-start: 4px; padding: 0 8px; border-radius: 99px; background: var(--ds-accent-soft); color: var(--ds-accent-strong); font-size: 12px; }
-.df-queue .df-card { gap: 10px; padding: 14px 16px; }
-.df-queue .df-card footer { display: flex; gap: 8px; flex-wrap: wrap; }
+.df-queue h2 { display: flex; align-items: center; gap: 6px; }
+.df-queue h2 span { padding: 0 8px; border-radius: 99px; background: var(--ds-accent-soft); color: var(--ds-accent-strong); font-size: 12px; }
+.df-queue h2 small { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 500; color: var(--ds-ink-mute); }
+
+.df-queue .df-card { gap: 9px; padding: 12px 14px; border-inline-start-width: 1px; border-inline-start-color: var(--ds-border); cursor: grab; transition: border-color var(--ds-dur-fast) ease, box-shadow var(--ds-dur) ease, transform var(--ds-dur) var(--ds-ease); }
+.df-queue .df-card:hover, .df-queue .df-card.is-linked { border-color: var(--ds-accent); box-shadow: 0 14px 28px -22px rgba(37, 99, 235, .7); }
+.df-queue .df-card.is-dragging { opacity: .45; cursor: grabbing; }
+.df-queue .df-card header { display: flex; gap: 6px; align-items: flex-start; }
+.df-queue .df-card .df-title { font-size: 14px; }
+.df-grip { margin-top: 3px; color: var(--ds-border-strong); font-size: 15px; }
+.df-queue .df-card:hover .df-grip { color: var(--ds-accent); }
+.df-queue .df-facts { gap: 5px; }
+.df-queue .df-facts > span { padding: 2px 8px; font-size: 11.5px; }
+.df-queue .df-facts > span.is-person { padding: 2px 8px 2px 3px; color: var(--ds-ink); font-weight: 600; }
+[dir="rtl"] .df-queue .df-facts > span.is-person { padding: 2px 3px 2px 8px; }
+.df-queue .df-av { width: 20px !important; height: 20px !important; font-size: 8.5px; }
+
+.df-suggest { display: flex; flex-direction: column; gap: 1px; padding: 8px 10px; border-radius: 10px; background: var(--ds-accent-soft); }
+.df-suggest-when { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ds-ink); }
+.df-suggest-when i { color: var(--ds-accent); }
+.df-suggest-when bdi { margin-inline-start: auto; padding: 0 8px; border-radius: 99px; background: var(--ds-surface); font-weight: 800; color: var(--ds-accent-strong); font-variant-numeric: tabular-nums; }
+.df-suggest-who { font-size: 12px; color: var(--ds-ink-soft); padding-inline-start: 22px; }
+.df-suggest-who em { margin-inline-start: 4px; padding: 0 6px; border-radius: 99px; background: var(--ds-surface); font-style: normal; font-size: 10.5px; font-weight: 700; color: var(--ds-accent-strong); }
+.df-queue .df-card footer { display: flex; gap: 6px; margin-top: 0; }
 .df-queue .df-card footer form { margin: 0; flex: 1; }
 .df-queue .df-card footer form .btn { width: 100%; }
-.df-people { display: flex; flex-wrap: wrap; gap: 6px 12px; }
-.df-person { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ds-ink-soft); }
-.df-person em { font-style: normal; font-size: 11px; color: var(--ds-ink-mute); }
-.df-person.is-team i { color: var(--ds-ink-mute); }
-.df-suggest { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--ds-brand-200); background: var(--ds-accent-soft); }
-.df-suggest small { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--ds-accent); }
-.df-suggest b { font-size: 14px; color: var(--ds-ink); }
-.df-suggest span { font-size: 12.5px; color: var(--ds-ink-soft); }
-.df-suggest em { margin-inline-start: 4px; padding: 0 6px; border-radius: 99px; background: var(--ds-surface); font-style: normal; font-size: 10.5px; font-weight: 700; color: var(--ds-accent-strong); }
+.df-queue .df-card footer .btn { min-height: 34px; padding-block: 0; border-radius: 9px; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; }
 .df-queue-empty { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 28px 16px; text-align: center; border: 1px dashed var(--ds-border); border-radius: var(--ds-radius-lg); color: var(--ds-ink-mute); font-size: 12.5px; line-height: 1.7; }
 .df-queue-empty i { font-size: 26px; color: #047857; }
 .df-queue-empty b { font-size: 14px; color: var(--ds-ink); }
 
+/* ---- أسبوع الدوام ---- */
 .df-week { border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg); background: var(--ds-surface); overflow: hidden; }
-.df-week-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--ds-border); }
-.df-week-nav { display: flex; align-items: center; gap: 6px; }
-.df-grid-scroll { overflow-x: auto; }
-.df-cal { width: 100%; min-width: 620px; border-collapse: collapse; table-layout: fixed; }
-.df-cal th, .df-cal td { border: 1px solid var(--ds-border); }
-.df-cal tr > :first-child { border-inline-start: 0; }
-.df-cal tr > :last-child { border-inline-end: 0; }
-.df-cal thead th { padding: 8px 6px; background: var(--ds-surface-sunk); text-align: center; border-top: 0; }
-.df-cal thead th b { display: block; font-size: 12.5px; color: var(--ds-ink); }
-.df-cal thead th small { font-size: 11px; color: var(--ds-ink-mute); }
-.df-cal thead th.is-today b { color: var(--ds-accent-strong); }
-.df-cal-time { width: 58px; padding: 0 6px; font-size: 11.5px; font-weight: 600; color: var(--ds-ink-mute); text-align: center; background: var(--ds-surface-sunk); font-variant-numeric: tabular-nums; }
-.df-cal td { position: relative; height: 58px; padding: 3px; vertical-align: top; }
-.df-cal td.is-past { background: repeating-linear-gradient(135deg, transparent 0 6px, rgba(9, 9, 11, .025) 6px 12px); }
-.df-block {
-    display: block; width: 100%; margin-bottom: 3px; padding: 5px 8px; border: 0; border-radius: 8px; text-align: start; cursor: pointer;
-    border-inline-start: 3px solid var(--df-c, var(--ds-accent)); background: var(--df-bg, var(--ds-accent-soft)); color: var(--ds-ink);
-    font: inherit; transition: box-shadow var(--ds-dur-fast) ease;
-}
-.df-block:hover:not(:disabled) { box-shadow: 0 6px 14px -8px rgba(9, 9, 11, .4); }
-.df-block:disabled { cursor: default; }
-.df-block b { display: block; font-size: 12px; font-weight: 700; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.df-block small { display: block; font-size: 10.5px; color: var(--ds-ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.df-block.is-in_person { --df-c: #0f766e; --df-bg: #f0fdfa; }
-.df-block.is-online { --df-c: #2563eb; --df-bg: #eff6ff; }
-.df-block.is-hybrid { --df-c: #6d28d9; --df-bg: #f5f3ff; }
-.df-block.is-done { opacity: .65; }
-.df-block.is-ghost { border: 1px dashed var(--ds-brand-200); border-inline-start: 3px dashed var(--ds-accent); background: transparent; }
-.df-block.is-ghost b { color: var(--ds-accent-strong); }
-.df-add {
-    position: absolute; inset: 3px; display: grid; place-items: center; border: 1px dashed transparent; border-radius: 8px;
-    background: transparent; color: transparent; cursor: pointer; transition: color var(--ds-dur-fast) ease, border-color var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease;
-}
-/* الخانة المشغولة: زر الإضافة لا يغطّي كتلها */
-.df-cal td:has(.df-block) .df-add { position: static; width: 100%; height: 16px; inset: auto; }
-.df-add:hover, .df-add:focus-visible { color: var(--ds-accent); border-color: var(--ds-brand-200); background: var(--ds-accent-soft); outline: 0; }
-.df-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; padding: 10px 16px; border-top: 1px solid var(--ds-border); font-size: 12px; color: var(--ds-ink-soft); }
+.df-week-head { display: flex; align-items: center; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; padding: 12px 16px; }
+.df-week-nav { display: flex; align-items: center; gap: 4px; }
+.df-week-nav h2 { margin-inline: 8px 10px; }
+.df-nav-btn { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: var(--ds-ink-soft); text-decoration: none; transition: background-color var(--ds-dur-fast) ease, color var(--ds-dur-fast) ease; }
+.df-nav-btn:hover { background: var(--ds-accent-soft); color: var(--ds-accent); }
+.df-nav-today { padding: 3px 12px; border-radius: 99px; border: 1px solid var(--ds-border); font-size: 12px; font-weight: 600; color: var(--ds-ink-soft); text-decoration: none; }
+.df-nav-today:hover { border-color: var(--ds-brand-200); color: var(--ds-accent-strong); }
+.df-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--ds-ink-mute); }
 .df-legend span { display: inline-flex; align-items: center; gap: 6px; }
-.df-legend i { width: 10px; height: 10px; border-radius: 3px; }
-.df-legend i.is-in_person { background: #0f766e; }
+.df-legend i { width: 9px; height: 9px; border-radius: 3px; }
+.df-legend i.is-in_person { background: #0d9488; }
 .df-legend i.is-online { background: #2563eb; }
-.df-legend i.is-hybrid { background: #6d28d9; }
-.df-legend i.is-ghost { border: 1px dashed var(--ds-accent); }
-.df-legend small { margin-inline-start: auto; color: var(--ds-ink-mute); }
+.df-legend i.is-hybrid { background: #7c3aed; }
+.df-legend i.is-ghost { border: 1.5px dashed var(--ds-accent); }
+
+/* الكتل جنباً إلى جنب حين تتعدّد القاعات في الوقت نفسه */
+.df-cell { position: relative; display: flex; gap: 3px; height: 100%; min-height: 72px; padding: 3px; }
+.df-block {
+    flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 1px; padding: 6px 8px; border: 0; border-radius: 9px; text-align: start; cursor: pointer;
+    border-inline-start: 3px solid var(--df-c, var(--ds-accent)); background: var(--df-bg, var(--ds-accent-soft)); color: var(--ds-ink);
+    font: inherit; transition: box-shadow var(--ds-dur-fast) ease, transform var(--ds-dur-fast) var(--ds-ease);
+}
+.df-block:hover:not(:disabled) { box-shadow: 0 10px 20px -12px rgba(9, 9, 11, .45); transform: translateY(-1px); }
+.df-block:disabled { cursor: default; }
+.df-block b { font-size: 12px; font-weight: 700; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.df-block small { font-size: 10.5px; color: var(--ds-ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.df-who { display: flex; margin-top: auto; }
+.df-who i { display: grid; place-items: center; width: 18px; height: 18px; margin-inline-end: -4px; border-radius: 50%; border: 1.5px solid var(--df-bg, #fff); background: var(--df-c, var(--ds-accent)); color: #fff; font-style: normal; font-size: 8px; font-weight: 800; }
+.df-block.is-in_person { --df-c: #0d9488; --df-bg: #f0fdfa; }
+.df-block.is-online { --df-c: #2563eb; --df-bg: #eff6ff; }
+.df-block.is-hybrid { --df-c: #7c3aed; --df-bg: #f5f3ff; }
+.df-block.is-done { opacity: .6; }
+.df-block.is-ghost { border: 1.5px dashed var(--ds-brand-200); background: color-mix(in srgb, var(--ds-accent-soft) 50%, transparent); }
+.df-block.is-ghost b { color: var(--ds-accent-strong); }
+.df-block.is-ghost small { color: var(--ds-accent); }
+.df-block.is-ghost.is-linked, .df-block.is-ghost:hover { border-color: var(--ds-accent); background: var(--ds-accent-soft); box-shadow: 0 0 0 3px rgba(37, 99, 235, .14); }
+/* الخانة الفارغة تقول ما يحدث عند النقر */
+.df-add {
+    flex: 1 1 0; display: flex; align-items: center; justify-content: center; gap: 4px; border: 1.5px dashed transparent; border-radius: 9px;
+    background: transparent; color: transparent; font: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer;
+    transition: color var(--ds-dur-fast) ease, border-color var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease;
+}
+.df-add:hover, .df-add:focus-visible { color: var(--ds-accent-strong); border-color: var(--ds-brand-200); background: var(--ds-accent-soft); outline: 0; }
+/* خانة فيها كتل: الإضافة شريط نحيف بلا نصّ */
+.df-cell:has(.df-block) .df-add { flex: 0 0 22px; }
+.df-cell:has(.df-block) .df-add span { display: none; }
 
 .df-pick { margin-top: 8px; max-width: 420px; }
 .df-pick[hidden] { display: none; }
@@ -9572,14 +9589,242 @@ a.df-slot { text-decoration: none; color: inherit; }
 
 @media (max-width: 1100px) {
     .df-plan { grid-template-columns: 1fr; }
+    .df-queue { position: static; max-height: none; overflow: visible; }
+    .df-queue h2 small { display: none; }
 }
 @media (max-width: 640px) {
-    .df-pipe { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .df-pipe-step:nth-child(3) { border-inline-start: 0; }
-    .df-pipe-step:nth-child(n+3) { border-top: 1px solid var(--ds-border); }
-    .df-pipe-step + .df-pipe-step::before { display: none; }
-    .df-legend small { margin-inline-start: 0; flex-basis: 100%; }
+    .df-pipe { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 16px; }
+    .df-pipe-step:nth-child(3)::before { display: none; }
+    .df-legend { display: none; }
 }
 @media (pointer: coarse) {
     .df-add { color: var(--ds-border-strong); }
+    .df-add span { display: none; }
+    .df-queue .df-card { cursor: default; }
+    .df-grip { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .df-block, .df-pipe-icon, .df-queue .df-card { transition: none; }
+    .df-block:hover:not(:disabled), .df-pipe-step:hover .df-pipe-icon { transform: none; }
+}
+
+/* ==================== نافذة جدولة المناقشة ====================
+   رأس بأيقونة لا يُقصّ، أقسام بعناوين داخلها (لا legend فوق الحدّ)، مدة
+   ونوع بأزرار، رابط اجتماع يتعرّف مزوّده، ولجنة ببطاقتين، وملخّص حيّ في
+   الذيل بما سيُرسل. */
+.df-form .dm-head { display: flex; align-items: center; gap: 12px; min-height: 0; height: auto; padding: 16px 20px; border-bottom: 1px solid var(--ds-border); }
+.dm-head-icon { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: var(--ds-accent); color: #fff; font-size: 20px; box-shadow: 0 10px 20px -12px rgba(37, 99, 235, .8); }
+.dm-head-body { flex: 1; min-width: 0; }
+.df-form .dm-head .modal-title { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.5; color: var(--ds-ink); }
+.df-form .dm-head .df-form-project { margin-top: 1px; font-size: 12.5px; line-height: 1.6; color: var(--ds-ink-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.df-form .dm-head .btn-close { position: static; margin: 0; flex: none; }
+
+.dm-body { display: flex; flex-direction: column; gap: 14px; padding: 18px 20px; background: var(--ds-bg); }
+.dm-sec { padding: 14px 16px 16px; border: 1px solid var(--ds-border); border-radius: 14px; background: var(--ds-surface); }
+.dm-sec-title { display: flex; align-items: center; gap: 7px; margin: 0 0 12px; font-size: 13.5px; font-weight: 800; color: var(--ds-ink); }
+.dm-sec-title > i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--ds-accent-soft); color: var(--ds-accent); font-size: 15px; }
+.dm-sec-title label { margin: 0; font: inherit; }
+.dm-sec-title small { font-size: 11.5px; font-weight: 500; color: var(--ds-ink-mute); }
+.dm-body .form-label { display: block; margin-bottom: 6px; font-size: 12.5px; font-weight: 600; color: var(--ds-ink-soft); }
+.dm-body .form-hint { margin-top: 8px; font-size: 12px; color: var(--ds-ink-mute); line-height: 1.6; }
+.dm-body .form-hint.is-same { color: #047857; }
+
+.dm-when { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto; gap: 12px; align-items: end; }
+.dm-chips { display: inline-flex; padding: 3px; gap: 2px; border: 1px solid var(--ds-border); border-radius: 10px; background: var(--ds-surface-sunk); }
+.dm-chip { position: relative; margin: 0; cursor: pointer; }
+.dm-chip input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.dm-chip span { display: block; padding: 6px 11px; border-radius: 8px; font-size: 13px; font-weight: 700; color: var(--ds-ink-soft); white-space: nowrap; transition: background-color var(--ds-dur-fast) ease, color var(--ds-dur-fast) ease; }
+.dm-chip small { font-size: 11px; font-weight: 500; }
+.dm-chip input:checked + span { background: var(--ds-surface); color: var(--ds-accent-strong); box-shadow: 0 1px 3px rgba(9, 9, 11, .12); }
+.dm-chip input:focus-visible + span { outline: 2px solid var(--ds-accent); outline-offset: 1px; }
+
+.dm-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.dm-mode { position: relative; margin: 0; cursor: pointer; }
+.dm-mode input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.dm-mode > span { display: grid; grid-template-columns: auto 1fr; column-gap: 9px; align-items: center; padding: 10px 12px; border: 1.5px solid var(--ds-border); border-radius: 12px; transition: border-color var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease; }
+.dm-mode i { grid-row: 1 / span 2; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--ds-surface-sunk); color: var(--ds-ink-mute); font-size: 18px; }
+.dm-mode b { font-size: 13.5px; color: var(--ds-ink); line-height: 1.4; }
+.dm-mode small { font-size: 11.5px; color: var(--ds-ink-mute); line-height: 1.4; }
+.dm-mode:hover > span { border-color: var(--ds-brand-200); }
+.dm-mode input:checked + span { border-color: var(--ds-accent); background: var(--ds-accent-soft); }
+.dm-mode input:checked + span i { background: var(--ds-accent); color: #fff; }
+.dm-mode input:focus-visible + span { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
+.dm-field { margin-top: 14px; }
+.dm-field[hidden] { display: none; }
+
+/* رابط الاجتماع: حقل واحد بأيقونة وزر لصق، ويخضرّ حين يصحّ */
+.dm-link { display: flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid var(--ds-border-strong); border-radius: 11px; background: var(--ds-surface); transition: border-color var(--ds-dur-fast) ease, box-shadow var(--ds-dur-fast) ease; }
+.dm-link:focus-within { border-color: var(--ds-accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, .14); }
+.dm-link.is-ok { border-color: #34d399; }
+.dm-link.is-invalid { border-color: var(--ds-danger, #e11d48); }
+.dm-link-icon { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; background: var(--ds-surface-sunk); color: var(--ds-ink-mute); }
+.dm-link.is-ok .dm-link-icon { background: #ecfdf5; color: #047857; }
+.dm-link input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; padding: 6px; font: inherit; font-size: 14px; color: var(--ds-ink); text-align: left; }
+.dm-link input::placeholder { color: #a1a1aa; }
+.dm-paste { flex: none; display: inline-flex; align-items: center; gap: 4px; padding: 6px 11px; border: 0; border-radius: 8px; background: var(--ds-surface-sunk); color: var(--ds-ink-soft); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+.dm-paste:hover { background: var(--ds-accent-soft); color: var(--ds-accent-strong); }
+.dm-paste[hidden] { display: none; }
+.dm-link-state { min-height: 0; margin-top: 6px; font-size: 12px; line-height: 1.6; }
+.dm-link-state:empty { display: none; }
+.dm-link-state.is-ok { color: #047857; }
+.dm-link-state.is-bad { color: #be123c; }
+
+/* زر Google Meet بشعاره: بطاقة لا زر حدود */
+.dm-meet { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 11px 14px; border: 1px solid var(--ds-border); border-radius: 12px; background: var(--ds-surface); text-decoration: none !important; color: inherit; transition: border-color var(--ds-dur-fast) ease, box-shadow var(--ds-dur) ease, transform var(--ds-dur) var(--ds-ease); }
+.dm-meet:hover { border-color: #00ac47; box-shadow: 0 12px 24px -18px rgba(0, 131, 45, .7); transform: translateY(-1px); }
+.dm-meet-logo { flex: none; width: 34px; height: 28px; }
+.dm-meet > span { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.dm-meet b { font-size: 13.5px; color: var(--ds-ink); }
+.dm-meet small { font-size: 11.5px; color: var(--ds-ink-mute); line-height: 1.6; }
+.dm-meet > i { color: var(--ds-ink-mute); }
+
+.dm-committee { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.dm-member { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--ds-border); border-radius: 12px; background: var(--ds-surface-sunk); min-width: 0; }
+.dm-member > span:not(.dm-member-av) { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.dm-member small { font-size: 11.5px; color: var(--ds-ink-mute); }
+.dm-member small em { font-style: normal; color: #e11d48; }
+.dm-member b { font-size: 14px; color: var(--ds-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dm-member > i { color: var(--ds-border-strong); }
+.dm-member-av { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--ds-accent); color: #fff; font-size: 13px; font-weight: 800; }
+.dm-member-av.is-examiner { background: #f5f3ff; color: #6d28d9; font-size: 18px; }
+.dm-member.is-pick { background: var(--ds-surface); border-color: var(--ds-border-strong); }
+.dm-member.is-pick:focus-within { border-color: var(--ds-accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, .14); }
+.dm-member-field label { margin: 0; }
+.dm-member-field select { width: 100%; border: 0; outline: 0; background: transparent; padding: 0; font: inherit; font-size: 14px; font-weight: 700; color: var(--ds-ink); cursor: pointer; text-overflow: ellipsis; }
+
+.df-form .dm-foot { display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-top: 1px solid var(--ds-border); background: var(--ds-surface); }
+.dm-summary { flex: 1; display: flex; align-items: center; gap: 9px; min-width: 0; margin-inline-end: auto; }
+.dm-summary > i { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--ds-accent-soft); color: var(--ds-accent); }
+.dm-summary > span { display: flex; flex-direction: column; min-width: 0; }
+.dm-summary small { font-size: 11px; color: var(--ds-ink-mute); }
+.dm-summary b { font-size: 12.5px; color: var(--ds-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ==================== المخطِّط حين تكثر المناقشات ==================== */
+.df-queue-search { display: flex; align-items: center; gap: 8px; margin: 0; padding: 0 12px; height: 38px; border: 1px solid var(--ds-border); border-radius: 10px; background: var(--ds-surface); color: var(--ds-ink-mute); position: sticky; top: 0; z-index: 2; }
+.df-queue-search:focus-within { border-color: var(--ds-accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, .14); }
+.df-queue-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 13px; color: var(--ds-ink); }
+.df-queue-none { margin: 0; padding: 14px; text-align: center; font-size: 12.5px; color: var(--ds-ink-mute); }
+.df-queue .df-card[hidden] { display: none; }
+.df-sub-sup { display: none; }
+.df-expand { flex: none; margin-inline-start: auto; display: grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 7px; background: transparent; color: var(--ds-ink-mute); cursor: pointer; transition: transform var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease; }
+.df-expand:hover { background: var(--ds-surface-sunk); color: var(--ds-ink); }
+/* المدمجة: العنوان والمشرف، والاقتراح سطراً واحداً، والتفاصيل عند الفتح */
+.df-queue .df-card.is-dense { gap: 7px; padding: 10px 12px; }
+.df-card.is-dense .df-sub-sup { display: inline; }
+.df-card.is-dense .df-facts { display: none; }
+.df-card.is-dense.is-open .df-facts { display: flex; }
+.df-card.is-dense.is-open .df-expand { transform: rotate(180deg); }
+.df-card.is-dense .df-suggest { flex-direction: row; align-items: center; gap: 8px; padding: 6px 9px; }
+.df-card.is-dense .df-suggest-when { flex: 1; min-width: 0; font-size: 12.5px; }
+.df-card.is-dense .df-suggest-who { display: none; }
+.df-card.is-dense.is-open .df-suggest { flex-direction: column; align-items: stretch; }
+.df-card.is-dense.is-open .df-suggest-who { display: block; }
+.df-card.is-dense footer .btn { min-height: 30px; font-size: 12.5px; }
+
+.df-blocks { flex: 1 1 0; min-width: 0; display: flex; gap: 3px; }
+.df-cell.is-crowded:not(.is-open) .df-blocks .df-block:nth-child(n+3) { display: none; }
+.df-cell.is-open .df-blocks { flex-direction: column; }
+.df-cell.is-open .df-block { flex: none; }
+.df-more { flex: 0 0 26px; align-self: stretch; border: 0; border-radius: 8px; background: var(--ds-surface-sunk); color: var(--ds-ink-soft); font: inherit; font-size: 11.5px; font-weight: 800; cursor: pointer; }
+.df-more:hover { background: var(--ds-accent-soft); color: var(--ds-accent-strong); }
+
+@media (max-width: 640px) {
+    .dm-when { grid-template-columns: 1fr 1fr; }
+    .dm-when > :last-child { grid-column: 1 / -1; }
+    .dm-modes, .dm-committee { grid-template-columns: 1fr; }
+    .df-form .dm-foot { flex-wrap: wrap; }
+    .dm-summary { flex-basis: 100%; }
+    .dm-meet small { display: none; }
+}
+
+/* ==================== نافذة القاعات ====================
+   قاعة جديدة في بطاقة بحقول معنونة، وكل قاعة صفّ بمعلوماتها شاراتٍ،
+   ومفتاح إتاحة بدل زر «تعطيل»، وحذف هادئ. */
+.dm-head-icon.is-teal { background: #0d9488; box-shadow: 0 10px 20px -12px rgba(13, 148, 136, .8); }
+.dr-add-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) 90px; gap: 10px 12px; }
+.dr-add-name { grid-column: 1 / -1; }
+.dr-add-btn { width: 100%; margin-top: 12px; min-height: 40px; border-radius: 10px; }
+.dr-list { display: flex; flex-direction: column; gap: 8px; }
+.dr-room { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--ds-border); border-radius: 14px; background: var(--ds-surface); transition: border-color var(--ds-dur-fast) ease; }
+.dr-room:hover { border-color: var(--ds-border-strong); }
+.dr-room form { margin: 0; }
+.dr-room-icon { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: #f0fdfa; color: #0f766e; font-size: 18px; }
+.dr-room-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.dr-room-body b { font-size: 14px; color: var(--ds-ink); }
+.dr-room-meta { display: flex; flex-wrap: wrap; gap: 3px 12px; font-size: 12px; color: var(--ds-ink-mute); }
+.dr-room-meta span { display: inline-flex; align-items: center; gap: 4px; }
+.dr-room-meta .is-busy { color: var(--ds-accent-strong); font-weight: 600; }
+.dr-room.is-off .dr-room-icon { background: var(--ds-surface-sunk); color: var(--ds-ink-mute); }
+.dr-room.is-off .dr-room-body b { color: var(--ds-ink-mute); }
+.dr-switch-form { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.dr-switch-form small { font-size: 10.5px; font-weight: 600; color: var(--ds-ink-mute); }
+.dr-switch { position: relative; width: 40px; height: 22px; padding: 0; border: 0; border-radius: 99px; background: var(--ds-border-strong); cursor: pointer; transition: background-color var(--ds-dur) ease; }
+.dr-switch span { position: absolute; top: 3px; inset-inline-start: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(9, 9, 11, .3); transition: inset-inline-start var(--ds-dur) var(--ds-ease); }
+.dr-switch.is-on { background: #10b981; }
+.dr-switch.is-on span { inset-inline-start: 21px; }
+.dr-switch:focus-visible { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
+.dr-delete { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 10px; background: transparent; color: var(--ds-ink-mute); cursor: pointer; transition: background-color var(--ds-dur-fast) ease, color var(--ds-dur-fast) ease; }
+.dr-delete:hover, .dr-delete:focus-visible { background: #fff1f2; color: #be123c; outline: 0; }
+
+/* تتمّات المخطِّط: حقل البحث بارتفاع ثابت، وزر «جدولة» داخل سطر الاقتراح للبطاقة المدمجة */
+.df-queue-search { flex: none; min-height: 38px; }
+.df-quick { display: none; flex: none; align-items: center; gap: 4px; padding: 4px 10px; border: 0; border-radius: 8px; background: var(--ds-accent); color: #fff; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.df-quick:hover { background: var(--ds-accent-strong); }
+.df-card.is-dense:not(.is-open) .df-quick { display: inline-flex; }
+.df-card.is-dense:not(.is-open) footer { display: none; }
+.df-card.is-dense .df-suggest-when bdi { margin-inline-start: 4px; }
+@media (pointer: coarse) {
+    .dr-delete, .df-quick { min-height: 40px; }
+    .dr-delete { width: 40px; }
+}
+
+/* ==================== المخطِّط: يوم واحد كاملاً ====================
+   بدل شبكة أسبوع أغلبها فارغ: شريط أيام بعدّاداتها، واليوم المختار قائمة
+   زمنية ببطاقات تُقرأ كاملة (العنوان، القاعة، الممتحن). */
+.df-days { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(112px, 1fr); gap: 8px; padding: 2px 16px 14px; overflow-x: auto; scrollbar-width: none; }
+.df-daytab { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px; border: 1px solid var(--ds-border); border-radius: 14px; background: var(--ds-surface); color: var(--ds-ink); font: inherit; text-align: start; cursor: pointer; transition: border-color var(--ds-dur-fast) ease, background-color var(--ds-dur-fast) ease, box-shadow var(--ds-dur-fast) ease; }
+.df-daytab:hover, .df-daytab.is-hint { border-color: var(--ds-accent); }
+.df-daytab.is-hint { box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+.df-daytab:focus-visible { outline: 2px solid var(--ds-accent); outline-offset: 2px; }
+.df-daytab-date { display: flex; flex-direction: column; gap: 2px; line-height: 1.15; }
+.df-daytab-date small { font-size: 11.5px; font-weight: 600; color: var(--ds-ink-mute); }
+.df-daytab-date b { font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.df-daytab-n { display: grid; place-items: center; min-width: 26px; height: 26px; padding: 0 8px; border-radius: 99px; background: var(--ds-accent-soft); color: var(--ds-accent-strong); font-size: 12.5px; font-weight: 800; }
+.df-daytab.is-empty .df-daytab-n { background: transparent; color: var(--ds-border-strong); }
+.df-daytab.is-today .df-daytab-date small { color: var(--ds-accent-strong); }
+.df-daytab.is-active { border-color: var(--ds-accent); background: var(--ds-accent-soft); }
+.df-daytab.is-active .df-daytab-n { background: var(--ds-accent); color: #fff; }
+.df-daytab.is-active.is-empty .df-daytab-n { background: transparent; color: var(--ds-accent); }
+
+.df-cal { border-top: 1px solid var(--ds-border); }
+.df-agenda { display: flex; flex-direction: column; padding: 4px 16px 12px; }
+.df-agenda[hidden] { display: none; }
+.df-tslot { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 0 10px; padding: 6px 0; }
+.df-tslot + .df-tslot { border-top: 1px solid color-mix(in srgb, var(--ds-border) 60%, transparent); }
+.df-tslot-time { padding-top: 11px; text-align: center; font-size: 12px; font-weight: 700; color: var(--ds-ink-mute); font-variant-numeric: tabular-nums; }
+.df-tslot.has-items .df-tslot-time { color: var(--ds-ink); }
+.df-tslot.is-past { opacity: .55; }
+.df-cell { flex-wrap: wrap; gap: 6px; height: auto; min-height: 40px; padding: 0; border-radius: 12px; }
+.df-tslot.is-drop .df-cell { background: var(--ds-accent-soft); box-shadow: 0 0 0 2px var(--ds-accent); }
+.df-block { flex: 1 1 250px; flex-direction: row; align-items: center; gap: 10px; min-height: 56px; padding: 9px 12px; border-radius: 12px; }
+.df-block-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.df-block b { font-size: 13px; -webkit-line-clamp: 1; }
+.df-block small { display: flex; flex-wrap: wrap; gap: 2px 12px; white-space: normal; font-size: 11.5px; }
+.df-block small span { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.df-who { flex: none; margin-top: 0; padding-inline-end: 4px; }
+.df-who i { width: 22px; height: 22px; font-size: 9px; }
+.df-tag { flex: none; display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 99px; background: var(--ds-surface); color: var(--ds-accent-strong); font-style: normal; font-size: 11px; font-weight: 700; }
+/* الخانة الفارغة: صفّ متقطّع هادئ يُفصح عن نفسه عند المرور */
+.df-add { flex: 1 1 100%; min-height: 40px; border-color: color-mix(in srgb, var(--ds-border) 90%, transparent); color: var(--ds-border-strong); border-radius: 12px; }
+.df-add span { opacity: 0; transition: opacity var(--ds-dur-fast) ease; }
+.df-add:hover span, .df-add:focus-visible span { opacity: 1; }
+.df-cell:has(.df-block) .df-add { flex: 0 0 40px; min-height: 0; }
+.df-plan.is-dragging .df-tslot[data-slot-date] .df-add { border-color: var(--ds-brand-200); color: var(--ds-accent); background: color-mix(in srgb, var(--ds-accent-soft) 45%, transparent); }
+@media (max-width: 640px) {
+    .df-days { grid-auto-columns: minmax(96px, 1fr); padding-inline: 12px; }
+    .df-agenda { padding-inline: 12px; }
+    .df-tslot { grid-template-columns: 40px minmax(0, 1fr); gap: 0 6px; }
+    .df-block { flex-basis: 100%; }
+    .df-cell:has(.df-block) .df-add { flex: 1 1 100%; min-height: 34px; }
+    .dm-summary b { white-space: normal; }
 }

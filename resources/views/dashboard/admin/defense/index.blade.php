@@ -115,56 +115,89 @@
 
     {{-- ═══ المخطِّط: قائمة الانتظار باقتراحاتها + أسبوع الدوام ═══ --}}
     @if ($tab === 'awaiting')
+        @php
+            $initials = fn ($d) => $d->members->map(fn ($m) => $m->supervisor->initials)->all();
+            // عدد ما في كل يوم: المجدول والمقترح
+            $dayCount = fn ($day) => $week['defenses']->filter(fn ($d) => $d->starts_at->isSameDay($day))->count()
+                + $planned->filter(fn ($x) => $x['starts_at']->isSameDay($day))->count();
+        @endphp
+
         <div class="df-plan">
             <aside class="df-queue" aria-labelledby="df-queue-title">
-                <h2 id="df-queue-title">بانتظار الجدولة <span>{{ $awaiting->count() }}</span></h2>
+                <h2 id="df-queue-title">
+                    بانتظار الجدولة <span data-queue-count>{{ $awaiting->count() }}</span>
+                    @if ($awaiting->count())
+                        <small><i class="ti ti-hand-move" aria-hidden="true"></i> اسحب مشروعاً إلى خانة</small>
+                    @endif
+                </h2>
+
+                {{-- حين تكثر المشاريع: بحث فوري، وبطاقات مدمجة تُفتح تفاصيلها بالنقر --}}
+                @if ($awaiting->count() > 4)
+                    <label class="df-queue-search">
+                        <i class="ti ti-search" aria-hidden="true"></i>
+                        <input type="search" data-queue-search placeholder="ابحث بالمشروع أو المشرف أو النوع…" aria-label="بحث في المشاريع المنتظرة">
+                    </label>
+                    <p class="df-queue-none" data-queue-none hidden>لا مشروع يطابق البحث.</p>
+                @endif
 
                 @forelse ($awaiting as $p)
                     @php $s = $plan[$p->id] ?? null; @endphp
-                    <article class="df-card">
+                    {{-- البطاقة تُسحب إلى خانة في المخطِّط، والمرور عليها يُضيء اقتراحها فيه --}}
+                    <article class="df-card {{ $awaiting->count() > 4 ? 'is-dense' : '' }}" data-project="{{ $p->id }}" draggable="true"
+                        data-search="{{ mb_strtolower($p->title . ' ' . $p->supervisor->name . ' ' . ($p->project_type->name ?? '')) }}">
                         <header>
-                            <a href="{{ route('admin.groups.show', $p->id) }}" class="df-title">{{ $p->title }}</a>
-                            <span class="df-sub">{{ $p->project_type->name ?? '—' }}</span>
+                            <i class="ti ti-grip-vertical df-grip" aria-hidden="true"></i>
+                            <div>
+                                <a href="{{ route('admin.groups.show', $p->id) }}" class="df-title" draggable="false">{{ $p->title }}</a>
+                                <span class="df-sub">{{ $p->project_type->name ?? '—' }}<span class="df-sub-sup"> · {{ $p->supervisor->name }}</span></span>
+                            </div>
+                            @if ($awaiting->count() > 4)
+                                <button type="button" class="df-expand" data-expand aria-expanded="false" aria-label="تفاصيل {{ $p->title }}">
+                                    <i class="ti ti-chevron-down" aria-hidden="true"></i>
+                                </button>
+                            @endif
                         </header>
-                        <div class="df-people">
-                            <span class="df-person"><x-avatar :user="$p->supervisor" class="cell-avatar df-av" />{{ $p->supervisor->name }} <em>المشرف</em></span>
-                            <span class="df-person is-team" title="{{ $p->group->map(fn ($g) => $g->student?->name)->filter()->implode('، ') }}">
-                                <i class="ti ti-users" aria-hidden="true"></i>{{ $p->group->count() }} طلاب
-                            </span>
-                        </div>
                         <div class="df-facts">
-                            <span><i class="ti ti-list-check" aria-hidden="true"></i>{{ $p->milestones_done }} من {{ $p->milestones_count }} مراحل</span>
-                            <span><i class="ti ti-circle-check" aria-hidden="true"></i>اكتمل {{ $p->updated_at?->diffForHumans() }}</span>
+                            <span class="is-person"><x-avatar :user="$p->supervisor" class="cell-avatar df-av" />{{ $p->supervisor->name }}</span>
+                            <span title="{{ $p->group->map(fn ($g) => $g->student?->name)->filter()->implode('، ') }}"><i class="ti ti-users" aria-hidden="true"></i>{{ $p->group->count() }}</span>
+                            <span title="المراحل المنجزة"><i class="ti ti-list-check" aria-hidden="true"></i>{{ $p->milestones_done }}/{{ $p->milestones_count }}</span>
+                            <span title="اكتمل {{ $p->updated_at?->diffForHumans() }}"><i class="ti ti-clock" aria-hidden="true"></i>{{ $p->updated_at?->diffForHumans(null, true) }}</span>
                             @if ($p->defense && $p->defense->status === Defense::CANCELLED)
-                                <span class="is-warn"><i class="ti ti-calendar-x" aria-hidden="true"></i>أُلغيت مناقشته السابقة</span>
+                                <span class="is-warn"><i class="ti ti-calendar-x" aria-hidden="true"></i>أُلغيت سابقاً</span>
                             @endif
                         </div>
 
                         @if ($s)
                             {{-- الاقتراح: أول خانة يكون فيها المشرف والقاعة وممتحن أحراراً --}}
                             <div class="df-suggest">
-                                <small><i class="ti ti-sparkles" aria-hidden="true"></i> اقتراح</small>
-                                <b>{{ $s['starts_at']->translatedFormat('l j F') }} · <bdi dir="ltr">{{ $s['starts_at']->format('H:i') }}</bdi></b>
-                                <span>{{ $s['room'] }} · الممتحن {{ $s['examiner'] }}@if ($s['same_specialize']) <em>من التخصص</em>@endif</span>
+                                <span class="df-suggest-when">
+                                    <i class="ti ti-sparkles" aria-hidden="true"></i>
+                                    <b>{{ $s['starts_at']->translatedFormat('l j F') }}</b>
+                                    <bdi dir="ltr">{{ $s['starts_at']->format('H:i') }}</bdi>
+                                </span>
+                                <span class="df-suggest-who">{{ $s['room'] }} · {{ $s['examiner'] }}@if ($s['same_specialize']) <em>من التخصص</em>@endif</span>
+                                <button type="submit" form="qf-{{ $p->id }}" class="df-quick" title="جدولة بهذا الاقتراح: {{ $s['room'] }} · {{ $s['examiner'] }}" aria-label="جدولة {{ $p->title }} بالاقتراح">
+                                    <i class="ti ti-calendar-check" aria-hidden="true"></i> جدولة
+                                </button>
                             </div>
                             <footer>
-                                <form action="{{ route('admin.defenses.store') }}" method="post">
+                                <form action="{{ route('admin.defenses.store') }}" method="post" id="qf-{{ $p->id }}">
                                     @csrf
                                     <input type="hidden" name="project_id" value="{{ $p->id }}">
                                     @foreach ($suggestionMeta($s) as $k => $v)
                                         <input type="hidden" name="{{ $k }}" value="{{ $v }}">
                                     @endforeach
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary btn-sm">
                                         <i class="ti ti-calendar-check me-1" aria-hidden="true"></i>جدولة بهذا الاقتراح
                                     </button>
                                 </form>
-                                <button type="button" class="btn btn-outline-secondary" data-schedule='@json($meta($p))' data-defense='@json($suggestionMeta($s))'>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" data-schedule='@json($meta($p))' data-defense='@json($suggestionMeta($s))'>
                                     تعديل
                                 </button>
                             </footer>
                         @else
                             <footer>
-                                <button type="button" class="btn btn-primary" data-schedule='@json($meta($p))'>
+                                <button type="button" class="btn btn-primary btn-sm" data-schedule='@json($meta($p))'>
                                     <i class="ti ti-calendar-plus me-1" aria-hidden="true"></i>جدولة المناقشة
                                 </button>
                             </footer>
@@ -179,82 +212,107 @@
                 @endforelse
             </aside>
 
-            {{-- أسبوع الدوام: ما جُدول كتلاً، وما اقتُرح أشباحاً، والخانة الفارغة تُجدول بنقرة --}}
+            {{-- أسبوع الدوام: ما جُدول كتلاً، وما اقتُرح أشباحاً، والخانة الفارغة تُجدول بنقرة أو بإفلات --}}
             <section class="df-week" aria-labelledby="df-week-title">
                 <header class="df-week-head">
-                    <h2 id="df-week-title">
-                        {{-- «إلى» لا شرطة: المدى بشرطة يُقرأ معكوساً داخل نصّ عربي --}}
-                        أسبوع {{ $week['days']->first()->translatedFormat($week['days']->first()->month === $week['days']->last()->month ? 'j' : 'j F') }}
-                        إلى {{ $week['days']->last()->translatedFormat('j F Y') }}
-                    </h2>
                     <div class="df-week-nav">
-                        <a href="{{ route('admin.defenses.index', ['tab' => 'awaiting', 'week' => $week['prev']]) }}" class="btn-action" aria-label="الأسبوع السابق" title="الأسبوع السابق"><i class="ti ti-chevron-right" aria-hidden="true"></i></a>
-                        <a href="{{ route('admin.defenses.index', ['tab' => 'awaiting']) }}" class="btn btn-sm btn-outline-secondary">الأقرب</a>
-                        <a href="{{ route('admin.defenses.index', ['tab' => 'awaiting', 'week' => $week['next']]) }}" class="btn-action" aria-label="الأسبوع التالي" title="الأسبوع التالي"><i class="ti ti-chevron-left" aria-hidden="true"></i></a>
+                        <a href="{{ route('admin.defenses.index', ['tab' => 'awaiting', 'week' => $week['prev']]) }}" class="df-nav-btn" aria-label="الأسبوع السابق" title="الأسبوع السابق"><i class="ti ti-chevron-right" aria-hidden="true"></i></a>
+                        <a href="{{ route('admin.defenses.index', ['tab' => 'awaiting', 'week' => $week['next']]) }}" class="df-nav-btn" aria-label="الأسبوع التالي" title="الأسبوع التالي"><i class="ti ti-chevron-left" aria-hidden="true"></i></a>
+                        <h2 id="df-week-title">
+                            {{-- «إلى» لا شرطة: المدى بشرطة يُقرأ معكوساً داخل نصّ عربي --}}
+                            {{ $week['days']->first()->translatedFormat($week['days']->first()->month === $week['days']->last()->month ? 'j' : 'j F') }}
+                            إلى {{ $week['days']->last()->translatedFormat('j F Y') }}
+                        </h2>
+                        <a href="{{ route('admin.defenses.index', ['tab' => 'awaiting']) }}" class="df-nav-today">الأقرب</a>
+                    </div>
+                    <div class="df-legend">
+                        <span><i class="is-in_person"></i>حضوري</span>
+                        <span><i class="is-online"></i>عن بُعد</span>
+                        <span><i class="is-hybrid"></i>مدمج</span>
+                        <span><i class="is-ghost"></i>مقترح</span>
                     </div>
                 </header>
 
-                <div class="df-grid-scroll">
-                    <table class="df-cal">
-                        <thead>
-                            <tr>
-                                <th class="df-cal-time" scope="col"><span class="visually-hidden">الوقت</span></th>
-                                @foreach ($week['days'] as $day)
-                                    <th scope="col" class="{{ $day->isToday() ? 'is-today' : '' }}">
-                                        <b>{{ $day->translatedFormat('l') }}</b>
-                                        <small dir="ltr">{{ $day->format('j/n') }}</small>
-                                    </th>
-                                @endforeach
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($week['times'] as $time)
-                                <tr>
-                                    <th scope="row" class="df-cal-time" dir="ltr">{{ $time }}</th>
-                                    @foreach ($week['days'] as $day)
-                                        @php
-                                            $items = $inSlot($day, $time);
-                                            $ghost = $ghosts($day, $time);
-                                            $gone = $day->copy()->setTimeFromTimeString($time)->isPast();
-                                        @endphp
-                                        <td class="{{ $gone ? 'is-past' : '' }}">
-                                            @foreach ($items as $d)
-                                                @php $editable = $d->status === Defense::SCHEDULED && ! $d->members->whereNotNull('grade')->count(); @endphp
-                                                <button type="button" class="df-block is-{{ $d->mode }} {{ $d->status === Defense::DONE ? 'is-done' : '' }}"
-                                                    @if ($editable) data-schedule='@json($meta($d->project))' data-defense='@json($defenseMeta($d))' @else disabled @endif
-                                                    title="{{ $d->project->title }} — {{ $d->members->map(fn ($m) => $m->supervisor->name)->implode('، ') }}">
-                                                    <b>{{ $d->project->title }}</b>
-                                                    <small><bdi dir="ltr">{{ $d->starts_at->format('H:i') }}</bdi> · {{ $d->place_label }}</small>
-                                                </button>
-                                            @endforeach
-                                            @foreach ($ghost as $pid => $g)
-                                                <button type="button" class="df-block is-ghost" data-schedule='@json($projectsMeta[$pid])' data-defense='@json($suggestionMeta($g))'
-                                                    title="اقتراح — انقر للمراجعة والجدولة">
-                                                    <b>{{ $projectsMeta[$pid]['title'] }}</b>
-                                                    <small>مقترح · {{ $g['room'] }}</small>
-                                                </button>
-                                            @endforeach
-                                            @if (! $gone && $awaiting->count())
-                                                <button type="button" class="df-add" data-slot-date="{{ $day->format('Y-m-d') }}" data-slot-time="{{ $time }}"
-                                                    aria-label="جدولة في {{ $day->translatedFormat('l') }} {{ $time }}">
-                                                    <i class="ti ti-plus" aria-hidden="true"></i>
-                                                </button>
-                                            @endif
-                                        </td>
-                                    @endforeach
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                @php
+                    $counts = $week['days']->mapWithKeys(fn ($d) => [$d->format('Y-m-d') => $dayCount($d)]);
+                    // اليوم المفتوح: أول يوم فيه شيء، وإلا اليوم، وإلا أول الأسبوع
+                    $activeDay = $counts->filter()->keys()->first()
+                        ?? $week['days']->first(fn ($d) => $d->isToday())?->format('Y-m-d')
+                        ?? $week['days']->first()->format('Y-m-d');
+                @endphp
+
+                {{-- شريط الأيام: يوم واحد يُعرض كاملاً، والبقية بعدّادها — والإفلات على يوم يفتحه --}}
+                <div class="df-days" role="tablist" aria-label="أيام الأسبوع">
+                    @foreach ($week['days'] as $day)
+                        @php $key = $day->format('Y-m-d'); $n = $counts[$key]; @endphp
+                        <button type="button" role="tab" id="df-tab-{{ $key }}" data-day="{{ $key }}" aria-controls="df-day-{{ $key }}"
+                            class="df-daytab {{ $key === $activeDay ? 'is-active' : '' }} {{ $day->isToday() ? 'is-today' : '' }} {{ $n ? '' : 'is-empty' }}"
+                            aria-selected="{{ $key === $activeDay ? 'true' : 'false' }}"
+                            title="{{ $n ? $n . ' في هذا اليوم — مجدولة ومقترحة' : 'لا مناقشات في هذا اليوم' }}">
+                            <span class="df-daytab-date">
+                                <small>{{ $day->isToday() ? 'اليوم' : $day->translatedFormat('l') }}</small>
+                                <b>{{ $day->format('j') }}</b>
+                            </span>
+                            <span class="df-daytab-n">{{ $n ?: '—' }}</span>
+                        </button>
+                    @endforeach
                 </div>
 
-                <footer class="df-legend">
-                    <span><i class="is-in_person"></i>حضوري</span>
-                    <span><i class="is-online"></i>عن بُعد</span>
-                    <span><i class="is-hybrid"></i>مدمج</span>
-                    <span><i class="is-ghost"></i>مقترح</span>
-                    <small>انقر خانة فارغة للجدولة فيها، أو مناقشة لتعديلها.</small>
-                </footer>
+                <div class="df-cal">
+                    @foreach ($week['days'] as $day)
+                        @php $key = $day->format('Y-m-d'); @endphp
+                        <div class="df-agenda" id="df-day-{{ $key }}" role="tabpanel" aria-labelledby="df-tab-{{ $key }}" data-day-panel="{{ $key }}" @if ($key !== $activeDay) hidden @endif>
+                            @foreach ($week['times'] as $time)
+                                @php
+                                    $items = $inSlot($day, $time);
+                                    $ghost = $ghosts($day, $time);
+                                    $gone = $day->copy()->setTimeFromTimeString($time)->isPast();
+                                    $droppable = ! $gone && $awaiting->count();
+                                @endphp
+                                <div class="df-tslot {{ $gone ? 'is-past' : '' }} {{ $items->count() + $ghost->count() ? 'has-items' : '' }}"
+                                    @if ($droppable) data-slot-date="{{ $key }}" data-slot-time="{{ $time }}" @endif>
+                                    <span class="df-tslot-time" dir="ltr">{{ $time }}</span>
+                                    <div class="df-cell">
+                                        @foreach ($items as $d)
+                                            @php $editable = $d->status === Defense::SCHEDULED && ! $d->members->whereNotNull('grade')->count(); @endphp
+                                            <button type="button" class="df-block is-{{ $d->mode }} {{ $d->status === Defense::DONE ? 'is-done' : '' }}"
+                                                @if ($editable) data-schedule='@json($meta($d->project))' data-defense='@json($defenseMeta($d))' @else disabled @endif
+                                                title="{{ $d->project->title }} — {{ $d->members->map(fn ($m) => $m->supervisor->name)->implode('، ') }}">
+                                                <span class="df-block-body">
+                                                    <b>{{ $d->project->title }}</b>
+                                                    <small>
+                                                        <span><i class="ti ti-clock" aria-hidden="true"></i><bdi dir="ltr">{{ $d->starts_at->format('H:i') }}–{{ $d->endsAt()->format('H:i') }}</bdi></span>
+                                                        <span><i class="ti ti-map-pin" aria-hidden="true"></i>{{ $d->place_label }}</span>
+                                                    </small>
+                                                </span>
+                                                <span class="df-who">@foreach ($initials($d) as $i)<i>{{ $i }}</i>@endforeach</span>
+                                            </button>
+                                        @endforeach
+                                        @foreach ($ghost as $pid => $g)
+                                            <button type="button" class="df-block is-ghost" data-project="{{ $pid }}"
+                                                data-schedule='@json($projectsMeta[$pid])' data-defense='@json($suggestionMeta($g))'
+                                                title="اقتراح — انقر للمراجعة والجدولة">
+                                                <span class="df-block-body">
+                                                    <b>{{ $projectsMeta[$pid]['title'] }}</b>
+                                                    <small>
+                                                        <span><i class="ti ti-door" aria-hidden="true"></i>{{ $g['room'] }}</span>
+                                                        <span><i class="ti ti-user-check" aria-hidden="true"></i>{{ $g['examiner'] }}</span>
+                                                    </small>
+                                                </span>
+                                                <em class="df-tag"><i class="ti ti-sparkles" aria-hidden="true"></i>مقترح</em>
+                                            </button>
+                                        @endforeach
+                                        @if ($droppable)
+                                            <button type="button" class="df-add" data-add aria-label="جدولة في {{ $day->translatedFormat('l') }} {{ $time }}">
+                                                <i class="ti ti-plus" aria-hidden="true"></i><span>جدولة <bdi dir="ltr">{{ $time }}</bdi></span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
             </section>
         </div>
     @endif
@@ -357,8 +415,9 @@
                 <input type="hidden" name="project_id" value="{{ old('project_id') }}">
                 <input type="hidden" name="defense_id" value="{{ old('defense_id') }}">
 
-                <div class="modal-header">
-                    <div>
+                <div class="modal-header dm-head">
+                    <span class="dm-head-icon" aria-hidden="true"><i class="ti ti-presentation"></i></span>
+                    <div class="dm-head-body">
                         <h2 class="modal-title" id="defenseModalTitle">جدولة المناقشة</h2>
                         <div class="df-form-project" data-f="project"></div>
                         <select class="form-select form-select-sm df-pick" data-f="pick" aria-label="المشروع" hidden>
@@ -370,48 +429,57 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body dm-body">
                     @error('date')
                         <div class="alert alert-danger py-2">{{ $message }}</div>
                     @enderror
 
-                    <fieldset class="df-fieldset">
-                        <legend>الموعد</legend>
-                        <div class="row g-3">
-                            <div class="col-sm-5">
+                    {{-- ① الموعد --}}
+                    <section class="dm-sec">
+                        <h3 class="dm-sec-title"><i class="ti ti-calendar-event" aria-hidden="true"></i> الموعد</h3>
+                        <div class="dm-when">
+                            <div>
                                 <label class="form-label required" for="df-date">التاريخ</label>
                                 <input type="date" id="df-date" name="date" class="form-control @error('date') is-invalid @enderror"
                                     min="{{ today()->format('Y-m-d') }}" value="{{ old('date') }}" required>
                             </div>
-                            <div class="col-sm-4">
+                            <div>
                                 <label class="form-label required" for="df-time">الوقت</label>
                                 <input type="time" id="df-time" name="time" step="900" class="form-control @error('time') is-invalid @enderror"
                                     value="{{ old('time', '10:00') }}" required>
-                                @error('time')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                             </div>
-                            <div class="col-sm-3">
-                                <label class="form-label" for="df-duration">المدة</label>
-                                <select id="df-duration" name="duration_minutes" class="form-select">
+                            <div>
+                                <span class="form-label" id="df-duration-label">المدة</span>
+                                <div class="dm-chips" role="radiogroup" aria-labelledby="df-duration-label">
                                     @foreach (Defense::DURATIONS as $m)
-                                        <option value="{{ $m }}" @selected((int) old('duration_minutes', 45) === $m)>{{ $m }} دقيقة</option>
+                                        <label class="dm-chip">
+                                            <input type="radio" name="duration_minutes" value="{{ $m }}" @checked((int) old('duration_minutes', 45) === $m)>
+                                            <span>{{ $m }} <small>د</small></span>
+                                        </label>
                                     @endforeach
-                                </select>
+                                </div>
                             </div>
                         </div>
-                    </fieldset>
+                        @error('time')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    </section>
 
-                    <fieldset class="df-fieldset">
-                        <legend>المكان</legend>
-                        <div class="df-modes" role="radiogroup" aria-label="نوع المناقشة">
-                            @foreach (Defense::MODES as $key => $m)
-                                <label class="df-mode-opt">
+                    {{-- ② المكان --}}
+                    <section class="dm-sec">
+                        <h3 class="dm-sec-title"><i class="ti ti-map-pin" aria-hidden="true"></i> المكان</h3>
+                        <div class="dm-modes" role="radiogroup" aria-label="نوع المناقشة">
+                            @foreach (['in_person' => 'في قاعة بالجامعة', 'online' => 'برابط اجتماع', 'hybrid' => 'قاعة ورابط معاً'] as $key => $hint)
+                                <label class="dm-mode">
                                     <input type="radio" name="mode" value="{{ $key }}" @checked(old('mode', $activeRooms->count() ? 'in_person' : 'online') === $key)>
-                                    <span><i class="ti {{ $m['icon'] }}" aria-hidden="true"></i>{{ $m['label'] }}</span>
+                                    <span>
+                                        <i class="ti {{ Defense::MODES[$key]['icon'] }}" aria-hidden="true"></i>
+                                        <b>{{ Defense::MODES[$key]['label'] }}</b>
+                                        <small>{{ $hint }}</small>
+                                    </span>
                                 </label>
                             @endforeach
                         </div>
 
-                        <div class="df-when" data-when="room">
+                        <div class="dm-field" data-when="room">
                             <label class="form-label required" for="df-room">القاعة</label>
                             <select id="df-room" name="room_id" class="form-select @error('room_id') is-invalid @enderror">
                                 <option value="">اختر قاعة…</option>
@@ -428,46 +496,63 @@
                         </div>
 
                         {{-- Google Meet بلا ربط حساب: يُنشأ الاجتماع في تبويب جديد ويُلصق رابطه --}}
-                        <div class="df-when" data-when="link">
+                        <div class="dm-field" data-when="link">
                             <label class="form-label required" for="df-link">رابط الاجتماع</label>
-                            <div class="df-link-row">
-                                <input type="url" id="df-link" name="meeting_url" dir="ltr" inputmode="url"
-                                    class="form-control @error('meeting_url') is-invalid @enderror"
+                            <div class="dm-link @error('meeting_url') is-invalid @enderror">
+                                <span class="dm-link-icon" aria-hidden="true"><i class="ti ti-link"></i></span>
+                                <input type="url" id="df-link" name="meeting_url" dir="ltr" inputmode="url" autocomplete="off"
                                     placeholder="https://meet.google.com/abc-defg-hij" value="{{ old('meeting_url') }}">
-                                <a href="https://meet.google.com/new" target="_blank" rel="noopener" class="btn btn-outline-primary df-meet">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15 12 17.3 14 20 16.2V7.8L17.3 10zM3 7.5V16.5A1.5 1.5 0 0 0 4.5 18H13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 13 6H4.5A1.5 1.5 0 0 0 3 7.5z"/></svg>
-                                    إنشاء Google Meet
-                                </a>
+                                <button type="button" class="dm-paste" data-f="paste"><i class="ti ti-clipboard" aria-hidden="true"></i> لصق</button>
                             </div>
                             @error('meeting_url')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                            <div class="form-hint">يُفتح Google Meet في تبويب جديد — انسخ رابط الاجتماع والصقه هنا. يقبل أيضاً روابط Zoom وTeams.</div>
-                        </div>
-                    </fieldset>
+                            <div class="dm-link-state" data-f="link-state" aria-live="polite"></div>
 
-                    <fieldset class="df-fieldset">
-                        <legend>اللجنة</legend>
-                        <div class="df-committee">
-                            <div class="df-committee-fixed">
-                                <small>المشرف</small>
-                                <b data-f="supervisor">—</b>
+                            <a href="https://meet.google.com/new" target="_blank" rel="noopener" class="dm-meet">
+                                <svg class="dm-meet-logo" viewBox="0 0 87.5 72" aria-hidden="true"><path fill="#00832d" d="M49.5 36l8.53 9.75 11.47 7.33 2-17.02-2-16.64-11.69 6.44z"/><path fill="#0066da" d="M0 51.5V66c0 3.315 2.685 6 6 6h14.5l3-10.96-3-9.54-9.95-3z"/><path fill="#e94235" d="M20.5 0L0 20.5l10.55 3 9.95-3 2.95-9.41z"/><path fill="#2684fc" d="M20.5 20.5H0v31h20.5z"/><path fill="#00ac47" d="M82.6 8.68L69.5 19.42v33.66l13.16 10.79c1.97 1.54 4.85.135 4.85-2.37V11c0-2.535-2.945-3.925-4.91-2.32zM49.5 36v15.5h-29V72h43c3.315 0 6-2.685 6-6V53.08z"/><path fill="#ffba00" d="M63.5 0h-43v20.5h29V36l20-16.57V6c0-3.315-2.685-6-6-6z"/></svg>
+                                <span>
+                                    <b>إنشاء Google Meet</b>
+                                    <small>يُفتح في تبويب جديد — انسخ رابط الاجتماع والصقه هنا. روابط Zoom وTeams مقبولة أيضاً.</small>
+                                </span>
+                                <i class="ti ti-external-link" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </section>
+
+                    {{-- ③ اللجنة --}}
+                    <section class="dm-sec">
+                        <h3 class="dm-sec-title"><i class="ti ti-users-group" aria-hidden="true"></i> اللجنة</h3>
+                        <div class="dm-committee">
+                            <div class="dm-member">
+                                <span class="dm-member-av" data-f="sup-av" aria-hidden="true"></span>
+                                <span><small>المشرف</small><b data-f="supervisor">—</b></span>
+                                <i class="ti ti-lock" aria-hidden="true" title="مشرف المشروع عضو ثابت في اللجنة"></i>
                             </div>
-                            <div class="df-committee-pick">
-                                <label class="form-label required" for="df-examiner">الممتحن</label>
-                                <select id="df-examiner" name="examiner_id" class="form-select @error('examiner_id') is-invalid @enderror" required>
-                                </select>
-                                @error('examiner_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                                <div class="form-hint">مرتّبون: من تخصص المشروع أولاً، ثم الأقلّ مناقشاتٍ قادمة.</div>
+                            <div class="dm-member is-pick">
+                                <span class="dm-member-av is-examiner" aria-hidden="true"><i class="ti ti-user-search"></i></span>
+                                <span class="dm-member-field">
+                                    <label for="df-examiner"><small>الممتحن <em>*</em></small></label>
+                                    <select id="df-examiner" name="examiner_id" class="@error('examiner_id') is-invalid @enderror" required></select>
+                                </span>
                             </div>
                         </div>
-                    </fieldset>
+                        @error('examiner_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                        <div class="form-hint" data-f="examiner-hint">مرتّبون: من تخصص المشروع أولاً، ثم الأقلّ مناقشاتٍ قادمة.</div>
+                    </section>
 
-                    <label class="form-label" for="df-notes">ملاحظات للفريق واللجنة <span class="text-secondary">(اختيارية)</span></label>
-                    <textarea id="df-notes" name="notes" rows="2" class="form-control" maxlength="1000"
-                        placeholder="مثال: عرض تقديمي 15 دقيقة ثم أسئلة اللجنة. أحضروا نسخة مطبوعة من التقرير.">{{ old('notes') }}</textarea>
+                    {{-- ④ ملاحظات --}}
+                    <section class="dm-sec">
+                        <h3 class="dm-sec-title"><i class="ti ti-notes" aria-hidden="true"></i> <label for="df-notes">ملاحظات للفريق واللجنة</label> <small>اختيارية</small></h3>
+                        <textarea id="df-notes" name="notes" rows="2" class="form-control" maxlength="1000"
+                            placeholder="مثال: عرض تقديمي 15 دقيقة ثم أسئلة اللجنة. أحضروا نسخة مطبوعة من التقرير.">{{ old('notes') }}</textarea>
+                    </section>
                 </div>
 
-                <div class="modal-footer">
-                    <span class="df-foot-note"><i class="ti ti-bell" aria-hidden="true"></i> يُشعَر الفريق واللجنة على المنصّة وبالبريد</span>
+                <div class="modal-footer dm-foot">
+                    {{-- الملخّص الحيّ: ما سيُرسل للفريق واللجنة بعد الضغط --}}
+                    <div class="dm-summary" aria-live="polite">
+                        <i class="ti ti-bell" aria-hidden="true"></i>
+                        <span><small>سيُشعَر الفريق واللجنة بـ</small><b data-f="summary">—</b></span>
+                    </div>
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">إلغاء</button>
                     <button type="submit" class="btn btn-primary" data-f="submit">
                         <i class="ti ti-calendar-check me-1" aria-hidden="true"></i> جدولة
@@ -549,40 +634,78 @@
     {{-- ═══════════ نافذة القاعات ═══════════ --}}
     <div class="modal fade" id="roomsModal" tabindex="-1" aria-labelledby="roomsModalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title" id="roomsModalTitle">قاعات المناقشة</h2>
+            <div class="modal-content df-form">
+                <div class="modal-header dm-head">
+                    <span class="dm-head-icon is-teal" aria-hidden="true"><i class="ti ti-door"></i></span>
+                    <div class="dm-head-body">
+                        <h2 class="modal-title" id="roomsModalTitle">قاعات المناقشة</h2>
+                        <div class="df-form-project">{{ $activeRooms->count() }} متاحة من {{ $rooms->count() }} — منها يختار الاقتراح التلقائي</div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
                 </div>
-                <div class="modal-body">
-                    <form method="post" action="{{ route('admin.defenses.rooms.store', ['tab' => $tab]) }}" class="df-room-add">
+
+                <div class="modal-body dm-body">
+                    {{-- قاعة جديدة: الاسم وحده مطلوب --}}
+                    <form method="post" action="{{ route('admin.defenses.rooms.store', ['tab' => $tab]) }}" class="dm-sec dr-add">
                         @csrf
-                        <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="اسم القاعة — مثال: قاعة 204" value="{{ old('name') }}" required maxlength="60">
-                        <input type="text" name="location" class="form-control" placeholder="المبنى / الطابق" value="{{ old('location') }}" maxlength="120">
-                        <input type="number" name="capacity" class="form-control" placeholder="السعة" min="1" max="1000" value="{{ old('capacity') }}">
-                        <button type="submit" class="btn btn-primary"><i class="ti ti-plus me-1" aria-hidden="true"></i>إضافة</button>
-                        @error('name')<div class="invalid-feedback d-block w-100">{{ $message }}</div>@enderror
+                        <h3 class="dm-sec-title"><i class="ti ti-plus" aria-hidden="true"></i> قاعة جديدة</h3>
+                        <div class="dr-add-grid">
+                            <div class="dr-add-name">
+                                <label class="form-label required" for="dr-name">اسم القاعة</label>
+                                <input type="text" id="dr-name" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="قاعة 204" value="{{ old('name') }}" required maxlength="60">
+                                @error('name')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                            </div>
+                            <div>
+                                <label class="form-label" for="dr-location">المبنى والطابق</label>
+                                <input type="text" id="dr-location" name="location" class="form-control" placeholder="مبنى الهندسة — الطابق الثاني" value="{{ old('location') }}" maxlength="120">
+                            </div>
+                            <div>
+                                <label class="form-label" for="dr-capacity">السعة</label>
+                                <input type="number" id="dr-capacity" name="capacity" class="form-control" placeholder="40" min="1" max="1000" value="{{ old('capacity') }}">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary dr-add-btn">
+                            <i class="ti ti-plus me-1" aria-hidden="true"></i>إضافة القاعة
+                        </button>
                     </form>
 
-                    @forelse ($rooms as $r)
-                        <div class="df-room {{ $r->is_active ? '' : 'is-off' }}">
-                            <span class="df-room-icon"><i class="ti ti-door" aria-hidden="true"></i></span>
-                            <span class="df-room-body">
-                                <b>{{ $r->name }}</b>
-                                <small>{{ collect([$r->location, $r->capacity ? $r->capacity . ' مقعداً' : null, $r->upcoming_count ? $r->upcoming_count . ' مناقشات قادمة' : null, $r->is_active ? null : 'معطّلة'])->filter()->implode(' · ') ?: '—' }}</small>
-                            </span>
-                            <form method="post" action="{{ route('admin.defenses.rooms.toggle', $r->id) }}">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-secondary">{{ $r->is_active ? 'تعطيل' : 'تفعيل' }}</button>
-                            </form>
-                            <form method="post" action="{{ route('admin.defenses.rooms.destroy', $r->id) }}">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-action btn-action--danger" title="حذف القاعة" aria-label="حذف {{ $r->name }}"><i class="ti ti-trash" aria-hidden="true"></i></button>
-                            </form>
-                        </div>
-                    @empty
-                        <p class="text-secondary text-center my-3">لا قاعات بعد.</p>
-                    @endforelse
+                    <div class="dr-list">
+                        @forelse ($rooms as $r)
+                            <div class="dr-room {{ $r->is_active ? '' : 'is-off' }}">
+                                <span class="dr-room-icon"><i class="ti ti-door" aria-hidden="true"></i></span>
+                                <span class="dr-room-body">
+                                    <b>{{ $r->name }}</b>
+                                    <span class="dr-room-meta">
+                                        @if ($r->location)<span><i class="ti ti-building" aria-hidden="true"></i>{{ $r->location }}</span>@endif
+                                        @if ($r->capacity)<span><i class="ti ti-armchair" aria-hidden="true"></i>{{ $r->capacity }} مقعداً</span>@endif
+                                        @if ($r->upcoming_count)<span class="is-busy"><i class="ti ti-calendar-event" aria-hidden="true"></i>{{ match (true) { $r->upcoming_count == 1 => 'مناقشة قادمة', $r->upcoming_count == 2 => 'مناقشتان قادمتان', $r->upcoming_count <= 10 => $r->upcoming_count . ' مناقشات قادمة', default => $r->upcoming_count . ' مناقشة قادمة' } }}</span>@endif
+                                    </span>
+                                </span>
+
+                                {{-- مفتاح الإتاحة: القاعة المعطّلة تبقى لسجلّها ولا تُعرض للجدولة --}}
+                                <form method="post" action="{{ route('admin.defenses.rooms.toggle', $r->id) }}" class="dr-switch-form">
+                                    @csrf
+                                    <button type="submit" class="dr-switch {{ $r->is_active ? 'is-on' : '' }}" role="switch" aria-checked="{{ $r->is_active ? 'true' : 'false' }}"
+                                        aria-label="{{ $r->is_active ? 'تعطيل' : 'تفعيل' }} {{ $r->name }}" title="{{ $r->is_active ? 'متاحة — انقر للتعطيل' : 'معطّلة — انقر للتفعيل' }}">
+                                        <span></span>
+                                    </button>
+                                    <small>{{ $r->is_active ? 'متاحة' : 'معطّلة' }}</small>
+                                </form>
+
+                                <form method="post" action="{{ route('admin.defenses.rooms.destroy', $r->id) }}"
+                                    onsubmit="return confirm('حذف «{{ $r->name }}»؟ القاعة التي لها مناقشات مسجّلة تُعطَّل ولا تُحذف.')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="dr-delete" title="حذف القاعة" aria-label="حذف {{ $r->name }}"><i class="ti ti-trash" aria-hidden="true"></i></button>
+                                </form>
+                            </div>
+                        @empty
+                            <div class="df-queue-empty">
+                                <i class="ti ti-door-off" aria-hidden="true" style="color: var(--ds-ink-mute)"></i>
+                                <b>لا قاعات بعد</b>
+                                <span>أضف أول قاعة لتعمل المناقشات الحضورية والاقتراح التلقائي.</span>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>
@@ -646,6 +769,7 @@
                 f('submit').lastChild.textContent = edit ? ' حفظ التعديل' : ' جدولة';
                 f('project').textContent = p.title + (p.team ? ' · ' + p.team : '');
                 f('supervisor').textContent = p.supervisor || '—';
+                f('sup-av').textContent = (p.supervisor || '').replace(/^(أ\.د\.|د\.|أ\.)\s*/, '').slice(0, 2);
 
                 if (!keepOld) {
                     d = d || {};
@@ -662,8 +786,76 @@
                 }
                 fillExaminers(p, keepOld ? @json(old('examiner_id')) : (d && d.examiner_id));
                 syncMode();
+                refresh();
                 modal.show();
             }
+
+            // ---- رابط الاجتماع: يُعرَّف مزوّده ويُتحقّق من شكله أثناء الكتابة ----
+            var PROVIDERS = [
+                [/(^|\.)meet\.google\.com$/, 'Google Meet', 'is-meet'],
+                [/(^|\.)zoom\.us$/, 'Zoom', 'is-zoom'],
+                [/(^|\.)teams\.(microsoft|live)\.com$/, 'Microsoft Teams', 'is-teams'],
+            ];
+            function linkState() {
+                var box = f('link-state'), wrap = form.querySelector('.dm-link'), v = field('meeting_url').value.trim();
+                wrap.classList.remove('is-ok', 'is-meet', 'is-zoom', 'is-teams');
+                if (!v) { box.textContent = ''; box.className = 'dm-link-state'; return null; }
+                var host = null;
+                try { var u = new URL(v); if (/^https?:$/.test(u.protocol)) host = u.hostname; } catch (e) {}
+                if (!host) { box.textContent = 'الرابط غير مكتمل — الصقه كاملاً بدايةً من https://'; box.className = 'dm-link-state is-bad'; return null; }
+                var found = PROVIDERS.filter(function (p) { return p[0].test(host); })[0];
+                wrap.classList.add('is-ok');
+                if (found) wrap.classList.add(found[2]);
+                box.textContent = found ? 'رابط ' + found[1] + ' — سيظهر للفريق واللجنة زر «انضم» قبل الموعد بربع ساعة' : 'رابط اجتماع — سيظهر للفريق واللجنة زر «انضم» قبل الموعد';
+                box.className = 'dm-link-state is-ok';
+                return found ? found[1] : 'رابط اجتماع';
+            }
+            var paste = f('paste');
+            if (paste) {
+                if (!(navigator.clipboard && navigator.clipboard.readText)) paste.hidden = true;
+                paste.addEventListener('click', function () {
+                    navigator.clipboard.readText().then(function (t) {
+                        field('meeting_url').value = (t || '').trim();
+                        refresh();
+                        field('meeting_url').focus();
+                    }, function () { field('meeting_url').focus(); });
+                });
+            }
+
+            // ---- الملخّص الحيّ: «الأحد 4 أكتوبر · 09:45–10:30 · قاعة 204 · الممتحن …» ----
+            var dayFmt = new Intl.DateTimeFormat('ar-u-nu-latn', { weekday: 'long', day: 'numeric', month: 'long' });
+            function refresh() {
+                var provider = linkState();
+                var mode = (form.querySelector('input[name="mode"]:checked') || {}).value;
+                var date = field('date').value, time = field('time').value, dur = parseInt(field('duration_minutes').value || 45, 10);
+                var parts = [];
+                if (date) {
+                    var day = new Date(date + 'T00:00:00');
+                    if (!isNaN(day)) parts.push(dayFmt.format(day));
+                }
+                if (time) {
+                    var t = time.split(':'), end = new Date(2000, 0, 1, +t[0], +t[1] + dur);
+                    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+                    // LRI…PDI: المدى لا ينقلب داخل النص العربي
+                    parts.push('\u2066' + time + '–' + pad(end.getHours()) + ':' + pad(end.getMinutes()) + '\u2069');
+                }
+                var room = field('room_id'), place = [];
+                if (mode !== 'online' && room.value) place.push(room.options[room.selectedIndex].text.split(' — ')[0].trim());
+                if (mode !== 'in_person') place.push(provider || 'عن بُعد');
+                if (place.length) parts.push(place.join(' + '));
+                var ex = field('examiner_id'), opt = ex.options[ex.selectedIndex];
+                if (opt) parts.push('الممتحن ' + opt.textContent.split(' — ')[0]);
+                f('summary').textContent = parts.length ? parts.join(' · ') : '—';
+
+                var hint = f('examiner-hint');
+                if (hint && opt) {
+                    var same = opt.parentNode && opt.parentNode.label === 'من تخصص المشروع';
+                    hint.textContent = (same ? 'من تخصص المشروع' : 'من تخصص آخر') + ' · ' + (opt.textContent.split(' — ')[1] || '');
+                    hint.classList.toggle('is-same', same);
+                }
+            }
+            form.addEventListener('input', refresh);
+            form.addEventListener('change', refresh);
 
             var pick = f('pick');
             document.querySelectorAll('[data-schedule]').forEach(function (btn) {
@@ -673,14 +865,106 @@
                 });
             });
 
-            // خانة فارغة في المخطِّط: الوقت معلوم، والمشروع يُختار من المنتظرين
-            document.querySelectorAll('[data-slot-date]').forEach(function (btn) {
+            // خانة في المخطِّط: الوقت معلوم، والمشروع يُختار من المنتظرين (أو هو المُفلَت عليها)
+            function openSlot(cell, projectId) {
+                if (!pick || !pick.options.length) return;
+                if (projectId) pick.value = projectId;
+                pick.hidden = false;
+                pick.onchange = function () { open(PROJECTS[pick.value], { date: field('date').value, time: field('time').value, mode: (form.querySelector('input[name="mode"]:checked') || {}).value, room_id: field('room_id').value }, false); };
+                open(PROJECTS[pick.value], { date: cell.dataset.slotDate, time: cell.dataset.slotTime }, false);
+            }
+            document.querySelectorAll('[data-add]').forEach(function (btn) {
+                btn.addEventListener('click', function () { openSlot(btn.closest('.df-tslot')); });
+            });
+
+            // الخانة المزدحمة: «+N» يفتحها لتُعرض مناقشاتها كلها
+            document.querySelectorAll('[data-more]').forEach(function (btn) {
                 btn.addEventListener('click', function () {
-                    if (!pick || !pick.options.length) return;
-                    var slot = { date: btn.dataset.slotDate, time: btn.dataset.slotTime };
-                    pick.hidden = false;
-                    pick.onchange = function () { open(PROJECTS[pick.value], { date: field('date').value, time: field('time').value, mode: (form.querySelector('input[name="mode"]:checked') || {}).value, room_id: field('room_id').value }, false); };
-                    open(PROJECTS[pick.value], slot, false);
+                    var open = btn.closest('.df-cell').classList.toggle('is-open');
+                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    btn.textContent = open ? '−' : btn.dataset.n;
+                });
+                btn.dataset.n = btn.textContent;
+            });
+
+            // القائمة الكثيرة: بحث فوري، وتفاصيل البطاقة المدمجة بالنقر
+            var search = document.querySelector('[data-queue-search]');
+            if (search) {
+                var cards = document.querySelectorAll('.df-queue .df-card'), none = document.querySelector('[data-queue-none]'), count = document.querySelector('[data-queue-count]'), total = cards.length;
+                search.addEventListener('input', function () {
+                    var q = search.value.trim().toLowerCase(), shown = 0;
+                    cards.forEach(function (c) { var on = !q || c.dataset.search.indexOf(q) !== -1; c.hidden = !on; if (on) shown++; });
+                    if (none) none.hidden = shown > 0;
+                    if (count) count.textContent = q ? shown + ' من ' + total : total;
+                });
+            }
+            document.querySelectorAll('[data-expand]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var open = btn.closest('.df-card').classList.toggle('is-open');
+                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                });
+            });
+
+            // المرور على بطاقة مشروع يُضيء اقتراحها في المخطِّط، والعكس
+            function link(id, on) {
+                document.querySelectorAll('[data-project="' + id + '"]').forEach(function (el) { el.classList.toggle('is-linked', on); });
+            }
+            document.querySelectorAll('[data-project]').forEach(function (el) {
+                el.addEventListener('mouseenter', function () { link(el.dataset.project, true); });
+                el.addEventListener('mouseleave', function () { link(el.dataset.project, false); });
+                el.addEventListener('focusin', function () { link(el.dataset.project, true); });
+                el.addEventListener('focusout', function () { link(el.dataset.project, false); });
+            });
+
+            // السحب والإفلات: بطاقة من القائمة على خانة ← نافذة الجدولة بوقتها ومشروعها.
+            // النقر يبقى الطريق للمس ولوحة المفاتيح.
+            // شريط الأيام: يوم واحد معروض؛ والسحب فوق يوم يفتحه ليُفلت في خاناته
+            var dayTabs = document.querySelectorAll('.df-daytab');
+            function showDay(key) {
+                dayTabs.forEach(function (t) {
+                    var on = t.dataset.day === key;
+                    t.classList.toggle('is-active', on);
+                    t.setAttribute('aria-selected', on ? 'true' : 'false');
+                });
+                document.querySelectorAll('[data-day-panel]').forEach(function (d) { d.hidden = d.dataset.dayPanel !== key; });
+            }
+            dayTabs.forEach(function (t) {
+                t.addEventListener('click', function () { showDay(t.dataset.day); });
+                t.addEventListener('dragenter', function (e) { e.preventDefault(); showDay(t.dataset.day); });
+                t.addEventListener('dragover', function (e) { e.preventDefault(); });
+            });
+            // المرور على بطاقة اقتراحها في يوم آخر: يُعلَّم ذلك اليوم
+            document.querySelectorAll('.df-queue .df-card[data-project]').forEach(function (card) {
+                var ghost = document.querySelector('.df-block.is-ghost[data-project="' + card.dataset.project + '"]');
+                var panel = ghost && ghost.closest('[data-day-panel]');
+                var tab = panel && document.querySelector('.df-daytab[data-day="' + panel.dataset.dayPanel + '"]');
+                if (!tab) return;
+                card.addEventListener('mouseenter', function () { tab.classList.add('is-hint'); });
+                card.addEventListener('mouseleave', function () { tab.classList.remove('is-hint'); });
+            });
+
+            var planEl = document.querySelector('.df-plan');
+            document.querySelectorAll('.df-card[draggable="true"]').forEach(function (card) {
+                card.addEventListener('dragstart', function (e) {
+                    e.dataTransfer.setData('text/plain', card.dataset.project);
+                    e.dataTransfer.effectAllowed = 'move';
+                    card.classList.add('is-dragging');
+                    if (planEl) planEl.classList.add('is-dragging');
+                });
+                card.addEventListener('dragend', function () {
+                    card.classList.remove('is-dragging');
+                    if (planEl) planEl.classList.remove('is-dragging');
+                    document.querySelectorAll('.df-tslot.is-drop').forEach(function (td) { td.classList.remove('is-drop'); });
+                });
+            });
+            document.querySelectorAll('.df-tslot[data-slot-date]').forEach(function (td) {
+                td.addEventListener('dragover', function (e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; td.classList.add('is-drop'); });
+                td.addEventListener('dragleave', function () { td.classList.remove('is-drop'); });
+                td.addEventListener('drop', function (e) {
+                    e.preventDefault();
+                    td.classList.remove('is-drop');
+                    var id = e.dataTransfer.getData('text/plain');
+                    if (PROJECTS[id]) openSlot(td, id);
                 });
             });
 
