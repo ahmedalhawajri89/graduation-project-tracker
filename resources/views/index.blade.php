@@ -838,24 +838,32 @@
                         </div>
                     </section>
 
-                    {{-- كيف تتصل الأدوار: ما ينتقل من كل دور إلى التالي --}}
+                    {{-- كيف تتصل الأدوار: ما ينتقل من كل دور إلى التالي — وزرّ الجولة التلقائية --}}
+                    <div class="rx-foot">
                     <ol class="rx-flow" aria-label="كيف تتصل الأدوار" data-i18n-aria="roles.flow.label">
                         <li class="rx-node" data-node="student">
                             <span class="rx-node-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
                             <b data-i18n="roles.student.name">الطالب</b>
                         </li>
-                        <li class="rx-edge"><span data-i18n="roles.flow.1">يسلّم المرحلة ويعدّل</span></li>
+                        <li class="rx-edge" data-edge="student"><span data-i18n="roles.flow.1">يسلّم المرحلة ويعدّل</span></li>
                         <li class="rx-node" data-node="supervisor">
                             <span class="rx-node-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span>
                             <b data-i18n="roles.supervisor.name">المشرف</b>
                         </li>
-                        <li class="rx-edge"><span data-i18n="roles.flow.2">يعتمد ويرصد الدرجة</span></li>
+                        <li class="rx-edge" data-edge="supervisor"><span data-i18n="roles.flow.2">يعتمد ويرصد الدرجة</span></li>
                         <li class="rx-node" data-node="admin">
                             <span class="rx-node-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" y1="4" x2="14" y2="4"/><line x1="10" y1="4" x2="3" y2="4"/><line x1="21" y1="12" x2="12" y2="12"/><line x1="8" y1="12" x2="3" y2="12"/><line x1="21" y1="20" x2="16" y2="20"/><line x1="12" y1="20" x2="3" y2="20"/><line x1="14" y1="2" x2="14" y2="6"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="22"/></svg></span>
                             <b data-i18n="roles.admin.name">الإدارة</b>
                             <small data-i18n="roles.flow.3">تتابع الفصل كلّه</small>
                         </li>
                     </ol>
+                    {{-- محتوى يتحرّك وحده يلزمه إيقاف (WCAG 2.2.2) — يظهر حين يعمل السكربت --}}
+                    <button type="button" class="rx-tour" data-rx-tour hidden aria-pressed="true">
+                        <svg class="rx-tour-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+                        <svg class="rx-tour-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.8L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg>
+                        <span data-rx-tour-label>إيقاف الجولة</span>
+                    </button>
+                    </div>
                 </div>
             </div>
         </section>

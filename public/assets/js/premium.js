@@ -285,6 +285,8 @@
       "roles.flow.1": "يسلّم المرحلة ويعدّل",
       "roles.flow.2": "يعتمد ويرصد الدرجة",
       "roles.flow.3": "تتابع الفصل كلّه",
+      "roles.tour.pause": "إيقاف الجولة",
+      "roles.tour.play": "تشغيل الجولة",
       "roles.scene.s.now": "ماذا عليّ الآن",
       "roles.scene.s.stage": "الفصل الثالث — التحليل",
       "roles.scene.s.due": "آخر موعد بعد يومين",
@@ -645,6 +647,8 @@
       "roles.flow.1": "Submits and revises",
       "roles.flow.2": "Approves and grades",
       "roles.flow.3": "Oversees the whole term",
+      "roles.tour.pause": "Pause tour",
+      "roles.tour.play": "Play tour",
       "roles.scene.s.now": "What's on me now",
       "roles.scene.s.stage": "Chapter 3 — Analysis",
       "roles.scene.s.due": "Due in two days",
@@ -1029,17 +1033,29 @@
 
   /* ---------- مستكشف الأدوار (القسم 05) ----------
      تبويب لكل دور يبدّل لوحته، ويُضيء عقدته على خطّ «كيف تتصل الأدوار».
-     الأسهم تتنقّل بين التبويبات، ولا دوران تلقائي: القارئ يختار. بلا هذا
-     السكربت تظهر اللوحات الثلاث متتالية. */
+
+     جولة تلقائية: حين يُرى القسم تمرّ الأدوار الثلاثة كقصة — خطّ التبويب
+     النشط شريط تقدّم، ووصلة التسليم إلى الدور التالي تتحرّك. تتجمّد عند
+     المرور أو التركيز داخل القسم، وتتوقّف نهائياً حين يأخذ الزائر القيادة
+     (نقر، أسهم، روابط الفوتر). زرّ إيقاف/تشغيل دائماً، ولا تشغيل تلقائي مع
+     «تقليل الحركة». المدة في CSS (--rx-dur)، والانتقال على animationend
+     فيبقى الإيقاف والشريط متزامنين. بلا هذا السكربت تظهر اللوحات متتالية. */
   function initRoles() {
     var root = document.querySelector("[data-role-explorer]");
     if (!root) return;
     var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
     var panels = root.querySelectorAll("[data-panel]");
     var nodes = root.querySelectorAll("[data-node]");
+    var edges = root.querySelectorAll("[data-edge]");
+    var toggle = root.querySelector("[data-rx-tour]");
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var current = tabs[0].dataset.role;
+    // stopped: أوقفها الزائر — لا تعود إلا بزرّ التشغيل
+    var tour = { on: !reduce, stopped: reduce, visible: false, hover: false };
     root.classList.add("is-enhanced");
 
     function show(role, focus) {
+      current = role;
       tabs.forEach(function (t) {
         var on = t.dataset.role === role;
         t.setAttribute("aria-selected", on ? "true" : "false");
@@ -1053,31 +1069,122 @@
         if (on) { p.classList.remove("is-in"); void p.offsetWidth; p.classList.add("is-in"); }
       });
       nodes.forEach(function (n) { n.classList.toggle("is-active", n.dataset.node === role); });
+      edges.forEach(function (e) { e.classList.toggle("is-flowing", e.dataset.edge === role); });
+      restartProgress();
     }
 
-    tabs.forEach(function (t, i) {
-      t.addEventListener("click", function () { show(t.dataset.role); });
-      t.addEventListener("keydown", function (e) {
+    // شريط التقدّم حركة CSS على ::after — تُعاد من الصفر عند كل دور
+    function restartProgress() {
+      root.classList.remove("is-playing");
+      void root.offsetWidth;
+      sync();
+    }
+
+    function sync() {
+      var running = tour.on && !tour.stopped;
+      root.classList.toggle("is-playing", running);
+      root.classList.toggle("is-paused", running && (!tour.visible || tour.hover || document.hidden));
+      if (toggle) {
+        var label = running ? t("roles.tour.pause", "إيقاف الجولة") : t("roles.tour.play", "تشغيل الجولة");
+        toggle.querySelector("[data-rx-tour-label]").textContent = label;
+        toggle.setAttribute("aria-pressed", running ? "true" : "false");
+        toggle.classList.toggle("is-off", !running);
+      }
+    }
+
+    function t(key, fallback) {
+      var d = dict[locale];
+      return (d && d[key]) || fallback;
+    }
+
+    function next() {
+      var i = tabs.findIndex(function (x) { return x.dataset.role === current; });
+      show(tabs[(i + 1) % tabs.length].dataset.role);
+    }
+
+    // الزائر أخذ القيادة: تتوقّف الجولة في هذه الزيارة
+    function takeOver() {
+      tour.stopped = true;
+      sync();
+    }
+
+    tabs.forEach(function (tab, i) {
+      // الشريط اكتمل: الدور التالي
+      tab.addEventListener("animationend", function (e) {
+        if (e.animationName === "rx-progress" && tab.dataset.role === current && tour.on && !tour.stopped) next();
+      });
+      tab.addEventListener("click", function () { takeOver(); show(tab.dataset.role); });
+      tab.addEventListener("keydown", function (e) {
         // الاتجاه البصري يتبع لغة الصفحة: في RTL «اليسار» هو التالي
         var rtl = document.documentElement.dir === "rtl";
-        var next = { ArrowLeft: rtl ? 1 : -1, ArrowRight: rtl ? -1 : 1, Home: -i, End: tabs.length - 1 - i }[e.key];
-        if (next === undefined) return;
+        var step = { ArrowLeft: rtl ? 1 : -1, ArrowRight: rtl ? -1 : 1, Home: -i, End: tabs.length - 1 - i }[e.key];
+        if (step === undefined) return;
         e.preventDefault();
-        show(tabs[(i + next + tabs.length) % tabs.length].dataset.role, true);
+        takeOver();
+        show(tabs[(i + step + tabs.length) % tabs.length].dataset.role, true);
       });
     });
 
     // النقر على عقدة في الخطّ يفتح دورها أيضاً
     nodes.forEach(function (n) {
-      n.addEventListener("click", function () { show(n.dataset.node); });
+      n.addEventListener("click", function () { takeOver(); show(n.dataset.node); });
     });
 
     // روابط الفوتر «الطالب / المشرف / الإدارة» تفتح تبويب دورها قبل النزول
     document.querySelectorAll("[data-role-link]").forEach(function (a) {
-      a.addEventListener("click", function () { show(a.dataset.roleLink); });
+      a.addEventListener("click", function () { takeOver(); show(a.dataset.roleLink); });
     });
 
+    if (toggle) {
+      toggle.hidden = false;
+      toggle.addEventListener("click", function () {
+        var running = tour.on && !tour.stopped;
+        tour.on = true;
+        tour.stopped = running;
+        // تشغيل يدوي: من الدور الحالي من أوله
+        if (!running) restartProgress(); else sync();
+      });
+    }
+
+    // تتجمّد عند المرور أو التركيز داخل القسم (لا عند زرّ الجولة نفسه)
+    // الفأرة وحدها: لمسة على الجوال تُطلق mouseenter وتبقى «فوقه» فتتجمّد الجولة بلا سبب
+    root.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") { tour.hover = true; sync(); } });
+    root.addEventListener("pointerleave", function (e) { if (e.pointerType === "mouse") { tour.hover = false; sync(); } });
+    root.addEventListener("focusin", function (e) { if (e.target !== toggle) { tour.hover = true; sync(); } });
+    root.addEventListener("focusout", function () { tour.hover = false; sync(); });
+    document.addEventListener("visibilitychange", sync);
+
+    // تبدأ حين يُرى القسم، وتنتظر حين يخرج من الشاشة
+    if ("IntersectionObserver" in window) {
+      // «مرئي»: 40% منه، أو نصف الشاشة حين يكون أطول منها (الجوال)
+      new IntersectionObserver(function (entries) {
+        var e = entries[0];
+        tour.visible = e.isIntersecting && (e.intersectionRatio >= 0.4 || e.intersectionRect.height >= window.innerHeight * 0.5);
+        sync();
+      }, { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6] }).observe(root);
+    } else {
+      tour.visible = true;
+    }
+
+    // اللوحات بارتفاع أطولها: التبديل التلقائي لا يُزيح ما تحت القسم
+    // أثناء القراءة (على الجوال تختلف أطوالها كثيراً)
+    function equalize() {
+      var tallest = 0;
+      panels.forEach(function (p) {
+        var wasHidden = p.hidden;
+        p.style.minHeight = "";
+        p.hidden = false;
+        tallest = Math.max(tallest, p.offsetHeight);
+        p.hidden = wasHidden;
+      });
+      panels.forEach(function (p) { p.style.minHeight = tallest + "px"; });
+    }
+    var resizeTimer;
+    window.addEventListener("resize", function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(equalize, 150); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(equalize);
+
     show(tabs[0].dataset.role);
+    equalize();
   }
 
   /* ---------- الأسئلة الشائعة (القسم 08) ----------

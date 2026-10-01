@@ -2032,10 +2032,11 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
 .rx-private svg { flex: none; color: var(--ink-mute); }
 
 /* كيف تتصل الأدوار */
+.rx-foot { display: flex; align-items: center; gap: 14px; padding-inline-end: 18px; border-top: 1px solid var(--rule); background: var(--paper); }
 .rx-flow {
   list-style: none; margin: 0; padding: 18px 28px;
   display: flex; align-items: center; gap: 10px;
-  border-top: 1px solid var(--rule); background: var(--paper);
+  flex: 1; min-width: 0;
 }
 .rx-node { display: inline-flex; align-items: center; gap: 9px; flex: none; cursor: pointer; }
 .rx-node-icon {
@@ -2051,6 +2052,47 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
 .rx-edge { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 40px; font-size: 12px; color: var(--ink-mute); white-space: nowrap; }
 .rx-edge::before, .rx-edge::after { content: ""; flex: 1; height: 1px; background: repeating-linear-gradient(90deg, var(--rule-strong) 0 5px, transparent 5px 9px); }
 
+/* ---- الجولة التلقائية ----
+   خطّ التبويب النشط شريط تقدّم يمتلئ من بداية السطر؛ اكتماله (animationend)
+   ينقل للدور التالي. الإيقاف يجمّده مكانه. */
+.rx { --rx-dur: 7s; }
+.rx.is-playing .rx-tab[aria-selected="true"]::after {
+  transform-origin: right; animation: rx-progress var(--rx-dur) linear both;
+}
+[dir="ltr"] .rx.is-playing .rx-tab[aria-selected="true"]::after { transform-origin: left; }
+.rx.is-playing.is-paused .rx-tab[aria-selected="true"]::after { animation-play-state: paused; }
+@keyframes rx-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* خلف الشريط أثر خافت للمسافة الباقية */
+.rx.is-playing .rx-tab[aria-selected="true"]::before {
+  content: ""; position: absolute; inset-inline: 22px; bottom: -1px; height: 2px; background: var(--accent-soft);
+}
+
+/* وصلة التسليم إلى الدور التالي: نقاطها تجري في اتجاهه */
+.rx-edge.is-flowing { color: var(--ink-soft); }
+.rx-edge.is-flowing::before, .rx-edge.is-flowing::after {
+  background: repeating-linear-gradient(90deg, var(--accent) 0 5px, transparent 5px 9px);
+  background-size: 18px 1px; animation: rx-flow 1s linear infinite;
+}
+[dir="rtl"] .rx-edge.is-flowing::before, [dir="rtl"] .rx-edge.is-flowing::after { animation-direction: reverse; }
+.rx:not(.is-playing) .rx-edge.is-flowing::before, .rx:not(.is-playing) .rx-edge.is-flowing::after,
+.rx.is-paused .rx-edge.is-flowing::before, .rx.is-paused .rx-edge.is-flowing::after { animation-play-state: paused; }
+@keyframes rx-flow { to { background-position: 18px 0; } }
+
+/* زرّ الجولة */
+.rx-tour {
+  flex: none; display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 13px; border: 1px solid var(--rule-strong); border-radius: 999px;
+  background: var(--paper-raised); color: var(--ink-soft); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;
+  transition: border-color .2s ease, color .2s ease, background-color .2s ease;
+}
+.rx-tour[hidden] { display: none; }
+.rx-tour:hover { border-color: var(--accent); color: var(--accent); }
+.rx-tour:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rx-tour .rx-tour-play { display: none; }
+.rx-tour.is-off .rx-tour-play { display: block; }
+.rx-tour.is-off .rx-tour-pause { display: none; }
+.rx-tour.is-off { border-color: var(--accent); background: var(--accent); color: #fff; }
+
 @media (max-width: 980px) {
   .rx-panel { grid-template-columns: 1fr; }
   .rx-scene { border-inline-end: 0; border-bottom: 1px solid var(--rule); padding: 24px; }
@@ -2064,6 +2106,9 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
   .rx-info { padding: 22px; }
   .rx-caps { grid-template-columns: 1fr; gap: 14px; }
   .rx-flow { flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px 22px; }
+  .rx-foot { flex-direction: column; align-items: stretch; gap: 0; padding: 0 22px 16px; }
+  .rx-foot .rx-flow { padding-inline: 0; }
+  .rx-tour { align-self: flex-start; }
   .rx-edge { padding-inline-start: 16px; min-height: 26px; }
   .rx-edge::before { display: none; }
   .rx-edge::after { flex: none; order: -1; width: 1px; height: 22px; background: repeating-linear-gradient(180deg, var(--rule-strong) 0 4px, transparent 4px 7px); }
@@ -2071,6 +2116,7 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
 @media (prefers-reduced-motion: reduce) {
   .rx-panel.is-in .rx-scene > *, .rx-panel.is-in .rx-caps li { animation: none; }
   .rx-tab::after { transition: none; }
+  .rx-edge.is-flowing::before, .rx-edge.is-flowing::after { animation: none; }
 }
 
 /* ==========================================================
