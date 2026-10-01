@@ -11,7 +11,7 @@
 <section class="ctx-card dash-panel" aria-labelledby="activity-title">
     <h2 class="ctx-head" id="activity-title">
         <i class="ti ti-activity" aria-hidden="true"></i>
-        آخر النشاط
+        {{ __('آخر النشاط') }}
     </h2>
 
     @if ($activity->isEmpty())

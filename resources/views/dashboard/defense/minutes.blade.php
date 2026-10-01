@@ -19,11 +19,11 @@
     $pct = fn ($w) => rtrim(rtrim(number_format($w, 1, '.', ''), '0'), '.') . '%';
 @endphp
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>محضر مناقشة — {{ $project->title }}</title>
+    <title>{{ __('محضر مناقشة — :title', ['title' => $project->title]) }}</title>
     <link rel="icon" href="{{ asset('assets/img/takharruj-logo.svg') }}">
     <link href="{{ asset('assets/fonts/fonts.css') }}" rel="stylesheet">
     <link href="{{ asset('vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet">
@@ -112,13 +112,13 @@
 </head>
 <body>
     <div class="mn-bar">
-        <a href="{{ $back }}"><i class="ti ti-arrow-right" aria-hidden="true"></i>رجوع</a>
-        <small>{{ $draft ? 'مسودة — تكتمل حين ترصد اللجنة كل الدرجات' : 'محضر مكتمل' }}</small>
-        <button type="button" onclick="window.print()"><i class="ti ti-printer" aria-hidden="true"></i>طباعة<span class="mn-bar-long"> / حفظ PDF</span></button>
+        <a href="{{ $back }}"><i class="ti {{ app()->getLocale() === 'ar' ? 'ti-arrow-right' : 'ti-arrow-left' }}" aria-hidden="true"></i>{{ __('رجوع') }}</a>
+        <small>{{ $draft ? __('مسودة — تكتمل حين ترصد اللجنة كل الدرجات') : __('محضر مكتمل') }}</small>
+        <button type="button" onclick="window.print()"><i class="ti ti-printer" aria-hidden="true"></i>{{ __('طباعة') }}<span class="mn-bar-long"> / {{ __('حفظ PDF') }}</span></button>
     </div>
 
     <main class="mn-page">
-        @if ($draft)<div class="mn-draft" aria-hidden="true">مسودة</div>@endif
+        @if ($draft)<div class="mn-draft" aria-hidden="true">{{ __('مسودة') }}</div>@endif
 
         <header class="mn-head">
             <div class="mn-brand">
@@ -129,50 +129,50 @@
                     <circle cx="20" cy="20" r="3.4" fill="#fff" />
                     <circle cx="29.5" cy="20" r="3.4" fill="#1d4ed8" stroke="#fff" stroke-width="2" />
                 </svg>
-                <div><b>تخرُّج</b><small>منصّة متابعة مشاريع التخرّج</small></div>
+                <div><b>{{ __('تخرُّج') }}</b><small>{{ __('منصّة متابعة مشاريع التخرّج') }}</small></div>
             </div>
             <div class="mn-ref">
-                رقم المحضر <b dir="ltr">DEF-{{ str_pad($defense->id, 4, '0', STR_PAD_LEFT) }}</b><br>
+                {{ __('رقم المحضر') }} <b dir="ltr">DEF-{{ str_pad($defense->id, 4, '0', STR_PAD_LEFT) }}</b><br>
                 @if ($project->semester){{ $project->semester->label }}<br>@endif
-                أُصدر <b dir="ltr">{{ now()->format('Y-m-d') }}</b>
+                {{ __('أُصدر') }} <b dir="ltr">{{ now()->format('Y-m-d') }}</b>
             </div>
         </header>
 
-        <h1 class="mn-title">محضر مناقشة مشروع تخرّج @if ($draft)<span class="mn-flag">مسودة</span>@endif</h1>
-        <p class="mn-sub">اجتمعت لجنة المناقشة المبيّنة أدناه وناقشت المشروع، ورصدت درجاتها كما يلي.</p>
+        <h1 class="mn-title">{{ __('محضر مناقشة مشروع تخرّج') }} @if ($draft)<span class="mn-flag">{{ __('مسودة') }}</span>@endif</h1>
+        <p class="mn-sub">{{ __('اجتمعت لجنة المناقشة المبيّنة أدناه وناقشت المشروع، ورصدت درجاتها كما يلي.') }}</p>
 
         <section class="mn-sec">
-            <h2><i class="ti ti-file-description" aria-hidden="true"></i> المشروع</h2>
+            <h2><i class="ti ti-file-description" aria-hidden="true"></i> {{ __('المشروع') }}</h2>
             <dl class="mn-grid">
-                <div class="is-wide"><dt>العنوان</dt><dd>{{ $project->title }}</dd></div>
-                <div><dt>النوع</dt><dd>{{ $project->project_type->name ?? '—' }}</dd></div>
-                <div><dt>التخصص</dt><dd>{{ $project->project_type?->specialize?->name ?? '—' }}</dd></div>
-                <div class="is-wide"><dt>الفريق</dt><dd>
-                    @foreach ($team as $g)<span>{{ $g->student?->name }}@if ($g->type === 'leader')<span class="mn-lead">القائد</span>@endif</span>{{ $loop->last ? '' : '، ' }}@endforeach
+                <div class="is-wide"><dt>{{ __('العنوان') }}</dt><dd>{{ $project->title }}</dd></div>
+                <div><dt>{{ __('النوع') }}</dt><dd>{{ $project->project_type->name ?? '—' }}</dd></div>
+                <div><dt>{{ __('التخصص') }}</dt><dd>{{ $project->project_type?->specialize?->name ?? '—' }}</dd></div>
+                <div class="is-wide"><dt>{{ __('الفريق') }}</dt><dd>
+                    @foreach ($team as $g)<span>{{ $g->student?->name }}@if ($g->type === 'leader')<span class="mn-lead">{{ __('القائد') }}</span>@endif</span>{{ $loop->last ? '' : __('، ') }}@endforeach
                 </dd></div>
             </dl>
         </section>
 
         <section class="mn-sec">
-            <h2><i class="ti ti-calendar-event" aria-hidden="true"></i> المناقشة</h2>
+            <h2><i class="ti ti-calendar-event" aria-hidden="true"></i> {{ __('المناقشة') }}</h2>
             <dl class="mn-grid">
-                <div><dt>التاريخ</dt><dd>{{ $defense->starts_at->translatedFormat('l j F Y') }}</dd></div>
-                <div><dt>الوقت</dt><dd>{{ $isolate($defense->starts_at->format('H:i') . '–' . $defense->endsAt()->format('H:i')) }} <em>· {{ $defense->duration_minutes }} دقيقة</em></dd></div>
-                <div class="is-wide"><dt>المكان</dt><dd>{{ $defense->mode_label }} · {{ $defense->place_label }}@if ($defense->room?->location) <em>— {{ $defense->room->location }}</em>@endif</dd></div>
+                <div><dt>{{ __('التاريخ') }}</dt><dd>{{ $defense->starts_at->translatedFormat('l j F Y') }}</dd></div>
+                <div><dt>{{ __('الوقت') }}</dt><dd>{{ $isolate($defense->starts_at->format('H:i') . '–' . $defense->endsAt()->format('H:i')) }} <em>· {{ __(':n دقيقة', ['n' => $defense->duration_minutes]) }}</em></dd></div>
+                <div class="is-wide"><dt>{{ __('المكان') }}</dt><dd>{{ $defense->mode_label }} · {{ $defense->place_label }}@if ($defense->room?->location) <em>— {{ $defense->room->location }}</em>@endif</dd></div>
             </dl>
         </section>
 
         <section class="mn-sec">
-            <h2><i class="ti ti-users-group" aria-hidden="true"></i> لجنة المناقشة ودرجاتها</h2>
+            <h2><i class="ti ti-users-group" aria-hidden="true"></i> {{ __('لجنة المناقشة ودرجاتها') }}</h2>
             <div class="mn-table-wrap">
                 <table>
                     <thead>
-                        <tr><th>العضو</th><th>الدرجة من 100</th>@if ($weighted)<th>الوزن</th>@endif<th>الملاحظات</th><th>التوقيع</th></tr>
+                        <tr><th>{{ __('العضو') }}</th><th>{{ __('الدرجة من 100') }}</th>@if ($weighted)<th>{{ __('الوزن') }}</th>@endif<th>{{ __('الملاحظات') }}</th><th>{{ __('التوقيع') }}</th></tr>
                     </thead>
                     <tbody>
                         @foreach ($members as $m)
                             <tr>
-                                <td><b>{{ $m->supervisor->name }}</b>@if ($m->id === $chair?->id)<span class="mn-lead">رئيس اللجنة</span>@endif<small>{{ $m->role_label }}</small></td>
+                                <td><b>{{ $m->supervisor->name }}</b>@if ($m->id === $chair?->id)<span class="mn-lead">{{ __('رئيس اللجنة') }}</span>@endif<small>{{ $m->role_label }}</small></td>
                                 <td class="mn-num">{{ $fmt($m->grade) }}</td>
                                 @if ($weighted)<td class="mn-weight">{{ $pct($weights[$m->id]) }}</td>@endif
                                 <td class="mn-notes">{{ $m->comments }}</td>
@@ -186,24 +186,24 @@
             <div class="mn-result {{ $draft ? 'is-draft' : '' }}">
                 <b>{{ $draft ? '—' : $fmt($project->grade) }}</b>
                 <span>
-                    <strong>الدرجة النهائية — {{ $weighted ? 'بأوزان أعضاء اللجنة' : 'متوسط درجات اللجنة' }}</strong>
+                    <strong>{{ __('الدرجة النهائية') }} — {{ $weighted ? __('بأوزان أعضاء اللجنة') : __('متوسط درجات اللجنة') }}</strong>
                     @if ($draft)
-                        <em>تُحسب حين يرصد كل الأعضاء درجاتهم.</em>
+                        <em>{{ __('تُحسب حين يرصد كل الأعضاء درجاتهم.') }}</em>
                     @else
-                        <em>التقدير: {{ $project->grade_label }} ·
-                            {{ $project->isGradeLocked() ? 'اعتُمدت بتاريخ ' . $isolate($project->grade_locked_at->format('Y-m-d')) : 'لم تُعتمد بعد' }}</em>
+                        <em>{{ __('التقدير: :label', ['label' => $project->grade_label]) }} ·
+                            {{ $project->isGradeLocked() ? __('اعتُمدت بتاريخ :date', ['date' => $isolate($project->grade_locked_at->format('Y-m-d'))]) : __('لم تُعتمد بعد') }}</em>
                     @endif
                 </span>
             </div>
         </section>
 
         <div class="mn-signs">
-            <div>رئيس لجنة المناقشة@if ($chair) — {{ $chair->supervisor->name }}@endif</div>
-            <div>رئيس القسم والختم</div>
+            <div>{{ __('رئيس لجنة المناقشة') }}@if ($chair) — {{ $chair->supervisor->name }}@endif</div>
+            <div>{{ __('رئيس القسم والختم') }}</div>
         </div>
 
         <footer class="mn-foot">
-            <span>أُصدر من منصّة تخرُّج — {{ $isolate(now()->format('Y-m-d H:i')) }}</span>
+            <span>{{ __('أُصدر من منصّة تخرُّج — :time', ['time' => $isolate(now()->format('Y-m-d H:i'))]) }}</span>
             <span dir="ltr">DEF-{{ str_pad($defense->id, 4, '0', STR_PAD_LEFT) }}</span>
         </footer>
     </main>

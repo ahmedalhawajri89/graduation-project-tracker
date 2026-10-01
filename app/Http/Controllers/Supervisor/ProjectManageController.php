@@ -29,12 +29,6 @@ class ProjectManageController extends Controller
         abort_unless((int) $project->supervisor_id === (int) auth('supervisor')->id(), 403);
     }
 
-    /** رسالة القفل الموحدة بعد التقييم */
-    private const LOCKED_MSG = 'المشروع مؤرشف بعد رصد التقييم — لا يمكن تعديل مراحله أو ملفاته أو موعده. النقاش وتعديل الدرجة فقط متاحان.';
-
-    /** رسالة المشروع الذي لم يُقبل — أو رُفض */
-    private const INACTIVE_MSG = 'المشروع لم يُقبل بعد أو رُفض — المراحل والملفات والموعد تُدار بعد قبوله.';
-
     /**
      * هل يُمنع تعديل محتوى المشروع؟ يعيد سبب المنع أو null.
      *
@@ -44,10 +38,14 @@ class ProjectManageController extends Controller
     private function blocked(Project $project): ?string
     {
         if (! in_array($project->status, ['accept', 'complete'], true)) {
-            return self::INACTIVE_MSG;
+            // رسالة المشروع الذي لم يُقبل — أو رُفض
+            return __('المشروع لم يُقبل بعد أو رُفض — المراحل والملفات والموعد تُدار بعد قبوله.');
         }
 
-        return $project->is_locked ? self::LOCKED_MSG : null;
+        // رسالة القفل الموحدة بعد التقييم
+        return $project->is_locked
+            ? __('المشروع مؤرشف بعد رصد التقييم — لا يمكن تعديل مراحله أو ملفاته أو موعده. النقاش وتعديل الدرجة فقط متاحان.')
+            : null;
     }
 
     /**
@@ -133,15 +131,15 @@ class ProjectManageController extends Controller
             'title' => ['required', 'string', 'max:150'],
             'due_date' => ['nullable', 'date'],
         ], [], [
-            'title' => 'عنوان المرحلة',
-            'due_date' => 'تاريخ الاستحقاق',
+            'title' => __('عنوان المرحلة'),
+            'due_date' => __('تاريخ الاستحقاق'),
         ]);
 
         $project->milestones()->create($request->only('title', 'due_date'));
 
         $this->notifyStudents($project, 'أضاف المشرف مرحلة جديدة للمشروع: ' . $request->title);
 
-        return redirect()->back()->with('success', 'تمت إضافة المرحلة بنجاح');
+        return redirect()->back()->with('success', __('تمت إضافة المرحلة بنجاح'));
     }
 
     public function milestoneToggle(ProjectMilestone $milestone)
@@ -178,7 +176,7 @@ class ProjectManageController extends Controller
                 : 'أُعيدت مرحلة "' . $milestone->title . '" إلى قيد التنفيذ'
         );
 
-        return redirect()->back()->with('success', 'تم تحديث حالة المرحلة');
+        return redirect()->back()->with('success', __('تم تحديث حالة المرحلة'));
     }
 
     /**
@@ -198,9 +196,9 @@ class ProjectManageController extends Controller
             'decision' => ['required', 'in:approve,revision'],
             'feedback' => ['nullable', 'string', 'max:2000', 'required_if:decision,revision'],
         ], [
-            'feedback.required_if' => 'اكتب ما يجب تعديله — الفريق يحتاج السبب ليعدّل.',
+            'feedback.required_if' => __('اكتب ما يجب تعديله — الفريق يحتاج السبب ليعدّل.'),
         ], [
-            'feedback' => 'ملاحظة التعديل',
+            'feedback' => __('ملاحظة التعديل'),
         ]);
 
         $approve = $data['decision'] === 'approve';
@@ -231,7 +229,7 @@ class ProjectManageController extends Controller
         });
 
         if (! $round) {
-            return redirect()->back()->with('fail', 'لا تسليم بانتظار المراجعة في هذه المرحلة.');
+            return redirect()->back()->with('fail', __('لا تسليم بانتظار المراجعة في هذه المرحلة.'));
         }
 
         Audit::record($approve ? 'milestone.approved' : 'milestone.revision', $milestone->project, [
@@ -253,7 +251,7 @@ class ProjectManageController extends Controller
         }
 
         return redirect()->to(url()->previous() . '#milestone-' . $milestone->id)
-            ->with('success', $approve ? 'اعتُمدت المرحلة.' : 'أُرسل طلب التعديل إلى الفريق.');
+            ->with('success', $approve ? __('اعتُمدت المرحلة.') : __('أُرسل طلب التعديل إلى الفريق.'));
     }
 
     public function milestoneDestroy(ProjectMilestone $milestone)
@@ -269,7 +267,7 @@ class ProjectManageController extends Controller
         $milestone->delete();
         Storage::disk('local')->delete($files);
 
-        return redirect()->back()->with('success', 'تم حذف المرحلة');
+        return redirect()->back()->with('success', __('تم حذف المرحلة'));
     }
 
     /* ==================== الملفات ==================== */
@@ -286,8 +284,8 @@ class ProjectManageController extends Controller
             'title' => ['required', 'string', 'max:120'],
             'file' => ['required', 'file', 'max:10240', 'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar,png,jpg,jpeg'],
         ], [], [
-            'title' => 'اسم الملف',
-            'file' => 'الملف',
+            'title' => __('اسم الملف'),
+            'file' => __('الملف'),
         ]);
 
         // القرص الخاص: الملف لا يُفتح إلا عبر راوت التنزيل المحمي بالصلاحيات
@@ -303,7 +301,7 @@ class ProjectManageController extends Controller
 
         $this->notifyStudents($project, 'رفع المشرف ملفاً جديداً: ' . $request->title);
 
-        return redirect()->back()->with('success', 'تم رفع الملف بنجاح');
+        return redirect()->back()->with('success', __('تم رفع الملف بنجاح'));
     }
 
     public function fileDestroy(ProjectFile $file)
@@ -319,7 +317,7 @@ class ProjectManageController extends Controller
         Storage::disk('public')->delete($file->path);
         $file->delete();
 
-        return redirect()->back()->with('success', 'تم حذف الملف');
+        return redirect()->back()->with('success', __('تم حذف الملف'));
     }
 
     /* ==================== التعليقات ==================== */
@@ -330,7 +328,7 @@ class ProjectManageController extends Controller
 
         $request->validate([
             'body' => ['required', 'string', 'max:1000'],
-        ], [], ['body' => 'التعليق']);
+        ], [], ['body' => __('التعليق')]);
 
         $project->comments()->create([
             'body' => $request->body,
@@ -341,7 +339,7 @@ class ProjectManageController extends Controller
         // لا إشعار: عدّاد النقاش يحلّ محلّه — انظر \App\Support\Discussion
         Discussion::markRead($project, auth('supervisor')->user());
 
-        return redirect()->back()->with('success', 'تم إضافة التعليق');
+        return redirect()->back()->with('success', __('تم إضافة التعليق'));
     }
 
     public function commentDestroy(ProjectComment $comment)
@@ -353,7 +351,7 @@ class ProjectManageController extends Controller
 
         $comment->delete();
 
-        return redirect()->back()->with('success', 'تم حذف التعليق');
+        return redirect()->back()->with('success', __('تم حذف التعليق'));
     }
 
     /* ==================== الموعد النهائي ==================== */
@@ -369,14 +367,14 @@ class ProjectManageController extends Controller
         $request->validate([
             'date_line' => ['required', 'date', 'after_or_equal:today'],
         ], [
-            'date_line.after_or_equal' => 'الموعد النهائي يجب أن يكون اليوم أو تاريخاً مستقبلياً',
-        ], ['date_line' => 'الموعد النهائي']);
+            'date_line.after_or_equal' => __('الموعد النهائي يجب أن يكون اليوم أو تاريخاً مستقبلياً'),
+        ], ['date_line' => __('الموعد النهائي')]);
 
         $project->update(['date_line' => $request->date_line]);
 
         $this->notifyStudents($project, 'حدّد المشرف الموعد النهائي للمشروع: ' . $request->date_line);
 
-        return redirect()->back()->with('success', 'تم تحديد الموعد النهائي');
+        return redirect()->back()->with('success', __('تم تحديد الموعد النهائي'));
     }
 
     /* ==================== التقييم النهائي ==================== */
@@ -386,28 +384,28 @@ class ProjectManageController extends Controller
         $this->authorizeProject($project);
 
         if ($project->status !== 'complete') {
-            return redirect()->back()->with('fail', 'لا يمكن التقييم قبل اكتمال المشروع');
+            return redirect()->back()->with('fail', __('لا يمكن التقييم قبل اكتمال المشروع'));
         }
 
         // للمشروع مناقشة: الدرجة متوسط درجات لجنتها، تُرصد من صفحتها
         if ($committee = \App\Support\DefenseGrading::defenseFor($project)) {
             return redirect()->route('supervisor.defenses.show', $committee->id)
-                ->with('fail', 'درجة هذا المشروع تُرصد من لجنة المناقشة.');
+                ->with('fail', __('درجة هذا المشروع تُرصد من لجنة المناقشة.'));
         }
 
         // الحراسة على الخادم لا في الواجهة وحدها: إخفاء النموذج لا
         // يمنع طلباً مُلفَّقاً، والدرجة المعتمدة هي ما يُتنازَع عليه
         if ($project->isGradeLocked()) {
             return redirect()->back()->with('fail',
-                'الدرجة معتمدة ولا يمكن تعديلها. راجع مسؤول النظام لفكّ الاعتماد.');
+                __('الدرجة معتمدة ولا يمكن تعديلها. راجع مسؤول النظام لفكّ الاعتماد.'));
         }
 
         $request->validate([
             'grade' => ['required', 'numeric', 'min:0', 'max:100'],
             'evaluation_note' => ['nullable', 'string', 'max:2000'],
         ], [], [
-            'grade' => 'الدرجة',
-            'evaluation_note' => 'ملاحظات التقييم',
+            'grade' => __('الدرجة'),
+            'evaluation_note' => __('ملاحظات التقييم'),
         ]);
 
         $previous = $project->grade;
@@ -425,13 +423,15 @@ class ProjectManageController extends Controller
             ['grade' => ['from' => $previous, 'to' => (float) $request->grade]]
         );
 
+        // الإشعار يُحفظ ليقرأه الفريق: بالعربية مهما كانت لغة المشرف
+        $gradeLabel = \App\Support\Arabic::run(fn () => $project->fresh()->grade_label);
         $this->notifyStudents(
             $project,
-            'تم تقييم مشروعكم — الدرجة: ' . $request->grade . ' (' . $project->fresh()->grade_label . ') 🎓',
+            'تم تقييم مشروعكم — الدرجة: ' . $request->grade . ' (' . $gradeLabel . ') 🎓',
             'درجة مشروعكم'
         );
 
-        return redirect()->back()->with('success', 'تم حفظ التقييم وإشعار الفريق');
+        return redirect()->back()->with('success', __('تم حفظ التقييم وإشعار الفريق'));
     }
 
     /**
@@ -445,17 +445,17 @@ class ProjectManageController extends Controller
         $this->authorizeProject($project);
 
         if (is_null($project->grade)) {
-            return redirect()->back()->with('fail', 'ضع الدرجة أولاً ثم اعتمدها.');
+            return redirect()->back()->with('fail', __('ضع الدرجة أولاً ثم اعتمدها.'));
         }
 
         if ($project->isGradeLocked()) {
-            return redirect()->back()->with('fail', 'الدرجة معتمدة أصلاً.');
+            return redirect()->back()->with('fail', __('الدرجة معتمدة أصلاً.'));
         }
 
         $project->update(['grade_locked_at' => now()]);
 
         Audit::record('grade.locked', $project, ['grade' => ['to' => (float) $project->grade]]);
 
-        return redirect()->back()->with('success', 'تم اعتماد الدرجة. لم يعد بالإمكان تعديلها.');
+        return redirect()->back()->with('success', __('تم اعتماد الدرجة. لم يعد بالإمكان تعديلها.'));
     }
 }

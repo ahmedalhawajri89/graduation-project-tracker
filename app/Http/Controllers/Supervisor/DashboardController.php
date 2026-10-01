@@ -139,7 +139,7 @@ class DashboardController extends Controller
             ->filter(fn ($p) => $p->date_line && $p->date_line->betweenIncluded(today(), $until))
             ->map(fn ($p) => [
                 'date' => $p->date_line,
-                'title' => 'التسليم النهائي — ' . $p->title,
+                'title' => __('التسليم النهائي — :title', ['title' => $p->title]),
                 'kind' => 'deadline',
                 'href' => route('supervisor.projects.show', $p->id),
             ]);
@@ -154,7 +154,7 @@ class DashboardController extends Controller
                 ->get()
                 ->map(fn ($d) => [
                     'date' => $d->starts_at,
-                    'title' => 'مناقشة — ' . $d->project->title,
+                    'title' => __('مناقشة — :title', ['title' => $d->project->title]),
                     'kind' => 'defense',
                     'role' => optional($d->members->firstWhere('supervisor_id', $me))->role_label,
                     'meta' => $d->starts_at->format('H:i') . ' · ' . $d->place_label,
@@ -251,7 +251,7 @@ class DashboardController extends Controller
             ->first();
 
         if (! $project) {
-            return redirect()->back()->with('fail', 'الطلب غير موجود أو رُدّ عليه من قبل.');
+            return redirect()->back()->with('fail', __('الطلب غير موجود أو رُدّ عليه من قبل.'));
         }
 
         $isAccept = (bool) request()->btnAccept;
@@ -259,7 +259,7 @@ class DashboardController extends Controller
         // لا قبول بلا مقعد — كان يُقبل فوق الحدّ، والرفض التلقائي يقارن
         // بعدد كل الفصول فلا يعمل
         if ($isAccept && $supervisor->seatsLeft() <= 0) {
-            return redirect()->back()->with('fail', 'اكتمل حدّ مجموعاتك لهذا الفصل — القبول يحتاج رفع الحدّ من الإدارة.');
+            return redirect()->back()->with('fail', __('اكتمل حدّ مجموعاتك لهذا الفصل — القبول يحتاج رفع الحدّ من الإدارة.'));
         }
 
         // سبب الرفض (اختياري) — يُرسل للطلاب ضمن الإشعار
@@ -278,10 +278,10 @@ class DashboardController extends Controller
                 $locked = Project::whereKey($project->id)->where('status', 'request')->lockForUpdate()->first();
 
                 if (! $locked) {
-                    throw new \DomainException('رُدّ على هذا الطلب من قبل.');
+                    throw new \DomainException(__('رُدّ على هذا الطلب من قبل.'));
                 }
                 if ($isAccept && $supervisor->seatsLeft() <= 0) {
-                    throw new \DomainException('اكتمل حدّ مجموعاتك لهذا الفصل — القبول يحتاج رفع الحدّ من الإدارة.');
+                    throw new \DomainException(__('اكتمل حدّ مجموعاتك لهذا الفصل — القبول يحتاج رفع الحدّ من الإدارة.'));
                 }
 
                 $to = $isAccept ? 'accept' : 'reject';
@@ -314,7 +314,7 @@ class DashboardController extends Controller
         } catch (\Exception $ex) {
             \Illuminate\Support\Facades\Log::error('فشل الردّ على طلب إشراف', ['project' => $project->id, 'exception' => $ex]);
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
         }
 
         foreach ($outbox as [$target, $text]) {
@@ -325,8 +325,8 @@ class DashboardController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', "تم {$msg} المشروع بنجاح"
-            . ($autoRejected ? " — واكتمل حدّك فرُفض {$autoRejected} طلب معلّق تلقائياً" : ''));
+        return redirect()->back()->with('success', ($isAccept ? __('تم قبول المشروع بنجاح') : __('تم رفض المشروع بنجاح'))
+            . ($autoRejected ? ' — ' . __('واكتمل حدّك فرُفض :n طلب معلّق تلقائياً', ['n' => $autoRejected]) : ''));
     }
 
     private function notifyTeam(Project $project, string $msg): void
@@ -368,13 +368,13 @@ class DashboardController extends Controller
             ->first();
 
         if (! $project) {
-            return redirect()->back()->with('fail', 'المشروع غير موجود.');
+            return redirect()->back()->with('fail', __('المشروع غير موجود.'));
         }
 
         if ($project->status !== 'accept') {
             return redirect()->back()->with('fail', $project->status === 'complete'
-                ? 'المشروع مكتمل من قبل.'
-                : 'لا يُكمَل إلا مشروع مقبول.');
+                ? __('المشروع مكتمل من قبل.')
+                : __('لا يُكمَل إلا مشروع مقبول.'));
         }
 
         $project->update(['status' => 'complete']);
@@ -387,6 +387,6 @@ class DashboardController extends Controller
             \Illuminate\Support\Facades\Log::warning('أُكمل المشروع وتعذّر إشعار الفريق', ['project' => $project->id, 'exception' => $ex]);
         }
 
-        return redirect()->back()->with('success', 'اكتمل المشروع — يمكنك الآن رصد التقييم.');
+        return redirect()->back()->with('success', __('اكتمل المشروع — يمكنك الآن رصد التقييم.'));
     }
 }

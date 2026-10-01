@@ -103,18 +103,18 @@ class SpecializeController extends Controller
         $specialize = Specialize::find($id);
 
         if (! $specialize) {
-            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+            return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
         }
 
         if ($specialize->isArchived()) {
-            return redirect()->back()->with('fail', 'التخصص موقوف أصلاً.');
+            return redirect()->back()->with('fail', __('التخصص موقوف أصلاً.'));
         }
 
         $specialize->update(['archived_at' => now()]);
 
         Audit::record('specialize.archived', $specialize);
 
-        return redirect()->back()->with('success', "تم إيقاف «{$specialize->name}» — لن يُسجَّل عليه أحد جديد.");
+        return redirect()->back()->with('success', __('تم إيقاف «:name» — لن يُسجَّل عليه أحد جديد.', ['name' => $specialize->name]));
     }
 
     /** استئناف تخصص موقوف */
@@ -123,14 +123,14 @@ class SpecializeController extends Controller
         $specialize = Specialize::find($id);
 
         if (! $specialize) {
-            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+            return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
         }
 
         $specialize->update(['archived_at' => null]);
 
         Audit::record('specialize.restored', $specialize);
 
-        return redirect()->back()->with('success', "تم استئناف «{$specialize->name}».");
+        return redirect()->back()->with('success', __('تم استئناف «:name».', ['name' => $specialize->name]));
     }
 
     public function store(SpecializeRequest $request)
@@ -140,11 +140,11 @@ class SpecializeController extends Controller
 
             // لا \u200E$request->all()\u200E: \u200Earchived_at\u200E قابل للإسناد، والأرشفة فعلٌ له مساره
             Specialize::create($request->only('name'));
-            return redirect()->route("admin.specialize.index")->with('success', "تم اضافة السجل بنجاح");
+            return redirect()->route("admin.specialize.index")->with('success', __('تم اضافة السجل بنجاح'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
         }
 
     }
@@ -154,15 +154,15 @@ class SpecializeController extends Controller
         try {
             $specialize = Specialize::where('id', $request->id)->first();
             if (!$specialize) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             $specialize->update($request->only('name'));
-            return redirect()->back()->with('success', "تم تعديل السجل بنجاح");
+            return redirect()->back()->with('success', __('تم تعديل السجل بنجاح'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 
@@ -173,7 +173,7 @@ class SpecializeController extends Controller
         try {
             $specialize = Specialize::where('id', request()->id)->first();
             if (!$specialize) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             // حماية: لا حذف لتخصص مرتبط بطلاب أو مشرفين — وإلا يفقدون تصنيفهم
@@ -181,15 +181,15 @@ class SpecializeController extends Controller
                 || \App\Models\Supervisor::where('specialize_id', $specialize->id)->exists();
             if ($hasUsers) {
                 return redirect()->back()->with('fail',
-                    'لا يمكن حذف التخصص — يوجد طلاب أو مشرفون مسجلون عليه. انقلهم لتخصص آخر أولاً.');
+                    __('لا يمكن حذف التخصص — يوجد طلاب أو مشرفون مسجلون عليه. انقلهم لتخصص آخر أولاً.'));
             }
 
             $specialize->delete();
-            return redirect()->back()->with('success', "تم حذف السجل بنجاح");
+            return redirect()->back()->with('success', __('تم حذف السجل بنجاح'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 

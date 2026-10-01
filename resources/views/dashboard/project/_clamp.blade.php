@@ -7,7 +7,7 @@
 
 <div class="clamp" data-clamp>
     <p class="proj-desc clamp-text">{{ $text }}</p>
-    <button type="button" class="clamp-toggle" hidden aria-expanded="false">المزيد</button>
+    <button type="button" class="clamp-toggle" hidden aria-expanded="false">{{ __('المزيد') }}</button>
 </div>
 
 @once
@@ -21,7 +21,7 @@
                 btn.hidden = false;
                 btn.addEventListener('click', function () {
                     var open = box.classList.toggle('is-open');
-                    btn.textContent = open ? 'أقلّ' : 'المزيد';
+                    btn.textContent = open ? @json(__('أقلّ')) : @json(__('المزيد'));
                     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
                 });
             });

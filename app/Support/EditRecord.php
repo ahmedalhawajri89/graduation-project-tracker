@@ -35,7 +35,7 @@ class EditRecord
             'sub' => (string) $s->university_id,
             'status' => $project
                 ? ['label' => $project->title, 'tone' => 'in']
-                : ['label' => 'بلا فريق', 'tone' => 'none'],
+                : ['label' => __('بلا فريق'), 'tone' => 'none'],
         ];
     }
 
@@ -53,7 +53,7 @@ class EditRecord
             'max_group' => $max,
             'sub' => (string) $s->university_id,
             'status' => [
-                'label' => $used . '/' . $max . ' مجموعات',
+                'label' => __(':used/:max مجموعات', ['used' => $used, 'max' => $max]),
                 'tone' => $max > 0 && $used >= $max ? 'full' : 'in',
             ],
         ];
@@ -65,7 +65,7 @@ class EditRecord
 
         return self::identity($a) + [
             'sub' => (string) $a->email,
-            'status' => $isMe ? ['label' => 'حسابك', 'tone' => 'in'] : null,
+            'status' => $isMe ? ['label' => __('حسابك'), 'tone' => 'in'] : null,
         ];
     }
 

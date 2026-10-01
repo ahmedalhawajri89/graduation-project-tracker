@@ -15,14 +15,14 @@
     $errorCount = $errors->count();
 @endphp
 
-<div class="toast-stack" role="region" aria-label="تنبيهات">
+<div class="toast-stack" role="region" aria-label="{{ __('تنبيهات') }}">
 
     @if (Session::get('success'))
         <div class="app-toast is-success" role="status" aria-live="polite" data-delay="4000">
             <span class="app-toast-bar" aria-hidden="true"></span>
             <i class="ti ti-circle-check app-toast-icon" aria-hidden="true"></i>
             <p class="app-toast-text">{{ Session::get('success') }}</p>
-            <button type="button" class="app-toast-close" aria-label="إغلاق">
+            <button type="button" class="app-toast-close" aria-label="{{ __('إغلاق') }}">
                 <i class="ti ti-x" aria-hidden="true"></i>
             </button>
         </div>
@@ -33,7 +33,7 @@
             <span class="app-toast-bar" aria-hidden="true"></span>
             <i class="ti ti-alert-circle app-toast-icon" aria-hidden="true"></i>
             <p class="app-toast-text">{{ Session::get('fail') }}</p>
-            <button type="button" class="app-toast-close" aria-label="إغلاق">
+            <button type="button" class="app-toast-close" aria-label="{{ __('إغلاق') }}">
                 <i class="ti ti-x" aria-hidden="true"></i>
             </button>
         </div>
@@ -47,10 +47,10 @@
                 @if ($errorCount === 1)
                     {{ $errors->first() }}
                 @else
-                    تعذّر الحفظ — {{ $errorCount }} حقول تحتاج مراجعة، وهي معلَّمة بالأحمر.
+                    {{ __('تعذّر الحفظ — :n حقول تحتاج مراجعة، وهي معلَّمة بالأحمر.', ['n' => $errorCount]) }}
                 @endif
             </p>
-            <button type="button" class="app-toast-close" aria-label="إغلاق">
+            <button type="button" class="app-toast-close" aria-label="{{ __('إغلاق') }}">
                 <i class="ti ti-x" aria-hidden="true"></i>
             </button>
         </div>

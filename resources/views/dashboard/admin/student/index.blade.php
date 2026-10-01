@@ -1,8 +1,8 @@
 @extends('layouts.admin.admin')
-@section('title', 'بيانات الطلاب')
+@section('title', __('بيانات الطلاب'))
 
 @section('crumbs')
-    <x-crumb>بيانات الطلاب</x-crumb>
+    <x-crumb>{{ __('بيانات الطلاب') }}</x-crumb>
 @endsection
 
 @section('content')
@@ -20,34 +20,34 @@
     @if ($currentSpecializeName)
         <div class="scope-chip">
             <i class="ti ti-filter" aria-hidden="true"></i>
-            <span>مُصفّى حسب التخصص: <b>{{ $currentSpecializeName }}</b></span>
+            <span>{{ __('مُصفّى حسب التخصص:') }} <b>{{ $currentSpecializeName }}</b></span>
             <a href="{{ route('admin.students.index', array_diff_key($filterQuery, ['specialize' => ''])) }}"
-                class="scope-chip-clear" title="إزالة تصفية التخصص" aria-label="إزالة تصفية التخصص">
+                class="scope-chip-clear" title="{{ __('إزالة تصفية التخصص') }}" aria-label="{{ __('إزالة تصفية التخصص') }}">
                 <i class="ti ti-x" aria-hidden="true"></i>
             </a>
         </div>
     @endif
 
-    <x-page-header title="بيانات الطلاب"
-        subtitle="{{ $countAll }} طالباً · {{ $countInGroup }} في فرق · {{ $countNoGroup }} بلا فريق">
+    <x-page-header title="{{ __('بيانات الطلاب') }}"
+        subtitle="{{ __(':all طالباً · :in في فرق · :none بلا فريق', ['all' => $countAll, 'in' => $countInGroup, 'none' => $countNoGroup]) }}">
         <x-slot:actions>
             {{-- فعل أساسي واحد بالحبر، وما عداه ثانوي بحدّ شعرة —
                  كان أزرق وأخضر يتنافسان --}}
             <button type="button" class="btn btn-primary btn-create" data-bs-toggle="offcanvas"
                 data-bs-target="#createDrawer">
                 <i class="ti ti-plus me-1" aria-hidden="true"></i>
-                إضافة طالب
+                {{ __('إضافة طالب') }}
             </button>
 
             <button type="button" class="btn btn-outline-primary btn-import" data-bs-toggle="modal"
                 data-bs-target="#importModal">
                 <i class="ti ti-upload me-1" aria-hidden="true"></i>
-                استيراد
+                {{ __('استيراد') }}
             </button>
 
             <a href="{{ route('admin.students.export', $filterQuery) }}" class="btn btn-outline-primary">
                 <i class="ti ti-file-spreadsheet me-1" aria-hidden="true"></i>
-                تصدير
+                {{ __('تصدير') }}
             </a>
         </x-slot:actions>
     </x-page-header>
@@ -58,22 +58,22 @@
          لوحة التحكم تربط «الطلاب بلا فريق» إلى هنا، ولم تكن هناك
          وسيلة لعزلهم من بين الـ٥٠٠. --}}
     <div class="filter-bar mb-3">
-        <div class="filter-tabs" role="group" aria-label="تصفية حسب الانضمام">
+        <div class="filter-tabs" role="group" aria-label="{{ __('تصفية حسب الانضمام') }}">
             <a href="{{ route('admin.students.index', array_diff_key($filterQuery, ['group' => ''])) }}"
                 class="filter-tab {{ is_null($currentGroupFilter) ? 'is-active' : '' }}">
-                الكل
+                {{ __('الكل') }}
                 <span class="filter-count">{{ $countAll }}</span>
             </a>
             <a href="{{ route('admin.students.index', array_merge($filterQuery, ['group' => 'in'])) }}"
                 class="filter-tab {{ $currentGroupFilter === 'in' ? 'is-active' : '' }}">
                 <span class="filter-dot" style="background: #047857"></span>
-                في فريق
+                {{ __('في فريق') }}
                 <span class="filter-count">{{ $countInGroup }}</span>
             </a>
             <a href="{{ route('admin.students.index', array_merge($filterQuery, ['group' => 'none'])) }}"
                 class="filter-tab {{ $currentGroupFilter === 'none' ? 'is-active' : '' }}">
                 <span class="filter-dot" style="background: #b45309"></span>
-                بلا فريق
+                {{ __('بلا فريق') }}
                 <span class="filter-count">{{ $countNoGroup }}</span>
             </a>
         </div>
@@ -89,7 +89,7 @@
                  لأن البحث فوريّ. --}}
             <div class="filter-field filter-field--search">
                 {{-- المُعرِّف يضعه السكربت على الحقل بعد نقله --}}
-                <label class="form-label" for="dt-search-input">بحث</label>
+                <label class="form-label" for="dt-search-input">{{ __('بحث') }}</label>
                 <div class="filter-search-box">
                     <i class="ti ti-search filter-search-icon" aria-hidden="true"></i>
                     <div id="dt-search-slot"></div>
@@ -97,14 +97,14 @@
             </div>
 
             <div class="filter-field">
-                <label class="form-label" for="f-spec">التخصص</label>
+                <label class="form-label" for="f-spec">{{ __('التخصص') }}</label>
                 <select name="specialize" id="f-spec" class="form-select">
-                    <option value="">كل التخصصات</option>
+                    <option value="">{{ __('كل التخصصات') }}</option>
                     {{-- الموقوفة تبقى هنا: طلابها موجودون ولا بدّ من
                          الوصول إليهم --}}
                     @foreach ($filterSpecializes as $spec)
                         <option value="{{ $spec->id }}" @selected($currentSpecialize === $spec->id)>
-                            {{ $spec->name }}@if ($spec->isArchived()) (موقوف)@endif
+                            {{ $spec->name }}@if ($spec->isArchived()) ({{ __('موقوف') }})@endif
                         </option>
                     @endforeach
                 </select>
@@ -113,12 +113,12 @@
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
                     <i class="ti ti-filter me-1" aria-hidden="true"></i>
-                    تطبيق
+                    {{ __('تطبيق') }}
                 </button>
                 @if (count($filterQuery))
                     <a href="{{ route('admin.students.index') }}" class="btn btn-ghost-secondary">
                         <i class="ti ti-x me-1" aria-hidden="true"></i>
-                        مسح
+                        {{ __('مسح') }}
                     </a>
                 @endif
             </div>
@@ -133,14 +133,14 @@
                      والبريد انتقل إلى خليّة الهوية مع الاسم. --}}
                 <thead>
                     <tr>
-                        <th>الطالب</th>
-                        <th>الرقم الجامعي</th>
-                        <th>التخصص</th>
-                        <th>رقم الجوال</th>
-                        <th>المشروع</th>
+                        <th>{{ __('الطالب') }}</th>
+                        <th>{{ __('الرقم الجامعي') }}</th>
+                        <th>{{ __('التخصص') }}</th>
+                        <th>{{ __('رقم الجوال') }}</th>
+                        <th>{{ __('المشروع') }}</th>
                         {{-- كان فارغاً: عمود بلا عنوان ولا محتوى ظاهر
                              يُقرأ كعطل لا كتصميم --}}
-                        <th class="w-1">إجراءات</th>
+                        <th class="w-1">{{ __('إجراءات') }}</th>
                     </tr>
                 </thead>
             </table>
@@ -151,7 +151,7 @@
     @include('dashboard.admin.student.create_modal')
     @include('dashboard.admin.student.edit_modal')
     @include('dashboard.component.delete_modal', [
-        'delete_title' => 'الطالب',
+        'delete_title' => __('الطالب'),
         'delete_controller_name' => 'admin.students',
     ])
 
@@ -160,7 +160,7 @@
 
 @include('dashboard.component.datatables_style_script', [
     'urlData' => route('admin.students.getData', $filterQuery),
-    'searchPlaceholder' => 'ابحث بالاسم أو الرقم الجامعي أو البريد…',
+    'searchPlaceholder' => __('ابحث بالاسم أو الرقم الجامعي أو البريد…'),
     // الفرز على عمودين فقط: الاسم والرقم الجامعي. لن يرتّب أحد ٥٠٠
     // طالب حسب الجوال أو التخصص، والأسهم على كل عمود ضجيج في الرأس.
     'columnsData' => "[

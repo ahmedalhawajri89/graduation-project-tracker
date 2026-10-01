@@ -1,19 +1,19 @@
 @extends('layouts.admin.admin')
-@section('title', 'مسؤولو النظام')
+@section('title', __('مسؤولو النظام'))
 
 @section('crumbs')
-    <x-crumb>مسؤولو النظام</x-crumb>
+    <x-crumb>{{ __('مسؤولو النظام') }}</x-crumb>
 @endsection
 
 @section('content')
 
-    <x-page-header title="مسؤولو النظام"
-        subtitle="{{ $countAll }} {{ $countAll == 1 ? 'حساب' : 'حسابات' }} بصلاحية كاملة على المنصّة">
+    <x-page-header title="{{ __('مسؤولو النظام') }}"
+        subtitle="{{ $countAll == 1 ? __(':n حساب بصلاحية كاملة على المنصّة', ['n' => $countAll]) : __(':n حسابات بصلاحية كاملة على المنصّة', ['n' => $countAll]) }}">
         <x-slot:actions>
             <button type="button" class="btn btn-primary btn-create" data-bs-toggle="offcanvas"
                 data-bs-target="#createDrawer">
                 <i class="ti ti-plus me-1" aria-hidden="true"></i>
-                إضافة مسؤول
+                {{ __('إضافة مسؤول') }}
             </button>
         </x-slot:actions>
     </x-page-header>
@@ -24,9 +24,8 @@
         <div class="alert alert-warning d-flex align-items-start gap-2 mb-3" role="alert">
             <i class="ti ti-alert-triangle fs-2" aria-hidden="true"></i>
             <div>
-                <strong>حساب مسؤول واحد فقط.</strong>
-                إن فُقدت كلمة مروره تعذّر الدخول إلى لوحة التحكم — لا يوجد استرجاع.
-                يُنصح بإضافة حساب ثانٍ لشخص تثق به.
+                <strong>{{ __('حساب مسؤول واحد فقط.') }}</strong>
+                {{ __('إن فُقدت كلمة مروره تعذّر الدخول إلى لوحة التحكم — لا يوجد استرجاع. يُنصح بإضافة حساب ثانٍ لشخص تثق به.') }}
             </div>
         </div>
     @endif
@@ -36,7 +35,7 @@
         <div class="filter-form">
             <div class="filter-field filter-field--search">
                 {{-- المُعرِّف يضعه السكربت على الحقل بعد نقله --}}
-                <label class="form-label" for="dt-search-input">بحث</label>
+                <label class="form-label" for="dt-search-input">{{ __('بحث') }}</label>
                 <div class="filter-search-box">
                     <i class="ti ti-search filter-search-icon" aria-hidden="true"></i>
                     <div id="dt-search-slot"></div>
@@ -52,10 +51,10 @@
             <table class="table table-vcenter card-table" id="dataTable-1">
                 <thead>
                     <tr>
-                        <th>المسؤول</th>
-                        <th>رقم الجوال</th>
-                        <th class="w-1">عضو منذ</th>
-                        <th class="w-1">إجراءات</th>
+                        <th>{{ __('المسؤول') }}</th>
+                        <th>{{ __('رقم الجوال') }}</th>
+                        <th class="w-1">{{ __('عضو منذ') }}</th>
+                        <th class="w-1">{{ __('إجراءات') }}</th>
                     </tr>
                 </thead>
             </table>
@@ -65,9 +64,9 @@
     @include('dashboard.admin.adminData.create_modal')
     @include('dashboard.admin.adminData.edit_modal')
     @include('dashboard.component.delete_modal', [
-        'delete_title' => 'المسؤول',
+        'delete_title' => __('المسؤول'),
         'delete_controller_name' => 'admin.administrators',
-        'delete_note' => 'سيفقد هذا الحساب صلاحيته فوراً ولا يمكن التراجع. لا يمكن حذف حسابك أنت ولا آخر حساب مسؤول.',
+        'delete_note' => __('سيفقد هذا الحساب صلاحيته فوراً ولا يمكن التراجع. لا يمكن حذف حسابك أنت ولا آخر حساب مسؤول.'),
     ])
 
 @endsection
@@ -75,7 +74,7 @@
 
 @include('dashboard.component.datatables_style_script', [
     'urlData' => route('admin.administrators.getData'),
-    'searchPlaceholder' => 'ابحث بالاسم أو البريد…',
+    'searchPlaceholder' => __('ابحث بالاسم أو البريد…'),
     'columnsData' => "[
                 {data: 'identity', name: 'name'},
                 {data: 'phone', name: 'phone', orderable: false},

@@ -48,13 +48,13 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping, Shoul
     public function headings(): array
     {
         return [
-            'الرقم الجامعي',
-            'اسم الطالب',
-            'التخصص',
-            'البريد الإلكتروني',
-            'رقم الجوال',
-            'الجنس',
-            'المشروع',
+            __('الرقم الجامعي'),
+            __('اسم الطالب'),
+            __('التخصص'),
+            __('البريد الإلكتروني'),
+            __('رقم الجوال'),
+            __('الجنس'),
+            __('المشروع'),
         ];
     }
 
@@ -67,7 +67,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping, Shoul
             $student->email,
             $student->phone,
             __('site.' . $student->gender),
-            $student->groups->first()?->project?->title ?? 'بلا فريق',
+            $student->groups->first()?->project?->title ?? __('بلا فريق'),
         ];
     }
 }

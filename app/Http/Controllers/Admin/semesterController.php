@@ -72,15 +72,15 @@ class semesterController extends Controller
             if (! Semester::where('is_active', true)->where('id', '!=', $semester->id)->exists()) {
                 $semester->update(['is_active' => true]);
                 return redirect()->route('admin.semesters.index')
-                    ->with('success', 'تم إضافة الفصل وتفعيله (أول فصل في النظام)');
+                    ->with('success', __('تم إضافة الفصل وتفعيله (أول فصل في النظام)'));
             }
 
             return redirect()->route('admin.semesters.index')
-                ->with('success', 'تم إضافة الفصل بنجاح — لن ينتقل النظام إليه حتى تضغط "تفعيل"');
+                ->with('success', __('تم إضافة الفصل بنجاح — لن ينتقل النظام إليه حتى تضغط "تفعيل"'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
         }
 
     }
@@ -90,7 +90,7 @@ class semesterController extends Controller
     {
         $semester = Semester::where('id', $id)->first();
         if (!$semester) {
-            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+            return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
         }
 
         try {
@@ -106,10 +106,10 @@ class semesterController extends Controller
                 'semester' => ['from' => $previous, 'to' => $semester->name],
             ]);
 
-            return redirect()->back()->with('success', "تم التفعيل — النظام الآن يعمل على: {$semester->name}");
+            return redirect()->back()->with('success', __('تم التفعيل — النظام الآن يعمل على: :name', ['name' => $semester->name]));
 
         } catch (\Exception$ex) {
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
         }
     }
 
@@ -118,7 +118,7 @@ class semesterController extends Controller
         try {
             $semester = Semester::where('id', $request->id)->first();
             if (!$semester) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             // \u200E$request->all()\u200E و\u200Eis_active\u200E قابل للإسناد الجماعي: طلبٌ
@@ -126,11 +126,11 @@ class semesterController extends Controller
             // النظام فصلان نشطان و\u200ESemester::current()\u200E تختار أحدهما
             // اعتباطاً. التفعيل له مساره الخاص وحده.
             $semester->update($request->only('name'));
-            return redirect()->back()->with('success', "تم تعديل السجل بنجاح");
+            return redirect()->back()->with('success', __('تم تعديل السجل بنجاح'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 
@@ -141,7 +141,7 @@ class semesterController extends Controller
         try {
             $semester = Semester::where('id', request()->id)->first();
             if (!$semester) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             // حماية الأرشيف: لا حذف لفصل يحتوي مشاريع مسجلة — وإلا تفقد المشاريع ربطها بالفصل.
@@ -149,21 +149,21 @@ class semesterController extends Controller
             // للاسترجاع، وحذف فصله يُرجعه بلا فصل.
             if (Project::withTrashed()->where('semester_id', $semester->id)->exists()) {
                 return redirect()->back()->with('fail',
-                    'لا يمكن حذف هذا الفصل — يحتوي مشاريع مسجلة، وحذفه يدمر أرشيف النتائج.');
+                    __('لا يمكن حذف هذا الفصل — يحتوي مشاريع مسجلة، وحذفه يدمر أرشيف النتائج.'));
             }
 
             // لا حذف للفصل النشط — فعّل فصلاً آخر أولاً
             if ($semester->is_active) {
                 return redirect()->back()->with('fail',
-                    'لا يمكن حذف الفصل النشط — فعّل فصلاً آخر أولاً ثم احذف هذا.');
+                    __('لا يمكن حذف الفصل النشط — فعّل فصلاً آخر أولاً ثم احذف هذا.'));
             }
 
             $semester->delete();
-            return redirect()->back()->with('success', "تم حذف السجل بنجاح");
+            return redirect()->back()->with('success', __('تم حذف السجل بنجاح'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 

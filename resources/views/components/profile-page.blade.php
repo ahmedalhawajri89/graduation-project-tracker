@@ -26,7 +26,7 @@
     $canGender = in_array('gender', $editable, true);
 @endphp
 
-<x-page-header title="الملف الشخصي" subtitle="حسابك وبياناتك وكلمة السر" />
+<x-page-header title="{{ __('الملف الشخصي') }}" subtitle="{{ __('حسابك وبياناتك وكلمة السر') }}" />
 
 @if ($notice)
     <div class="alert alert-warning d-flex align-items-start gap-2 mb-3" role="alert">
@@ -60,7 +60,7 @@
 
                 @if ($user->created_at)
                     <span class="profile-meta-sep" aria-hidden="true">·</span>
-                    <span>عضو منذ <b>{{ $user->created_at->translatedFormat('F Y') }}</b></span>
+                    <span>{!! __('عضو منذ :date', ['date' => '<b>' . e($user->created_at->translatedFormat('F Y')) . '</b>']) !!}</span>
                 @endif
             </p>
         </div>
@@ -85,8 +85,8 @@
                 <header class="profile-section-head">
                     <i class="ti ti-camera" aria-hidden="true"></i>
                     <div>
-                        <h3>الصورة الشخصية</h3>
-                        <p>اختيارية. تُعرَض لمسؤول النظام والمشرف الأكاديمي.</p>
+                        <h3>{{ __('الصورة الشخصية') }}</h3>
+                        <p>{{ __('اختيارية. تُعرَض لمسؤول النظام والمشرف الأكاديمي.') }}</p>
                     </div>
                 </header>
 
@@ -107,13 +107,13 @@
                         </label>
 
                         <p class="avatar-card-hint" id="avatar-hint">
-                            اسحب صورة إلى هنا أو انقر لاختيارها.<br>
-                            <span>JPG أو PNG أو WebP · حتى 2 ميغابايت · تُقصّ مربّعة إلى 256 بكسل</span>
+                            {{ __('اسحب صورة إلى هنا أو انقر لاختيارها.') }}<br>
+                            <span>{{ __('JPG أو PNG أو WebP · حتى 2 ميغابايت · تُقصّ مربّعة إلى 256 بكسل') }}</span>
                         </p>
 
                         <button type="submit" class="btn btn-primary w-100 d-none" id="avatar-save">
                             <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>
-                            حفظ الصورة
+                            {{ __('حفظ الصورة') }}
                         </button>
                     </form>
 
@@ -123,7 +123,7 @@
                             @method('DELETE')
                             <button type="submit" class="btn btn-ghost-secondary w-100">
                                 <i class="ti ti-trash me-1" aria-hidden="true"></i>
-                                إزالة الصورة
+                                {{ __('إزالة الصورة') }}
                             </button>
                         </form>
                     @endif
@@ -138,8 +138,8 @@
             <header class="profile-section-head">
                 <i class="ti ti-shield-lock" aria-hidden="true"></i>
                 <div>
-                    <h3>الأمان</h3>
-                    <p>كلمة السر لا تقلّ عن 8 أحرف.</p>
+                    <h3>{{ __('الأمان') }}</h3>
+                    <p>{{ __('كلمة السر لا تقلّ عن 8 أحرف.') }}</p>
                 </div>
             </header>
 
@@ -158,12 +158,12 @@
                 @endif
 
                 <div class="mb-3">
-                    <label class="form-label" for="p-current">كلمة السر الحالية</label>
+                    <label class="form-label" for="p-current">{{ __('كلمة السر الحالية') }}</label>
                     <div class="password-wrapper">
                         <input id="p-current" type="password" name="current_password"
                             class="form-control @error('current_password') is-invalid @enderror"
                             autocomplete="current-password">
-                        <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
+                        <button type="button" class="toggle-password" aria-label="{{ __('إظهار كلمة السر') }}"
                             data-target="p-current"><i class="ti ti-eye"></i></button>
                     </div>
                     @error('current_password')
@@ -172,19 +172,19 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="p-new">كلمة السر الجديدة</label>
+                    <label class="form-label" for="p-new">{{ __('كلمة السر الجديدة') }}</label>
                     <div class="password-wrapper">
                         <input id="p-new" type="password" name="password"
                             class="form-control @error('password') is-invalid @enderror" autocomplete="new-password"
-                            minlength="8" placeholder="8 أحرف على الأقل">
-                        <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
+                            minlength="8" placeholder="{{ __('8 أحرف على الأقل') }}">
+                        <button type="button" class="toggle-password" aria-label="{{ __('إظهار كلمة السر') }}"
                             data-target="p-new"><i class="ti ti-eye"></i></button>
                     </div>
                     {{-- مقياس القوة: تغذية راجعة أثناء الكتابة بدل
                          رسالة خطأ بعد الإرسال --}}
                     <div class="pw-meter" aria-hidden="true">
                         <span class="pw-meter-bar"><span id="pw-fill"></span></span>
-                        <span class="pw-meter-label" id="pw-label">أدخل كلمة سر</span>
+                        <span class="pw-meter-label" id="pw-label">{{ __('أدخل كلمة سر') }}</span>
                     </div>
                     @error('password')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -192,11 +192,11 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label" for="p-confirm">تأكيد كلمة السر</label>
+                    <label class="form-label" for="p-confirm">{{ __('تأكيد كلمة السر') }}</label>
                     <div class="password-wrapper">
                         <input id="p-confirm" type="password" name="password_confirmation" class="form-control"
-                            autocomplete="new-password" placeholder="أعد كتابة كلمة السر">
-                        <button type="button" class="toggle-password" aria-label="إظهار كلمة السر"
+                            autocomplete="new-password" placeholder="{{ __('أعد كتابة كلمة السر') }}">
+                        <button type="button" class="toggle-password" aria-label="{{ __('إظهار كلمة السر') }}"
                             data-target="p-confirm"><i class="ti ti-eye"></i></button>
                     </div>
                     <div class="form-hint" id="pw-match"></div>
@@ -204,7 +204,7 @@
 
                 <button type="submit" class="btn btn-primary">
                     <i class="ti ti-key me-1" aria-hidden="true"></i>
-                    تغيير كلمة السر
+                    {{ __('تغيير كلمة السر') }}
                 </button>
             </form>
         </section>
@@ -215,8 +215,8 @@
         <header class="profile-section-head">
             <i class="ti ti-user" aria-hidden="true"></i>
             <div>
-                <h3>المعلومات الشخصية</h3>
-                <p>ما يظهر لك ولمن يراك في النظام.</p>
+                <h3>{{ __('المعلومات الشخصية') }}</h3>
+                <p>{{ __('ما يظهر لك ولمن يراك في النظام.') }}</p>
             </div>
         </header>
 
@@ -225,7 +225,7 @@
             @method('PUT')
 
             <div class="mb-3">
-                <label class="form-label" for="p-name">الاسم</label>
+                <label class="form-label" for="p-name">{{ __('الاسم') }}</label>
                 @if ($canName)
                     <input id="p-name" type="text" name="name"
                         class="form-control @error('name') is-invalid @enderror"
@@ -242,7 +242,7 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label" for="p-email">البريد الإلكتروني</label>
+                <label class="form-label" for="p-email">{{ __('البريد الإلكتروني') }}</label>
                 @if ($canEmail)
                     <input id="p-email" type="email" name="email" dir="ltr"
                         class="form-control @error('email') is-invalid @enderror"
@@ -250,7 +250,7 @@
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <div class="form-hint">هو اسم الدخول. تغييره يتطلّب كلمة السر الحالية.</div>
+                    <div class="form-hint">{{ __('هو اسم الدخول. تغييره يتطلّب كلمة السر الحالية.') }}</div>
                 @else
                     <div class="field-locked" dir="ltr">
                         <span>{{ $user->email }}</span>
@@ -260,22 +260,22 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label" for="p-phone">رقم الجوال</label>
+                <label class="form-label" for="p-phone">{{ __('رقم الجوال') }}</label>
                 <input id="p-phone" type="tel" name="phone" dir="ltr" inputmode="numeric" maxlength="10"
                     class="form-control @error('phone') is-invalid @enderror"
                     value="{{ old('phone', $user->phone) }}" required>
                 @error('phone')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
-                <div class="form-hint">10 أرقام، تبدأ بصفر.</div>
+                <div class="form-hint">{{ __('10 أرقام، تبدأ بصفر.') }}</div>
             </div>
 
             @if ($canGender)
                 <div class="mb-3">
-                    <label class="form-label" for="p-gender">الجنس</label>
+                    <label class="form-label" for="p-gender">{{ __('الجنس') }}</label>
                     <select id="p-gender" name="gender" class="form-select">
-                        <option value="male" @selected(old('gender', $user->gender) === 'male')>ذكر</option>
-                        <option value="female" @selected(old('gender', $user->gender) === 'female')>أنثى</option>
+                        <option value="male" @selected(old('gender', $user->gender) === 'male')>{{ __('ذكر') }}</option>
+                        <option value="female" @selected(old('gender', $user->gender) === 'female')>{{ __('أنثى') }}</option>
                     </select>
                 </div>
             @endif
@@ -294,15 +294,15 @@
             @if (count($facts) || ! $canName)
                 <p class="profile-locked-note">
                     <i class="ti ti-info-circle" aria-hidden="true"></i>
-                    الحقول المقفلة تصدرها الجامعة. راجع مسؤول النظام لتعديلها.
+                    {{ __('الحقول المقفلة تصدرها الجامعة. راجع مسؤول النظام لتعديلها.') }}
                 </p>
             @endif
 
             @if ($canEmail)
                 <div class="mb-3">
-                    <label class="form-label" for="p-current-info">كلمة السر الحالية</label>
+                    <label class="form-label" for="p-current-info">{{ __('كلمة السر الحالية') }}</label>
                     <input id="p-current-info" type="password" name="current_password" class="form-control"
-                        autocomplete="current-password" placeholder="تُطلب فقط عند تغيير البريد">
+                        autocomplete="current-password" placeholder="{{ __('تُطلب فقط عند تغيير البريد') }}">
                     @error('current_password')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
@@ -311,7 +311,7 @@
 
             <button type="submit" class="btn btn-primary">
                 <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>
-                حفظ المعلومات
+                {{ __('حفظ المعلومات') }}
             </button>
         </form>
     </section>
@@ -338,7 +338,7 @@
                 preview.querySelector('img').src = URL.createObjectURL(file);
 
                 if (save) save.classList.remove('d-none');
-                if (hint) hint.textContent = 'اضغط «حفظ الصورة» لتأكيد الرفع.';
+                if (hint) hint.textContent = @json(__('اضغط «حفظ الصورة» لتأكيد الرفع.'));
             }
 
             input.addEventListener('change', function () {
@@ -398,18 +398,18 @@
             }
 
             var levels = [
-                { w: '0%',   c: '',          t: 'أدخل كلمة سر' },
-                { w: '25%',  c: 'is-weak',   t: 'ضعيفة' },
-                { w: '50%',  c: 'is-fair',   t: 'مقبولة' },
-                { w: '75%',  c: 'is-good',   t: 'جيدة' },
-                { w: '100%', c: 'is-strong', t: 'قوية' }
+                { w: '0%',   c: '',          t: @json(__('أدخل كلمة سر')) },
+                { w: '25%',  c: 'is-weak',   t: @json(__('ضعيفة')) },
+                { w: '50%',  c: 'is-fair',   t: @json(__('مقبولة')) },
+                { w: '75%',  c: 'is-good',   t: @json(__('جيدة')) },
+                { w: '100%', c: 'is-strong', t: @json(__('قوية')) }
             ];
 
             function checkMatch() {
                 if (!confirmField || !match) return;
                 if (!confirmField.value) { match.textContent = ''; match.className = 'form-hint'; return; }
                 var ok = confirmField.value === pw.value;
-                match.textContent = ok ? 'متطابقتان' : 'غير متطابقتين';
+                match.textContent = ok ? @json(__('متطابقتان')) : @json(__('غير متطابقتين'));
                 match.className = 'form-hint ' + (ok ? 'text-success' : 'text-danger');
             }
 
@@ -417,7 +417,7 @@
                 var lvl = levels[score(pw.value)];
                 fill.style.width = lvl.w;
                 fill.className = lvl.c;
-                label.textContent = pw.value && pw.value.length < 8 ? 'قصيرة — 8 أحرف على الأقل' : lvl.t;
+                label.textContent = pw.value && pw.value.length < 8 ? @json(__('قصيرة — 8 أحرف على الأقل')) : lvl.t;
                 checkMatch();
             }
 

@@ -31,13 +31,13 @@
         <div class="form-hint mb-0">
             <i class="ti ti-info-circle me-1"></i>
             @if ($isStudentContext)
-                أنت قائد الفريق تلقائياً — ابحث عن بقية الأعضاء.
+                {{ __('أنت قائد الفريق تلقائياً — ابحث عن بقية الأعضاء.') }}
             @else
-                ابحث عن الطلاب المراد إضافتهم (المتاحون فقط: بدون مشروع نشط).
+                {{ __('ابحث عن الطلاب المراد إضافتهم (المتاحون فقط: بدون مشروع نشط).') }}
             @endif
         </div>
         @if ($isStudentContext)
-            <span class="badge bg-primary-lt text-primary" id="picker-counter">الفريق: 1</span>
+            <span class="badge bg-primary-lt text-primary" id="picker-counter">{{ __('الفريق: :n', ['n' => 1]) }}</span>
         @endif
     </div>
 
@@ -47,12 +47,12 @@
         <div class="input-icon">
             <span class="input-icon-addon"><i class="ti ti-search"></i></span>
             <input type="search" id="picker-search" class="form-control" autocomplete="off"
-                placeholder="ابحث بالاسم أو الرقم الجامعي.." aria-label="بحث عن طالب">
+                placeholder="{{ __('ابحث بالاسم أو الرقم الجامعي..') }}" aria-label="{{ __('بحث عن طالب') }}">
         </div>
         @if ($availableCount)
             <button type="button" class="btn btn-outline-primary" id="picker-browse">
                 <i class="ti ti-list me-1" aria-hidden="true"></i>
-                عرض المتاحين
+                {{ __('عرض المتاحين') }}
             </button>
         @endif
     </div>
@@ -60,9 +60,9 @@
     {{-- العدد: من يرى «١٤٧ متاحاً» يعرف أن البحث هو الطريق --}}
     <p class="picker-count" id="picker-count">
         @if ($availableCount)
-            {{ $availableCount }} طالباً متاحاً — اكتب للبحث
+            {{ __(':n طالباً متاحاً — اكتب للبحث', ['n' => $availableCount]) }}
         @else
-            لا يوجد طلاب متاحون حالياً في هذا التخصص.
+            {{ __('لا يوجد طلاب متاحون حالياً في هذا التخصص.') }}
         @endif
     </p>
 
@@ -76,10 +76,10 @@
         @endforeach
     </div>
 
-    <div class="picker-list" id="picker-list" role="group" aria-label="نتائج البحث عن أعضاء">
+    <div class="picker-list" id="picker-list" role="group" aria-label="{{ __('نتائج البحث عن أعضاء') }}">
         <p class="picker-hint" id="picker-hint">
             <i class="ti ti-search" aria-hidden="true"></i>
-            اكتب حرفين للبحث، أو اعرض المتاحين.
+            {{ __('اكتب حرفين للبحث، أو اعرض المتاحين.') }}
         </p>
     </div>
 </div>
@@ -101,6 +101,29 @@
             var countLine = document.getElementById('picker-count');
             var counter = document.getElementById('picker-counter');
             var typeSelect = document.getElementById('specialize_project_id');
+
+            var T = {
+                remove: @json(__('إزالة')),
+                team: @json(__('الفريق: :n')),
+                teamOf: @json(__('الفريق: :n من :max')),
+                showing: @json(__('يُعرض :shown من :total متاحاً')),
+                matched: @json(__(':shown من :matched مطابق')),
+                none: @json(__('لا طالب متاح بهذا الاسم أو الرقم.')),
+                more: @json(__('عرض المزيد')),
+                left: @json(__(':n متبقٍ')),
+                loading: @json(__('جارٍ التحميل…')),
+                failed: @json(__('تعذّر التحميل. حاول مرة أخرى.')),
+                hint: @json(__('اكتب حرفين للبحث، أو اعرض المتاحين.')),
+                available: @json(__(':n طالباً متاحاً — اكتب للبحث')),
+            };
+            function fmt(s, o) {
+                return s.replace(/:(\w+)/g, function (m, k) { return k in o ? o[k] : m; });
+            }
+            function esc(s) {
+                var d = document.createElement('div');
+                d.textContent = s;
+                return d.innerHTML;
+            }
 
             // الاسم يُحفظ مع المُعرِّف: الشريحة تبقى معروضة بعد أن
             // يختفي صفّ الطالب من نتيجة بحث جديدة
@@ -135,7 +158,7 @@
                 selected.forEach(function (name, id) {
                     var chip = document.createElement('span');
                     chip.className = 'picker-chip';
-                    chip.innerHTML = '<span></span><button type="button" aria-label="إزالة"><i class="ti ti-x"></i></button>';
+                    chip.innerHTML = '<span></span><button type="button" aria-label="' + esc(T.remove) + '"><i class="ti ti-x"></i></button>';
                     chip.querySelector('span').textContent = name;
                     chip.querySelector('button').addEventListener('click', function () {
                         selected.delete(id);
@@ -153,7 +176,7 @@
                 var l = limits();
                 if (counter) {
                     var team = selected.size + 1; // + قائد الفريق
-                    counter.textContent = 'الفريق: ' + team + (l.max ? ' من ' + l.max : '');
+                    counter.textContent = l.max ? fmt(T.teamOf, { n: team, max: l.max }) : fmt(T.team, { n: team });
                     counter.className = 'badge ' + (l.max && team > l.max
                         ? 'bg-red-lt text-red'
                         : (l.min && team < l.min ? 'bg-yellow-lt text-yellow' : 'bg-green-lt text-green'));
@@ -178,12 +201,12 @@
                 if (countLine) {
                     var shown = data.offset + data.results.length;
                     countLine.textContent = term === ''
-                        ? 'يُعرض ' + shown + ' من ' + data.total + ' متاحاً'
-                        : shown + ' من ' + data.matched + ' مطابق';
+                        ? fmt(T.showing, { shown: shown, total: data.total })
+                        : fmt(T.matched, { shown: shown, matched: data.matched });
                 }
 
                 if (data.results.length === 0 && !append) {
-                    list.innerHTML = '<p class="picker-hint"><i class="ti ti-user-off"></i> لا طالب متاح بهذا الاسم أو الرقم.</p>';
+                    list.innerHTML = '<p class="picker-hint"><i class="ti ti-user-off"></i> ' + esc(T.none) + '</p>';
                     return;
                 }
 
@@ -228,11 +251,11 @@
                     more.className = 'picker-more';
                     // الأيقونة تقول الاتجاه قبل أن يُقرأ النصّ، والعدد
                     // في \u200E<small>\u200E أهدأ من الدعوة نفسها
-                    more.innerHTML = '<i class="ti ti-chevron-down"></i><span>عرض المزيد</span>'
-                        + '<small>' + (data.matched - (data.offset + data.results.length)) + ' متبقٍ</small>';
+                    more.innerHTML = '<i class="ti ti-chevron-down"></i><span>' + esc(T.more) + '</span>'
+                        + '<small>' + esc(fmt(T.left, { n: data.matched - (data.offset + data.results.length) })) + '</small>';
                     more.addEventListener('click', function () {
                         more.disabled = true;
-                        more.innerHTML = '<i class="ti ti-loader-2"></i><span>جارٍ التحميل…</span>';
+                        more.innerHTML = '<i class="ti ti-loader-2"></i><span>' + esc(T.loading) + '</span>';
                         fetchPage(term, data.offset + data.results.length, true);
                     });
                     list.appendChild(more);
@@ -249,7 +272,7 @@
                 controller = new AbortController();
 
                 if (!append) {
-                    list.innerHTML = '<p class="picker-hint"><i class="ti ti-loader-2"></i> جارٍ التحميل…</p>';
+                    list.innerHTML = '<p class="picker-hint"><i class="ti ti-loader-2"></i> ' + esc(T.loading) + '</p>';
                 }
 
                 var query = '?offset=' + offset + (term ? '&q=' + encodeURIComponent(term) : '');
@@ -262,7 +285,7 @@
                     .then(function (data) { render(data, term, append); })
                     .catch(function (e) {
                         if (e.name === 'AbortError') return;
-                        list.innerHTML = '<p class="picker-hint"><i class="ti ti-alert-circle"></i> تعذّر التحميل. حاول مرة أخرى.</p>';
+                        list.innerHTML = '<p class="picker-hint"><i class="ti ti-alert-circle"></i> ' + esc(T.failed) + '</p>';
                     });
             }
 
@@ -270,8 +293,8 @@
                 var term = search.value.trim();
 
                 if (term.length < 2) {
-                    list.innerHTML = '<p class="picker-hint"><i class="ti ti-search"></i> اكتب حرفين للبحث، أو اعرض المتاحين.</p>';
-                    if (countLine) countLine.textContent = total + ' طالباً متاحاً — اكتب للبحث';
+                    list.innerHTML = '<p class="picker-hint"><i class="ti ti-search"></i> ' + esc(T.hint) + '</p>';
+                    if (countLine) countLine.textContent = fmt(T.available, { n: total });
                     return;
                 }
 

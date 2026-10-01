@@ -112,7 +112,7 @@ class GroupsController extends Controller
                 // الفرق واضحاً مهما ضاق العمود.
                 return '<a href="' . route('admin.groups.show', $project->id) . '" class="cell-identity-link">'
                     . '<span class="cell-name">' . e($project->title) . '</span>'
-                    . '<span class="cell-tag">' . e($project->project_type->name ?? 'بلا نوع') . '</span>'
+                    . '<span class="cell-tag">' . e($project->project_type->name ?? __('بلا نوع')) . '</span>'
                     . '</a>';
             })
 
@@ -129,7 +129,7 @@ class GroupsController extends Controller
                 $max = $project->project_type->max ?? null;
 
                 $over = $max && $size > $max ? ' is-over' : '';
-                $title = $max ? ' title="الحد الأقصى لهذا النوع: ' . e($max) . '"' : '';
+                $title = $max ? ' title="' . e(__('الحد الأقصى لهذا النوع: :max', ['max' => $max])) . '"' : '';
                 $limit = $max ? '<small>/' . e($max) . '</small>' : '';
 
                 return '<span class="team-size' . $over . '"' . $title . '>' . e($size) . $limit . '</span>';
@@ -161,10 +161,10 @@ class GroupsController extends Controller
 
             ->addColumn('actions', function ($project) {
                 return '<div class="btn-group">'
-                    . '<a href="' . route('admin.groups.show', $project->id) . '" class="btn-action" title="عرض التفاصيل" aria-label="عرض التفاصيل"><i class="ti ti-eye"></i></a>'
-                    . '<a href="' . route('admin.groups.edit', $project->id) . '" class="btn-action" title="تعديل" aria-label="تعديل"><i class="ti ti-pencil"></i></a>'
+                    . '<a href="' . route('admin.groups.show', $project->id) . '" class="btn-action" title="' . e(__('عرض التفاصيل')) . '" aria-label="' . e(__('عرض التفاصيل')) . '"><i class="ti ti-eye"></i></a>'
+                    . '<a href="' . route('admin.groups.edit', $project->id) . '" class="btn-action" title="' . e(__('تعديل')) . '" aria-label="' . e(__('تعديل')) . '"><i class="ti ti-pencil"></i></a>'
                     . '<button type="button" class="btn-action btn-action--danger btn-delete" data-bs-toggle="modal" data-bs-target="#deleteModal"'
-                    . ' data-id="' . e($project->id) . '" data-name="' . e($project->title) . '" title="حذف" aria-label="حذف"><i class="ti ti-trash"></i></button>'
+                    . ' data-id="' . e($project->id) . '" data-name="' . e($project->title) . '" title="' . e(__('حذف')) . '" aria-label="' . e(__('حذف')) . '"><i class="ti ti-trash"></i></button>'
                     . '</div>';
             })
 
@@ -199,7 +199,7 @@ class GroupsController extends Controller
             ->first();
 
         if (!$project) {
-            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+            return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
         }
 
         return view('dashboard.admin.group.show', [
@@ -230,7 +230,7 @@ class GroupsController extends Controller
             ->first();
 
         if (!$project) {
-            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+            return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
         }
 
         $semesterId = Semester::current()->id;
@@ -273,7 +273,7 @@ class GroupsController extends Controller
             ->first();
 
         if (! $project) {
-            return redirect()->back()->with('fail', 'المشروع غير موجود.');
+            return redirect()->back()->with('fail', __('المشروع غير موجود.'));
         }
 
         $oldSupervisor = $project->supervisor;
@@ -290,10 +290,10 @@ class GroupsController extends Controller
 
                     $type = $project->project_type;
                     if ($type && $project->group->count() + $members->count() > $type->max) {
-                        throw new \DomainException("الفريق يتجاوز الحدّ الأقصى لنوعه ({$type->max} طلاب).");
+                        throw new \DomainException(__('الفريق يتجاوز الحدّ الأقصى لنوعه (:max طلاب).', ['max' => $type->max]));
                     }
                     if ($type && $members->contains(fn ($m) => (int) $m->specialize_id !== (int) $type->specialize_id)) {
-                        throw new \DomainException('يجب أن يكون الأعضاء من تخصص المشروع.');
+                        throw new \DomainException(__('يجب أن يكون الأعضاء من تخصص المشروع.'));
                     }
 
                     // المحذوف حذفاً مرناً يُعدّ — كما في availableForTeam وتقديم المقترح
@@ -301,7 +301,7 @@ class GroupsController extends Controller
                         ->whereHas('groups.project', fn ($q) => $q->withTrashed()->where('status', '!=', 'reject'))
                         ->pluck('name');
                     if ($busy->isNotEmpty()) {
-                        throw new \DomainException('مسجَّل في فريق آخر، أو في مشروع موقوف لدى الإدارة: ' . $busy->implode('، '));
+                        throw new \DomainException(__('مسجَّل في فريق آخر، أو في مشروع موقوف لدى الإدارة: :names', ['names' => $busy->implode(__('، '))]));
                     }
 
                     foreach ($members as $member) {
@@ -334,7 +334,7 @@ class GroupsController extends Controller
         } catch (\Exception $ex) {
             \Illuminate\Support\Facades\Log::error('فشل تعديل مجموعة', ['project' => $project->id, 'exception' => $ex]);
 
-            return redirect()->back()->with('fail', 'تعذّر حفظ التعديل. حاول مرة أخرى، وإن تكرّر فراجع السجلّ.');
+            return redirect()->back()->with('fail', __('تعذّر حفظ التعديل. حاول مرة أخرى، وإن تكرّر فراجع السجلّ.'));
         }
 
         // الإشعارات بعد الالتزام
@@ -374,7 +374,7 @@ class GroupsController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'حُفظت التعديلات.');
+        return redirect()->back()->with('success', __('حُفظت التعديلات.'));
     }
 
     public function destroy()
@@ -398,7 +398,7 @@ class GroupsController extends Controller
             ->first();
 
         if (!$project) {
-            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+            return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
         }
 
         try {
@@ -409,11 +409,11 @@ class GroupsController extends Controller
 
             Audit::record('project.deleted', $project);
 
-            return redirect()->back()->with('success', 'نُقلت المجموعة إلى المحذوفات — يمكن استرجاعها.');
+            return redirect()->back()->with('success', __('نُقلت المجموعة إلى المحذوفات — يمكن استرجاعها.'));
 
         } catch (\Exception $ex) {
             report($ex);
-            return redirect()->back()->with('fail', 'تعذّر حذف المجموعة. حاول مرة أخرى.');
+            return redirect()->back()->with('fail', __('تعذّر حذف المجموعة. حاول مرة أخرى.'));
         }
     }
 
@@ -487,33 +487,33 @@ class GroupsController extends Controller
         $project = Project::with('group.student')->find($id);
 
         if (! $project) {
-            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+            return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
         }
 
         $member = $project->group->firstWhere('id', (int) $memberId);
 
         if (! $member) {
-            return redirect()->back()->with('fail', 'العضو غير موجود في هذا الفريق.');
+            return redirect()->back()->with('fail', __('العضو غير موجود في هذا الفريق.'));
         }
 
         // مشروع بلا أعضاء يتيم: لا يظهر لأحد ولا يملك من يعمل عليه
         if ($project->group->count() <= 1) {
             return redirect()->back()->with('fail',
-                'لا يمكن إزالة آخر عضو — المشروع يبقى بلا فريق. احذف المشروع نفسه إن كان هذا المقصود.');
+                __('لا يمكن إزالة آخر عضو — المشروع يبقى بلا فريق. احذف المشروع نفسه إن كان هذا المقصود.'));
         }
 
         // القائد يُنقل قبل أن يُزال: فريق بلا قائد لا مُخاطَب له
         if ($member->type === 'leader') {
             return redirect()->back()->with('fail',
-                'هذا قائد الفريق. عيّن قائداً آخر أولاً ثم أزِله.');
+                __('هذا قائد الفريق. عيّن قائداً آخر أولاً ثم أزِله.'));
         }
 
-        $name = $member->student?->name ?? 'طالب محذوف';
+        $name = $member->student?->name ?? __('طالب محذوف');
         $member->delete();
 
         Audit::record('project.memberRemoved', $project, ['member' => $name]);
 
-        return redirect()->back()->with('success', "أُزيل {$name} من الفريق.");
+        return redirect()->back()->with('success', __('أُزيل :name من الفريق.', ['name' => $name]));
     }
 
     /** تعيين قائد للفريق — كان القائد يُحدَّد عند الإنشاء ولا يتغيّر */
@@ -522,17 +522,17 @@ class GroupsController extends Controller
         $project = Project::with('group.student')->find($id);
 
         if (! $project) {
-            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+            return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
         }
 
         $member = $project->group->firstWhere('id', (int) $memberId);
 
         if (! $member) {
-            return redirect()->back()->with('fail', 'العضو غير موجود في هذا الفريق.');
+            return redirect()->back()->with('fail', __('العضو غير موجود في هذا الفريق.'));
         }
 
         if ($member->type === 'leader') {
-            return redirect()->back()->with('fail', 'هو قائد الفريق أصلاً.');
+            return redirect()->back()->with('fail', __('هو قائد الفريق أصلاً.'));
         }
 
         $previous = $project->group->firstWhere('type', 'leader')?->student?->name;
@@ -547,7 +547,7 @@ class GroupsController extends Controller
             'member' => ['from' => $previous ?? '—', 'to' => $member->student?->name ?? '—'],
         ]);
 
-        return redirect()->back()->with('success', 'تم تعيين قائد الفريق.');
+        return redirect()->back()->with('success', __('تم تعيين قائد الفريق.'));
     }
 
     /**
@@ -561,19 +561,19 @@ class GroupsController extends Controller
         $project = Project::find($id);
 
         if (! $project) {
-            return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+            return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
         }
 
         if (! $project->isGradeLocked()) {
-            return redirect()->back()->with('fail', 'الدرجة غير معتمدة أصلاً.');
+            return redirect()->back()->with('fail', __('الدرجة غير معتمدة أصلاً.'));
         }
 
         $request->validate([
             'reason' => ['required', 'string', 'min:10', 'max:500'],
         ], [
-            'reason.required' => 'اكتب سبب فكّ الاعتماد — يُحفظ في سجلّ التدقيق.',
-            'reason.min' => 'السبب قصير جداً — اشرحه في جملة مفهومة.',
-        ], ['reason' => 'السبب']);
+            'reason.required' => __('اكتب سبب فكّ الاعتماد — يُحفظ في سجلّ التدقيق.'),
+            'reason.min' => __('السبب قصير جداً — اشرحه في جملة مفهومة.'),
+        ], ['reason' => __('السبب')]);
 
         $project->update(['grade_locked_at' => null]);
 
@@ -582,7 +582,7 @@ class GroupsController extends Controller
             'reason' => $request->reason,
         ]);
 
-        return redirect()->back()->with('success', 'فُكّ الاعتماد — يستطيع المشرف تعديل الدرجة الآن.');
+        return redirect()->back()->with('success', __('فُكّ الاعتماد — يستطيع المشرف تعديل الدرجة الآن.'));
     }
 
     /** المشاريع المحذوفة — قابلة للاسترجاع أو للحذف النهائي */
@@ -603,14 +603,14 @@ class GroupsController extends Controller
         $project = Project::onlyTrashed()->find($id);
 
         if (! $project) {
-            return redirect()->back()->with('fail', 'المشروع غير موجود في المحذوفات.');
+            return redirect()->back()->with('fail', __('المشروع غير موجود في المحذوفات.'));
         }
 
         $project->restore();
 
         Audit::record('project.restored', $project);
 
-        return redirect()->back()->with('success', 'تم استرجاع المشروع بمراحله وملفاته.');
+        return redirect()->back()->with('success', __('تم استرجاع المشروع بمراحله وملفاته.'));
     }
 
     /**
@@ -623,7 +623,7 @@ class GroupsController extends Controller
         $project = Project::onlyTrashed()->with('files')->find($id);
 
         if (! $project) {
-            return redirect()->back()->with('fail', 'المشروع غير موجود في المحذوفات.');
+            return redirect()->back()->with('fail', __('المشروع غير موجود في المحذوفات.'));
         }
 
         try {
@@ -651,12 +651,12 @@ class GroupsController extends Controller
             Storage::disk('local')->deleteDirectory('project_files/' . $project->id);
             Storage::disk('public')->deleteDirectory('project_files/' . $project->id);
 
-            return redirect()->back()->with('success', 'حُذف المشروع نهائياً مع ملفاته.');
+            return redirect()->back()->with('success', __('حُذف المشروع نهائياً مع ملفاته.'));
 
         } catch (\Exception $ex) {
             DB::rollBack();
             report($ex);
-            return redirect()->back()->with('fail', 'تعذّر الحذف النهائي. حاول مرة أخرى.');
+            return redirect()->back()->with('fail', __('تعذّر الحذف النهائي. حاول مرة أخرى.'));
         }
     }
 }

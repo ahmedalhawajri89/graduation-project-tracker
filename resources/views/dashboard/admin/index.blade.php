@@ -1,5 +1,5 @@
 @extends('layouts.admin.admin')
-@section('title', 'الصفحة الرئيسية')
+@section('title', __('الصفحة الرئيسية'))
 
 @section('content')
     @php
@@ -28,11 +28,11 @@
 
     {{-- الفصل الدراسي انتقل إلى السايدبار — كان يظهر هنا وفي شريحة
          الهيدر معاً، أي مرتين في كل صفحة. --}}
-    <x-page-header title="لوحة التحكم" subtitle="نظرة عامة على الفصل الحالي">
+    <x-page-header title="{{ __('لوحة التحكم') }}" subtitle="{{ __('نظرة عامة على الفصل الحالي') }}">
         <x-slot:actions>
             <a href="{{ route('site.home') }}" class="btn btn-outline-primary" target="_blank">
                 <i class="ti ti-world me-1"></i>
-                عرض الموقع
+                {{ __('عرض الموقع') }}
             </a>
         </x-slot:actions>
     </x-page-header>
@@ -46,22 +46,22 @@
         $todos = [];
         if ($pending > 0) {
             // يقود إلى الطلبات المعلّقة نفسها لا إلى قائمة تستثنيها
-            $todos[] = ['n' => $pending, 'label' => 'طلب بانتظار مراجعة المشرف',
+            $todos[] = ['n' => $pending, 'label' => __('طلب بانتظار مراجعة المشرف'),
                         'href' => route('admin.groups.index', ['status' => 'request']), 'icon' => 'ti-clock-hour-4'];
         }
         if ($not_has_group > 0) {
             // يقود إلى الطلاب بلا فريق أنفسهم لا إلى قائمة الـ٥٠٠ كاملة
-            $todos[] = ['n' => $not_has_group, 'label' => 'طالب لم ينضمّ إلى فريق',
+            $todos[] = ['n' => $not_has_group, 'label' => __('طالب لم ينضمّ إلى فريق'),
                         'href' => route('admin.students.index', ['group' => 'none']), 'icon' => 'ti-user-exclamation'];
         }
         if ($unreadMsgs > 0) {
-            $todos[] = ['n' => $unreadMsgs, 'label' => 'رسالة لم تُقرأ',
+            $todos[] = ['n' => $unreadMsgs, 'label' => __('رسالة لم تُقرأ'),
                         'href' => route('admin.contact.index'), 'icon' => 'ti-mail'];
         }
 
-        $barLabel = 'توزيع حالات المشاريع: ' . collect($statusRows)
+        $barLabel = __('توزيع حالات المشاريع') . ': ' . collect($statusRows)
             ->map(fn ($r) => $r['label'] . ' ' . $r['count'])
-            ->implode('، ');
+            ->implode(__('، '));
     @endphp
 
     <section class="cmd-panel mb-4">
@@ -75,18 +75,18 @@
             <div class="cmd-vitals">
                 <div class="vital">
                     <span class="vital-n">{{ $student_count }}<x-trend :value="$trends['students'] ?? null" /></span>
-                    <span class="vital-l">طالب مسجَّل</span>
-                    <span class="vital-s">{{ $has_group }} في فرق هذا الفصل</span>
+                    <span class="vital-l">{{ __('طالب مسجَّل') }}</span>
+                    <span class="vital-s">{{ __(':n في فرق هذا الفصل', ['n' => $has_group]) }}</span>
                 </div>
                 <div class="vital">
                     <span class="vital-n">{{ $supervisor_count }}<x-trend :value="$trends['supervisors'] ?? null" /></span>
-                    <span class="vital-l">مشرف أكاديمي</span>
+                    <span class="vital-l">{{ __('مشرف أكاديمي') }}</span>
                     <span class="vital-s">&nbsp;</span>
                 </div>
                 <div class="vital">
                     <span class="vital-n">{{ $project_count }}<x-trend :value="$trends['groups'] ?? null" /></span>
-                    <span class="vital-l">مجموعة نشطة</span>
-                    <span class="vital-s">من {{ $statusTotal }} مشروعاً مسجَّلاً</span>
+                    <span class="vital-l">{{ __('مجموعة نشطة') }}</span>
+                    <span class="vital-s">{{ __('من :n مشروعاً مسجَّلاً', ['n' => $statusTotal]) }}</span>
                 </div>
             </div>
 
@@ -102,7 +102,7 @@
                 @empty
                     <p class="cmd-clear">
                         <i class="ti ti-circle-check" aria-hidden="true"></i>
-                        لا شيء ينتظر إجراءً
+                        {{ __('لا شيء ينتظر إجراءً') }}
                     </p>
                 @endforelse
             </div>
@@ -111,8 +111,8 @@
         @if ($statusTotal > 0)
             <div class="cmd-status">
                 <div class="cmd-status-head">
-                    <span>توزيع حالات المشاريع</span>
-                    <b>{{ $statusTotal }} مشروعاً</b>
+                    <span>{{ __('توزيع حالات المشاريع') }}</span>
+                    <b>{{ __(':n مشروعاً', ['n' => $statusTotal]) }}</b>
                 </div>
 
                 {{-- شريط مكدّس بـ CSS، بألوان hex_dark لأنه على لوح داكن --}}
@@ -145,7 +145,7 @@
     <section class="dash-block mb-4">
         <h2 class="dash-block-title">
             <i class="ti ti-heartbeat" aria-hidden="true"></i>
-            متابعة الفرق
+            {{ __('متابعة الفرق') }}
         </h2>
 
         <div class="health-grid">
@@ -158,7 +158,7 @@
                         <span class="health-n">{{ $n }}</span>
                     </span>
                     <span class="health-title">{{ $title }}</span>
-                    <span class="health-text">{{ $n > 0 ? $text : 'لا شيء هنا — جيد.' }}</span>
+                    <span class="health-text">{{ $n > 0 ? $text : __('لا شيء هنا — جيد.') }}</span>
                 </a>
             @endforeach
         </div>
@@ -171,7 +171,7 @@
     <section class="dash-block mb-4">
         <h2 class="dash-block-title">
             <i class="ti ti-trending-up" aria-hidden="true"></i>
-            الاتجاه خلال الفصل
+            {{ __('الاتجاه خلال الفصل') }}
         </h2>
 
         <x-trend-chart :series="$trendSeries" />
@@ -183,39 +183,39 @@
     <section class="dash-block mb-4">
         <h2 class="dash-block-title">
             <i class="ti ti-layout-distribute-horizontal" aria-hidden="true"></i>
-            التوزيع
+            {{ __('التوزيع') }}
         </h2>
 
         <div class="dist-grid">
             <div class="dist-panel">
                 <div class="dist-head">
-                    <span>الطلاب حسب التخصص</span>
-                    <a href="{{ route('admin.specialize.index') }}">إدارة التخصصات</a>
+                    <span>{{ __('الطلاب حسب التخصص') }}</span>
+                    <a href="{{ route('admin.specialize.index') }}">{{ __('إدارة التخصصات') }}</a>
                 </div>
                 @forelse ($specializes->sortByDesc('students_count') as $spec)
                     <div class="dist-row {{ $spec->students_count === 0 ? 'is-zero' : '' }}">
                         <span class="dist-fill" style="width: {{ round($spec->students_count / $specMax * 100) }}%"></span>
                         <span class="dist-name" title="{{ $spec->name }}">
-                            {{ $spec->name }}@if ($spec->isArchived())<small class="dist-archived">موقوف</small>@endif
+                            {{ $spec->name }}@if ($spec->isArchived())<small class="dist-archived">{{ __('موقوف') }}</small>@endif
                         </span>
                         <span class="dist-n">{{ $spec->students_count }}</span>
                     </div>
                 @empty
-                    <p class="dist-empty">لم تُضَف تخصصات بعد.</p>
+                    <p class="dist-empty">{{ __('لم تُضَف تخصصات بعد.') }}</p>
                 @endforelse
 
                 @if ($specializes->count())
                     <div class="dist-foot">
-                        <span>{{ $specializes->count() }} تخصصاً</span>
-                        <span>المجموع <b>{{ $specializes->sum('students_count') }}</b> طالباً</span>
+                        <span>{{ __(':n تخصصاً', ['n' => $specializes->count()]) }}</span>
+                        <span>{{ __('المجموع') }} <b>{{ $specializes->sum('students_count') }}</b> {{ __('طالباً') }}</span>
                     </div>
                 @endif
             </div>
 
             <div class="dist-panel">
                 <div class="dist-head">
-                    <span>المشاريع حسب النوع</span>
-                    <a href="{{ route('admin.groups.index') }}">عرض المجموعات</a>
+                    <span>{{ __('المشاريع حسب النوع') }}</span>
+                    <a href="{{ route('admin.groups.index') }}">{{ __('عرض المجموعات') }}</a>
                 </div>
                 @forelse ($project_types->sortByDesc('projects_count') as $type)
                     <div class="dist-row {{ $type->projects_count === 0 ? 'is-zero' : '' }}">
@@ -224,13 +224,13 @@
                         <span class="dist-n">{{ $type->projects_count }}</span>
                     </div>
                 @empty
-                    <p class="dist-empty">لم تُضَف أنواع مشاريع بعد.</p>
+                    <p class="dist-empty">{{ __('لم تُضَف أنواع مشاريع بعد.') }}</p>
                 @endforelse
 
                 @if ($project_types->count())
                     <div class="dist-foot">
-                        <span>{{ $project_types->count() }} أنواع</span>
-                        <span>المجموع <b>{{ $project_types->sum('projects_count') }}</b> مشروعاً</span>
+                        <span>{{ __(':n أنواع', ['n' => $project_types->count()]) }}</span>
+                        <span>{{ __('المجموع') }} <b>{{ $project_types->sum('projects_count') }}</b> {{ __('مشروعاً') }}</span>
                     </div>
                 @endif
             </div>
@@ -241,21 +241,21 @@
     <section class="dash-block">
         <h2 class="dash-block-title">
             <i class="ti ti-activity" aria-hidden="true"></i>
-            آخر النشاط
+            {{ __('آخر النشاط') }}
         </h2>
 
         <div class="dist-grid">
             <div class="dist-panel">
                 <div class="dist-head">
-                    <span>أحدث طلبات المشاريع</span>
-                    <a href="{{ route('admin.groups.index') }}">الكل</a>
+                    <span>{{ __('أحدث طلبات المشاريع') }}</span>
+                    <a href="{{ route('admin.groups.index') }}">{{ __('الكل') }}</a>
                 </div>
                 @forelse ($recent_projects as $project)
                     <a href="{{ route('admin.groups.show', $project->id) }}" class="feed-row">
                         <span class="feed-body">
                             <span class="feed-title">{{ $project->title }}</span>
                             <span class="feed-meta">
-                                {{ $project->supervisor->name ?: 'بلا مشرف' }}
+                                {{ $project->supervisor->name ?: __('بلا مشرف') }}
                                 · {{ $project->created_at?->diffForHumans() }}
                             </span>
                         </span>
@@ -263,14 +263,14 @@
                         <i class="ti ti-chevron-left feed-go" aria-hidden="true"></i>
                     </a>
                 @empty
-                    <p class="dist-empty">لا توجد طلبات في هذا الفصل بعد.</p>
+                    <p class="dist-empty">{{ __('لا توجد طلبات في هذا الفصل بعد.') }}</p>
                 @endforelse
             </div>
 
             <div class="dist-panel">
                 <div class="dist-head">
-                    <span>آخر رسائل الاستفسار</span>
-                    <a href="{{ route('admin.contact.index') }}">الكل</a>
+                    <span>{{ __('آخر رسائل الاستفسار') }}</span>
+                    <a href="{{ route('admin.contact.index') }}">{{ __('الكل') }}</a>
                 </div>
                 @forelse ($recent_messages as $message)
                     <a href="{{ route('admin.contact.index') }}" class="feed-row">
@@ -281,12 +281,12 @@
                             </span>
                         </span>
                         @if (! $message->is_read)
-                            <span class="feed-new">جديد</span>
+                            <span class="feed-new">{{ __('جديد') }}</span>
                         @endif
                         <i class="ti ti-chevron-left feed-go" aria-hidden="true"></i>
                     </a>
                 @empty
-                    <p class="dist-empty">لا توجد رسائل بعد.</p>
+                    <p class="dist-empty">{{ __('لا توجد رسائل بعد.') }}</p>
                 @endforelse
             </div>
         </div>

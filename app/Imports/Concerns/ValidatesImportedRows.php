@@ -30,7 +30,7 @@ trait ValidatesImportedRows
     public function onFailure(Failure ...$failures)
     {
         foreach ($failures as $failure) {
-            $this->skipped[$failure->row()] ??= $failure->errors()[0] ?? 'بيانات غير صالحة';
+            $this->skipped[$failure->row()] ??= $failure->errors()[0] ?? __('بيانات غير صالحة');
         }
     }
 
@@ -62,7 +62,7 @@ trait ValidatesImportedRows
             $value = mb_strtolower((string) $value);
 
             if (in_array($value, $this->seen[$key], true)) {
-                $fail('مكرّر في الملف نفسه');
+                $fail(__('مكرّر في الملف نفسه'));
 
                 return;
             }
@@ -74,13 +74,13 @@ trait ValidatesImportedRows
     public function customValidationAttributes()
     {
         return [
-            'name' => 'الاسم',
-            'university_id' => 'الرقم الجامعي',
-            'email' => 'البريد',
-            'phone' => 'الجوال',
-            'gender' => 'الجنس',
-            'specialization' => 'التخصص',
-            'max_group' => 'حدّ المجموعات',
+            'name' => __('الاسم'),
+            'university_id' => __('الرقم الجامعي'),
+            'email' => __('البريد'),
+            'phone' => __('الجوال'),
+            'gender' => __('الجنس'),
+            'specialization' => __('التخصص'),
+            'max_group' => __('حدّ المجموعات'),
         ];
     }
 

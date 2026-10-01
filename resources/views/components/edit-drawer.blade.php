@@ -37,7 +37,7 @@
         <header class="ed-head">
             <div class="ed-head-top">
                 <h2 class="ed-title" id="{{ $id }}-title">{{ $title }}</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="إغلاق"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ __('إغلاق') }}"></button>
             </div>
 
             <div class="ed-identity">
@@ -45,7 +45,7 @@
                     @if ($create)<i class="ti ti-user-plus"></i>@endif
                 </span>
                 <span class="ed-who">
-                    <b data-ed-name @if ($create) data-placeholder="الاسم يظهر هنا" @endif>{{ $create ? 'الاسم يظهر هنا' : '' }}</b>
+                    <b data-ed-name @if ($create) data-placeholder="{{ __('الاسم يظهر هنا') }}" @endif>{{ $create ? __('الاسم يظهر هنا') : '' }}</b>
                     <span dir="ltr" data-ed-sub></span>
                 </span>
                 <span class="ed-status" data-ed-status hidden></span>
@@ -56,12 +56,12 @@
                     <input type="hidden" name="remove_avatar" value="0" data-ed-remove>
                     <button type="button" class="ed-link is-danger" data-ed-remove-toggle>
                         <i class="ti ti-photo-x" aria-hidden="true"></i>
-                        إزالة الصورة الشخصية
+                        {{ __('إزالة الصورة الشخصية') }}
                     </button>
                     <span class="ed-remove-note" data-ed-remove-note hidden>
                         <i class="ti ti-info-circle" aria-hidden="true"></i>
-                        ستُزال الصورة عند الحفظ ·
-                        <button type="button" class="ed-link" data-ed-remove-undo>تراجع</button>
+                        {{ __('ستُزال الصورة عند الحفظ ·') }}
+                        <button type="button" class="ed-link" data-ed-remove-undo>{{ __('تراجع') }}</button>
                     </span>
                 </div>
             @endif
@@ -72,18 +72,18 @@
         </div>
 
         <footer class="ed-foot">
-            <span class="ed-changes" data-ed-changes aria-live="polite">{{ $create ? 'الحقول المعلَّمة بـ * مطلوبة' : 'لا تغييرات' }}</span>
-            <button type="button" class="btn" data-bs-dismiss="offcanvas">إلغاء</button>
+            <span class="ed-changes" data-ed-changes aria-live="polite">{{ $create ? __('الحقول المعلَّمة بـ * مطلوبة') : __('لا تغييرات') }}</span>
+            <button type="button" class="btn" data-bs-dismiss="offcanvas">{{ __('إلغاء') }}</button>
             @if ($create)
                 {{-- لإدخال دفعة يدوياً: يحفظ ثم يعيد فتح الدرج فارغاً --}}
                 <button type="submit" class="btn btn-outline-primary" name="another" value="1" data-ed-save-another>
-                    حفظ وإضافة آخر
+                    {{ __('حفظ وإضافة آخر') }}
                 </button>
             @endif
             <button type="submit" class="btn btn-primary" data-ed-save @unless ($create) disabled @endunless>
                 <span class="ed-spinner" aria-hidden="true"></span>
                 <i class="ti {{ $create ? 'ti-plus' : 'ti-device-floppy' }} me-1" aria-hidden="true"></i>
-                {{ $create ? 'إضافة' . ($noun ? ' ' . $noun : '') : 'حفظ التغييرات' }}
+                {{ $create ? ($noun ? __('إضافة :noun', ['noun' => $noun]) : __('إضافة')) : __('حفظ التغييرات') }}
             </button>
         </footer>
     </form>

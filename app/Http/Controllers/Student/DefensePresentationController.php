@@ -30,19 +30,19 @@ class DefensePresentationController extends Controller
 
         // القائد وحده — وفريق بلا قائد يرفع أي عضو فيه
         if ($me->type !== 'leader' && $group->contains('type', 'leader')) {
-            return back()->with('fail', 'قائد الفريق هو من يرفع العرض التقديمي.');
+            return back()->with('fail', __('قائد الفريق هو من يرفع العرض التقديمي.'));
         }
 
         if ($defense->status !== Defense::SCHEDULED || $defense->starts_at->isPast()) {
-            return back()->with('fail', 'يُرفع العرض التقديمي قبل بدء المناقشة.');
+            return back()->with('fail', __('يُرفع العرض التقديمي قبل بدء المناقشة.'));
         }
 
         $request->validate([
             'presentation' => ['required', 'file', 'max:20480', 'mimes:pdf,ppt,pptx'],
         ], [
-            'presentation.mimes' => 'العرض التقديمي يكون PDF أو PowerPoint.',
-            'presentation.max' => 'حجم العرض التقديمي لا يزيد على 20 ميغابايت.',
-        ], ['presentation' => 'العرض التقديمي']);
+            'presentation.mimes' => __('العرض التقديمي يكون PDF أو PowerPoint.'),
+            'presentation.max' => __('حجم العرض التقديمي لا يزيد على 20 ميغابايت.'),
+        ], ['presentation' => __('العرض التقديمي')]);
 
         $previous = $project->presentation;
         $upload = $request->file('presentation');
@@ -63,6 +63,6 @@ class DefensePresentationController extends Controller
 
         DefenseNotifier::presentationUploaded($defense, auth('student')->user()->name, (bool) $previous);
 
-        return back()->with('success', $previous ? 'استُبدل العرض التقديمي وأُشعرت اللجنة.' : 'رُفع العرض التقديمي وأُشعرت اللجنة.');
+        return back()->with('success', $previous ? __('استُبدل العرض التقديمي وأُشعرت اللجنة.') : __('رُفع العرض التقديمي وأُشعرت اللجنة.'));
     }
 }

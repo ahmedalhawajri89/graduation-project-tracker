@@ -60,7 +60,7 @@ class Defense extends Model
     /** «الممتحن · رئيس اللجنة» — صفة العضو كما تُعرض */
     public function roleOf(DefenseMember $m): string
     {
-        return $m->role_label . ($this->chair()?->id === $m->id ? ' · رئيس اللجنة' : '');
+        return $m->role_label . ($this->chair()?->id === $m->id ? ' · ' . __('رئيس اللجنة') : '');
     }
 
     public function scopeActive(Builder $query): Builder
@@ -93,7 +93,13 @@ class Defense extends Model
 
     public function getModeLabelAttribute(): string
     {
-        return self::MODES[$this->mode]['label'] ?? $this->mode;
+        return isset(self::MODES[$this->mode]) ? __(self::MODES[$this->mode]['label']) : (string) $this->mode;
+    }
+
+    /** @return array<string, array{label: string, icon: string}> MODES بأسماء بلغة الواجهة */
+    public static function modes(): array
+    {
+        return array_map(fn ($m) => ['label' => __($m['label'])] + $m, self::MODES);
     }
 
     public function getModeIconAttribute(): string
@@ -107,9 +113,9 @@ class Defense extends Model
         $room = $this->room?->name;
 
         return match ($this->mode) {
-            'online' => 'عن بُعد',
-            'hybrid' => ($room ?: 'قاعة غير محدّدة') . ' + عن بُعد',
-            default => $room ?: 'قاعة غير محدّدة',
+            'online' => __('عن بُعد'),
+            'hybrid' => ($room ?: __('قاعة غير محدّدة')) . ' + ' . __('عن بُعد'),
+            default => $room ?: __('قاعة غير محدّدة'),
         };
     }
 
@@ -120,11 +126,11 @@ class Defense extends Model
     public function googleCalendarUrl(): string
     {
         $fmt = fn (Carbon $t) => $t->copy()->utc()->format('Ymd\THis\Z');
-        $title = 'مناقشة مشروع: ' . ($this->project?->title ?? '');
+        $title = __('مناقشة مشروع: :title', ['title' => $this->project?->title ?? '']);
         $details = trim(implode("\n", array_filter([
-            $this->needsLink() && $this->meeting_url ? 'رابط الاجتماع: ' . $this->meeting_url : null,
+            $this->needsLink() && $this->meeting_url ? __('رابط الاجتماع: :url', ['url' => $this->meeting_url]) : null,
             $this->notes,
-            'منصّة تخرُّج',
+            __('منصّة تخرُّج'),
         ])));
 
         return 'https://calendar.google.com/calendar/render?' . http_build_query([

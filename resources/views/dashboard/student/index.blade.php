@@ -1,8 +1,8 @@
 @extends('layouts.admin.admin')
-@section('title', 'لوحتي')
+@section('title', __('لوحتي'))
 
 @section('crumbs')
-    <x-crumb>لوحتي</x-crumb>
+    <x-crumb>{{ __('لوحتي') }}</x-crumb>
 @endsection
 
 @section('content')
@@ -35,17 +35,17 @@
 
     {{-- بمشروع نشط: التحية داخل بطاقة المشروع — لا ترويسة فوقها تكرّرها --}}
     @unless ($activeProject)
-        <x-page-header title="أهلاً، {{ $student->name }}" subtitle="{{ $semester->label }}" />
+        <x-page-header :title="__('أهلاً، :name', ['name' => $student->name])" subtitle="{{ $semester->label }}" />
     @endunless
 
     @if ($held)
         <section class="start-panel mb-4" role="status">
             <i class="ti ti-archive" aria-hidden="true"></i>
             <div>
-                <h2>مشروعك «{{ $held->title }}» موقوف لدى الإدارة</h2>
+                <h2>{{ __('مشروعك «:title» موقوف لدى الإدارة', ['title' => $held->title]) }}</h2>
                 <p>
-                    حذفته إدارة القسم حذفاً مؤقتاً، وما زلت مرتبطاً به فلا تستطيع تقديم مقترح جديد.
-                    راجع الإدارة لاسترجاعه أو حذفه نهائياً.
+                    {{ __('حذفته إدارة القسم حذفاً مؤقتاً، وما زلت مرتبطاً به فلا تستطيع تقديم مقترح جديد.') }}
+                    {{ __('راجع الإدارة لاسترجاعه أو حذفه نهائياً.') }}
                 </p>
             </div>
         </section>

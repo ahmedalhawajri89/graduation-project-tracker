@@ -33,15 +33,15 @@ class MilestoneSubmissionController extends Controller
 
         // بعد الاكتمال لا تُطلب مراحل: التالي المناقشة والدرجة
         if ($project->status === 'complete') {
-            return back()->with('fail', 'اكتمل المشروع — لا تسليمات بعده. التالي المناقشة.');
+            return back()->with('fail', __('اكتمل المشروع — لا تسليمات بعده. التالي المناقشة.'));
         }
 
         if ($project->status !== 'accept') {
-            return back()->with('fail', 'تُسلَّم المراحل بعد قبول المشروع.');
+            return back()->with('fail', __('تُسلَّم المراحل بعد قبول المشروع.'));
         }
 
         if ($project->is_locked) {
-            return back()->with('fail', 'المشروع مؤرشف بعد التقييم — لا تسليمات جديدة.');
+            return back()->with('fail', __('المشروع مؤرشف بعد التقييم — لا تسليمات جديدة.'));
         }
 
         $data = $request->validate([
@@ -49,10 +49,10 @@ class MilestoneSubmissionController extends Controller
             'note' => ['nullable', 'string', 'max:2000', 'required_without:file'],
             'file' => ['nullable', 'file', 'max:10240', 'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar,png,jpg,jpeg'],
         ], [
-            'note.required_without' => 'اكتب ملاحظة أو أرفق ملفاً — تسليم فارغ لا يُراجَع.',
+            'note.required_without' => __('اكتب ملاحظة أو أرفق ملفاً — تسليم فارغ لا يُراجَع.'),
         ], [
-            'note' => 'الملاحظة',
-            'file' => 'الملف',
+            'note' => __('الملاحظة'),
+            'file' => __('الملف'),
         ]);
 
         $path = $request->hasFile('file')
@@ -95,8 +95,8 @@ class MilestoneSubmissionController extends Controller
             }
 
             return back()->with('fail', $milestone->fresh()->isSubmitted()
-                ? 'سُلّمت هذه المرحلة وتنتظر مراجعة المشرف.'
-                : 'اعتُمدت هذه المرحلة — لا تسليم جديد لها.');
+                ? __('سُلّمت هذه المرحلة وتنتظر مراجعة المشرف.')
+                : __('اعتُمدت هذه المرحلة — لا تسليم جديد لها.'));
         }
 
         Audit::record('milestone.submitted', $project, ['milestone' => ['to' => $milestone->title], 'round' => ['to' => $submission->round]]);
@@ -115,7 +115,7 @@ class MilestoneSubmissionController extends Controller
 
         return redirect()->to(url()->previous() . '#milestone-' . $milestone->id)
             ->with('success', $submission->round > 1
-                ? 'أُعيد تسليم المرحلة — الجولة ' . $submission->round . ' بانتظار المشرف.'
-                : 'سُلّمت المرحلة — بانتظار مراجعة المشرف.');
+                ? __('أُعيد تسليم المرحلة — الجولة :round بانتظار المشرف.', ['round' => $submission->round])
+                : __('سُلّمت المرحلة — بانتظار مراجعة المشرف.'));
     }
 }

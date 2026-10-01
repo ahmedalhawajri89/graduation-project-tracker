@@ -1,9 +1,9 @@
 @extends('layouts.admin.admin')
-@section('title', 'الإشعارات')
+@section('title', __('الإشعارات'))
 
 @section('crumbs')
-    <x-crumb :href="route('student.dashboard')">لوحتي</x-crumb>
-    <x-crumb>الإشعارات</x-crumb>
+    <x-crumb :href="route('student.dashboard')">{{ __('لوحتي') }}</x-crumb>
+    <x-crumb>{{ __('الإشعارات') }}</x-crumb>
 @endsection
 
 @section('content')
@@ -20,40 +20,40 @@
         $counts = $items->countBy('source');
     @endphp
 
-    <x-page-header title="الإشعارات"
-        subtitle="{{ count($newIds) ? count($newIds) . ' جديد منذ آخر زيارة' : 'ردود المشرف وتحديثات مشروعك' }}" />
+    <x-page-header :title="__('الإشعارات')"
+        :subtitle="count($newIds) ? __(':n جديد منذ آخر زيارة', ['n' => count($newIds)]) : __('ردود المشرف وتحديثات مشروعك')" />
 
     @if ($items->isEmpty())
         <div class="card notif-empty-page">
             <span class="notif-empty-icon" aria-hidden="true"><i class="ti ti-bell"></i></span>
-            <h2>لا إشعارات بعد</h2>
-            <p>ستصلك هنا ردود المشرف على مقترحك وتسليماتك، ومواعيد المراحل، وتحديثات الإدارة.</p>
+            <h2>{{ __('لا إشعارات بعد') }}</h2>
+            <p>{{ __('ستصلك هنا ردود المشرف على مقترحك وتسليماتك، ومواعيد المراحل، وتحديثات الإدارة.') }}</p>
             <a href="{{ route('student.dashboard') }}" class="btn btn-outline-secondary">
                 <i class="ti ti-arrow-right me-1" aria-hidden="true"></i>
-                العودة إلى لوحتي
+                {{ __('العودة إلى لوحتي') }}
             </a>
         </div>
     @else
         {{-- التصفية بالمصدر: ما قاله المشرف غير ما غيّرته الإدارة --}}
-        <div class="filter-tabs notif-tabs mb-3" role="group" aria-label="تصفية الإشعارات">
+        <div class="filter-tabs notif-tabs mb-3" role="group" aria-label="{{ __('تصفية الإشعارات') }}">
             <button type="button" class="filter-tab is-active" data-notif-filter="all">
-                الكل <span class="filter-count">{{ $items->count() }}</span>
+                {{ __('الكل') }} <span class="filter-count">{{ $items->count() }}</span>
             </button>
             @if (count($newIds))
                 <button type="button" class="filter-tab" data-notif-filter="new">
-                    الجديدة <span class="filter-count">{{ count($newIds) }}</span>
+                    {{ __('الجديدة') }} <span class="filter-count">{{ count($newIds) }}</span>
                 </button>
             @endif
             <button type="button" class="filter-tab" data-notif-filter="supervisor">
-                من المشرف <span class="filter-count">{{ $counts['supervisor'] ?? 0 }}</span>
+                {{ __('من المشرف') }} <span class="filter-count">{{ $counts['supervisor'] ?? 0 }}</span>
             </button>
             @if ($counts['team'] ?? 0)
                 <button type="button" class="filter-tab" data-notif-filter="team">
-                    من الفريق <span class="filter-count">{{ $counts['team'] }}</span>
+                    {{ __('من الفريق') }} <span class="filter-count">{{ $counts['team'] }}</span>
                 </button>
             @endif
             <button type="button" class="filter-tab" data-notif-filter="admin">
-                من الإدارة <span class="filter-count">{{ $counts['admin'] ?? 0 }}</span>
+                {{ __('من الإدارة') }} <span class="filter-count">{{ $counts['admin'] ?? 0 }}</span>
             </button>
         </div>
 
@@ -72,7 +72,7 @@
                                         <span class="notif-card-top">
                                             <b>{{ $item['title'] }}</b>
                                             @if ($item['new'])
-                                                <span class="notif-new">جديد</span>
+                                                <span class="notif-new">{{ __('جديد') }}</span>
                                             @endif
                                             <time datetime="{{ $item['at']->toIso8601String() }}"
                                                 title="{{ $item['at']->format('Y-m-d H:i') }}">
@@ -95,7 +95,7 @@
                     </ol>
                 </section>
             @endforeach
-            <p class="notif-none d-none" id="notif-none">لا إشعارات في هذا التصنيف.</p>
+            <p class="notif-none d-none" id="notif-none">{{ __('لا إشعارات في هذا التصنيف.') }}</p>
         </div>
     @endif
 

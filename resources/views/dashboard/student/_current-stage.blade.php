@@ -24,10 +24,10 @@
             default => 'is-open',
         };
         $label = [
-            'is-revision' => 'مطلوب تعديل',
-            'is-submitted' => 'بانتظار مراجعة المشرف',
-            'is-late' => 'متأخّرة',
-            'is-open' => 'المرحلة الحالية',
+            'is-revision' => __('مطلوب تعديل'),
+            'is-submitted' => __('بانتظار مراجعة المشرف'),
+            'is-late' => __('متأخّرة'),
+            'is-open' => __('المرحلة الحالية'),
         ][$state];
     }
 @endphp
@@ -36,13 +36,13 @@
     <section class="spotlight is-empty mb-4">
         <span class="spotlight-icon" aria-hidden="true"><i class="ti ti-route"></i></span>
         <div class="spotlight-body">
-            <span class="spotlight-kicker">مراحل المشروع</span>
-            <h2>لم يضع مشرفك المراحل بعد</h2>
-            <p>ستظهر هنا المرحلة التي تعملون عليها بموعدها وتعليماتها. ريثما تصل، ارفعوا ملفات المقترح، أو اسألوا المشرف عن الخطة.</p>
+            <span class="spotlight-kicker">{{ __('مراحل المشروع') }}</span>
+            <h2>{{ __('لم يضع مشرفك المراحل بعد') }}</h2>
+            <p>{{ __('ستظهر هنا المرحلة التي تعملون عليها بموعدها وتعليماتها. ريثما تصل، ارفعوا ملفات المقترح، أو اسألوا المشرف عن الخطة.') }}</p>
             <div class="spotlight-actions">
                 <a href="{{ route('student.discussion') }}" class="btn btn-primary">
                     <i class="ti ti-messages me-1" aria-hidden="true"></i>
-                    اسأل المشرف
+                    {{ __('اسأل المشرف') }}
                 </a>
             </div>
         </div>
@@ -51,16 +51,16 @@
     <section class="spotlight is-done mb-4">
         <span class="spotlight-icon" aria-hidden="true"><i class="ti ti-confetti"></i></span>
         <div class="spotlight-body">
-            <span class="spotlight-kicker">مراحل المشروع</span>
+            <span class="spotlight-kicker">{{ __('مراحل المشروع') }}</span>
             @if ($project->status === 'complete')
-                <h2>اكتمل المشروع</h2>
+                <h2>{{ __('اكتمل المشروع') }}</h2>
                 <p>
-                    أنجزتم {{ $milestones->where('is_done', true)->count() }} من {{ $milestones->count() }} مراحل.
-                    لا تسليمات بعد الاكتمال — التالي المناقشة ثم درجة اللجنة.
+                    {{ __('أنجزتم :done من :total مراحل.', ['done' => $milestones->where('is_done', true)->count(), 'total' => $milestones->count()]) }}
+                    {{ __('لا تسليمات بعد الاكتمال — التالي المناقشة ثم درجة اللجنة.') }}
                 </p>
             @else
-                <h2>أنجزتم المراحل كلّها</h2>
-                <p>بقي تقييم المشرف. تابعوا النقاش لأي ملاحظة أخيرة.</p>
+                <h2>{{ __('أنجزتم المراحل كلّها') }}</h2>
+                <p>{{ __('بقي تقييم المشرف. تابعوا النقاش لأي ملاحظة أخيرة.') }}</p>
             @endif
         </div>
     </section>
@@ -79,29 +79,29 @@
                     <span class="{{ $days < 0 && ! $current->isSubmitted() ? 'is-late' : ($days <= 3 ? 'is-warn' : '') }}">
                         <i class="ti ti-calendar-due" aria-hidden="true"></i>
                         @if ($days < 0)
-                            فات موعدها منذ {{ abs($days) }} {{ abs($days) === 1 ? 'يوم' : 'أيام' }}
+                            {{ abs($days) === 1 ? __('فات موعدها منذ :n يوم', ['n' => abs($days)]) : __('فات موعدها منذ :n أيام', ['n' => abs($days)]) }}
                         @elseif ($days === 0)
-                            موعدها اليوم
+                            {{ __('موعدها اليوم') }}
                         @elseif ($days === 1)
-                            موعدها غداً
+                            {{ __('موعدها غداً') }}
                         @else
-                            بعد {{ $days }} أيام · {{ $current->due_date->translatedFormat('j F') }}
+                            {{ __('بعد :n أيام · :date', ['n' => $days, 'date' => $current->due_date->translatedFormat('j F')]) }}
                         @endif
                     </span>
                 @endif
                 @if ($latest && $latest->round > 1)
-                    <span><i class="ti ti-repeat" aria-hidden="true"></i> الجولة {{ $latest->round }}</span>
+                    <span><i class="ti ti-repeat" aria-hidden="true"></i> {{ __('الجولة :n', ['n' => $latest->round]) }}</span>
                 @endif
             </div>
 
             @if ($current->needsRevision() && $latest?->feedback)
                 <div class="spotlight-feedback">
-                    <b>ملاحظة المشرف</b>
+                    <b>{{ __('ملاحظة المشرف') }}</b>
                     <span>{{ $latest->feedback }}</span>
                 </div>
             @elseif ($current->isSubmitted())
                 <p class="spotlight-note">
-                    سلّمها {{ $latest?->student?->name }} {{ $latest?->created_at?->diffForHumans() }} — سيصلكم إشعار حين يعتمدها المشرف أو يطلب تعديلاً.
+                    {{ __('سلّمها :name :when — سيصلكم إشعار حين يعتمدها المشرف أو يطلب تعديلاً.', ['name' => $latest?->student?->name, 'when' => $latest?->created_at?->diffForHumans()]) }}
                 </p>
             @elseif ($current->stage?->instructions)
                 <p class="spotlight-note">{{ \Illuminate\Support\Str::limit($current->stage->instructions, 220) }}</p>
@@ -112,17 +112,17 @@
                     <a href="#milestone-{{ $current->id }}" class="btn {{ $current->needsRevision() ? 'btn-warning' : 'btn-primary' }}"
                         data-open-submit="{{ $current->id }}">
                         <i class="ti ti-upload me-1" aria-hidden="true"></i>
-                        {{ $current->needsRevision() ? 'إعادة التسليم بعد التعديل' : 'تسليم المرحلة' }}
+                        {{ $current->needsRevision() ? __('إعادة التسليم بعد التعديل') : __('تسليم المرحلة') }}
                     </a>
                 @endif
                 @if ($current->stage?->hasTemplate())
                     <a href="{{ route('stages.template', $current->stage_id) }}" class="btn btn-outline-secondary">
                         <i class="ti ti-download me-1" aria-hidden="true"></i>
-                        قالب المشرف
+                        {{ __('قالب المشرف') }}
                     </a>
                 @endif
                 <a href="#milestone-{{ $current->id }}" class="spotlight-link">
-                    التفاصيل في المراحل
+                    {{ __('التفاصيل في المراحل') }}
                     <i class="ti ti-arrow-left" aria-hidden="true"></i>
                 </a>
             </div>

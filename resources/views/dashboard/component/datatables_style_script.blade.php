@@ -29,24 +29,24 @@
                 if (window.dtLabelCells) window.dtLabelCells(this.api().table().node());
             },
             language: {
-                processing: "جارٍ التحميل...",
+                processing: @json(__('جارٍ التحميل...')),
                 // التسمية تُفرَّغ: الحقل ينتقل إلى شريط التصفية بأيقونة
                 // بحث ونصّ إرشادي، فتصير كلمة «بحث:» تكراراً
                 search: "",
                 // كان ثابتاً «ابحث بالاسم أو الرقم أو البريد» فظهر في
                 // صفحات لا بريد فيها. كل صفحة تصف ما يُبحث فيه عندها.
-                searchPlaceholder: "{{ $searchPlaceholder ?? 'ابحث…' }}",
-                lengthMenu: "أظهر _MENU_ سجلات",
-                info: "عرض _START_ إلى _END_ من أصل _TOTAL_ سجل",
-                infoEmpty: "لا توجد سجلات",
-                infoFiltered: "(مرشّحة من أصل _MAX_ سجل)",
-                zeroRecords: "لم يُعثر على نتائج",
-                emptyTable: "لا توجد بيانات في الجدول",
+                searchPlaceholder: @json($searchPlaceholder ?? __('ابحث…')),
+                lengthMenu: @json(__('أظهر _MENU_ سجلات')),
+                info: @json(__('عرض _START_ إلى _END_ من أصل _TOTAL_ سجل')),
+                infoEmpty: @json(__('لا توجد سجلات')),
+                infoFiltered: @json(__('(مرشّحة من أصل _MAX_ سجل)')),
+                zeroRecords: @json(__('لم يُعثر على نتائج')),
+                emptyTable: @json(__('لا توجد بيانات في الجدول')),
                 paginate: {
-                    first: "الأول",
-                    previous: "السابق",
-                    next: "التالي",
-                    last: "الأخير"
+                    first: @json(__('الأول')),
+                    previous: @json(__('السابق')),
+                    next: @json(__('التالي')),
+                    last: @json(__('الأخير'))
                 }
             }
         });

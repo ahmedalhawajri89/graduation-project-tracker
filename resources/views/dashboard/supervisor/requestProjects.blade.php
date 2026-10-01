@@ -1,9 +1,9 @@
 @extends('layouts.admin.admin')
-@section('title', 'طلبات الإشراف')
+@section('title', __('طلبات الإشراف'))
 
 @section('crumbs')
-    <x-crumb :href="route('supervisor.dashboard')">لوحتي</x-crumb>
-    <x-crumb>طلبات الإشراف</x-crumb>
+    <x-crumb :href="route('supervisor.dashboard')">{{ __('لوحتي') }}</x-crumb>
+    <x-crumb>{{ __('طلبات الإشراف') }}</x-crumb>
 @endsection
 
 @section('content')
@@ -12,36 +12,36 @@
         $pending = $requests->count();
         // المقاعد هي ما يُقرَّر على أساسه — تُقال قبل الطلبات لا بعدها
         $seatsNote = match (true) {
-            $seatsLeft < 0 => 'تجاوزت حدّك بـ' . abs($seatsLeft) . ' — لا قبول قبل رفع الحدّ من الإدارة',
-            $seatsLeft === 0 => 'اكتمل حدّك — لا قبول قبل رفع الحدّ من الإدارة',
-            $seatsLeft === 1 => 'بقي لك مقعد واحد',
-            $seatsLeft === 2 => 'بقي لك مقعدان',
-            default => 'بقي لك ' . $seatsLeft . ' مقاعد',
+            $seatsLeft < 0 => __('تجاوزت حدّك بـ:n — لا قبول قبل رفع الحدّ من الإدارة', ['n' => abs($seatsLeft)]),
+            $seatsLeft === 0 => __('اكتمل حدّك — لا قبول قبل رفع الحدّ من الإدارة'),
+            $seatsLeft === 1 => __('بقي لك مقعد واحد'),
+            $seatsLeft === 2 => __('بقي لك مقعدان'),
+            default => __('بقي لك :n مقاعد', ['n' => $seatsLeft]),
         };
         // نقاط المقاعد: المشغول ممتلئ والمتاح فارغ، والتجاوز يُرسم زائداً
         $pips = max($maxGroup, $acceptedCount);
     @endphp
 
-    <x-page-header title="طلبات الإشراف" subtitle="قرّر من تشرف عليه هذا الفصل — مقاعدك تُحسب مع كل قبول" />
+    <x-page-header title="{{ __('طلبات الإشراف') }}" subtitle="{{ __('قرّر من تشرف عليه هذا الفصل — مقاعدك تُحسب مع كل قبول') }}" />
 
     {{-- ===== السعة: ما يُقرَّر على أساسه ===== --}}
-    <section class="seat-panel mb-4 {{ $seatsLeft <= 0 ? 'is-full' : '' }}" aria-label="مقاعدك">
+    <section class="seat-panel mb-4 {{ $seatsLeft <= 0 ? 'is-full' : '' }}" aria-label="{{ __('مقاعدك') }}">
         <div class="seat-main">
-            <span class="seat-label">مقاعدك هذا الفصل</span>
-            <div class="seat-pips" role="img" aria-label="{{ $acceptedCount }} مشغولة من {{ $maxGroup }}">
+            <span class="seat-label">{{ __('مقاعدك هذا الفصل') }}</span>
+            <div class="seat-pips" role="img" aria-label="{{ __(':n مشغولة من :max', ['n' => $acceptedCount, 'max' => $maxGroup]) }}">
                 @for ($i = 1; $i <= $pips; $i++)
                     <span class="seat-pip {{ $i <= $acceptedCount ? ($i > $maxGroup ? 'is-over' : 'is-taken') : '' }}"></span>
                 @endfor
             </div>
-            <span class="seat-note">{{ $seatsNote }} <small>· {{ $acceptedCount }} من {{ $maxGroup }} مشغولة</small></span>
+            <span class="seat-note">{{ $seatsNote }} <small>· {{ __(':n من :max مشغولة', ['n' => $acceptedCount, 'max' => $maxGroup]) }}</small></span>
         </div>
         <div class="seat-stat">
             <b class="{{ $pending ? 'is-warn' : '' }}">{{ $pending }}</b>
-            <span>{{ $pending === 1 ? 'طلب ينتظرك' : 'طلبات تنتظرك' }}</span>
+            <span>{{ $pending === 1 ? __('طلب ينتظرك') : __('طلبات تنتظرك') }}</span>
         </div>
         <div class="seat-stat">
             <b>{{ $acceptedCount }}</b>
-            <span>قبلتها هذا الفصل</span>
+            <span>{{ __('قبلتها هذا الفصل') }}</span>
         </div>
     </section>
 
@@ -50,16 +50,16 @@
             {{-- ===== القرارات ===== --}}
             @if ($pending)
                 <div class="dash-section-head">
-                    <h2>بانتظار قرارك</h2>
-                    <span class="dash-section-meta">الأقدم أولاً — انتظر أطول</span>
+                    <h2>{{ __('بانتظار قرارك') }}</h2>
+                    <span class="dash-section-meta">{{ __('الأقدم أولاً — انتظر أطول') }}</span>
                 </div>
 
                 @if ($seatsLeft === 1 && $pending > 1)
                     <p class="hint-bar mb-3" role="status">
                         <i class="ti ti-alert-triangle" aria-hidden="true"></i>
                         <span>
-                            <b>{{ $pending }} طلبات ومقعد واحد.</b>
-                            قبول أيّها يرفض الباقي تلقائياً ويُبلَّغ أصحابها — اقرأها كلّها قبل أن تقرّر.
+                            <b>{{ __(':n طلبات ومقعد واحد.', ['n' => $pending]) }}</b>
+                            {{ __('قبول أيّها يرفض الباقي تلقائياً ويُبلَّغ أصحابها — اقرأها كلّها قبل أن تقرّر.') }}
                         </span>
                     </p>
                 @endif
@@ -77,17 +77,17 @@
             @else
                 <div class="card req-empty">
                     <span class="req-empty-icon" aria-hidden="true"><i class="ti ti-inbox"></i></span>
-                    <h2>لا طلبات تنتظرك</h2>
+                    <h2>{{ __('لا طلبات تنتظرك') }}</h2>
                     <p>
-                        حين يختارك فريق مشرفاً لمقترحه، يظهر طلبه هنا بفريقه ووصفه لتقبله أو ترفضه.
+                        {{ __('حين يختارك فريق مشرفاً لمقترحه، يظهر طلبه هنا بفريقه ووصفه لتقبله أو ترفضه.') }}
                         @if ($seatsLeft > 0)
-                            <br>{{ $seatsNote }} لطلبات جديدة.
+                            <br>{{ __(':note لطلبات جديدة.', ['note' => $seatsNote]) }}
                         @endif
                     </p>
                     @unless ($hasPlan)
                         <a href="{{ route('supervisor.plan', ['new' => 1]) }}#stage-new" class="btn btn-outline-secondary">
                             <i class="ti ti-route me-1" aria-hidden="true"></i>
-                            جهّز خطة المراحل ريثما تصل
+                            {{ __('جهّز خطة المراحل ريثما تصل') }}
                         </a>
                     @endunless
                 </div>
@@ -99,10 +99,10 @@
             <section class="ctx-card dash-panel" aria-labelledby="decisions-title">
                 <h2 class="ctx-head" id="decisions-title">
                     <i class="ti ti-history" aria-hidden="true"></i>
-                    قراراتك هذا الفصل
+                    {{ __('قراراتك هذا الفصل') }}
                 </h2>
                 @if ($decisions->isEmpty())
-                    <p class="dash-panel-empty">لم تقرّر في طلب بعد هذا الفصل.</p>
+                    <p class="dash-panel-empty">{{ __('لم تقرّر في طلب بعد هذا الفصل.') }}</p>
                 @else
                     <ol class="decision-list">
                         @foreach ($decisions as $d)
@@ -119,7 +119,7 @@
                                     <span class="decision-body">
                                         <span class="decision-title">{{ $d->title }}</span>
                                         <span class="decision-meta">
-                                            {{ $accepted ? 'قبلته' : 'رفضته' }}
+                                            {{ $accepted ? __('قبلته') : __('رفضته') }}
                                             @if ($d->group->first()?->student)
                                                 · {{ $d->group->first()->student->name }}
                                             @endif
@@ -141,10 +141,10 @@
             <section class="ctx-card dash-panel" aria-labelledby="updates-title">
                 <h2 class="ctx-head" id="updates-title">
                     <i class="ti ti-bell" aria-hidden="true"></i>
-                    آخر التحديثات
+                    {{ __('آخر التحديثات') }}
                 </h2>
                 @if ($updates->isEmpty())
-                    <p class="dash-panel-empty">لا تحديثات بعد.</p>
+                    <p class="dash-panel-empty">{{ __('لا تحديثات بعد.') }}</p>
                 @else
                     <ol class="activity-feed">
                         @foreach ($updates as $notification)
@@ -158,10 +158,10 @@
                                         @if (! empty($notification->data['supervisor_name']))
                                             {{ $notification->data['supervisor_name'] }}:
                                         @endif
-                                        {{ $notification->data['msg'] ?? '' }}
+                                        {{ __($notification->data['msg'] ?? '') }}
                                     </span>
                                     <span class="activity-meta">
-                                        {{ $byAdmin ? 'الإدارة · ' : '' }}{{ $notification->data['project'] ?? '' }}
+                                        {{ $byAdmin ? __('الإدارة') . ' · ' : '' }}{{ $notification->data['project'] ?? '' }}
                                         · <time datetime="{{ $notification->created_at->toIso8601String() }}">{{ $notification->created_at->diffForHumans() }}</time>
                                     </span>
                                 </span>

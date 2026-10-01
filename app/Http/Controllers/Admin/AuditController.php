@@ -51,8 +51,8 @@ class AuditController extends Controller
             ],
             'currentAction' => request('action'),
             'currentRole' => request('role'),
-            'actions' => AuditLog::LABELS,
-            'roles' => AuditLog::ROLES,
+            'actions' => AuditLog::labels(),
+            'roles' => AuditLog::roles(),
         ]);
     }
 

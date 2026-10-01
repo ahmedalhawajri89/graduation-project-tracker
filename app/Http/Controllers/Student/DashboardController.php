@@ -208,27 +208,27 @@ class DashboardController extends Controller
     {
         $semester = Semester::current();
         if (! $semester) {
-            return redirect()->back()->with('fail', 'لا يوجد فصل دراسي نشط — راجع إدارة القسم.');
+            return redirect()->back()->with('fail', __('لا يوجد فصل دراسي نشط — راجع إدارة القسم.'));
         }
 
         $student = $this->getInfo($semester->id);
         $specialize = $student->specialize;
 
         if (! $specialize || ! $specialize->id) {
-            return redirect()->back()->with('fail', 'لم يُحدَّد تخصصك بعد — راجع إدارة القسم.');
+            return redirect()->back()->with('fail', __('لم يُحدَّد تخصصك بعد — راجع إدارة القسم.'));
         }
 
         $project_type = $specialize->projects->firstWhere('id', (int) $request->specialize_project_id);
         if (! $project_type) {
-            return redirect()->back()->withInput()->with('fail', 'نوع المشروع غير متاح في تخصصك.');
+            return redirect()->back()->withInput()->with('fail', __('نوع المشروع غير متاح في تخصصك.'));
         }
 
         $supervisor = $specialize->supervisorsAvailable->firstWhere('id', (int) $request->supervisor_id);
         if (! $supervisor) {
-            return redirect()->back()->withInput()->with('fail', 'المشرف غير متاح في تخصصك.');
+            return redirect()->back()->withInput()->with('fail', __('المشرف غير متاح في تخصصك.'));
         }
         if ($supervisor->seatsLeft() <= 0) {
-            return redirect()->back()->withInput()->with('fail', 'اكتملت مجموعات هذا المشرف — اختر مشرفاً آخر.');
+            return redirect()->back()->withInput()->with('fail', __('اكتملت مجموعات هذا المشرف — اختر مشرفاً آخر.'));
         }
 
         // الأعضاء بعد حذف الفارغ والمكرّر — كانت القيم الفارغة تُعدّ في الحدّ الأدنى
@@ -239,11 +239,11 @@ class DashboardController extends Controller
             ->values();
 
         if (! $ids->contains((string) $student->university_id)) {
-            return redirect()->back()->withInput()->with('fail', 'يجب أن تكون ضمن فريقك — أنت قائده.');
+            return redirect()->back()->withInput()->with('fail', __('يجب أن تكون ضمن فريقك — أنت قائده.'));
         }
         if ($ids->count() < $project_type->min || $ids->count() > $project_type->max) {
             return redirect()->back()->withInput()->with('fail',
-                "حجم الفريق لهذا النوع بين {$project_type->min} و{$project_type->max} طلاب.");
+                __('حجم الفريق لهذا النوع بين :min و:max طلاب.', ['min' => $project_type->min, 'max' => $project_type->max]));
         }
 
         try {
@@ -253,10 +253,10 @@ class DashboardController extends Controller
                 $members = Student::whereIn('university_id', $ids)->lockForUpdate()->get();
 
                 if ($members->count() !== $ids->count()) {
-                    throw new \DomainException('بعض الأرقام الجامعية غير موجودة.');
+                    throw new \DomainException(__('بعض الأرقام الجامعية غير موجودة.'));
                 }
                 if ($members->contains(fn ($m) => (int) $m->specialize_id !== (int) $specialize->id)) {
-                    throw new \DomainException('يجب أن يكون جميع أعضاء الفريق من تخصصك.');
+                    throw new \DomainException(__('يجب أن يكون جميع أعضاء الفريق من تخصصك.'));
                 }
 
                 // مشروع قائم غير مرفوض — والمحذوف حذفاً مرناً يُعدّ، كما في availableForTeam
@@ -264,7 +264,7 @@ class DashboardController extends Controller
                     ->whereHas('groups.project', fn ($q) => $q->withTrashed()->where('status', '!=', 'reject'))
                     ->pluck('name');
                 if ($busy->isNotEmpty()) {
-                    throw new \DomainException('مسجَّل في فريق آخر، أو في مشروع موقوف لدى الإدارة: ' . $busy->implode('، '));
+                    throw new \DomainException(__('مسجَّل في فريق آخر، أو في مشروع موقوف لدى الإدارة: :names', ['names' => $busy->implode(__('، '))]));
                 }
 
                 // الحقول صراحةً: الحالة والفصل من الخادم، لا من الطلب
@@ -291,7 +291,7 @@ class DashboardController extends Controller
         } catch (\Exception $ex) {
             \Illuminate\Support\Facades\Log::error('فشل تسجيل مشروع', ['exception' => $ex]);
 
-            return redirect()->back()->withInput()->with('fail', 'تعذّر تسجيل المشروع. حاول مرة أخرى.');
+            return redirect()->back()->withInput()->with('fail', __('تعذّر تسجيل المشروع. حاول مرة أخرى.'));
         }
 
         // بعد الالتزام وفي محاولة مستقلّة: فشل البريد كان يُبلِّغ الطالب بفشل
@@ -302,7 +302,7 @@ class DashboardController extends Controller
             \Illuminate\Support\Facades\Log::warning('سُجِّل المشروع وتعذّر إشعار المشرف', ['project' => $project->id, 'exception' => $ex]);
         }
 
-        return redirect()->back()->with('success', 'أُرسل مقترحك إلى المشرف — ستصلك موافقته أو ملاحظاته هنا.');
+        return redirect()->back()->with('success', __('أُرسل مقترحك إلى المشرف — ستصلك موافقته أو ملاحظاته هنا.'));
     }
 
     /**
@@ -329,7 +329,7 @@ class DashboardController extends Controller
 
                 // قبل الردّ وحده: بعد القبول يدير المشرف المشروع، وبعد الرفض لا شيء يُسحب
                 if (! $locked || $locked->status !== 'request') {
-                    throw new \DomainException('لا يُسحب إلا طلب ما زال بانتظار ردّ المشرف.');
+                    throw new \DomainException(__('لا يُسحب إلا طلب ما زال بانتظار ردّ المشرف.'));
                 }
 
                 $members = $locked->group()->with('student')->get()->pluck('student')->filter();
@@ -369,7 +369,8 @@ class DashboardController extends Controller
         }
 
         return redirect()->route('student.dashboard')
-            ->with('success', 'سُحب الطلب وتحرّر الفريق — يمكنك تقديم مقترح جديد أو اختيار مشرف آخر.');
+            ->with('success', __('سُحب الطلب وتحرّر الفريق — يمكنك تقديم مقترح جديد أو اختيار مشرف آخر.'))
+;
     }
 
     public function showNotification()

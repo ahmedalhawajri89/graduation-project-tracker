@@ -74,13 +74,15 @@ class DefenseController extends Controller
         $data = $request->validate([
             'grade' => ['required', 'numeric', 'min:0', 'max:100'],
             'comments' => ['nullable', 'string', 'max:2000'],
-        ], [], ['grade' => 'الدرجة', 'comments' => 'الملاحظات']);
+        ], [], ['grade' => __('الدرجة'), 'comments' => __('الملاحظات')]);
 
         $result = DefenseGrading::record($mine, (float) $data['grade'], $data['comments'] ?? null);
 
         return back()->with('success', $result['final']
-            ? 'رُصدت درجتك واكتملت درجات اللجنة — الدرجة النهائية ' . rtrim(rtrim(number_format($result['grade'], 2, '.', ''), '0'), '.') . '. أُشعر الفريق.'
-            : 'رُصدت درجتك. تكتمل درجة المشروع حين يرصد بقية أعضاء اللجنة درجاتهم.');
+            ? __('رُصدت درجتك واكتملت درجات اللجنة — الدرجة النهائية :grade. أُشعر الفريق.', [
+                'grade' => rtrim(rtrim(number_format($result['grade'], 2, '.', ''), '0'), '.'),
+            ])
+            : __('رُصدت درجتك. تكتمل درجة المشروع حين يرصد بقية أعضاء اللجنة درجاتهم.'));
     }
 
     /** العضوية شرط الدخول: غير العضو كأن المناقشة غير موجودة */

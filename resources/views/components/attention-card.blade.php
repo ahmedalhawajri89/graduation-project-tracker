@@ -4,7 +4,7 @@
     'title' => '',
     'text' => null,
     'href' => null,
-    'cta' => 'عرض القائمة',
+    'cta' => __('عرض القائمة'),
     'tone' => 'warning', // warning | azure | red | green
 ])
 

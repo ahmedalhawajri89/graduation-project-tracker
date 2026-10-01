@@ -40,6 +40,6 @@ class DefenseMember extends Model
 
     public function getRoleLabelAttribute(): string
     {
-        return self::ROLES[$this->role] ?? $this->role;
+        return isset(self::ROLES[$this->role]) ? __(self::ROLES[$this->role]) : (string) $this->role;
     }
 }

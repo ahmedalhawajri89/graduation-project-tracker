@@ -33,14 +33,14 @@ class HomeController extends Controller
                 return response()->json(['message' => 'sent']);
             }
 
-            return redirect()->to($this->backToContact())->with('success', 'تم ارسال رسالتك. شكرا لك!');
+            return redirect()->to($this->backToContact())->with('success', __('تم ارسال رسالتك. شكرا لك!'));
 
         } catch (\Exception$ex) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'error'], 500);
             }
 
-            return redirect()->to($this->backToContact())->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return redirect()->to($this->backToContact())->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
     }

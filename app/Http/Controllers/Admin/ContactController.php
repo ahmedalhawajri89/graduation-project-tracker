@@ -122,11 +122,11 @@ class ContactController extends Controller
                 $project = $projects->first(fn ($p) => $p->status !== 'reject') ?? $projects->first();
                 $out[mb_strtolower($s->email)] = [
                     'role' => 'student',
-                    'label' => 'طالب',
+                    'label' => __('طالب'),
                     'meta' => array_values(array_filter([$s->university_id, $s->specialize->name])),
                     'link' => $project ? route('admin.groups.show', $project->id) : null,
                     'link_label' => $project ? $project->title : null,
-                    'link_hint' => $project ? 'مشروعه' : 'لم ينضمّ إلى فريق بعد',
+                    'link_hint' => $project ? __('مشروعه') : __('لم ينضمّ إلى فريق بعد'),
                 ];
             });
 
@@ -134,16 +134,16 @@ class ContactController extends Controller
             ->each(function ($s) use (&$out) {
                 $out[mb_strtolower($s->email)] = [
                     'role' => 'supervisor',
-                    'label' => 'مشرف',
+                    'label' => __('مشرف'),
                     'meta' => array_values(array_filter([$s->specialize->name ?? null])),
                     'link' => route('admin.supervisors.groups', $s->id),
-                    'link_label' => $s->projects_accept_count . ' ' . ($s->projects_accept_count === 1 ? 'مجموعة' : 'مجموعات'),
-                    'link_hint' => 'مجموعاته',
+                    'link_label' => $s->projects_accept_count . ' ' . ($s->projects_accept_count === 1 ? __('مجموعة') : __('مجموعات')),
+                    'link_hint' => __('مجموعاته'),
                 ];
             });
 
         Admin::whereIn('email', $emails)->get()->each(function ($a) use (&$out) {
-            $out[mb_strtolower($a->email)] ??= ['role' => 'admin', 'label' => 'مسؤول', 'meta' => [], 'link' => null, 'link_label' => null, 'link_hint' => null];
+            $out[mb_strtolower($a->email)] ??= ['role' => 'admin', 'label' => __('مسؤول'), 'meta' => [], 'link' => null, 'link_label' => null, 'link_hint' => null];
         });
 
         return $out;
@@ -154,7 +154,7 @@ class ContactController extends Controller
     {
         Contact::where('id', $id)->update(['is_read' => 0]);
 
-        return redirect()->back()->with('success', 'أُعيدت الرسالة إلى غير المقروءة.');
+        return redirect()->back()->with('success', __('أُعيدت الرسالة إلى غير المقروءة.'));
     }
 
     /** تعليم الكل كمقروء — فعل صريح بدل أن يقع تلقائياً */
@@ -162,7 +162,7 @@ class ContactController extends Controller
     {
         $n = Contact::where('is_read', 0)->update(['is_read' => 1]);
 
-        return redirect()->back()->with('success', "عُلِّمت {$n} رسالة كمقروءة.");
+        return redirect()->back()->with('success', __('عُلِّمت :n رسالة كمقروءة.', ['n' => $n]));
     }
 
     public function destroy($id)
@@ -171,17 +171,17 @@ class ContactController extends Controller
         $message = Contact::find($id ?: request()->id);
 
         if (! $message) {
-            return redirect()->back()->with('fail', 'الرسالة غير موجودة.');
+            return redirect()->back()->with('fail', __('الرسالة غير موجودة.'));
         }
 
         try {
             $message->delete();
 
-            return redirect()->back()->with('success', 'حُذفت الرسالة.');
+            return redirect()->back()->with('success', __('حُذفت الرسالة.'));
         } catch (\Exception $ex) {
             report($ex);
 
-            return redirect()->back()->with('fail', 'تعذّر حذف الرسالة. حاول مرة أخرى.');
+            return redirect()->back()->with('fail', __('تعذّر حذف الرسالة. حاول مرة أخرى.'));
         }
     }
 }

@@ -80,8 +80,10 @@ class StagePlanController extends Controller
         $n = count($result['created']);
 
         return redirect()->route('supervisor.plan')->with('success', $n
-            ? "أُضيفت المرحلة إلى {$n} " . ($n === 1 ? 'مجموعة' : 'مجموعات') . '.'
-            : 'أُضيفت المرحلة — وتصل كل مجموعة تقبلها لاحقاً.');
+            ? ($n === 1
+                ? __('أُضيفت المرحلة إلى :n مجموعة.', ['n' => $n])
+                : __('أُضيفت المرحلة إلى :n مجموعات.', ['n' => $n]))
+            : __('أُضيفت المرحلة — وتصل كل مجموعة تقبلها لاحقاً.'));
     }
 
     public function update(Request $request, SupervisorStage $stage)
@@ -115,8 +117,14 @@ class StagePlanController extends Controller
             $this->notifyGroups($affected, 'تغيّر موعد مرحلة «' . $stage->title . '» إلى ' . $stage->due_date->format('Y-m-d'));
         }
 
+        $u = $result['updated'];
+
         return redirect()->route('supervisor.plan')
-            ->with('success', 'حُفظت المرحلة' . ($result['updated'] ? " وحُدّثت في {$result['updated']} " . ($result['updated'] === 1 ? 'مجموعة' : 'مجموعات') : '') . '.');
+            ->with('success', match (true) {
+                ! $u => __('حُفظت المرحلة.'),
+                $u === 1 => __('حُفظت المرحلة وحُدّثت في :n مجموعة.', ['n' => $u]),
+                default => __('حُفظت المرحلة وحُدّثت في :n مجموعات.', ['n' => $u]),
+            });
     }
 
     public function destroy(SupervisorStage $stage)
@@ -128,7 +136,11 @@ class StagePlanController extends Controller
         Audit::record('stage.deleted', null, ['stage' => ['from' => $title], 'removed' => ['to' => $removed]]);
 
         return redirect()->route('supervisor.plan')
-            ->with('success', 'حُذفت المرحلة' . ($removed ? " من {$removed} " . ($removed === 1 ? 'مجموعة' : 'مجموعات') : '') . ' — وما أُنجز منها بقي.');
+            ->with('success', match (true) {
+                ! $removed => __('حُذفت المرحلة — وما أُنجز منها بقي.'),
+                $removed === 1 => __('حُذفت المرحلة من :n مجموعة — وما أُنجز منها بقي.', ['n' => $removed]),
+                default => __('حُذفت المرحلة من :n مجموعات — وما أُنجز منها بقي.', ['n' => $removed]),
+            });
     }
 
     /** @return array<string, mixed> */
@@ -142,10 +154,10 @@ class StagePlanController extends Controller
             'template' => self::TEMPLATE_RULE,
             'remove_template' => ['nullable', 'boolean'],
         ], [], [
-            'title' => 'عنوان المرحلة',
-            'instructions' => 'التعليمات',
-            'due_date' => 'الموعد',
-            'template' => 'القالب',
+            'title' => __('عنوان المرحلة'),
+            'instructions' => __('التعليمات'),
+            'due_date' => __('الموعد'),
+            'template' => __('القالب'),
         ]);
     }
 

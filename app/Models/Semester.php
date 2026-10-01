@@ -55,15 +55,17 @@ class Semester extends Model
     public function parts(): array
     {
         $name = trim((string) $this->name);
+        // «الفصل الأول» من بيانات الإدارة: المعروف منه يُترجم عند العرض (وخارج التطبيق كما هو)
+        $tr = fn (string $s) => app()->bound('translator') ? __($s) : $s;
 
         if (! preg_match('/(\d{4})\s*[\\\\\/\-–]\s*(\d{2,4})/u', $name, $m)) {
-            return ['term' => $name, 'year' => null];
+            return ['term' => $tr($name), 'year' => null];
         }
 
         $term = trim(preg_replace('/\s+/u', ' ', str_replace([$m[0], 'الدراسي'], '', $name)), " \t-–·");
 
         return [
-            'term' => $term !== '' ? $term : $name,
+            'term' => $tr($term !== '' ? $term : $name),
             'year' => $m[1] . '–' . substr($m[2], -2),
         ];
     }

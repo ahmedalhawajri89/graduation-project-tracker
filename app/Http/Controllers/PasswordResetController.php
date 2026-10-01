@@ -39,7 +39,7 @@ class PasswordResetController extends Controller
     {
         $request->validate([
             'identify' => 'required|string|max:100',
-        ], [], ['identify' => 'البريد الإلكتروني أو الرقم الجامعي']);
+        ], [], ['identify' => __('البريد الإلكتروني أو الرقم الجامعي')]);
 
         $identify = trim($request->identify);
         $match = $this->locate($identify);
@@ -60,7 +60,7 @@ class PasswordResetController extends Controller
         // الردّ واحد سواء وُجد الحساب أو لم يوجد: ردّ مختلف يحوّل
         // النموذج إلى أداة تُعدّد البُرد والأرقام الجامعية المسجّلة
         return back()->with('success',
-            'إن كان الحساب مسجَّلاً فستصلك رسالة بالبريد خلال دقائق. تحقّق من صندوق الرسائل غير المرغوبة أيضاً.');
+            __('إن كان الحساب مسجَّلاً فستصلك رسالة بالبريد خلال دقائق. تحقّق من صندوق الرسائل غير المرغوبة أيضاً.'));
     }
 
     public function resetForm(Request $request, string $guard, string $token)
@@ -85,11 +85,11 @@ class PasswordResetController extends Controller
             // تتساهل أضعف نقطة في السلسلة
             'password' => 'required|min:8|max:60|confirmed',
         ], [
-            'password.min' => 'كلمة السر لا تقلّ عن 8 أحرف.',
-            'password.confirmed' => 'تأكيد كلمة السر غير مطابق.',
+            'password.min' => __('كلمة السر لا تقلّ عن 8 أحرف.'),
+            'password.confirmed' => __('تأكيد كلمة السر غير مطابق.'),
         ], [
-            'email' => 'البريد الإلكتروني',
-            'password' => 'كلمة السر الجديدة',
+            'email' => __('البريد الإلكتروني'),
+            'password' => __('كلمة السر الجديدة'),
         ]);
 
         $status = Password::broker(self::GUARDS[$guard][1])->reset(
@@ -103,7 +103,7 @@ class PasswordResetController extends Controller
 
         if ($status === Password::PASSWORD_RESET) {
             return redirect()->route('login')
-                ->with('success', 'تم تغيير كلمة السر. يمكنك الدخول بها الآن.');
+                ->with('success', __('تم تغيير كلمة السر. يمكنك الدخول بها الآن.'));
         }
 
         return back()
@@ -142,10 +142,10 @@ class PasswordResetController extends Controller
     private function failure(string $status): string
     {
         return match ($status) {
-            Password::INVALID_TOKEN => 'الرابط منتهي الصلاحية أو استُعمل من قبل. اطلب رابطاً جديداً.',
-            Password::INVALID_USER => 'الرابط منتهي الصلاحية أو استُعمل من قبل. اطلب رابطاً جديداً.',
-            Password::RESET_THROTTLED => 'طلبتَ رابطاً قبل قليل. انتظر دقيقة ثم حاول.',
-            default => 'تعذّر تغيير كلمة السر. اطلب رابطاً جديداً.',
+            Password::INVALID_TOKEN => __('الرابط منتهي الصلاحية أو استُعمل من قبل. اطلب رابطاً جديداً.'),
+            Password::INVALID_USER => __('الرابط منتهي الصلاحية أو استُعمل من قبل. اطلب رابطاً جديداً.'),
+            Password::RESET_THROTTLED => __('طلبتَ رابطاً قبل قليل. انتظر دقيقة ثم حاول.'),
+            default => __('تعذّر تغيير كلمة السر. اطلب رابطاً جديداً.'),
         };
     }
 }

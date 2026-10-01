@@ -24,7 +24,7 @@
 <div class="ed-field {{ $wide ? 'is-wide' : '' }}" data-ed-wrap="{{ $name }}">
     <label for="{{ $prefix }}-{{ $name }}" class="form-label {{ $required ? 'required' : '' }}">
         {{ $label }}
-        <span class="ed-changed-dot" title="تغيّر" aria-hidden="true"></span>
+        <span class="ed-changed-dot" title="{{ __('تغيّر') }}" aria-hidden="true"></span>
     </label>
     @if (trim($slot) !== '')
         {{ $slot }}

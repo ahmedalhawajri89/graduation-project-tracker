@@ -46,7 +46,7 @@
                         @endif
                         @if ($chip['from'])
                             <span class="at-from">{{ $chip['from'] }}</span>
-                            <i class="ti ti-arrow-left" aria-label="إلى"></i>
+                            <i class="ti ti-arrow-left" aria-label="{{ __('إلى') }}"></i>
                         @endif
                         @if ($chip['to'])
                             <span class="at-to">{{ $chip['to'] }}</span>
@@ -67,11 +67,11 @@
             @else
                 <span class="ctx-avatar at-avatar" aria-hidden="true">{{ $initials }}</span>
             @endif
-            <span class="at-actor">{{ $log->actor_name ?: 'النظام' }}</span>
+            <span class="at-actor">{{ $log->actor_name ?: __('النظام') }}</span>
             <span class="at-role">{{ $log->role_label }}</span>
             <span class="at-sep" aria-hidden="true">·</span>
             <time datetime="{{ $log->created_at?->toIso8601String() }}"
-                title="{{ $log->created_at?->locale('ar')->translatedFormat('l j F Y — H:i') }}">
+                title="{{ $log->created_at?->translatedFormat('l j F Y — H:i') }}">
                 {{ $dated ? $log->created_at?->format('Y-m-d H:i') : $log->created_at?->format('H:i') }}
             </time>
         </p>

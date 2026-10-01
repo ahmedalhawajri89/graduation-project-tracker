@@ -16,8 +16,8 @@
     كان يعرض الرئيسية والصفحة الحالية فقط، ويُسقط ما بينهما — ولهذا
     اضطرّت ستّ صفحات إلى كتابة أزرار عودة خاصة بها.
 --}}
-<nav class="crumb" aria-label="مسار التنقّل">
-    <a href="{{ route($guard . '.dashboard') }}" class="crumb-home" aria-label="الصفحة الرئيسية">
+<nav class="crumb" aria-label="{{ __('مسار التنقّل') }}">
+    <a href="{{ route($guard . '.dashboard') }}" class="crumb-home" aria-label="{{ __('الصفحة الرئيسية') }}">
         <i class="ti ti-home" aria-hidden="true"></i>
     </a>
 

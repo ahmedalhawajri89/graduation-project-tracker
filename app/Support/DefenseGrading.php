@@ -34,9 +34,9 @@ class DefenseGrading
     public static function blocker(Defense $defense): ?string
     {
         return match (true) {
-            $defense->status === Defense::CANCELLED => 'المناقشة ملغاة.',
-            $defense->project?->isGradeLocked() => 'اعتُمدت الدرجة النهائية — لا تعديل بعد الاعتماد.',
-            $defense->starts_at->isFuture() => 'يُفتح رصد الدرجة عند بدء المناقشة (' . $defense->starts_at->format('Y-m-d H:i') . ').',
+            $defense->status === Defense::CANCELLED => __('المناقشة ملغاة.'),
+            $defense->project?->isGradeLocked() => __('اعتُمدت الدرجة النهائية — لا تعديل بعد الاعتماد.'),
+            $defense->starts_at->isFuture() => __('يُفتح رصد الدرجة عند بدء المناقشة (:time).', ['time' => $defense->starts_at->format('Y-m-d H:i')]),
             default => null,
         };
     }
@@ -63,9 +63,10 @@ class DefenseGrading
 
             $weights = self::weights($members);
             $final = round($members->sum(fn ($m) => $m->grade * $weights[$m->id]) / 100, 2);
-            $note = $members->filter(fn ($m) => filled($m->comments))
+            // ملاحظة التقييم تُحفظ مع المشروع ويقرؤها غيره: صفة العضو بالعربية
+            $note = Arabic::run(fn () => $members->filter(fn ($m) => filled($m->comments))
                 ->map(fn ($m) => $m->role_label . ' (' . $m->supervisor->name . '): ' . $m->comments)
-                ->implode("\n");
+                ->implode("\n"));
 
             $project->update([
                 'grade' => $final,
@@ -123,8 +124,9 @@ class DefenseGrading
     private static function notifyTeam(Project $project, float $grade, bool $updated): void
     {
         $fmt = rtrim(rtrim(number_format($grade, 2, '.', ''), '0'), '.');
-        $msg = ($updated ? 'عُدّلت درجة مشروعكم بعد المناقشة: ' : 'رصدت لجنة المناقشة درجة مشروعكم: ')
-            . $fmt . ' (' . $project->grade_label . ') 🎓';
+        // نصّ الإشعار يُحفظ: عربي مهما كانت لغة من رصد (التقدير مترجَم عند العرض)
+        $msg = Arabic::run(fn () => ($updated ? 'عُدّلت درجة مشروعكم بعد المناقشة: ' : 'رصدت لجنة المناقشة درجة مشروعكم: ')
+            . $fmt . ' (' . $project->grade_label . ') 🎓');
 
         try {
             Notification::send($project->students(), ProjectActivityNotify::withMail([
@@ -140,12 +142,13 @@ class DefenseGrading
     private static function nudgeOthers(Defense $defense, DefenseMember $by): void
     {
         $others = $defense->members->where('id', '!=', $by->id)->filter(fn ($m) => is_null($m->grade))->pluck('supervisor');
+        $role = Arabic::run(fn () => $by->role_label);
 
         try {
             Notification::send($others, new ProjectActivityNotify([
                 'project' => $defense->project->title,
                 'supervisor_name' => $by->supervisor->name,
-                'msg' => 'رصد ' . $by->role_label . ' درجته لمناقشة «' . $defense->project->title . '» — بقيت درجتك لتكتمل درجة المشروع.',
+                'msg' => 'رصد ' . $role . ' درجته لمناقشة «' . $defense->project->title . '» — بقيت درجتك لتكتمل درجة المشروع.',
                 'kind' => 'defense',
                 'title' => 'بقيت درجتك',
             ]));

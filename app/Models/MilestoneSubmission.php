@@ -32,7 +32,7 @@ class MilestoneSubmission extends Model
 
     public function student()
     {
-        return $this->belongsTo(Student::class, 'student_id')->withDefault(['name' => 'عضو سابق']);
+        return $this->belongsTo(Student::class, 'student_id')->withDefault(['name' => __('عضو سابق')]);
     }
 
     public function reviewer()

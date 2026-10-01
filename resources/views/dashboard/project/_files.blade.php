@@ -47,7 +47,7 @@
     <div class="dist-head">
         <span class="dist-head-title">
             <i class="ti ti-folder" aria-hidden="true"></i>
-            ملفات المشروع
+            {{ __('ملفات المشروع') }}
             @if ($n)
                 <span class="ctx-count">{{ $n }}</span>
             @endif
@@ -56,7 +56,7 @@
             <button type="button" class="btn btn-sm btn-outline-secondary" data-upload-toggle
                 aria-controls="file-upload" aria-expanded="{{ $showDrop ? 'true' : 'false' }}">
                 <i class="ti ti-upload me-1" aria-hidden="true"></i>
-                رفع ملف
+                {{ __('رفع ملف') }}
             </button>
         @endif
     </div>
@@ -64,7 +64,7 @@
     @if ($locked)
         <p class="hint-bar m-3">
             <i class="ti ti-archive" aria-hidden="true"></i>
-            <span>أُغلق الرفع والحذف بعد رصد التقييم — الملفات أدناه للتنزيل فقط.</span>
+            <span>{{ __('أُغلق الرفع والحذف بعد رصد التقييم — الملفات أدناه للتنزيل فقط.') }}</span>
         </p>
     @else
         <form action="{{ route($role . '.files.store', ['project' => $project->id]) }}" method="POST"
@@ -78,17 +78,17 @@
 
                 <span class="file-drop-idle" id="file-drop-idle">
                     <span class="file-drop-icon" aria-hidden="true"><i class="ti ti-cloud-upload"></i></span>
-                    <b>اسحب ملفك هنا أو <u>اختره من جهازك</u></b>
-                    <span class="file-chips" aria-label="الأنواع المقبولة">
+                    <b>{{ __('اسحب ملفك هنا أو') }} <u>{{ __('اختره من جهازك') }}</u></b>
+                    <span class="file-chips" aria-label="{{ __('الأنواع المقبولة') }}">
                         <span class="file-chip is-pdf">PDF</span>
                         <span class="file-chip is-doc">Word</span>
                         <span class="file-chip is-ppt">PowerPoint</span>
                         <span class="file-chip is-xls">Excel</span>
                         <span class="file-chip is-zip">ZIP</span>
-                        <span class="file-chip is-img">صور</span>
+                        <span class="file-chip is-img">{{ __('صور') }}</span>
                     </span>
-                    <small>حتى 10MB للملف —
-                        {{ $role === 'supervisor' ? 'يراه الفريق كلّه' : 'المقترح والتقارير والعرض النهائي، ويراها المشرف' }}</small>
+                    <small>{{ __('حتى 10MB للملف —') }}
+                        {{ $role === 'supervisor' ? __('يراه الفريق كلّه') : __('المقترح والتقارير والعرض النهائي، ويراها المشرف') }}</small>
                 </span>
 
                 <span class="file-drop-picked d-none" id="file-drop-picked">
@@ -97,7 +97,7 @@
                         <b id="picked-name"></b>
                         <small><bdi dir="ltr" id="picked-size"></bdi></small>
                     </span>
-                    <span class="file-drop-change">تغيير</span>
+                    <span class="file-drop-change">{{ __('تغيير') }}</span>
                 </span>
             </label>
             @error('file')
@@ -108,10 +108,10 @@
             <div class="file-upload-row {{ $uploadOpen ? '' : 'd-none' }}" id="file-upload-row">
                 <input type="text" name="title" id="file-title" required maxlength="120"
                     class="form-control @error('title') is-invalid @enderror"
-                    placeholder="اسم الملف كما يراه الفريق" value="{{ old('title') }}" aria-label="اسم الملف">
-                <button type="submit" class="btn btn-primary" data-loading-text="جارٍ الرفع..">
+                    placeholder="{{ __('اسم الملف كما يراه الفريق') }}" value="{{ old('title') }}" aria-label="{{ __('اسم الملف') }}">
+                <button type="submit" class="btn btn-primary" data-loading-text="{{ __('جارٍ الرفع..') }}">
                     <i class="ti ti-upload me-1" aria-hidden="true"></i>
-                    رفع
+                    {{ __('رفع') }}
                 </button>
             </div>
             @error('title')
@@ -121,7 +121,7 @@
     @endif
 
     @if ($n === 0 && $locked)
-        <x-empty-state icon="ti-file-off" title="لا ملفات" text="لم يُرفع ملف لهذا المشروع قبل أرشفته." class="is-inline" />
+        <x-empty-state icon="ti-file-off" :title="__('لا ملفات')" :text="__('لم يُرفع ملف لهذا المشروع قبل أرشفته.')" class="is-inline" />
     @elseif ($n > 0)
         <div class="file-list">
             @foreach ($project->files as $file)
@@ -144,7 +144,7 @@
                             <bdi dir="ltr">{{ $file->human_size }}</bdi>
                             · <time datetime="{{ $file->created_at->toIso8601String() }}"
                                 title="{{ $file->created_at->format('Y-m-d H:i') }}">{{ $file->created_at->diffForHumans() }}</time>
-                            · {{ $mine ? 'أنت' : ($file->uploader_type === \App\Models\Supervisor::class ? 'المشرف' : ($file->uploader->name ?? 'طالب')) }}
+                            · {{ $mine ? __('أنت') : ($file->uploader_type === \App\Models\Supervisor::class ? __('المشرف') : ($file->uploader->name ?? __('طالب'))) }}
                         </span>
                     </div>
 
@@ -152,7 +152,7 @@
                     @if ($open->isNotEmpty())
                         <span class="file-flag {{ $forMe ? 'is-mine' : '' }}">
                             <i class="ti ti-alert-circle" aria-hidden="true"></i>
-                            {{ $forMe ? 'تعديل مطلوب منك' : 'بحاجة لتعديل' }}
+                            {{ $forMe ? __('تعديل مطلوب منك') : __('بحاجة لتعديل') }}
                         </span>
                     @endif
 
@@ -160,29 +160,29 @@
                         @if ($file->notes->isNotEmpty() || $canNote)
                             <button type="button" class="file-notes-btn {{ $open->isNotEmpty() ? 'has-open' : '' }}"
                                 data-notes-toggle="{{ $file->id }}" aria-expanded="false" aria-controls="notes-{{ $file->id }}"
-                                title="الملاحظات">
+                                title="{{ __('الملاحظات') }}">
                                 <i class="ti ti-message-2" aria-hidden="true"></i>
                                 @if ($file->notes->isNotEmpty())
                                     <span>{{ $open->count() ?: $file->notes->count() }}</span>
                                 @else
-                                    <span class="visually-hidden">ملاحظة</span>
+                                    <span class="visually-hidden">{{ __('ملاحظة') }}</span>
                                 @endif
                             </button>
                         @endif
 
                         <a href="{{ route('files.download', ['file' => $file->id]) }}" class="btn-action"
-                            title="تنزيل" aria-label="تنزيل {{ $file->title }}">
+                            title="{{ __('تنزيل') }}" aria-label="{{ __('تنزيل :title', ['title' => $file->title]) }}">
                             <i class="ti ti-download" aria-hidden="true"></i>
                         </a>
 
                         @if ($canDelete)
                             {{-- الحذف عند المرور على الحاسوب: فعل نادر لا يُعرض في كل صفّ دائماً --}}
                             <form action="{{ route($role . '.files.destroy', ['file' => $file->id]) }}" method="POST"
-                                class="is-reveal" onsubmit="return confirm({{ Js::from('حذف «' . $file->title . '»؟ لا يمكن التراجع.') }})">
+                                class="is-reveal" onsubmit="return confirm({{ Js::from(__('حذف «:title»؟ لا يمكن التراجع.', ['title' => $file->title])) }})">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn-action btn-action--danger" title="حذف"
-                                    aria-label="حذف {{ $file->title }}">
+                                <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}"
+                                    aria-label="{{ __('حذف :title', ['title' => $file->title]) }}">
                                     <i class="ti ti-trash" aria-hidden="true"></i>
                                 </button>
                             </form>
@@ -202,13 +202,13 @@
                             <x-avatar :user="$note->author" class="ctx-avatar file-note-avatar" />
                             <div class="file-note-body">
                                 <div class="file-note-head">
-                                    <b>{{ $byMe ? 'أنت' : ($note->author->name ?? 'مستخدم محذوف') }}</b>
+                                    <b>{{ $byMe ? __('أنت') : ($note->author->name ?? __('مستخدم محذوف')) }}</b>
                                     @if ($note->author_type === \App\Models\Supervisor::class)
-                                        <span class="msg-role">مشرف</span>
+                                        <span class="msg-role">{{ __('مشرف') }}</span>
                                     @endif
                                     @if ($note->mentioned)
                                         <span class="file-note-mention {{ (int) $note->mentioned_id === (int) $me->id && $role === 'student' ? 'is-me' : '' }}">
-                                            <i class="ti ti-at" aria-hidden="true"></i>{{ (int) $note->mentioned_id === (int) $me->id && $role === 'student' ? 'أنت' : $note->mentioned->name }}
+                                            <i class="ti ti-at" aria-hidden="true"></i>{{ (int) $note->mentioned_id === (int) $me->id && $role === 'student' ? __('أنت') : $note->mentioned->name }}
                                         </span>
                                     @endif
                                     <time datetime="{{ $note->created_at->toIso8601String() }}"
@@ -218,7 +218,7 @@
                                 @unless ($note->isOpen())
                                     <span class="file-note-done">
                                         <i class="ti ti-circle-check" aria-hidden="true"></i>
-                                        عولجت{{ $note->resolver ? ' — ' . ($note->resolver->is($me) ? 'أنت' : $note->resolver->name) : '' }}
+                                        {{ __('عولجت') }}{{ $note->resolver ? ' — ' . ($note->resolver->is($me) ? __('أنت') : $note->resolver->name) : '' }}
                                         · {{ $note->resolved_at->diffForHumans() }}
                                     </span>
                                 @endunless
@@ -229,16 +229,16 @@
                                         @csrf
                                         <button type="submit" class="file-note-resolve {{ $note->isOpen() ? '' : 'is-reopen' }}">
                                             <i class="ti {{ $note->isOpen() ? 'ti-check' : 'ti-rotate' }}" aria-hidden="true"></i>
-                                            {{ $note->isOpen() ? 'عولجت' : 'إعادة فتح' }}
+                                            {{ $note->isOpen() ? __('عولجت') : __('إعادة فتح') }}
                                         </button>
                                     </form>
                                 @endif
                                 @if ($byMe || $role === 'supervisor')
                                     <form action="{{ route('files.notes.destroy', $note->id) }}" method="POST"
-                                        onsubmit="return confirm('حذف هذه الملاحظة؟')">
+                                        onsubmit="return confirm({{ Js::from(__('حذف هذه الملاحظة؟')) }})">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn-action btn-action--danger" title="حذف" aria-label="حذف الملاحظة">
+                                        <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}" aria-label="{{ __('حذف الملاحظة') }}">
                                             <i class="ti ti-trash" aria-hidden="true"></i>
                                         </button>
                                     </form>
@@ -253,24 +253,24 @@
                             <input type="hidden" name="note_file" value="{{ $file->id }}">
                             <textarea name="body" rows="2" maxlength="1000" required
                                 class="form-control {{ $noteFor === $file->id && $errors->has('body') ? 'is-invalid' : '' }}"
-                                placeholder="ما الذي يحتاج تعديلاً في هذا الملف؟ مثال: صفحة 3 ينقصها المرجع"
-                                aria-label="ملاحظة على {{ $file->title }}">{{ $noteFor === $file->id ? old('body') : '' }}</textarea>
+                                placeholder="{{ __('ما الذي يحتاج تعديلاً في هذا الملف؟ مثال: صفحة 3 ينقصها المرجع') }}"
+                                aria-label="{{ __('ملاحظة على :title', ['title' => $file->title]) }}">{{ $noteFor === $file->id ? old('body') : '' }}</textarea>
                             <div class="file-note-form-row">
                                 <label class="file-note-to">
                                     <i class="ti ti-at" aria-hidden="true"></i>
-                                    <select name="mentioned_id" class="form-select form-select-sm" aria-label="تنبيه عضو">
-                                        <option value="">بلا تنبيه عضو</option>
+                                    <select name="mentioned_id" class="form-select form-select-sm" aria-label="{{ __('تنبيه عضو') }}">
+                                        <option value="">{{ __('بلا تنبيه عضو') }}</option>
                                         @foreach ($teamOptions as $g)
                                             @continue($role === 'student' && (int) $g->student_id === (int) $me->id)
                                             <option value="{{ $g->student_id }}" @selected($noteFor === $file->id && (int) old('mentioned_id') === (int) $g->student_id)>
-                                                {{ $g->student->name }}{{ $g->type === 'leader' ? ' (القائد)' : '' }}
+                                                {{ $g->student->name }}{{ $g->type === 'leader' ? ' ' . __('(القائد)') : '' }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </label>
                                 <button type="submit" class="btn btn-primary btn-sm" data-loading-text="…">
                                     <i class="ti ti-send me-1" aria-hidden="true"></i>
-                                    إضافة ملاحظة
+                                    {{ __('إضافة ملاحظة') }}
                                 </button>
                             </div>
                             @if ($noteFor === $file->id)
@@ -282,7 +282,8 @@
                             @endif
                         </form>
                     @elseif ($file->notes->isEmpty())
-                        <p class="file-notes-empty">لا ملاحظات على هذا الملف.</p>
+                        <p class="file-notes-empty">{{ __('لا ملاحظات على هذا الملف.') }}</p>
+
                     @endif
                 </div>
                 </div>

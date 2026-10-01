@@ -1,13 +1,13 @@
 @php
     if (auth()->guard('admin')->check()) {
         $notifyRoute = route('admin.contact.index');
-        $roleLabel = 'مسؤول النظام';
+        $roleLabel = __('مسؤول النظام');
     } elseif (auth()->guard('supervisor')->check()) {
         $notifyRoute = route('supervisor.showNotification');
-        $roleLabel = 'مشرف أكاديمي';
+        $roleLabel = __('مشرف أكاديمي');
     } else {
         $notifyRoute = route('student.showNotification');
-        $roleLabel = 'طالب';
+        $roleLabel = __('طالب');
     }
     // من الـ View Composer — محسوبة مرة واحدة للطلب
     $unreadCount = $layoutShared['unreadCount'] ?? 0;
@@ -21,7 +21,7 @@
 
         {{-- صدر الشريط: فتح السايدبار (موبايل) + مسار التنقّل --}}
         <button type="button" class="topbar-icon-btn topbar-burger" data-bs-toggle="collapse"
-            data-bs-target="#sidebar-menu" aria-label="فتح القائمة" aria-expanded="false">
+            data-bs-target="#sidebar-menu" aria-label="{{ __('فتح القائمة') }}" aria-expanded="false">
             <i class="ti ti-menu-2" aria-hidden="true"></i>
         </button>
 
@@ -29,9 +29,9 @@
 
         {{-- الوسط: البحث --}}
         <button type="button" class="cmdk-trigger" data-bs-toggle="modal" data-bs-target="#cmdk-modal"
-            aria-label="فتح البحث السريع">
+            aria-label="{{ __('فتح البحث السريع') }}">
             <i class="ti ti-search" aria-hidden="true"></i>
-            <span class="cmdk-trigger-label">بحث سريع أو انتقال..</span>
+            <span class="cmdk-trigger-label">{{ __('بحث سريع أو انتقال..') }}</span>
             <span class="cmdk-kbd">Ctrl K</span>
         </button>
 
@@ -41,7 +41,7 @@
             {{-- الإشعارات: قائمة منسدلة بمعاينة --}}
             <div class="nav-item dropdown">
                 <button type="button" class="topbar-icon-btn topbar-bell {{ $unreadCount ? 'has-unread' : '' }}" data-bs-toggle="dropdown"
-                    aria-label="الإشعارات ({{ $unreadCount }} غير مقروء)"
+                    aria-label="{{ __('الإشعارات (:n غير مقروء)', ['n' => $unreadCount]) }}"
                     aria-haspopup="true" aria-expanded="false">
                     <i class="ti ti-bell" aria-hidden="true"></i>
                     @if ($unreadCount > 0)
@@ -50,16 +50,16 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notif-menu">
                     <div class="notif-menu-head">
-                        <span class="fw-bold">الإشعارات</span>
+                        <span class="fw-bold">{{ __('الإشعارات') }}</span>
                         @if ($unreadCount > 0)
-                            <span class="badge bg-red-lt text-red">{{ $unreadCount }} جديد</span>
+                            <span class="badge bg-red-lt text-red">{{ __(':n جديد', ['n' => $unreadCount]) }}</span>
                         @endif
                     </div>
 
                     @if ($latestNotifications->count() === 0)
                         <div class="notif-empty">
                             <i class="ti ti-bell-off"></i>
-                            <span>لا توجد إشعارات بعد</span>
+                            <span>{{ __('لا توجد إشعارات بعد') }}</span>
                         </div>
                     @else
                         @foreach ($latestNotifications as $notification)
@@ -76,10 +76,10 @@
                                 </span>
                                 <span class="notif-body">
                                     <span class="notif-title">
-                                        {{ $notification->data['project'] ?? ($notification->data['title'] ?? 'إشعار') }}
+                                        {{ $notification->data['project'] ?? ($notification->data['title'] ?? __('إشعار')) }}
                                     </span>
                                     <span class="notif-text">
-                                        {{ \Illuminate\Support\Str::limit($notification->data['msg'] ?? ($notification->data['type'] ?? ''), 70) }}
+                                        {{ \Illuminate\Support\Str::limit(__($notification->data['msg'] ?? ($notification->data['type'] ?? '')), 70) }}
                                     </span>
                                     <span class="notif-time">{{ $notification->created_at->diffForHumans() }}</span>
                                 </span>
@@ -88,7 +88,7 @@
                     @endif
 
                     <a href="{{ $notifyRoute }}" class="notif-menu-foot">
-                        عرض كل الإشعارات
+                        {{ __('عرض كل الإشعارات') }}
                         <i class="ti ti-arrow-left"></i>
                     </a>
                 </div>
@@ -103,7 +103,7 @@
             @endphp
             <div class="nav-item dropdown">
                 <button type="button" class="user-trigger" data-bs-toggle="dropdown"
-                    aria-label="فتح قائمة المستخدم" aria-haspopup="true" aria-expanded="false">
+                    aria-label="{{ __('فتح قائمة المستخدم') }}" aria-haspopup="true" aria-expanded="false">
                     <span class="user-trigger-avatar">
                         <x-avatar :user="auth()->user()" class="avatar avatar-sm avatar-gradient" />
                         <span class="user-online" aria-hidden="true"></span>
@@ -138,19 +138,25 @@
                     <div class="user-menu-list">
                         <a href="{{ $profileRoute }}" class="dropdown-item">
                             <span class="user-menu-icon"><i class="ti ti-user-cog"></i></span>
-                            الملف الشخصي
+                            {{ __('الملف الشخصي') }}
                         </a>
                         <a href="{{ $notifyRoute }}" class="dropdown-item">
                             <span class="user-menu-icon"><i class="ti ti-bell"></i></span>
-                            الإشعارات
+                            {{ __('الإشعارات') }}
                             @if ($unreadCount > 0)
                                 <span class="user-menu-count">{{ $unreadCount }}</span>
                             @endif
                         </a>
                         <a href="{{ route('site.home') }}" class="dropdown-item" target="_blank">
                             <span class="user-menu-icon"><i class="ti ti-world"></i></span>
-                            الموقع العام
+                            {{ __('الموقع العام') }}
                             <i class="ti ti-external-link user-menu-ext" aria-hidden="true"></i>
+                        </a>
+                        @php $otherLocale = app()->getLocale() === 'en' ? 'ar' : 'en'; @endphp
+                        <a href="{{ route('locale.switch', $otherLocale) }}" class="dropdown-item" lang="{{ $otherLocale }}">
+                            <span class="user-menu-icon"><i class="ti ti-language"></i></span>
+                            {{-- اسم اللغة الأخرى بلغتها هي، فلا يُترجَم --}}
+                            {{ $otherLocale === 'en' ? 'English' : 'العربية' }}
                         </a>
                     </div>
 
@@ -158,7 +164,7 @@
                         <a href="{{ route('logout') }}" class="dropdown-item is-danger"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <span class="user-menu-icon"><i class="ti ti-logout"></i></span>
-                            تسجيل خروج
+                            {{ __('تسجيل خروج') }}
                         </a>
                     </div>
                     <form action="{{ route('logout') }}" method="post" id="logout-form">@csrf</form>

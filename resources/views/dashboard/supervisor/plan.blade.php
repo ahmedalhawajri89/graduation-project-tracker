@@ -1,9 +1,9 @@
 @extends('layouts.admin.admin')
-@section('title', 'خطة المراحل')
+@section('title', __('خطة المراحل'))
 
 @section('crumbs')
-    <x-crumb :href="route('supervisor.dashboard')">لوحتي</x-crumb>
-    <x-crumb>خطة المراحل</x-crumb>
+    <x-crumb :href="route('supervisor.dashboard')">{{ __('لوحتي') }}</x-crumb>
+    <x-crumb>{{ __('خطة المراحل') }}</x-crumb>
 @endsection
 
 @section('content')
@@ -11,18 +11,20 @@
     @php
         $groupsCount = $projects->count();
         $activeCount = $projects->where('status', 'accept')->whereNull('grade')->count();
-        $suggestions = ['المقترح', 'الفصل الأول: المقدمة', 'الفصل الثاني: الدراسات السابقة', 'التحليل والتصميم', 'التنفيذ', 'العرض النهائي'];
+        $suggestions = [__('المقترح'), __('الفصل الأول: المقدمة'), __('الفصل الثاني: الدراسات السابقة'), __('التحليل والتصميم'), __('التنفيذ'), __('العرض النهائي')];
         // \u200E?new=1\u200E: زرّ «مرحلة جديدة» في اللوحة يفتح النموذج مباشرة
         $formOpen = $stages->isEmpty() || $errors->any() || request()->boolean('new');
     @endphp
 
-    <x-page-header title="خطة المراحل"
-        subtitle="{{ $semester->label }} · المرحلة تُعرَّف مرّة فتصل إلى {{ $activeCount }} {{ $activeCount === 1 ? 'مجموعة' : 'مجموعات' }} جارية — وكل مجموعة تقبلها لاحقاً">
+    <x-page-header title="{{ __('خطة المراحل') }}"
+        subtitle="{{ $semester->label }} · {{ $activeCount === 1
+            ? __('المرحلة تُعرَّف مرّة فتصل إلى :n مجموعة جارية — وكل مجموعة تقبلها لاحقاً', ['n' => 1])
+            : __('المرحلة تُعرَّف مرّة فتصل إلى :n مجموعات جارية — وكل مجموعة تقبلها لاحقاً', ['n' => $activeCount]) }}">
         @if ($stages->isNotEmpty())
             <x-slot:actions>
                 <button type="button" class="btn btn-primary" data-plan-add aria-controls="stage-new">
                     <i class="ti ti-plus me-1" aria-hidden="true"></i>
-                    مرحلة جديدة
+                    {{ __('مرحلة جديدة') }}
                 </button>
             </x-slot:actions>
         @endif
@@ -34,10 +36,9 @@
             <div class="stage-intro">
                 <span class="stage-intro-icon" aria-hidden="true"><i class="ti ti-route"></i></span>
                 <div>
-                    <h2>ارسم مسار مجموعاتك مرّة واحدة</h2>
+                    <h2>{{ __('ارسم مسار مجموعاتك مرّة واحدة') }}</h2>
                     <p>
-                        كل مرحلة تضيفها هنا — بموعدها وتعليماتها وقالبها — تظهر في كل مجموعاتك، وتصل كل مجموعة
-                        تقبلها لاحقاً. وتعديلها يسري على الجميع، وما أُنجز يبقى كما هو.
+                        {{ __('كل مرحلة تضيفها هنا — بموعدها وتعليماتها وقالبها — تظهر في كل مجموعاتك، وتصل كل مجموعة تقبلها لاحقاً. وتعديلها يسري على الجميع، وما أُنجز يبقى كما هو.') }}
                     </p>
                 </div>
             </div>
@@ -47,11 +48,11 @@
             @csrf
             <div class="stage-form-grid">
                 <div class="stage-field is-title">
-                    <label class="form-label" for="new-title">عنوان المرحلة</label>
+                    <label class="form-label" for="new-title">{{ __('عنوان المرحلة') }}</label>
                     <input type="text" id="new-title" name="title" required maxlength="150"
                         class="form-control @error('title') is-invalid @enderror" value="{{ old('title') }}"
-                        placeholder="مثال: الفصل الأول — المقدمة ومشكلة البحث">
-                    <div class="stage-suggest" aria-label="اقتراحات">
+                        placeholder="{{ __('مثال: الفصل الأول — المقدمة ومشكلة البحث') }}">
+                    <div class="stage-suggest" aria-label="{{ __('اقتراحات') }}">
                         @foreach ($suggestions as $s)
                             <button type="button" class="stage-suggest-chip" data-suggest="{{ $s }}">{{ $s }}</button>
                         @endforeach
@@ -59,30 +60,30 @@
                     @error('title') <div class="text-danger small">{{ $message }}</div> @enderror
                 </div>
                 <div class="stage-field is-date">
-                    <label class="form-label" for="new-due">الموعد</label>
+                    <label class="form-label" for="new-due">{{ __('الموعد') }}</label>
                     <input type="date" id="new-due" name="due_date" min="{{ now()->toDateString() }}"
                         class="form-control @error('due_date') is-invalid @enderror" value="{{ old('due_date') }}">
                     @error('due_date') <div class="text-danger small">{{ $message }}</div> @enderror
                 </div>
                 <div class="stage-field is-wide">
-                    <label class="form-label" for="new-instructions">تعليمات للطلاب <small>(اختيارية)</small></label>
+                    <label class="form-label" for="new-instructions">{{ __('تعليمات للطلاب') }} <small>{{ __('(اختيارية)') }}</small></label>
                     <textarea id="new-instructions" name="instructions" rows="2" maxlength="2000" class="form-control"
-                        placeholder="ما المطلوب في هذه المرحلة، وكيف يُسلَّم">{{ old('instructions') }}</textarea>
+                        placeholder="{{ __('ما المطلوب في هذه المرحلة، وكيف يُسلَّم') }}">{{ old('instructions') }}</textarea>
                 </div>
                 <div class="stage-field is-wide">
-                    <span class="form-label">القالب <small>(اختياري — يراه الطلاب داخل المرحلة)</small></span>
+                    <span class="form-label">{{ __('القالب') }} <small>{{ __('(اختياري — يراه الطلاب داخل المرحلة)') }}</small></span>
                     <label class="file-drop is-compact" for="new-template" data-template-drop>
                         <input type="file" name="template" id="new-template" class="file-drop-input"
                             accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar,.png,.jpg,.jpeg">
                         <span class="file-drop-idle" data-idle>
                             <span class="file-drop-icon" aria-hidden="true"><i class="ti ti-file-upload"></i></span>
-                            <b>أفلت القالب هنا أو <u>اختره</u></b>
-                            <small>Word أو PDF أو PowerPoint — حتى 10MB</small>
+                            <b>{!! __('أفلت القالب هنا أو :link', ['link' => '<u>' . e(__('اختره')) . '</u>']) !!}</b>
+                            <small>{{ __('Word أو PDF أو PowerPoint — حتى 10MB') }}</small>
                         </span>
                         <span class="file-drop-picked d-none" data-picked>
                             <span class="file-type" data-picked-type aria-hidden="true"></span>
                             <span class="file-drop-picked-body"><b data-picked-name></b><small><bdi dir="ltr" data-picked-size></bdi></small></span>
-                            <span class="file-drop-change">تغيير</span>
+                            <span class="file-drop-change">{{ __('تغيير') }}</span>
                         </span>
                     </label>
                     @error('template') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
@@ -90,11 +91,15 @@
             </div>
             <div class="stage-form-actions">
                 @if ($stages->isNotEmpty())
-                    <button type="button" class="btn btn-link text-secondary" data-plan-add>إلغاء</button>
+                    <button type="button" class="btn btn-link text-secondary" data-plan-add>{{ __('إلغاء') }}</button>
                 @endif
-                <button type="submit" class="btn btn-primary" data-loading-text="جارٍ الإضافة..">
+                <button type="submit" class="btn btn-primary" data-loading-text="{{ __('جارٍ الإضافة..') }}">
                     <i class="ti ti-plus me-1" aria-hidden="true"></i>
-                    إضافة إلى {{ $activeCount ? $activeCount . ' ' . ($activeCount === 1 ? 'مجموعة' : 'مجموعات') : 'الخطة' }}
+                    {{ match (true) {
+                        ! $activeCount => __('إضافة إلى الخطة'),
+                        $activeCount === 1 => __('إضافة إلى :n مجموعة', ['n' => 1]),
+                        default => __('إضافة إلى :n مجموعات', ['n' => $activeCount]),
+                    } }}
                 </button>
             </div>
         </form>
@@ -131,25 +136,25 @@
                                             <i class="ti ti-calendar-event" aria-hidden="true"></i>
                                             {{ $stage->due_date->translatedFormat('j F') }}
                                             <span>·
-                                                @if ($days < 0) مضى {{ abs($days) }} يوماً
-                                                @elseif ($days === 0) اليوم
-                                                @else بعد {{ $days }} {{ $days === 1 ? 'يوم' : 'يوماً' }}
+                                                @if ($days < 0) {{ __('مضى :n يوماً', ['n' => abs($days)]) }}
+                                                @elseif ($days === 0) {{ __('اليوم') }}
+                                                @else {{ $days === 1 ? __('بعد :n يوم', ['n' => 1]) : __('بعد :n يوماً', ['n' => $days]) }}
                                                 @endif
                                             </span>
                                         </span>
                                     @else
-                                        <span class="stage-due is-none">بلا موعد</span>
+                                        <span class="stage-due is-none">{{ __('بلا موعد') }}</span>
                                     @endif
                                 </div>
                                 <div class="stage-tools">
-                                    <button type="button" class="btn-action" data-stage-edit title="تعديل" aria-label="تعديل {{ $stage->title }}">
+                                    <button type="button" class="btn-action" data-stage-edit title="{{ __('تعديل') }}" aria-label="{{ __('تعديل :title', ['title' => $stage->title]) }}">
                                         <i class="ti ti-pencil" aria-hidden="true"></i>
                                     </button>
                                     <form action="{{ route('supervisor.plan.destroy', $stage->id) }}" method="POST"
-                                        onsubmit="return confirm({{ Js::from('حذف «' . $stage->title . '» من الخطة؟ تُحذف من المجموعات التي لم تنجزها، ويبقى ما أُنجز.') }})">
+                                        onsubmit="return confirm({{ Js::from(__('حذف «:title» من الخطة؟ تُحذف من المجموعات التي لم تنجزها، ويبقى ما أُنجز.', ['title' => $stage->title])) }})">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn-action btn-action--danger" title="حذف" aria-label="حذف {{ $stage->title }}">
+                                        <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}" aria-label="{{ __('حذف :title', ['title' => $stage->title]) }}">
                                             <i class="ti ti-trash" aria-hidden="true"></i>
                                         </button>
                                     </form>
@@ -166,7 +171,7 @@
                                     <span class="file-type {{ $tc }}" aria-hidden="true">{{ $tl }}</span>
                                     <span class="stage-template-body">
                                         <b>{{ $stage->template_name }}</b>
-                                        <small>قالب المرحلة · <bdi dir="ltr">{{ $stage->templateSizeLabel() }}</bdi></small>
+                                        <small>{{ __('قالب المرحلة') }} · <bdi dir="ltr">{{ $stage->templateSizeLabel() }}</bdi></small>
                                     </span>
                                     <i class="ti ti-download" aria-hidden="true"></i>
                                 </a>
@@ -177,12 +182,12 @@
                                 <div class="stage-groups">
                                     <div class="stage-groups-head">
                                         <span>
-                                            أنجزتها <b>{{ $p['done'] }}</b> من {{ $p['total'] }}
+                                            {!! __('أنجزتها :done من :total', ['done' => '<b>' . e($p['done']) . '</b>', 'total' => e($p['total'])]) !!}
                                             @if ($p['review'] ?? 0)
-                                                · <span class="stage-review-note">{{ $p['review'] }} بانتظار مراجعتك</span>
+                                                · <span class="stage-review-note">{{ __(':n بانتظار مراجعتك', ['n' => $p['review']]) }}</span>
                                             @endif
                                             @if ($p['late'])
-                                                · <span class="text-danger">{{ $p['late'] }} متأخّرة</span>
+                                                · <span class="text-danger">{{ __(':n متأخّرة', ['n' => $p['late']]) }}</span>
                                             @endif
                                         </span>
                                         <span class="stage-bar" aria-hidden="true"><span style="width: {{ $pct }}%"></span></span>
@@ -191,10 +196,10 @@
                                         @foreach ($projects as $project)
                                             @php
                                                 $state = $p['groups'][$project->id];
-                                                $label = ['done' => 'أنجزت', 'submitted' => 'بانتظار مراجعتك', 'revision' => 'مطلوب تعديل', 'late' => 'متأخّرة', 'open' => 'جارية', 'missing' => 'لم تصلها'][$state];
+                                                $label = ['done' => __('أنجزت'), 'submitted' => __('بانتظار مراجعتك'), 'revision' => __('مطلوب تعديل'), 'late' => __('متأخّرة'), 'open' => __('جارية'), 'missing' => __('لم تصلها')][$state];
                                                 // اسم القائد لا عنوان المشروع: العناوين المتشابهة تتطابق حين تُقصّ
                                                 $leader = $project->group->first()?->student?->name;
-                                                $teamName = $leader ? 'فريق ' . implode(' ', array_slice(preg_split('/\s+/u', trim($leader)), 0, 2)) : \Illuminate\Support\Str::limit($project->title, 22);
+                                                $teamName = $leader ? __('فريق :name', ['name' => implode(' ', array_slice(preg_split('/\s+/u', trim($leader)), 0, 2))]) : \Illuminate\Support\Str::limit($project->title, 22);
                                             @endphp
                                             <a href="{{ route('supervisor.projects.show', $project->id) }}#milestones"
                                                 class="stage-pill is-{{ $state }}" title="{{ $project->title }} — {{ $label }}">
@@ -213,49 +218,49 @@
                             @csrf
                             <div class="stage-form-grid">
                                 <div class="stage-field is-title">
-                                    <label class="form-label" for="t-{{ $stage->id }}">عنوان المرحلة</label>
+                                    <label class="form-label" for="t-{{ $stage->id }}">{{ __('عنوان المرحلة') }}</label>
                                     <input type="text" id="t-{{ $stage->id }}" name="title" required maxlength="150"
                                         class="form-control" value="{{ $stage->title }}">
                                 </div>
                                 <div class="stage-field is-date">
-                                    <label class="form-label" for="d-{{ $stage->id }}">الموعد</label>
+                                    <label class="form-label" for="d-{{ $stage->id }}">{{ __('الموعد') }}</label>
                                     <input type="date" id="d-{{ $stage->id }}" name="due_date" class="form-control"
                                         value="{{ $stage->due_date?->format('Y-m-d') }}">
                                 </div>
                                 <div class="stage-field is-wide">
-                                    <label class="form-label" for="i-{{ $stage->id }}">تعليمات للطلاب</label>
+                                    <label class="form-label" for="i-{{ $stage->id }}">{{ __('تعليمات للطلاب') }}</label>
                                     <textarea id="i-{{ $stage->id }}" name="instructions" rows="2" maxlength="2000"
                                         class="form-control">{{ $stage->instructions }}</textarea>
                                 </div>
                                 <div class="stage-field is-wide">
-                                    <span class="form-label">القالب</span>
+                                    <span class="form-label">{{ __('القالب') }}</span>
                                     <label class="file-drop is-compact" for="f-{{ $stage->id }}" data-template-drop>
                                         <input type="file" name="template" id="f-{{ $stage->id }}" class="file-drop-input"
                                             accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar,.png,.jpg,.jpeg">
                                         <span class="file-drop-idle" data-idle>
-                                            <b>{{ $stage->hasTemplate() ? 'استبدل «' . $stage->template_name . '»' : 'أضف قالباً' }} — <u>اختر ملفاً</u></b>
+                                            <b>{{ $stage->hasTemplate() ? __('استبدل «:name»', ['name' => $stage->template_name]) : __('أضف قالباً') }} — <u>{{ __('اختر ملفاً') }}</u></b>
                                         </span>
                                         <span class="file-drop-picked d-none" data-picked>
                                             <span class="file-type" data-picked-type aria-hidden="true"></span>
                                             <span class="file-drop-picked-body"><b data-picked-name></b><small><bdi dir="ltr" data-picked-size></bdi></small></span>
-                                            <span class="file-drop-change">تغيير</span>
+                                            <span class="file-drop-change">{{ __('تغيير') }}</span>
                                         </span>
                                     </label>
                                     @if ($stage->hasTemplate())
                                         <label class="form-check mt-2">
                                             <input type="checkbox" name="remove_template" value="1" class="form-check-input">
-                                            <span class="form-check-label">إزالة القالب الحالي</span>
+                                            <span class="form-check-label">{{ __('إزالة القالب الحالي') }}</span>
                                         </label>
                                     @endif
                                 </div>
                             </div>
                             <p class="stage-edit-note">
                                 <i class="ti ti-info-circle" aria-hidden="true"></i>
-                                يسري التعديل على المجموعات التي لم تنجز المرحلة، وما أُنجز يبقى كما هو.
+                                {{ __('يسري التعديل على المجموعات التي لم تنجز المرحلة، وما أُنجز يبقى كما هو.') }}
                             </p>
                             <div class="stage-form-actions">
-                                <button type="button" class="btn btn-link text-secondary" data-stage-edit>إلغاء</button>
-                                <button type="submit" class="btn btn-primary" data-loading-text="جارٍ الحفظ..">حفظ</button>
+                                <button type="button" class="btn btn-link text-secondary" data-stage-edit>{{ __('إلغاء') }}</button>
+                                <button type="submit" class="btn btn-primary" data-loading-text="{{ __('جارٍ الحفظ..') }}">{{ __('حفظ') }}</button>
                             </div>
                         </form>
                     </article>

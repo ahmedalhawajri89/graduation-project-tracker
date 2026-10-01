@@ -32,6 +32,14 @@ use App\Http\Controllers\Supervisor\DiscussionController as SupervisorDiscussion
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('site.home');
+
+// تبديل لغة الواجهة: كوكي لسنة، ثم العودة للصفحة نفسها
+Route::get('/locale/{locale}', function (string $locale) {
+    abort_unless(in_array($locale, \App\Http\Middleware\SetLocale::SUPPORTED, true), 404);
+
+    return redirect()->back(fallback: '/')
+        ->withCookie(cookie(\App\Http\Middleware\SetLocale::COOKIE, $locale, 60 * 24 * 365, null, null, null, false));
+})->name('locale.switch');
 // حد أقصى 5 رسائل تواصل بالدقيقة — حماية من السبام
 Route::post('/send', [HomeController::class, 'send'])->name('site.send')->middleware('throttle:5,1');
 

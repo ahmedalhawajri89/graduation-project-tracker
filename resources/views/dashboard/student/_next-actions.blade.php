@@ -22,8 +22,8 @@
             'tone' => 'is-warn',
             'n' => $revisions->count(),
             'label' => $revisions->count() === 1
-                ? 'مطلوب تعديل في: ' . $revisions->first()->title
-                : 'مراحل أعادها المشرف بطلب تعديل',
+                ? __('مطلوب تعديل في: :title', ['title' => $revisions->first()->title])
+                : __('مراحل أعادها المشرف بطلب تعديل'),
             'href' => '#milestone-' . $revisions->first()->id,
         ];
     }
@@ -40,8 +40,8 @@
             'tone' => 'is-danger',
             'n' => $overdue->count(),
             'label' => $overdue->count() === 1
-                ? 'مرحلة متأخّرة: ' . $overdue->first()->title
-                : 'مراحل فات موعد استحقاقها',
+                ? __('مرحلة متأخّرة: :title', ['title' => $overdue->first()->title])
+                : __('مراحل فات موعد استحقاقها'),
             'href' => '#milestones',
         ];
     }
@@ -57,8 +57,8 @@
             'tone' => 'is-warn',
             'n' => $myNotes->count(),
             'label' => $myNotes->count() === 1
-                ? 'ملاحظة على «' . $project->files->firstWhere('id', $first->project_file_id)?->title . '» تنتظر تعديلك'
-                : 'ملاحظات على ملفات تنتظر تعديلك',
+                ? __('ملاحظة على «:title» تنتظر تعديلك', ['title' => $project->files->firstWhere('id', $first->project_file_id)?->title])
+                : __('ملاحظات على ملفات تنتظر تعديلك'),
             'href' => '#file-' . $first->project_file_id,
         ];
     }
@@ -73,8 +73,8 @@
             'tone' => 'is-brand',
             'n' => $noRole,
             'label' => $noRole === $project->group->count()
-                ? 'وزّع الأدوار على الفريق — مَن مسؤول عن ماذا'
-                : ($noRole === 1 ? 'عضو بلا دور في الفريق' : 'أعضاء بلا دور في الفريق'),
+                ? __('وزّع الأدوار على الفريق — مَن مسؤول عن ماذا')
+                : ($noRole === 1 ? __('عضو بلا دور في الفريق') : __('أعضاء بلا دور في الفريق')),
             'href' => route('student.team'),
         ];
     }
@@ -86,7 +86,7 @@
             'icon' => 'ti-alarm',
             'tone' => 'is-warn',
             'n' => $daysLeft,
-            'label' => $daysLeft === 0 ? 'الموعد النهائي اليوم' : 'يوماً حتى الموعد النهائي',
+            'label' => $daysLeft === 0 ? __('الموعد النهائي اليوم') : __('يوماً حتى الموعد النهائي'),
             'href' => '#milestones',
         ];
     }
@@ -103,7 +103,7 @@
             'icon' => 'ti-message-dots',
             'tone' => '',
             'n' => $unreadMsgs,
-            'label' => $unreadMsgs === 1 ? 'رسالة جديدة من المشرف' : 'رسائل جديدة من المشرف',
+            'label' => $unreadMsgs === 1 ? __('رسالة جديدة من المشرف') : __('رسائل جديدة من المشرف'),
             'href' => route('student.discussion'),
         ];
     }
@@ -113,7 +113,7 @@
             'icon' => 'ti-users-group',
             'tone' => '',
             'n' => $unreadTeam,
-            'label' => $unreadTeam === 1 ? 'رسالة جديدة في نقاش الفريق' : 'رسائل جديدة في نقاش الفريق',
+            'label' => $unreadTeam === 1 ? __('رسالة جديدة في نقاش الفريق') : __('رسائل جديدة في نقاش الفريق'),
             'href' => route('student.discussion', ['tab' => 'team']),
         ];
     }
@@ -123,7 +123,7 @@
             'icon' => 'ti-clock-hour-4',
             'tone' => '',
             'n' => null,
-            'label' => 'طلبك بانتظار مراجعة المشرف',
+            'label' => __('طلبك بانتظار مراجعة المشرف'),
             'href' => '#project-facts',
         ];
     }
@@ -133,7 +133,7 @@
             'icon' => 'ti-file-upload',
             'tone' => '',
             'n' => null,
-            'label' => 'لم تُرفع أي ملفات للمشروع بعد',
+            'label' => __('لم تُرفع أي ملفات للمشروع بعد'),
             'href' => '#files',
         ];
     }
@@ -142,7 +142,7 @@
 <section class="todo-panel mb-4">
     <h2 class="todo-title">
         <i class="ti ti-target-arrow" aria-hidden="true"></i>
-        ماذا عليّ الآن
+        {{ __('ماذا عليّ الآن') }}
     </h2>
 
     @forelse ($todos as $todo)
@@ -158,7 +158,7 @@
         {{-- لوح فارغ يطمئن، لا فراغ صامت --}}
         <p class="todo-clear">
             <i class="ti ti-circle-check" aria-hidden="true"></i>
-            لا شيء ينتظرك — المشروع يسير كما ينبغي.
+            {{ __('لا شيء ينتظرك — المشروع يسير كما ينبغي.') }}
         </p>
     @endforelse
 </section>

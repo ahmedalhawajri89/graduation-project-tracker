@@ -69,51 +69,58 @@ class DefenseScheduler
         $others = fn () => Defense::overlapping($from, $to)->when($ignore, fn ($q) => $q->whereKeyNot($ignore->id));
 
         if (! self::isReady($project)) {
-            $errors['project'] = 'المشروع ليس جاهزاً للمناقشة — يجب أن يكون مكتملاً ولم يُقيَّم بعد.';
+            $errors['project'] = __('المشروع ليس جاهزاً للمناقشة — يجب أن يكون مكتملاً ولم يُقيَّم بعد.');
         }
 
         if ($from->isPast()) {
-            $errors['time'] = 'موعد المناقشة يجب أن يكون في المستقبل.';
+            $errors['time'] = __('موعد المناقشة يجب أن يكون في المستقبل.');
         }
 
         // اقتراح planAll يحمل ممتحناً واحداً (examiner_id)، والنافذة قائمة
         $examinerIds = array_map('intval', $d['examiner_ids'] ?? [$d['examiner_id']]);
         if (in_array((int) $project->supervisor_id, $examinerIds, true)) {
-            $errors['examiner_id'] = 'مشرف المشروع عضو في اللجنة أصلاً — اختر ممتحناً غيره.';
+            $errors['examiner_id'] = __('مشرف المشروع عضو في اللجنة أصلاً — اختر ممتحناً غيره.');
         } elseif (count($examinerIds) !== count(array_unique($examinerIds))) {
-            $errors['examiner_id'] = 'الممتحن نفسه مكرّر في اللجنة.';
+            $errors['examiner_id'] = __('الممتحن نفسه مكرّر في اللجنة.');
         }
 
         // الرئيس من أعضاء هذه اللجنة
         if (! empty($d['chair_id']) && ! in_array((int) $d['chair_id'], [(int) $project->supervisor_id, ...$examinerIds], true)) {
-            $errors['chair_id'] = 'رئيس اللجنة يكون المشرف أو أحد ممتحنيها.';
+            $errors['chair_id'] = __('رئيس اللجنة يكون المشرف أو أحد ممتحنيها.');
         }
 
         if (in_array($d['mode'], ['in_person', 'hybrid'], true)) {
             $room = $d['room_id'] ? DefenseRoom::find($d['room_id']) : null;
             if (! $room || ! $room->is_active) {
-                $errors['room_id'] = 'اختر قاعة متاحة للمناقشة الحضورية.';
+                $errors['room_id'] = __('اختر قاعة متاحة للمناقشة الحضورية.');
             } elseif ($clash = $others()->where('room_id', $room->id)->with('project')->first()) {
-                $errors['room_id'] = 'القاعة محجوزة في هذا الوقت لمناقشة «' . $clash->project?->title . '» ('
-                    . $clash->starts_at->format('H:i') . '–' . $clash->endsAt()->format('H:i') . ').';
+                $errors['room_id'] = __('القاعة محجوزة في هذا الوقت لمناقشة «:title» (:range).', [
+                    'title' => $clash->project?->title,
+                    'range' => $clash->starts_at->format('H:i') . '–' . $clash->endsAt()->format('H:i'),
+                ]);
             }
         }
 
         // كل عضو (المشرف والممتحنون) لا يكون في لجنة أخرى في الوقت نفسه
         $busy = fn ($supervisorId) => $others()->whereHas('members', fn ($q) => $q->where('supervisor_id', $supervisorId))->with('project')->first();
-        $span = fn ($clash) => ' في لجنة مناقشة «' . $clash->project?->title . '» في هذا الوقت ('
-            . $clash->starts_at->format('H:i') . '–' . $clash->endsAt()->format('H:i') . ').';
+        $span = fn (string $who, $clash) => __(':who في لجنة مناقشة «:title» في هذا الوقت (:range).', [
+            'who' => $who,
+            'title' => $clash->project?->title,
+            'range' => $clash->starts_at->format('H:i') . '–' . $clash->endsAt()->format('H:i'),
+        ]);
 
         if ($project->supervisor_id && ($clash = $busy($project->supervisor_id))) {
-            $errors['time'] = 'مشرف المشروع' . $span($clash);
+            $errors['time'] = $span(__('مشرف المشروع'), $clash);
         }
 
         if (! isset($errors['examiner_id'])) {
             foreach ($examinerIds as $examinerId) {
                 if ($clash = $busy($examinerId)) {
                     // مع أكثر من ممتحن يُسمّى المشغول منهم
-                    $who = count($examinerIds) > 1 ? 'الممتحن ' . Supervisor::find($examinerId)?->name : 'الممتحن';
-                    $errors['examiner_id'] = $who . $span($clash);
+                    $who = count($examinerIds) > 1
+                        ? __('الممتحن :name', ['name' => Supervisor::find($examinerId)?->name])
+                        : __('الممتحن');
+                    $errors['examiner_id'] = $span($who, $clash);
                     break;
                 }
             }

@@ -111,14 +111,37 @@ class AuditLog extends Model
         'student' => 'طالب',
     ];
 
+    /*
+    | الثوابت أعلاه عربية (مفاتيح الترجمة نفسها)؛ هذه نسخها المعروضة بلغة
+    | الواجهة — المفاتيح كما هي، والقيم مترجمة.
+    */
+
+    /** @return array<string, string> */
+    public static function labels(): array
+    {
+        return array_map(fn ($label) => __($label), self::LABELS);
+    }
+
+    /** @return array<string, string> */
+    public static function periods(): array
+    {
+        return array_map(fn ($label) => __($label), self::PERIODS);
+    }
+
+    /** @return array<string, string> */
+    public static function roles(): array
+    {
+        return array_map(fn ($label) => __($label), self::ROLES);
+    }
+
     public function getActionLabelAttribute(): string
     {
-        return self::LABELS[$this->action] ?? $this->action;
+        return isset(self::LABELS[$this->action]) ? __(self::LABELS[$this->action]) : $this->action;
     }
 
     public function getRoleLabelAttribute(): string
     {
-        return self::ROLES[$this->actor_role] ?? '—';
+        return isset(self::ROLES[$this->actor_role]) ? __(self::ROLES[$this->actor_role]) : '—';
     }
 
     /** الأفعال التي تمسّ الدرجة — تُبرَز في العرض */

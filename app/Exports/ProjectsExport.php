@@ -32,17 +32,17 @@ class ProjectsExport implements FromCollection, WithHeadings, WithMapping, Shoul
     public function headings(): array
     {
         return [
-            'عنوان المشروع',
-            'نوع المشروع',
-            'المشرف',
-            'الحالة',
-            'نسبة الإنجاز',
-            'الدرجة',
-            'التقدير',
-            'أعضاء الفريق',
-            'الأرقام الجامعية',
-            'الموعد النهائي',
-            'تاريخ التقديم',
+            __('عنوان المشروع'),
+            __('نوع المشروع'),
+            __('المشرف'),
+            __('الحالة'),
+            __('نسبة الإنجاز'),
+            __('الدرجة'),
+            __('التقدير'),
+            __('أعضاء الفريق'),
+            __('الأرقام الجامعية'),
+            __('الموعد النهائي'),
+            __('تاريخ التقديم'),
         ];
     }
 
@@ -56,8 +56,8 @@ class ProjectsExport implements FromCollection, WithHeadings, WithMapping, Shoul
             is_null($project->progress) ? '—' : $project->progress . '%',
             is_null($project->grade) ? '—' : (float) $project->grade,
             $project->grade_label ?? '—',
-            $project->group->pluck('student.name')->implode('، '),
-            $project->group->pluck('student.university_id')->implode('، '),
+            $project->group->pluck('student.name')->implode(__('، ')),
+            $project->group->pluck('student.university_id')->implode(__('، ')),
             $project->date_line ? $project->date_line->format('Y-m-d') : '—',
             $project->created_at->format('Y-m-d'),
         ];

@@ -24,7 +24,7 @@ class SupervisorController extends Controller
     {
         // \u200Eactive()\u200E لا \u200Ecount()\u200E: تخصصات كلها موقوفة = لا مكان لمشرف جديد
         if (Specialize::active()->count() == 0) {
-            return redirect()->route('admin.specialize.index')->with('fail', 'الرجاء ادخال تخصص نشط أو أكثر');
+            return redirect()->route('admin.specialize.index')->with('fail', __('الرجاء ادخال تخصص نشط أو أكثر'));
         }
     }
 
@@ -159,9 +159,9 @@ class SupervisorController extends Controller
                 };
 
                 $label = match ($state) {
-                    'is-over' => 'تجاوز الحد',
-                    'is-full' => 'مكتمل',
-                    default => 'متاح',
+                    'is-over' => __('تجاوز الحد'),
+                    'is-full' => __('مكتمل'),
+                    default => __('متاح'),
                 };
 
                 $pct = $max > 0 ? min(100, round($used / $max * 100)) : 0;
@@ -187,9 +187,9 @@ class SupervisorController extends Controller
                 $late = $days > \App\Support\TeamHealth::REVIEW_DAYS;
 
                 return '<span class="review-cell' . ($late ? ' is-late' : '') . '"'
-                    . ' title="أقدمها منذ ' . e($days) . ' يوماً">'
+                    . ' title="' . e(__('أقدمها منذ :n يوماً', ['n' => $days])) . '">'
                     . '<b>' . e($n) . '</b>'
-                    . '<small>' . match (true) { $days === 0 => 'اليوم', $days === 1 => 'منذ أمس', default => 'منذ ' . e($days) . ' يوماً' } . '</small>'
+                    . '<small>' . e(match (true) { $days === 0 => __('اليوم'), $days === 1 => __('منذ أمس'), default => __('منذ :n يوماً', ['n' => $days]) }) . '</small>'
                     . '</span>';
             })
 
@@ -197,10 +197,10 @@ class SupervisorController extends Controller
 
                 $editBtn = "<button type='button' class='btn-action btn-edit' data-bs-toggle='offcanvas' data-bs-target='#editDrawer'"
                     . " data-record='" . EditRecord::attr(EditRecord::supervisor($row)) . "'"
-                    . " title='تعديل' aria-label='تعديل " . e($row->name) . "'><i class='ti ti-pencil'></i></button>";
+                    . " title='" . e(__('تعديل')) . "' aria-label='" . e(__('تعديل :name', ['name' => $row->name])) . "'><i class='ti ti-pencil'></i></button>";
 
                 $deleteBtn = "<button type='button' class='btn-action btn-action--danger btn-delete' data-bs-toggle='modal' data-bs-target='#deleteModal'
-                              data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' title='حذف'>
+                              data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' title='" . e(__('حذف')) . "'>
                               <i class='ti ti-trash'></i>
                           </button>";
 
@@ -225,12 +225,12 @@ class SupervisorController extends Controller
 
             // «حفظ وإضافة آخر»: الدرج يُعاد فتحه فارغاً للتالي
             return redirect()->route("admin.supervisors.index")
-                ->with('success', "تمت إضافة «{$created->name}»")
+                ->with('success', __('تمت إضافة «:name»', ['name' => $created->name]))
                 ->with('reopen_create', $request->boolean('another'));
 
         } catch (\Exception $ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
         }
 
     }
@@ -241,7 +241,7 @@ class SupervisorController extends Controller
         try {
             $admin = Supervisor::where('id', $request->id)->first();
             if (!$admin) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             $data = $request->except('password');
@@ -256,11 +256,11 @@ class SupervisorController extends Controller
                 $admin->deleteAvatar();
             }
 
-            return redirect()->back()->with('success', "تم تعديل السجل بنجاح");
+            return redirect()->back()->with('success', __('تم تعديل السجل بنجاح'));
 
         } catch (\Exception $ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 
@@ -271,7 +271,7 @@ class SupervisorController extends Controller
         try {
             $admin = Supervisor::where('id', request()->id)->first();
             if (!$admin) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             // حماية: لا حذف لمشرف لديه مشاريع قائمة — وإلا تُصبح مجموعاته بلا مشرف بصمت
@@ -280,18 +280,18 @@ class SupervisorController extends Controller
                 ->exists();
             if ($hasActiveProjects) {
                 return redirect()->back()->with('fail',
-                    'لا يمكن حذف المشرف — لديه مشاريع/مجموعات قائمة. انقل مجموعاته لمشرف آخر من صفحة المجموعات أولاً.');
+                    __('لا يمكن حذف المشرف — لديه مشاريع/مجموعات قائمة. انقل مجموعاته لمشرف آخر من صفحة المجموعات أولاً.'));
             }
 
             // قبل الحذف: بعده يفقد المشرف اسمه ورقمه الجامعي
             Audit::record('supervisor.deleted', $admin);
 
             $admin->delete();
-            return redirect()->back()->with('success', "تم حذف السجل بنجاح");
+            return redirect()->back()->with('success', __('تم حذف السجل بنجاح'));
 
         } catch (\Exception $ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 
@@ -319,15 +319,15 @@ class SupervisorController extends Controller
         $count = fn (int $n, array $w) => match (true) {
             $n === 1 => $w[0],
             $n === 2 => $w[1],
-            $n <= 10 => "{$n} {$w[2]}",
-            default => "{$n} {$w[3]}",
+            $n <= 10 => str_replace(':n', $n, $w[2]),
+            default => str_replace(':n', $n, $w[3]),
         };
 
         $message = $report['added']
-            ? 'أُضيف ' . $count($report['added'], ['مشرف واحد', 'مشرفان', 'مشرفين', 'مشرفاً'])
-            : 'لم يُضف أحد';
+            ? __('أُضيف :what', ['what' => $count($report['added'], [__('مشرف واحد'), __('مشرفان'), __(':n مشرفين'), __(':n مشرفاً')])])
+            : __('لم يُضف أحد');
         if ($skipped) {
-            $message .= ' — وتُخطّي ' . $count($skipped, ['صفّ واحد', 'صفّان', 'صفوف', 'صفّاً']) . '، التفاصيل أعلى الصفحة.';
+            $message .= ' — ' . __('وتُخطّي :what، التفاصيل أعلى الصفحة.', ['what' => $count($skipped, [__('صفّ واحد'), __('صفّان'), __(':n صفوف'), __(':n صفّاً')])]);
         }
 
         return redirect()->back()

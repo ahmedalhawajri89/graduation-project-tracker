@@ -32,15 +32,15 @@
 <div class="ctx-card is-team" id="team">
     <div class="ctx-head">
         <i class="ti ti-users-group" aria-hidden="true"></i>
-        الفريق
+        {{ __('الفريق') }}
         <span class="ctx-count">{{ $members->count() + ($role === 'student' ? 1 : 0) }}</span>
         @if ($canAssign)
             <a href="{{ route('student.team') }}" class="team-assign-btn">
                 <i class="ti ti-id-badge-2" aria-hidden="true"></i>
-                توزيع الأدوار
+                {{ __('توزيع الأدوار') }}
             </a>
         @elseif ($role === 'student' && $roleCount)
-            <a href="{{ route('student.team') }}" class="team-assign-btn">الأدوار</a>
+            <a href="{{ route('student.team') }}" class="team-assign-btn">{{ __('الأدوار') }}</a>
         @endif
     </div>
 
@@ -51,11 +51,11 @@
                 <span style="width: {{ $members->count() ? round($withRoles * 100 / $members->count()) : 0 }}%"></span>
             </span>
             <span>
-                {{ $roleCount }} {{ $roleCount === 1 ? 'دور' : 'أدوار' }}
+                {{ $roleCount === 1 ? __(':n دور', ['n' => $roleCount]) : __(':n أدوار', ['n' => $roleCount]) }}
                 @if ($unassigned)
-                    · <b>{{ $unassigned === 1 ? 'عضو بلا دور' : $unassigned . ' أعضاء بلا دور' }}</b>
+                    · <b>{{ $unassigned === 1 ? __('عضو بلا دور') : __(':n أعضاء بلا دور', ['n' => $unassigned]) }}</b>
                 @else
-                    · كل الفريق له دور
+                    · {{ __('كل الفريق له دور') }}
                 @endif
             </span>
         </div>
@@ -63,8 +63,8 @@
         <a href="{{ route('student.team') }}" class="team-invite">
             <span class="team-invite-icon" aria-hidden="true"><i class="ti ti-id-badge-2"></i></span>
             <span>
-                <b>وزّع الأدوار على الفريق</b>
-                <small>مَن على الواجهات، ومَن على الخادم، ومَن يكتب التوثيق — يراه الفريق والمشرف.</small>
+                <b>{{ __('وزّع الأدوار على الفريق') }}</b>
+                <small>{{ __('مَن على الواجهات، ومَن على الخادم، ومَن يكتب التوثيق — يراه الفريق والمشرف.') }}</small>
             </span>
             <i class="ti ti-chevron-left" aria-hidden="true"></i>
         </a>
@@ -77,13 +77,13 @@
             <span class="ctx-person-body">
                 <span class="ctx-person-name">
                     {{ $project->supervisor->name }}
-                    <span class="ctx-tag is-neutral">مشرف</span>
+                    <span class="ctx-tag is-neutral">{{ __('مشرف') }}</span>
                 </span>
-                <span class="ctx-person-meta">{{ $project->supervisor->specialize->name ?? 'مشرف المشروع' }}</span>
+                <span class="ctx-person-meta">{{ $project->supervisor->specialize->name ?? __('مشرف المشروع') }}</span>
             </span>
             <span class="ctx-person-actions">
-                <a href="{{ route('student.discussion') }}" class="btn-action" title="النقاش مع المشرف"
-                    aria-label="النقاش مع المشرف">
+                <a href="{{ route('student.discussion') }}" class="btn-action" title="{{ __('النقاش مع المشرف') }}"
+                    aria-label="{{ __('النقاش مع المشرف') }}">
                     <i class="ti ti-messages" aria-hidden="true"></i>
                 </a>
                 @foreach ($contact($project->supervisor) as $c)
@@ -102,12 +102,12 @@
             <x-avatar :user="$member->student" class="ctx-avatar" />
             <span class="ctx-person-body">
                 <span class="ctx-person-name">
-                    {{ $member->student?->name ?? 'طالب محذوف' }}
+                    {{ $member->student?->name ?? __('طالب محذوف') }}
                     @if ($member->type === 'leader')
-                        <span class="ctx-tag">قائد</span>
+                        <span class="ctx-tag">{{ __('قائد') }}</span>
                     @endif
                     @if ($isMe)
-                        <span class="cell-you">أنت</span>
+                        <span class="cell-you">{{ __('أنت') }}</span>
                     @endif
                 </span>
                 @if ($role === 'supervisor' && $member->roles->isEmpty() && ! $member->responsibility)
@@ -118,7 +118,7 @@
                         @foreach ($member->roles as $r)
                             @php $meta = $r->meta(); @endphp
                             <span class="role-chip" style="--h: {{ $meta['hue'] }}">
-                                <i class="ti {{ $meta['icon'] }}" aria-hidden="true"></i>{{ $r->label }}
+                                <i class="ti {{ $meta['icon'] }}" aria-hidden="true"></i>{{ __($r->label) }}
                             </span>
                         @endforeach
                     </span>

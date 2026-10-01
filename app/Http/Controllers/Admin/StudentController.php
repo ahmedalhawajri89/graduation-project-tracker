@@ -21,7 +21,7 @@ class StudentController extends Controller
     {
         // \u200Eactive()\u200E لا \u200Ecount()\u200E: تخصصات كلها موقوفة = لا مكان لطالب جديد
         if (Specialize::active()->count() == 0) {
-            return redirect()->route('admin.specialize.index')->with('fail', 'الرجاء ادخال تخصص نشط أو أكثر');
+            return redirect()->route('admin.specialize.index')->with('fail', __('الرجاء ادخال تخصص نشط أو أكثر'));
         }
     }
 
@@ -142,7 +142,7 @@ class StudentController extends Controller
                 $project = $row->groups->first()?->project;
 
                 if (! $project) {
-                    return "<span class='no-team'>بلا فريق</span>";
+                    return "<span class='no-team'>" . e(__('بلا فريق')) . "</span>";
                 }
 
                 return "<a href='" . route('admin.groups.show', $project->id) . "' class='team-link'>"
@@ -153,10 +153,10 @@ class StudentController extends Controller
 
                 $editBtn = "<button type='button' class='btn-action btn-edit' data-bs-toggle='offcanvas' data-bs-target='#editDrawer'"
                     . " data-record='" . EditRecord::attr(EditRecord::student($row)) . "'"
-                    . " title='تعديل' aria-label='تعديل " . e($row->name) . "'><i class='ti ti-pencil'></i></button>";
+                    . " title='" . e(__('تعديل')) . "' aria-label='" . e(__('تعديل :name', ['name' => $row->name])) . "'><i class='ti ti-pencil'></i></button>";
 
                 $deleteBtn = "<button type='button' class='btn-action btn-action--danger btn-delete' data-bs-toggle='modal' data-bs-target='#deleteModal'
-                              data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' title='حذف'>
+                              data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' title='" . e(__('حذف')) . "'>
                               <i class='ti ti-trash'></i>
                           </button>";
 
@@ -186,7 +186,7 @@ class StudentController extends Controller
 
             // «حفظ وإضافة آخر»: الدرج يُعاد فتحه فارغاً للتالي
             return redirect()->route("admin.students.index")
-                ->with('success', "تمت إضافة «{$created->name}»")
+                ->with('success', __('تمت إضافة «:name»', ['name' => $created->name]))
                 ->with('reopen_create', $request->boolean('another'));
 
         } catch (\Exception $ex) {
@@ -195,7 +195,7 @@ class StudentController extends Controller
             // يُسجَّل للمطوّر ولا يُعرض للمستخدم
             \Illuminate\Support\Facades\Log::error('فشل إضافة طالب', ['exception' => $ex]);
 
-            return back()->with('fail', 'تعذّرت إضافة الطالب. تأكّد أن الرقم الجامعي والبريد غير مستعملين.');
+            return back()->with('fail', __('تعذّرت إضافة الطالب. تأكّد أن الرقم الجامعي والبريد غير مستعملين.'));
         }
 
     }
@@ -206,7 +206,7 @@ class StudentController extends Controller
         try {
             $admin = Student::where('id', $request->id)->first();
             if (!$admin) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             $data = $request->except('password');
@@ -222,11 +222,11 @@ class StudentController extends Controller
                 $admin->deleteAvatar();
             }
 
-            return redirect()->back()->with('success', "تم تعديل السجل بنجاح");
+            return redirect()->back()->with('success', __('تم تعديل السجل بنجاح'));
 
         } catch (\Exception $ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 
@@ -237,7 +237,7 @@ class StudentController extends Controller
         try {
             $admin = Student::where('id', request()->id)->first();
             if (!$admin) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             // حماية: لا حذف لطالب منضم لفريق نشط — وإلا يبقى صف فارغ في فريقه
@@ -248,18 +248,18 @@ class StudentController extends Controller
                 ->exists();
             if ($inActiveGroup) {
                 return redirect()->back()->with('fail',
-                    'لا يمكن حذف الطالب — منضم لفريق مشروع نشط. عالج وضع مجموعته من صفحة المجموعات أولاً.');
+                    __('لا يمكن حذف الطالب — منضم لفريق مشروع نشط. عالج وضع مجموعته من صفحة المجموعات أولاً.'));
             }
 
             // قبل الحذف: بعده يفقد الطالب اسمه ورقمه الجامعي
             Audit::record('student.deleted', $admin);
 
             $admin->delete();
-            return redirect()->back()->with('success', "تم حذف السجل بنجاح");
+            return redirect()->back()->with('success', __('تم حذف السجل بنجاح'));
 
         } catch (\Exception $ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 
@@ -287,15 +287,15 @@ class StudentController extends Controller
         $count = fn (int $n, array $w) => match (true) {
             $n === 1 => $w[0],
             $n === 2 => $w[1],
-            $n <= 10 => "{$n} {$w[2]}",
-            default => "{$n} {$w[3]}",
+            $n <= 10 => str_replace(':n', $n, $w[2]),
+            default => str_replace(':n', $n, $w[3]),
         };
 
         $message = $report['added']
-            ? 'أُضيف ' . $count($report['added'], ['طالب واحد', 'طالبان', 'طلاب', 'طالباً'])
-            : 'لم يُضف أحد';
+            ? __('أُضيف :what', ['what' => $count($report['added'], [__('طالب واحد'), __('طالبان'), __(':n طلاب'), __(':n طالباً')])])
+            : __('لم يُضف أحد');
         if ($skipped) {
-            $message .= ' — وتُخطّي ' . $count($skipped, ['صفّ واحد', 'صفّان', 'صفوف', 'صفّاً']) . '، التفاصيل أعلى الصفحة.';
+            $message .= ' — ' . __('وتُخطّي :what، التفاصيل أعلى الصفحة.', ['what' => $count($skipped, [__('صفّ واحد'), __('صفّان'), __(':n صفوف'), __(':n صفّاً')])]);
         }
 
         return redirect()->back()

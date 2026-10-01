@@ -1,8 +1,8 @@
 @extends('layouts.admin.admin')
-@section('title', 'بيانات المجموعات')
+@section('title', __('بيانات المجموعات'))
 
 @section('crumbs')
-    <x-crumb>المجموعات</x-crumb>
+    <x-crumb>{{ __('المجموعات') }}</x-crumb>
 @endsection
 
 @section('content')
@@ -18,21 +18,21 @@
         ]);
     @endphp
 
-    <x-page-header title="بيانات المجموعات"
-        subtitle="{{ $totalFiltered }} مجموعة ضمن التصفية الحالية">
+    <x-page-header title="{{ __('بيانات المجموعات') }}"
+        subtitle="{{ __(':n مجموعة ضمن التصفية الحالية', ['n' => $totalFiltered]) }}">
         <x-slot:actions>
             {{-- يظهر فقط حين يوجد محذوف، بعدده --}}
             @if ($trashedCount > 0)
                 <a href="{{ route('admin.groups.trash') }}" class="btn btn-ghost-secondary">
                     <i class="ti ti-trash me-1" aria-hidden="true"></i>
-                    المحذوفات
+                    {{ __('المحذوفات') }}
                     <span class="filter-count ms-1">{{ $trashedCount }}</span>
                 </a>
             @endif
             <a href="{{ route('admin.groups.export', ['semester' => $currentSemesterId]) }}"
                 class="btn btn-outline-primary">
                 <i class="ti ti-file-spreadsheet me-1" aria-hidden="true"></i>
-                تصدير Excel
+                {{ __('تصدير Excel') }}
             </a>
         </x-slot:actions>
     </x-page-header>
@@ -48,7 +48,7 @@
                 {{ $issueText }}
             </span>
             <a href="{{ route('admin.groups.index', array_diff_key($filterQuery, ['issue' => ''])) }}" class="issue-banner-clear">
-                إلغاء التصفية
+                {{ __('إلغاء التصفية') }}
                 <i class="ti ti-x" aria-hidden="true"></i>
             </a>
         </div>
@@ -62,13 +62,13 @@
             <table class="table table-vcenter card-table" id="dataTable-1">
                 <thead>
                     <tr>
-                        <th>المشروع</th>
-                        <th>قائد الفريق</th>
-                        <th class="w-1">الفريق</th>
-                        <th>المشرف</th>
-                        <th>الحالة</th>
-                        <th>الدرجة</th>
-                        <th class="w-1">إجراءات</th>
+                        <th>{{ __('المشروع') }}</th>
+                        <th>{{ __('قائد الفريق') }}</th>
+                        <th class="w-1">{{ __('الفريق') }}</th>
+                        <th>{{ __('المشرف') }}</th>
+                        <th>{{ __('الحالة') }}</th>
+                        <th>{{ __('الدرجة') }}</th>
+                        <th class="w-1">{{ __('إجراءات') }}</th>
                     </tr>
                 </thead>
             </table>
@@ -76,16 +76,16 @@
     </div>
 
     @include('dashboard.component.delete_modal', [
-        'delete_title' => 'المجموعة',
+        'delete_title' => __('المجموعة'),
         'delete_controller_name' => 'admin.groups',
-        'delete_note' => 'تنتقل المجموعة إلى المحذوفات، ويمكن استرجاعها من هناك.',
+        'delete_note' => __('تنتقل المجموعة إلى المحذوفات، ويمكن استرجاعها من هناك.'),
     ])
 
 @endsection
 
 @include('dashboard.component.datatables_style_script', [
     'urlData' => route('admin.groups.getData', $filterQuery),
-    'searchPlaceholder' => 'ابحث باسم المشروع…',
+    'searchPlaceholder' => __('ابحث باسم المشروع…'),
     // الفرز على العنوان والحالة والدرجة فقط. قائد الفريق وحجمه تُحسبان
     // من علاقات، وفرزهما يحتاج ربطاً لا يستحقّه عمود لن يُرتَّب به أحد.
     'columnsData' => "[

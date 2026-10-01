@@ -27,10 +27,10 @@
     </svg>
 
     @foreach ([
-        ['n' => 1, 'x' => 14.6, 'y' => 33.3, 'state' => 'done', 'label' => 'تقديم الطلب',   'side' => 'below'],
-        ['n' => 2, 'x' => 26.4, 'y' => 67.8, 'state' => 'done', 'label' => 'موافقة المشرف', 'side' => 'below'],
-        ['n' => 3, 'x' => 73.6, 'y' => 32.2, 'state' => 'next', 'label' => 'متابعة التنفيذ', 'side' => 'above'],
-        ['n' => 4, 'x' => 86.1, 'y' => 66.7, 'state' => 'todo', 'label' => 'المناقشة والتقييم', 'side' => 'below'],
+        ['n' => 1, 'x' => 14.6, 'y' => 33.3, 'state' => 'done', 'label' => __('تقديم الطلب'),   'side' => 'below'],
+        ['n' => 2, 'x' => 26.4, 'y' => 67.8, 'state' => 'done', 'label' => __('موافقة المشرف'), 'side' => 'below'],
+        ['n' => 3, 'x' => 73.6, 'y' => 32.2, 'state' => 'next', 'label' => __('متابعة التنفيذ'), 'side' => 'above'],
+        ['n' => 4, 'x' => 86.1, 'y' => 66.7, 'state' => 'todo', 'label' => __('المناقشة والتقييم'), 'side' => 'below'],
     ] as $st)
         {{-- المرساة بلا أبعاد عند نقطة المنحنى؛ الدائرة والبطاقة تتوسّطانها --}}
         <span class="station is-{{ $st['state'] }} is-{{ $st['side'] }} s{{ $st['n'] }}"
@@ -43,8 +43,8 @@
                 @endif
             </i>
             <span class="station-card">
-                <b class="step" data-l="s{{ $st['n'] }}">{{ $st['label'] }}</b>
-                <small data-l="st-{{ $st['state'] }}">{{ ['done' => 'تمّت', 'next' => 'التالية', 'todo' => 'لاحقاً'][$st['state'] ] }}</small>
+                <b class="step">{{ $st['label'] }}</b>
+                <small>{{ ['done' => __('تمّت'), 'next' => __('التالية'), 'todo' => __('لاحقاً')][$st['state'] ] }}</small>
             </span>
         </span>
     @endforeach

@@ -21,11 +21,11 @@ class AuthController extends Controller
             // كان ٣٠ فيُقفَل خارج حسابه من اختار ٣١ حرفاً فأكثر من صفحة ملفّه
             'password' => 'required|string|max:60',
         ], [
-            'identify.required' => 'أدخل بريدك الإلكتروني أو رقمك الجامعي.',
-            'password.required' => 'أدخل كلمة السر.',
+            'identify.required' => __('أدخل بريدك الإلكتروني أو رقمك الجامعي.'),
+            'password.required' => __('أدخل كلمة السر.'),
         ], [
-            'identify' => 'البريد الإلكتروني أو الرقم الجامعي',
-            'password' => 'كلمة السر',
+            'identify' => __('البريد الإلكتروني أو الرقم الجامعي'),
+            'password' => __('كلمة السر'),
         ]);
 
         $identify = $request->identify;
@@ -53,7 +53,7 @@ class AuthController extends Controller
 
         return redirect()->route('login')
             ->withInput($request->only('identify'))
-            ->with('fail', 'بيانات الدخول غير صحيحة. تأكد من البريد/الرقم الجامعي وكلمة السر.');
+            ->with('fail', __('بيانات الدخول غير صحيحة. تأكد من البريد/الرقم الجامعي وكلمة السر.'));
     }
 
     public function logout(\Illuminate\Http\Request $request)

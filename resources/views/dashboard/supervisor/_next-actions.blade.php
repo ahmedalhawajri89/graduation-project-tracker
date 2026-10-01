@@ -14,7 +14,7 @@
             'icon' => 'ti-inbox',
             'tone' => 'is-warn',
             'n' => $pendingRequests,
-            'label' => $pendingRequests === 1 ? 'طلب إشراف بانتظار ردّك — وطلبته ينتظرون' : 'طلبات إشراف بانتظار ردّك — وطلبتها ينتظرون',
+            'label' => $pendingRequests === 1 ? __('طلب إشراف بانتظار ردّك — وطلبته ينتظرون') : __('طلبات إشراف بانتظار ردّك — وطلبتها ينتظرون'),
             // البطاقات بزرّيها في هذه الصفحة نفسها، تحت هذا اللوح
             'href' => '#pending-title',
         ];
@@ -31,8 +31,8 @@
             'tone' => 'is-warn',
             'n' => $ungraded->count(),
             'label' => $ungraded->count() === 1
-                ? 'مشروع مكتمل بلا تقييم: ' . $ungraded->first()->title
-                : 'مشاريع مكتملة بلا تقييم',
+                ? __('مشروع مكتمل بلا تقييم: :title', ['title' => $ungraded->first()->title])
+                : __('مشاريع مكتملة بلا تقييم'),
             'href' => route('supervisor.projects.show', $ungraded->first()->id),
         ];
     }
@@ -47,8 +47,8 @@
             'tone' => 'is-brand',
             'n' => $reviewItems->count(),
             'label' => $reviewItems->count() === 1
-                ? 'تسليم بانتظار مراجعتك: ' . $first->title
-                : 'تسليمات مراحل بانتظار مراجعتك',
+                ? __('تسليم بانتظار مراجعتك: :title', ['title' => $first->title])
+                : __('تسليمات مراحل بانتظار مراجعتك'),
             'href' => route('supervisor.projects.show', $first->project_id) . '#milestone-' . $first->id,
         ];
     }
@@ -64,8 +64,8 @@
             'tone' => 'is-danger',
             'n' => $late->count(),
             'label' => $late->count() === 1
-                ? 'مجموعة عليها مرحلة متأخّرة: ' . $late->first()->title
-                : 'مجموعات عليها مراحل متأخّرة',
+                ? __('مجموعة عليها مرحلة متأخّرة: :title', ['title' => $late->first()->title])
+                : __('مجموعات عليها مراحل متأخّرة'),
             'href' => route('supervisor.projects.show', $late->first()->id),
         ];
     }
@@ -82,7 +82,7 @@
             'icon' => 'ti-message-dots',
             'tone' => '',
             'n' => $waiting->count(),
-            'label' => 'مجموعة تنتظر ردّك في النقاش',
+            'label' => __('مجموعة تنتظر ردّك في النقاش'),
             'href' => route('supervisor.discussion', $waiting->first()->id),
         ];
     }
@@ -99,7 +99,7 @@
             'icon' => 'ti-alarm',
             'tone' => 'is-warn',
             'n' => $soon->count(),
-            'label' => 'مجموعة موعدها النهائي خلال أسبوع',
+            'label' => __('مجموعة موعدها النهائي خلال أسبوع'),
             'href' => route('supervisor.projects.show', $soon->first()->id),
         ];
     }
@@ -108,7 +108,7 @@
 <section class="todo-panel mb-4">
     <h2 class="todo-title">
         <i class="ti ti-target-arrow" aria-hidden="true"></i>
-        ما يحتاجني الآن
+        {{ __('ما يحتاجني الآن') }}
     </h2>
 
     @forelse ($todos as $todo)
@@ -122,9 +122,9 @@
         <p class="todo-clear">
             <i class="ti ti-circle-check" aria-hidden="true"></i>
             @if ($groups->isEmpty())
-                لا شيء ينتظرك — ستظهر هنا مهامّ مجموعاتك حين تقبل أولها.
+                {{ __('لا شيء ينتظرك — ستظهر هنا مهامّ مجموعاتك حين تقبل أولها.') }}
             @else
-                لا شيء ينتظرك — مجموعاتك تسير كما ينبغي.
+                {{ __('لا شيء ينتظرك — مجموعاتك تسير كما ينبغي.') }}
             @endif
         </p>
     @endforelse

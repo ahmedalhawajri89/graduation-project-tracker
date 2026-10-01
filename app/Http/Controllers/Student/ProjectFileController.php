@@ -27,20 +27,20 @@ class ProjectFileController extends Controller
         );
 
         if (! in_array($project->status, ['accept', 'complete'])) {
-            return redirect()->back()->with('fail', 'لا يمكن رفع ملفات قبل قبول المشروع');
+            return redirect()->back()->with('fail', __('لا يمكن رفع ملفات قبل قبول المشروع'));
         }
 
         // بعد رصد التقييم يصبح المشروع أرشيفياً
         if ($project->is_locked) {
-            return redirect()->back()->with('fail', 'المشروع مؤرشف بعد التقييم — لا يمكن رفع ملفات جديدة');
+            return redirect()->back()->with('fail', __('المشروع مؤرشف بعد التقييم — لا يمكن رفع ملفات جديدة'));
         }
 
         $request->validate([
             'title' => ['required', 'string', 'max:120'],
             'file' => ['required', 'file', 'max:10240', 'mimes:pdf,doc,docx,ppt,pptx,xls,xlsx,zip,rar,png,jpg,jpeg'],
         ], [], [
-            'title' => 'اسم الملف',
-            'file' => 'الملف',
+            'title' => __('اسم الملف'),
+            'file' => __('الملف'),
         ]);
 
         // القرص الخاص: الملف لا يُفتح إلا عبر راوت التنزيل المحمي بالصلاحيات
@@ -63,7 +63,7 @@ class ProjectFileController extends Controller
             ]));
         }
 
-        return redirect()->back()->with('success', 'تم رفع الملف بنجاح');
+        return redirect()->back()->with('success', __('تم رفع الملف بنجاح'));
     }
 
     /** حذف ملف رفعه الطالب نفسه */
@@ -76,7 +76,7 @@ class ProjectFileController extends Controller
         );
 
         if ($file->project->is_locked) {
-            return redirect()->back()->with('fail', 'المشروع مؤرشف بعد التقييم — لا يمكن حذف ملفاته');
+            return redirect()->back()->with('fail', __('المشروع مؤرشف بعد التقييم — لا يمكن حذف ملفاته'));
         }
 
         // حذف من القرص الخاص، مع دعم الملفات القديمة على العام
@@ -84,6 +84,6 @@ class ProjectFileController extends Controller
         Storage::disk('public')->delete($file->path);
         $file->delete();
 
-        return redirect()->back()->with('success', 'تم حذف الملف');
+        return redirect()->back()->with('success', __('تم حذف الملف'));
     }
 }

@@ -98,67 +98,67 @@ class AuditPresenter
 
         if (isset($c['status'])) {
             [$from, $to] = $pair($c['status']);
-            $add('الحالة', $from ? __('site.' . $from) : null, $to ? __('site.' . $to) : null);
+            $add(__('الحالة'), $from ? __('site.' . $from) : null, $to ? __('site.' . $to) : null);
             if (($c['status']['reason'] ?? null) === 'seats_full') {
-                $add(null, null, 'مقاعد المشرف مكتملة');
+                $add(null, null, __('مقاعد المشرف مكتملة'));
             }
         }
 
         if (isset($c['grade']) && is_array($c['grade'])) {
             $fmt = fn ($g) => $g === null ? null : rtrim(rtrim(number_format((float) $g, 2), '0'), '.');
-            $add('الدرجة', $fmt($c['grade']['from'] ?? null), ($fmt($c['grade']['to'] ?? null) ?? '') . ' / 100');
+            $add(__('الدرجة'), $fmt($c['grade']['from'] ?? null), ($fmt($c['grade']['to'] ?? null) ?? '') . ' / 100');
         }
 
         if (isset($c['milestone'])) {
             [, $to] = $pair($c['milestone']);
-            $add('المرحلة', null, $to);
+            $add(__('المرحلة'), null, $to);
         }
 
         if (isset($c['round'])) {
             [, $to] = $pair($c['round']);
-            $add(null, null, 'الجولة ' . $to);
+            $add(null, null, __('الجولة :n', ['n' => $to]));
         }
 
         if (isset($c['supervisor'])) {
             [$from, $to] = $pair($c['supervisor']);
-            $add('المشرف', $from, $to);
+            $add(__('المشرف'), $from, $to);
         }
 
         if (isset($c['semester'])) {
             [$from, $to] = $pair($c['semester']);
-            $add('الفصل', $from, $to);
+            $add(__('الفصل'), $from, $to);
         }
 
         if (isset($c['member'])) {
             [$from, $to] = $pair($c['member']);
-            $add($log->action === 'project.leaderChanged' ? 'القائد' : 'العضو', $from, $to);
+            $add($log->action === 'project.leaderChanged' ? __('القائد') : __('العضو'), $from, $to);
         }
 
         if (isset($c['members'])) {
             [$from, $to] = $pair($c['members']);
-            $label = $log->action === 'team.roles' ? 'الأعضاء' : 'الفريق';
-            $add($label, $from, $log->action === 'team.roles' && is_numeric($to) ? $to . ' أعضاء' : $to);
+            $label = $log->action === 'team.roles' ? __('الأعضاء') : __('الفريق');
+            $add($label, $from, $log->action === 'team.roles' && is_numeric($to) ? __(':n أعضاء', ['n' => $to]) : $to);
         }
 
         if (isset($c['changed'])) {
             [, $to] = $pair($c['changed']);
-            $add('تغيّرت أدوارهم', null, (string) $to);
+            $add(__('تغيّرت أدوارهم'), null, (string) $to);
         }
 
         if (isset($c['file'])) {
             [, $to] = $pair($c['file']);
-            $add('الملف', null, $to);
+            $add(__('الملف'), null, $to);
         }
 
         if (isset($c['stage'])) {
             [$from, $to] = $pair($c['stage']);
-            $add('المرحلة', null, $from ?? $to);
+            $add(__('المرحلة'), null, $from ?? $to);
         }
 
         if (isset($c['removed'])) {
             [, $to] = $pair($c['removed']);
             if ($to) {
-                $add(null, null, 'من ' . $to . ($to == 1 ? ' مجموعة' : ' مجموعات'));
+                $add(null, null, $to == 1 ? __('من :n مجموعة', ['n' => $to]) : __('من :n مجموعات', ['n' => $to]));
             }
         }
 
@@ -180,9 +180,9 @@ class AuditPresenter
     public static function dayLabel(CarbonInterface $at): string
     {
         return match (true) {
-            $at->isToday() => 'اليوم',
-            $at->isYesterday() => 'أمس',
-            default => $at->locale('ar')->translatedFormat('l j F Y'),
+            $at->isToday() => __('اليوم'),
+            $at->isYesterday() => __('أمس'),
+            default => $at->translatedFormat('l j F Y'),
         };
     }
 }

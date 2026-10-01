@@ -37,7 +37,7 @@
             <x-status-badge :status="$project->status" />
         @else
             <span class="pct-ring {{ is_null($progress) ? 'is-empty' : '' }}" style="--p: {{ $progress ?? 0 }}"
-                title="{{ is_null($progress) ? 'لا مراحل بعد' : 'الإنجاز ' . $progress . '%' }}">
+                title="{{ is_null($progress) ? __('لا مراحل بعد') : __('الإنجاز :pct%', ['pct' => $progress]) }}">
                 <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" /><circle cx="20" cy="20" r="17" pathLength="100" /></svg>
                 <b>{{ is_null($progress) ? '—' : $progress . '%' }}</b>
             </span>
@@ -54,9 +54,9 @@
             @endif
         </span>
         <span class="group-card-team-text">
-            {{ $members->count() }} {{ $members->count() === 1 ? 'عضو' : 'أعضاء' }}
+            {{ $members->count() === 1 ? __(':n عضو', ['n' => 1]) : __(':n أعضاء', ['n' => $members->count()]) }}
             @if ($leader)
-                <small>القائد: {{ $leader->name }}</small>
+                <small>{{ __('القائد: :name', ['name' => $leader->name]) }}</small>
             @endif
         </span>
     </div>
@@ -79,21 +79,21 @@
             <i class="ti {{ ['is-review' => 'ti-inbox', 'is-revision' => 'ti-pencil', 'is-late' => 'ti-alert-triangle'][$stageTone] ?? 'ti-flag' }}" aria-hidden="true"></i>
             <span class="group-card-stage-title">{{ $current->title }}</span>
             @if ($stageTone === 'is-review')
-                <a href="{{ route('supervisor.projects.show', $project->id) }}#milestone-{{ $current->id }}" class="group-card-stage-due is-link">راجِع التسليم</a>
+                <a href="{{ route('supervisor.projects.show', $project->id) }}#milestone-{{ $current->id }}" class="group-card-stage-due is-link">{{ __('راجِع التسليم') }}</a>
             @elseif ($stageTone === 'is-revision')
-                <span class="group-card-stage-due">مطلوب تعديل</span>
+                <span class="group-card-stage-due">{{ __('مطلوب تعديل') }}</span>
             @elseif ($current->due_date)
                 <span class="group-card-stage-due">
-                    {{ $stageTone === 'is-late' ? 'متأخّرة منذ ' . $current->due_date->diffInDays(today()) . ' يوماً' : $current->due_date->translatedFormat('j F') }}
+                    {{ $stageTone === 'is-late' ? __('متأخّرة منذ :n يوماً', ['n' => $current->due_date->diffInDays(today())]) : $current->due_date->translatedFormat('j F') }}
                 </span>
             @endif
         @elseif ($project->milestones->isNotEmpty())
             <i class="ti ti-circle-check" aria-hidden="true"></i>
-            <span class="group-card-stage-title">أنجزت كل المراحل</span>
+            <span class="group-card-stage-title">{{ __('أنجزت كل المراحل') }}</span>
         @else
             <i class="ti ti-route" aria-hidden="true"></i>
-            <span class="group-card-stage-title is-muted">لم تُضَف مراحل بعد</span>
-            <a href="{{ route('supervisor.plan') }}" class="group-card-stage-due is-link">خطة المراحل</a>
+            <span class="group-card-stage-title is-muted">{{ __('لم تُضَف مراحل بعد') }}</span>
+            <a href="{{ route('supervisor.plan') }}" class="group-card-stage-due is-link">{{ __('خطة المراحل') }}</a>
         @endif
     </div>
 
@@ -101,20 +101,20 @@
         <span class="group-fact {{ ! is_null($days) && $days < 0 ? 'is-late' : (! is_null($days) && $days <= 7 ? 'is-warn' : '') }}">
             <i class="ti ti-calendar-due" aria-hidden="true"></i>
             @if (is_null($days))
-                بلا موعد نهائي
+                {{ __('بلا موعد نهائي') }}
             @elseif ($days < 0)
-                تأخّر {{ abs($days) }} يوماً
+                {{ __('تأخّر :n يوماً', ['n' => abs($days)]) }}
             @elseif ($days === 0)
-                التسليم اليوم
+                {{ __('التسليم اليوم') }}
             @else
-                التسليم بعد {{ $days }} يوماً
+                {{ __('التسليم بعد :n يوماً', ['n' => $days]) }}
             @endif
         </span>
 
         @if ($ungraded)
             <span class="group-fact is-warn">
                 <i class="ti ti-award" aria-hidden="true"></i>
-                بلا تقييم
+                {{ __('بلا تقييم') }}
             </span>
         @elseif (! is_null($project->grade))
             <span class="group-fact">
@@ -125,18 +125,18 @@
 
         <span class="group-fact">
             <i class="ti ti-activity" aria-hidden="true"></i>
-            {{ $lastAt ? 'آخر نشاط ' . $lastAt->diffForHumans() : 'لا نشاط بعد' }}
+            {{ $lastAt ? __('آخر نشاط :when', ['when' => $lastAt->diffForHumans()]) : __('لا نشاط بعد') }}
         </span>
     </div>
 
     <footer class="group-card-actions">
         <a href="{{ route('supervisor.projects.show', ['project' => $project->id]) }}">
             <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
-            فتح المشروع
+            {{ __('فتح المشروع') }}
         </a>
         <a href="{{ route('supervisor.discussion', $project->id) }}">
             <i class="ti ti-messages" aria-hidden="true"></i>
-            النقاش
+            {{ __('النقاش') }}
             @if ($unread)
                 <span class="sidebar-count">{{ $unread }}</span>
             @endif

@@ -36,7 +36,7 @@ class AvatarProcessor
     public static function process(UploadedFile $file): string
     {
         if (! self::available()) {
-            throw new AvatarException('إضافة GD غير مفعّلة على الخادم، فلا يمكن معالجة الصور.');
+            throw new AvatarException(__('إضافة GD غير مفعّلة على الخادم، فلا يمكن معالجة الصور.'));
         }
 
         $source = self::read($file);
@@ -70,7 +70,7 @@ class AvatarProcessor
         imagedestroy($canvas);
 
         if ($bytes === false || $bytes === '') {
-            throw new AvatarException('تعذّرت معالجة الصورة.');
+            throw new AvatarException(__('تعذّرت معالجة الصورة.'));
         }
 
         return $bytes;
@@ -93,7 +93,7 @@ class AvatarProcessor
         };
 
         if (! $image) {
-            throw new AvatarException('الملف ليس صورة صالحة.');
+            throw new AvatarException(__('الملف ليس صورة صالحة.'));
         }
 
         return $image;

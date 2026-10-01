@@ -1,1 +1,1 @@
-@include('errors._page', ['code' => '503', 'title' => 'المنصّة في صيانة', 'text' => 'نُحدّث المنصّة الآن وتعود خلال دقائق.', 'actionUrl' => null, 'actionLabel' => null])
+@include('errors._page', ['code' => '503', 'title' => __('المنصّة في صيانة'), 'text' => __('نُحدّث المنصّة الآن وتعود خلال دقائق.'), 'actionUrl' => null, 'actionLabel' => null])

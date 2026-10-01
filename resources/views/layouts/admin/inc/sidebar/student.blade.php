@@ -1,7 +1,7 @@
 <li class="nav-item {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('student.dashboard') }}">
         <span class="nav-link-icon"><i class="ti ti-home"></i></span>
-        <span class="nav-link-title">الصفحة الرئيسية</span>
+        <span class="nav-link-title">{{ __('الصفحة الرئيسية') }}</span>
     </a>
 </li>
 
@@ -9,7 +9,7 @@
 <li class="nav-item {{ request()->routeIs('student.discussion') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('student.discussion') }}">
         <span class="nav-link-icon"><i class="ti ti-messages"></i></span>
-        <span class="nav-link-title">النقاش</span>
+        <span class="nav-link-title">{{ __('النقاش') }}</span>
         @if (($layoutShared['discussionUnread'] ?? 0) > 0)
             <span class="sidebar-count">{{ $layoutShared['discussionUnread'] }}</span>
         @endif
@@ -21,7 +21,7 @@
     <li class="nav-item {{ request()->routeIs('student.team') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('student.team') }}">
             <span class="nav-link-icon"><i class="ti ti-id-badge-2"></i></span>
-            <span class="nav-link-title">الفريق والأدوار</span>
+            <span class="nav-link-title">{{ __('الفريق والأدوار') }}</span>
         </a>
     </li>
 @endif
@@ -29,7 +29,7 @@
 <li class="nav-item {{ request()->routeIs('student.showNotification') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('student.showNotification') }}">
         <span class="nav-link-icon"><i class="ti ti-bell"></i></span>
-        <span class="nav-link-title">الإشعارات</span>
+        <span class="nav-link-title">{{ __('الإشعارات') }}</span>
         @if (($layoutShared['unreadCount'] ?? 0) > 0)
             <span class="sidebar-count">{{ $layoutShared['unreadCount'] }}</span>
         @endif
@@ -42,7 +42,7 @@
     <li class="nav-item {{ request()->routeIs('student.projects.explore') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('student.projects.explore') }}">
             <span class="nav-link-icon"><i class="ti ti-telescope"></i></span>
-            <span class="nav-link-title">مشاريع منجزة</span>
+            <span class="nav-link-title">{{ __('مشاريع منجزة') }}</span>
         </a>
     </li>
 @endif

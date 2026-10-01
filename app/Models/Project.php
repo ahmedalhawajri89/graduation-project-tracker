@@ -182,12 +182,12 @@ class Project extends Model
             return null;
         }
         $g = (float) $this->grade;
-        if ($g >= 90) return 'ممتاز';
-        if ($g >= 80) return 'جيد جداً';
-        if ($g >= 70) return 'جيد';
-        if ($g >= 60) return 'مقبول';
+        if ($g >= 90) return __('ممتاز');
+        if ($g >= 80) return __('جيد جداً');
+        if ($g >= 70) return __('جيد');
+        if ($g >= 60) return __('مقبول');
 
-        return 'راسب';
+        return __('راسب');
     }
 
     /** نسبة الإنجاز من المراحل المنجزة (null إذا لا توجد مراحل) */

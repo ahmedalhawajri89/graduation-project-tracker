@@ -1,8 +1,8 @@
 @extends('layouts.admin.admin')
-@section('title', 'رسائل الاستفسار')
+@section('title', __('رسائل الاستفسار'))
 
 @section('crumbs')
-    <x-crumb>رسائل الاستفسار</x-crumb>
+    <x-crumb>{{ __('رسائل الاستفسار') }}</x-crumb>
 @endsection
 
 @section('content')
@@ -13,21 +13,21 @@
         // الفلاتر تُحمل في كل رابط: فتح رسالة لا يُفقد البحث ولا التبويب ولا الموضوع
         $keep = request()->except(['open', 'page']);
         $link = fn (array $over = [], array $drop = []) => route('admin.contact.index', array_merge(array_diff_key($keep, array_flip($drop)), $over));
-        $sender = fn ($m) => $senders[mb_strtolower($m->email)] ?? ['role' => 'guest', 'label' => 'زائر', 'meta' => [], 'link' => null, 'link_label' => null, 'link_hint' => null];
+        $sender = fn ($m) => $senders[mb_strtolower($m->email)] ?? ['role' => 'guest', 'label' => __('زائر'), 'meta' => [], 'link' => null, 'link_label' => null, 'link_hint' => null];
 
         // مجموعات القائمة بحسب اليوم
         $dayOf = function ($date) {
-            if (! $date) return 'أقدم';
-            if ($date->isToday()) return 'اليوم';
-            if ($date->isYesterday()) return 'أمس';
-            if ($date->gte(now()->subDays(7)->startOfDay())) return 'هذا الأسبوع';
-            if ($date->gte(now()->subDays(30)->startOfDay())) return 'هذا الشهر';
-            return 'أقدم';
+            if (! $date) return __('أقدم');
+            if ($date->isToday()) return __('اليوم');
+            if ($date->isYesterday()) return __('أمس');
+            if ($date->gte(now()->subDays(7)->startOfDay())) return __('هذا الأسبوع');
+            if ($date->gte(now()->subDays(30)->startOfDay())) return __('هذا الشهر');
+            return __('أقدم');
         };
     @endphp
 
-    <x-page-header title="رسائل الاستفسار"
-        subtitle="{{ $totalCount }} رسالة · {{ $unreadCount }} غير مقروءة">
+    <x-page-header title="{{ __('رسائل الاستفسار') }}"
+        subtitle="{{ __(':total رسالة · :unread غير مقروءة', ['total' => $totalCount, 'unread' => $unreadCount]) }}">
         <x-slot:actions>
             @if ($unreadCount > 0)
                 {{-- فعل صريح بدل أن يقع تلقائياً بمجرد فتح الصفحة --}}
@@ -35,7 +35,7 @@
                     @csrf
                     <button type="submit" class="btn btn-outline-primary">
                         <i class="ti ti-mail-opened me-1" aria-hidden="true"></i>
-                        تعليم الكل كمقروء
+                        {{ __('تعليم الكل كمقروء') }}
                     </button>
                 </form>
             @endif
@@ -43,27 +43,27 @@
     </x-page-header>
 
     {{-- ═══ المؤشّرات: ما ينتظر، وما وصل هذا الأسبوع، ومن يكتب، وعمّ ═══ --}}
-    <section class="cx-stats" aria-label="ملخّص الرسائل">
+    <section class="cx-stats" aria-label="{{ __('ملخّص الرسائل') }}">
         <a href="{{ $link(['unread' => 1], ['topic']) }}" class="cx-stat {{ $unreadCount ? 'is-live' : '' }}">
             <span class="cx-stat-icon"><i class="ti ti-mail" aria-hidden="true"></i></span>
-            <span><b>{{ $unreadCount }}</b><small>غير مقروءة</small></span>
+            <span><b>{{ $unreadCount }}</b><small>{{ __('غير مقروءة') }}</small></span>
         </a>
         <div class="cx-stat">
             <span class="cx-stat-icon"><i class="ti ti-calendar-week" aria-hidden="true"></i></span>
-            <span><b>{{ $stats['week'] }}</b><small>هذا الأسبوع</small></span>
+            <span><b>{{ $stats['week'] }}</b><small>{{ __('هذا الأسبوع') }}</small></span>
         </div>
         <div class="cx-stat">
             <span class="cx-stat-icon"><i class="ti ti-id-badge-2" aria-hidden="true"></i></span>
-            <span><b>{{ $stats['accounts'] }}</b><small>من طلاب ومشرفين</small></span>
+            <span><b>{{ $stats['accounts'] }}</b><small>{{ __('من طلاب ومشرفين') }}</small></span>
         </div>
         <div class="cx-stat">
             @if ($stats['top'])
                 @php $tm = ContactTopic::meta($stats['top']['key']); @endphp
                 <span class="cx-stat-icon is-{{ $tm['tone'] }}"><i class="ti {{ $tm['icon'] }}" aria-hidden="true"></i></span>
-                <span><b class="cx-stat-text">{{ $tm['label'] }}</b><small>الأكثر سؤالاً · {{ $stats['top']['n'] }}</small></span>
+                <span><b class="cx-stat-text">{{ $tm['label'] }}</b><small>{{ __('الأكثر سؤالاً') }} · {{ $stats['top']['n'] }}</small></span>
             @else
                 <span class="cx-stat-icon"><i class="ti ti-message-2" aria-hidden="true"></i></span>
-                <span><b>—</b><small>الأكثر سؤالاً</small></span>
+                <span><b>—</b><small>{{ __('الأكثر سؤالاً') }}</small></span>
             @endif
         </div>
     </section>
@@ -77,11 +77,11 @@
             <div class="inbox-tools">
                 <div class="inbox-tabs">
                     <a href="{{ $link([], ['unread']) }}" class="inbox-tab {{ ! $onlyUnread ? 'is-active' : '' }}">
-                        الكل
+                        {{ __('الكل') }}
                         <span class="inbox-tab-n">{{ $totalCount }}</span>
                     </a>
                     <a href="{{ $link(['unread' => 1]) }}" class="inbox-tab {{ $onlyUnread ? 'is-active' : '' }}">
-                        غير المقروءة
+                        {{ __('غير المقروءة') }}
                         <span class="inbox-tab-n {{ $unreadCount ? 'is-live' : '' }}">{{ $unreadCount }}</span>
                     </a>
                 </div>
@@ -95,17 +95,17 @@
                     @endif
                     <i class="ti ti-search" aria-hidden="true"></i>
                     <input type="search" name="q" value="{{ $q }}" class="form-control"
-                        placeholder="ابحث في الاسم أو الموضوع أو النصّ…" aria-label="بحث في الرسائل">
+                        placeholder="{{ __('ابحث في الاسم أو الموضوع أو النصّ…') }}" aria-label="{{ __('بحث في الرسائل') }}">
                     @if ($q !== '')
-                        <a href="{{ $link([], ['q']) }}" class="inbox-search-clear" aria-label="مسح البحث">
+                        <a href="{{ $link([], ['q']) }}" class="inbox-search-clear" aria-label="{{ __('مسح البحث') }}">
                             <i class="ti ti-x" aria-hidden="true"></i>
                         </a>
                     @endif
                 </form>
 
                 {{-- الموضوعات: تُستنتج من كلمات الرسالة، ولكلٍّ عدده ضمن البحث والتبويب --}}
-                <div class="cx-topics" role="group" aria-label="تصفية حسب الموضوع">
-                    <a href="{{ $link([], ['topic']) }}" class="cx-topic {{ ! $topic ? 'is-active' : '' }}">كل المواضيع</a>
+                <div class="cx-topics" role="group" aria-label="{{ __('تصفية حسب الموضوع') }}">
+                    <a href="{{ $link([], ['topic']) }}" class="cx-topic {{ ! $topic ? 'is-active' : '' }}">{{ __('كل المواضيع') }}</a>
                     @foreach ([...array_keys(ContactTopic::TOPICS), 'other'] as $key)
                         @continue(! $topicCounts[$key] && $topic !== $key)
                         @php $tm = ContactTopic::meta($key); @endphp
@@ -160,15 +160,15 @@
                 @endif
             @else
                 <x-empty-state icon="ti-mail-off"
-                    title="{{ $q !== '' || $onlyUnread || $topic ? 'لا رسائل مطابقة' : 'لا توجد رسائل بعد' }}"
+                    title="{{ $q !== '' || $onlyUnread || $topic ? __('لا رسائل مطابقة') : __('لا توجد رسائل بعد') }}"
                     text="{{ $q !== '' || $onlyUnread || $topic
-                        ? 'جرّب كلمة بحث أخرى أو موضوعاً آخر، أو اعرض كل الرسائل.'
-                        : 'ستظهر هنا رسائل نموذج التواصل في الموقع العام.' }}"
+                        ? __('جرّب كلمة بحث أخرى أو موضوعاً آخر، أو اعرض كل الرسائل.')
+                        : __('ستظهر هنا رسائل نموذج التواصل في الموقع العام.') }}"
                     class="py-5">
                     @if ($q !== '' || $onlyUnread || $topic)
                         <x-slot:action>
                             <a href="{{ route('admin.contact.index') }}" class="btn btn-outline-primary btn-sm">
-                                عرض كل الرسائل
+                                {{ __('عرض كل الرسائل') }}
                             </a>
                         </x-slot:action>
                     @endif
@@ -194,16 +194,16 @@
                     {{-- على الهاتف يحلّ القارئ محلّ القائمة، فيلزم طريق عودة --}}
                     <a href="{{ route('admin.contact.index', $keep) }}" class="inbox-back">
                         <i class="ti ti-arrow-right" aria-hidden="true"></i>
-                        كل الرسائل
+                        {{ __('كل الرسائل') }}
                     </a>
                     {{-- التنقّل ضمن القائمة كما تُعرض الآن، وبالأسهم ↑ ↓ --}}
-                    <nav class="cx-nav" aria-label="التنقّل بين الرسائل">
+                    <nav class="cx-nav" aria-label="{{ __('التنقّل بين الرسائل') }}">
                         <a @if ($prevId) href="{{ $link(['open' => $prevId]) }}" data-nav="prev" @else aria-disabled="true" @endif
-                            class="cx-nav-btn" title="الأحدث (↑)" aria-label="الرسالة الأحدث">
+                            class="cx-nav-btn" title="{{ __('الأحدث (↑)') }}" aria-label="{{ __('الرسالة الأحدث') }}">
                             <i class="ti ti-chevron-up" aria-hidden="true"></i>
                         </a>
                         <a @if ($nextId) href="{{ $link(['open' => $nextId]) }}" data-nav="next" @else aria-disabled="true" @endif
-                            class="cx-nav-btn" title="الأقدم (↓)" aria-label="الرسالة الأقدم">
+                            class="cx-nav-btn" title="{{ __('الأقدم (↓)') }}" aria-label="{{ __('الرسالة الأقدم') }}">
                             <i class="ti ti-chevron-down" aria-hidden="true"></i>
                         </a>
                     </nav>
@@ -227,7 +227,7 @@
                         </div>
                         <div class="cx-sender-mail">
                             <a href="mailto:{{ $openMessage->email }}" dir="ltr" class="reader-mail">{{ $openMessage->email }}</a>
-                            <button type="button" class="cx-copy" data-copy="{{ $openMessage->email }}" aria-label="نسخ البريد" title="نسخ البريد">
+                            <button type="button" class="cx-copy" data-copy="{{ $openMessage->email }}" aria-label="{{ __('نسخ البريد') }}" title="{{ __('نسخ البريد') }}">
                                 <i class="ti ti-copy" aria-hidden="true"></i>
                             </button>
                         </div>
@@ -246,7 +246,7 @@
                     @elseif ($who['role'] === 'student')
                         <span class="cx-sender-link is-muted"><small>{{ $who['link_hint'] }}</small></span>
                     @elseif ($who['role'] === 'guest')
-                        <span class="cx-sender-link is-muted"><small>لا حساب بهذا البريد في المنصّة</small></span>
+                        <span class="cx-sender-link is-muted"><small>{{ __('لا حساب بهذا البريد في المنصّة') }}</small></span>
                     @endif
                 </div>
 
@@ -255,7 +255,7 @@
 
                 @if ($history->count())
                     <div class="cx-history">
-                        <h3><i class="ti ti-history" aria-hidden="true"></i> رسائل سابقة من المُرسِل نفسه <span>{{ $history->count() }}</span></h3>
+                        <h3><i class="ti ti-history" aria-hidden="true"></i> {{ __('رسائل سابقة من المُرسِل نفسه') }} <span>{{ $history->count() }}</span></h3>
                         @foreach ($history as $old)
                             <a href="{{ $link(['open' => $old->id]) }}">
                                 <span>{{ $old->subject }}</span>
@@ -271,22 +271,22 @@
                     <div class="btn-group cx-reply">
                         <a class="btn btn-primary" href="{{ $mailto($tm['reply']) }}">
                             <i class="ti ti-mail-forward me-1" aria-hidden="true"></i>
-                            الرد بالبريد
+                            {{ __('الرد بالبريد') }}
                         </a>
                         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
-                            data-bs-toggle="dropdown" aria-expanded="false" aria-label="ردود جاهزة"></button>
+                            data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ __('ردود جاهزة') }}"></button>
                         <div class="dropdown-menu dropdown-menu-end cx-reply-menu">
-                            <span class="dropdown-header">ردود جاهزة — تُفتح في بريدك للتعديل</span>
+                            <span class="dropdown-header">{{ __('ردود جاهزة — تُفتح في بريدك للتعديل') }}</span>
                             @foreach ($replies as $key => $r)
                                 <a class="dropdown-item" href="{{ $mailto($r['reply']) }}">
                                     <i class="ti {{ $r['icon'] }} me-2" aria-hidden="true"></i>
                                     {{ $r['label'] }}
-                                    @if ($loop->first)<span class="cx-suggest">مقترح</span>@endif
+                                    @if ($loop->first)<span class="cx-suggest">{{ __('مقترح') }}</span>@endif
                                 </a>
                             @endforeach
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ $mailto('مرحباً،') }}">
-                                <i class="ti ti-pencil me-2" aria-hidden="true"></i> ردّ فارغ
+                                <i class="ti ti-pencil me-2" aria-hidden="true"></i> {{ __('ردّ فارغ') }}
                             </a>
                         </div>
                     </div>
@@ -297,7 +297,7 @@
                                 @csrf
                                 <button type="submit" class="btn btn-outline-secondary btn-sm">
                                     <i class="ti ti-mail me-1" aria-hidden="true"></i>
-                                    غير مقروءة
+                                    {{ __('غير مقروءة') }}
                                 </button>
                             </form>
                         @endif
@@ -305,7 +305,7 @@
                         {{-- الفعل الأخطر أهدأ ما في الشريط --}}
                         <button type="button" class="btn-action btn-action--danger btn-delete" data-bs-toggle="modal"
                             data-bs-target="#deleteModal" data-id="{{ $openMessage->id }}"
-                            data-name="{{ $openMessage->subject }}" title="حذف الرسالة" aria-label="حذف الرسالة">
+                            data-name="{{ $openMessage->subject }}" title="{{ __('حذف الرسالة') }}" aria-label="{{ __('حذف الرسالة') }}">
                             <i class="ti ti-trash" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -314,21 +314,21 @@
                 {{-- لوح فارغ يقول ما يُفعل، لا مساحة بيضاء صامتة --}}
                 <div class="reader-blank">
                     <span class="cx-blank-icon"><i class="ti ti-mail-opened" aria-hidden="true"></i></span>
-                    <p>اختر رسالة من القائمة لقراءتها</p>
-                    <span>تُعلَّم مقروءةً عند فتحها وحدها، لا بمجرد دخول الصفحة.</span>
+                    <p>{{ __('اختر رسالة من القائمة لقراءتها') }}</p>
+                    <span>{{ __('تُعلَّم مقروءةً عند فتحها وحدها، لا بمجرد دخول الصفحة.') }}</span>
                     @if ($unreadCount)
                         <a href="{{ $link(['unread' => 1]) }}" class="btn btn-outline-primary btn-sm mt-2">
-                            ابدأ بغير المقروءة ({{ $unreadCount }})
+                            {{ __('ابدأ بغير المقروءة (:n)', ['n' => $unreadCount]) }}
                         </a>
                     @endif
-                    <small class="cx-keys"><kbd>↑</kbd> <kbd>↓</kbd> للتنقّل بين الرسائل بعد فتح إحداها</small>
+                    <small class="cx-keys"><kbd>↑</kbd> <kbd>↓</kbd> {{ __('للتنقّل بين الرسائل بعد فتح إحداها') }}</small>
                 </div>
             @endif
         </section>
     </div>
 
     @include('dashboard.component.delete_modal', [
-        'delete_title' => 'الرسالة',
+        'delete_title' => __('الرسالة'),
         'delete_controller_name' => 'admin.contact',
     ])
 

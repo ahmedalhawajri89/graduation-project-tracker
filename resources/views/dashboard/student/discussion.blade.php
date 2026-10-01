@@ -1,9 +1,9 @@
 @extends('layouts.admin.admin')
-@section('title', 'النقاش')
+@section('title', __('النقاش'))
 
 @section('crumbs')
-    <x-crumb :href="route('student.dashboard')">لوحتي</x-crumb>
-    <x-crumb>النقاش</x-crumb>
+    <x-crumb :href="route('student.dashboard')">{{ __('لوحتي') }}</x-crumb>
+    <x-crumb>{{ __('النقاش') }}</x-crumb>
 @endsection
 
 {{--
@@ -20,30 +20,30 @@
         $members = $project?->group->sortBy(fn ($g) => $g->type === 'leader' ? 0 : 1)->values() ?? collect();
     @endphp
 
-    <x-page-header title="النقاش"
-        subtitle="{{ $project ? $project->title : 'اسأل مشرفك، ونسّق مع فريقك' }}" />
+    <x-page-header :title="__('النقاش')"
+        subtitle="{{ $project ? $project->title : __('اسأل مشرفك، ونسّق مع فريقك') }}" />
 
     @if (! $project)
         <div class="dist-panel">
-            <x-empty-state icon="ti-messages-off" title="لا نقاش قبل المشروع"
-                text="يُفتح النقاش مع المشرف ومع فريقك حين تقدّم مقترح مشروعك وتختار مشرفه." class="py-6">
+            <x-empty-state icon="ti-messages-off" :title="__('لا نقاش قبل المشروع')"
+                :text="__('يُفتح النقاش مع المشرف ومع فريقك حين تقدّم مقترح مشروعك وتختار مشرفه.')" class="py-6">
                 <x-slot:action>
                     <a href="{{ route('student.dashboard') }}" class="btn btn-primary">
                         <i class="ti ti-rocket me-1" aria-hidden="true"></i>
-                        تقديم المقترح
+                        {{ __('تقديم المقترح') }}
                     </a>
                 </x-slot:action>
             </x-empty-state>
         </div>
     @else
         {{-- ===== التبويبان ===== --}}
-        <nav class="chat-tabs" aria-label="قنوات النقاش">
+        <nav class="chat-tabs" aria-label="{{ __('قنوات النقاش') }}">
             <a href="{{ route('student.discussion') }}" class="chat-tab {{ $isTeam ? '' : 'is-active' }}"
                 @unless ($isTeam) aria-current="page" @endunless>
                 <x-avatar :user="$project->supervisor" class="ctx-avatar chat-tab-avatar is-supervisor" />
                 <span class="chat-tab-text">
-                    <b>مع المشرف</b>
-                    <small>{{ $project->supervisor->name ?? 'بلا مشرف' }}</small>
+                    <b>{{ __('مع المشرف') }}</b>
+                    <small>{{ $project->supervisor->name ?? __('بلا مشرف') }}</small>
                 </span>
                 @if ($unread['supervisor'])
                     <span class="sidebar-count">{{ $unread['supervisor'] }}</span>
@@ -57,8 +57,8 @@
                     @endforeach
                 </span>
                 <span class="chat-tab-text">
-                    <b>الفريق <i class="ti ti-lock chat-tab-lock" aria-hidden="true"></i></b>
-                    <small>{{ $members->count() }} أعضاء · خاص</small>
+                    <b>{{ __('الفريق') }} <i class="ti ti-lock chat-tab-lock" aria-hidden="true"></i></b>
+                    <small>{{ __(':n أعضاء · خاص', ['n' => $members->count()]) }}</small>
                 </span>
                 @if ($unread['team'])
                     <span class="sidebar-count">{{ $unread['team'] }}</span>
@@ -72,21 +72,21 @@
                     <header class="chat-head">
                         <span class="chat-team-icon" aria-hidden="true"><i class="ti ti-users-group"></i></span>
                         <span class="chat-head-body">
-                            <b>نقاش الفريق</b>
-                            <span>{{ $members->map(fn ($g) => $g->student?->name)->filter()->implode('، ') }}</span>
+                            <b>{{ __('نقاش الفريق') }}</b>
+                            <span>{{ $members->map(fn ($g) => $g->student?->name)->filter()->implode(__('، ')) }}</span>
                         </span>
                     </header>
                     {{-- الخصوصية تُقال لا تُفترض: الطالب يكتب بحرّية حين يعرف من يقرأ --}}
                     <div class="chat-private">
                         <i class="ti ti-lock" aria-hidden="true"></i>
-                        خاص بالفريق — لا يراه المشرف ولا الإدارة
+                        {{ __('خاص بالفريق — لا يراه المشرف ولا الإدارة') }}
                     </div>
                 @else
                     <header class="chat-head">
                         <x-avatar :user="$project->supervisor" class="ctx-avatar is-supervisor" />
                         <span class="chat-head-body">
-                            <b>{{ $project->supervisor->name ?? 'بلا مشرف' }}</b>
-                            <span>{{ $project->supervisor->specialize->name ?? 'مشرف المشروع' }}</span>
+                            <b>{{ $project->supervisor->name ?? __('بلا مشرف') }}</b>
+                            <span>{{ $project->supervisor->specialize->name ?? __('مشرف المشروع') }}</span>
                         </span>
                         @if ($project->status === 'request')
                             {{-- السؤال قبل القبول مشروع، لكن ليعرف أن الطلب لم يُبتّ بعد --}}

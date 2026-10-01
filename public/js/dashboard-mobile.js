@@ -28,7 +28,7 @@
         btn.className = 'filter-toggle';
         btn.setAttribute('aria-expanded', 'false');
         btn.innerHTML =
-            '<i class="ti ti-adjustments-horizontal" aria-hidden="true"></i><span>تصفية</span>' +
+            '<i class="ti ti-adjustments-horizontal" aria-hidden="true"></i><span>' + t('تصفية') + '</span>' +
             (active ? '<b class="filter-toggle-count">' + active + '</b>' : '') +
             '<i class="ti ti-chevron-down filter-toggle-caret" aria-hidden="true"></i>';
 

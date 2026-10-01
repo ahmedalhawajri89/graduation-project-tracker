@@ -1,12 +1,12 @@
 @php
     if (auth()->guard('admin')->check()) {
-        $sbRole = 'مسؤول النظام';
+        $sbRole = __('مسؤول النظام');
         $sbNotifyRoute = route('admin.contact.index');
     } elseif (auth()->guard('supervisor')->check()) {
-        $sbRole = 'مشرف أكاديمي';
+        $sbRole = __('مشرف أكاديمي');
         $sbNotifyRoute = route('supervisor.showNotification');
     } else {
-        $sbRole = 'طالب';
+        $sbRole = __('طالب');
         $sbNotifyRoute = route('student.showNotification');
     }
     // من الـ View Composer — محسوبة مرة واحدة للطلب
@@ -21,7 +21,7 @@
 
         {{-- الشعار --}}
         <h1 class="navbar-brand sidebar-brand">
-            <a href="{{ url('/') }}" class="brand-link text-decoration-none" aria-label="تخرُّج — الرئيسية">
+            <a href="{{ url('/') }}" class="brand-link text-decoration-none" aria-label="{{ __('تخرُّج — الرئيسية') }}">
                 {{-- علامة الموقع نفسها — عقد على مسار، آخرها التخرّج. مضمّنة لا <img>:
                      المسار يُرسم عند التحميل والعقد تضيء تباعاً، والأخيرة تمتلئ عند المرور --}}
                 <span class="brand-mark" aria-hidden="true">
@@ -41,8 +41,8 @@
                     <span class="brand-shine"></span>
                 </span>
                 <span class="sidebar-brand-text">
-                    <b>تخرُّج<i class="brand-dot"></i></b>
-                    <small>متابعة مشاريع التخرج</small>
+                    <b>{{ __('تخرُّج') }}<i class="brand-dot"></i></b>
+                    <small>{{ __('متابعة مشاريع التخرج') }}</small>
                 </span>
             </a>
         </h1>
@@ -63,7 +63,7 @@
                         {{-- السنة في سطر التسمية لا بجانب الاسم: كانت تأخذ عرضه فيُقصّ
                              «الفصل الأوّل» إلى «الفصل الأو…» حين يضيق الشريط --}}
                         <small>
-                            <span class="sem-live" aria-hidden="true"></span>الفصل الحالي
+                            <span class="sem-live" aria-hidden="true"></span>{{ __('الفصل الحالي') }}
                             @if ($sbSem['year'])
                                 <span class="sem-year" dir="ltr">{{ $sbSem['year'] }}</span>
                             @endif
@@ -75,7 +75,7 @@
 
             {{-- الأدمن لديه تسميات أقسام داخلية خاصة به --}}
             @unless (auth()->guard('admin')->check())
-                <div class="sidebar-label">القائمة الرئيسية</div>
+                <div class="sidebar-label">{{ __('القائمة الرئيسية') }}</div>
             @endunless
 
             <ul class="navbar-nav">
@@ -94,7 +94,7 @@
 
                 {{-- بطاقة حالة المشروع (طالب فقط) --}}
                 @if ($sbProject)
-                    <a href="{{ route('student.dashboard') }}" class="sidebar-project" title="مشروعك">
+                    <a href="{{ route('student.dashboard') }}" class="sidebar-project" title="{{ __('مشروعك') }}">
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <i class="ti ti-briefcase"></i>
                             <span class="text-truncate fw-bold">{{ $sbProject->title }}</span>
@@ -104,7 +104,7 @@
                                 <div class="sidebar-project-fill" style="width: {{ $sbProject->progress }}%"></div>
                             </div>
                             <div class="d-flex justify-content-between mt-1 sidebar-project-meta">
-                                <span>الإنجاز</span>
+                                <span>{{ __('الإنجاز') }}</span>
                                 <span>{{ $sbProject->progress }}%</span>
                             </div>
                         @else
@@ -120,7 +120,7 @@
                     <a href="{{ route('logout') }}" class="sidebar-logout"
                         onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
                         <i class="ti ti-logout"></i>
-                        <span>تسجيل خروج</span>
+                        <span>{{ __('تسجيل خروج') }}</span>
                     </a>
                     <form action="{{ route('logout') }}" method="post" id="logout-form-sidebar">@csrf</form>
                 </div>

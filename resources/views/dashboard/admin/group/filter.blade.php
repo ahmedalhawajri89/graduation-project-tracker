@@ -11,10 +11,10 @@
 
     {{-- أزرار الحالة: كانت الصفحة تستثني المعلّق والمرفوض تماماً.
          كل زر يحمل عدده ضمن الفلاتر المطبَّقة، فتعرف قبل النقر. --}}
-    <div class="filter-tabs" role="group" aria-label="تصفية حسب الحالة">
+    <div class="filter-tabs" role="group" aria-label="{{ __('تصفية حسب الحالة') }}">
         <a href="{{ route('admin.groups.index', array_merge(request()->except(['status', 'page']), [])) }}"
             class="filter-tab {{ is_null($currentStatus) ? 'is-active' : '' }}">
-            الكل
+            {{ __('الكل') }}
             <span class="filter-count">{{ $totalAll }}</span>
         </a>
         @foreach ($statusOrder as $st)
@@ -37,7 +37,7 @@
              يمنع Enter من إرسال النموذج لأن البحث فوريّ. --}}
         <div class="filter-field filter-field--search">
             {{-- المُعرِّف يضعه السكربت على الحقل بعد نقله --}}
-            <label class="form-label" for="dt-search-input">بحث</label>
+            <label class="form-label" for="dt-search-input">{{ __('بحث') }}</label>
             <div class="filter-search-box">
                 <i class="ti ti-search filter-search-icon" aria-hidden="true"></i>
                 <div id="dt-search-slot"></div>
@@ -45,7 +45,7 @@
         </div>
 
         <div class="filter-field">
-            <label class="form-label" for="f-semester">الفصل الدراسي</label>
+            <label class="form-label" for="f-semester">{{ __('الفصل الدراسي') }}</label>
             <select name="semester" id="f-semester" class="form-select">
                 @foreach ($semesters as $sem)
                     <option value="{{ $sem->id }}" @selected($currentSemesterId == $sem->id)>{{ $sem->label }}</option>
@@ -54,9 +54,9 @@
         </div>
 
         <div class="filter-field">
-            <label class="form-label" for="f-supervisor">المشرف</label>
+            <label class="form-label" for="f-supervisor">{{ __('المشرف') }}</label>
             <select name="supervisor" id="f-supervisor" class="form-select">
-                <option value="">كل المشرفين</option>
+                <option value="">{{ __('كل المشرفين') }}</option>
                 @foreach ($supervisors as $supervisor)
                     <option value="{{ $supervisor->id }}" @selected(request()->supervisor == $supervisor->id)>{{ $supervisor->name }}</option>
                 @endforeach
@@ -64,9 +64,9 @@
         </div>
 
         <div class="filter-field">
-            <label class="form-label" for="f-type">نوع المشروع</label>
+            <label class="form-label" for="f-type">{{ __('نوع المشروع') }}</label>
             <select name="type" id="f-type" class="form-select">
-                <option value="">كل الأنواع</option>
+                <option value="">{{ __('كل الأنواع') }}</option>
                 @foreach ($project_type as $type)
                     <option value="{{ $type->id }}" @selected(request()->type == $type->id)>{{ $type->name }}</option>
                 @endforeach
@@ -76,15 +76,15 @@
         <div class="filter-actions">
             <button type="submit" class="btn btn-primary">
                 <i class="ti ti-filter me-1" aria-hidden="true"></i>
-                تطبيق
+                {{ __('تطبيق') }}
             </button>
 
             {{-- مسح الفلاتر: لم يكن هناك طريق للعودة إلا بتصفير كل قائمة يدوياً --}}
             @if ($hasFilters)
                 <a href="{{ route('admin.groups.index', ['semester' => $currentSemesterId]) }}"
-                    class="btn btn-ghost-secondary" title="إزالة كل الفلاتر">
+                    class="btn btn-ghost-secondary" title="{{ __('إزالة كل الفلاتر') }}">
                     <i class="ti ti-x me-1" aria-hidden="true"></i>
-                    مسح
+                    {{ __('مسح') }}
                 </a>
             @endif
 

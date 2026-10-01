@@ -3,7 +3,7 @@
     'template',
     // الأعمدة: \u200E[اسم العمود، مطلوب؟، الشرح]\u200E
     'columns' => [],
-    'noun' => 'السجلات',
+    'noun' => __('السجلات'),
     'specializes' => collect(),
 ])
 
@@ -22,10 +22,10 @@
         <div class="modal-content im-modal">
             <div class="modal-header">
                 <div>
-                    <h5 class="modal-title" id="importLabel">استيراد {{ $noun }} من Excel</h5>
-                    <p class="im-sub">تُنشأ الحسابات دفعة واحدة، ويُعرض بعد الرفع تقرير بما أُضيف وما تُخطّي ولماذا.</p>
+                    <h5 class="modal-title" id="importLabel">{{ __('استيراد :noun من Excel', ['noun' => app()->getLocale() === 'en' ? \Illuminate\Support\Str::lower($noun) : $noun]) }}</h5>
+                    <p class="im-sub">{{ __('تُنشأ الحسابات دفعة واحدة، ويُعرض بعد الرفع تقرير بما أُضيف وما تُخطّي ولماذا.') }}</p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('إغلاق') }}"></button>
             </div>
 
             <form action="{{ $action }}" method="POST" enctype="multipart/form-data" data-import-form>
@@ -35,19 +35,19 @@
                         <li>
                             <span class="im-step-n">1</span>
                             <div>
-                                <b>نزّل القالب</b>
-                                <span>بأعمدته الصحيحة وصفّ مثال — احذف المثال واملأ بياناتك.</span>
+                                <b>{{ __('نزّل القالب') }}</b>
+                                <span>{{ __('بأعمدته الصحيحة وصفّ مثال — احذف المثال واملأ بياناتك.') }}</span>
                             </div>
                             <a href="{{ $template }}" class="btn btn-outline-primary btn-sm">
                                 <i class="ti ti-file-download me-1" aria-hidden="true"></i>
-                                القالب
+                                {{ __('القالب') }}
                             </a>
                         </li>
                         <li>
                             <span class="im-step-n">2</span>
                             <div>
-                                <b>ارفع الملف</b>
-                                <span>xlsx أو xls، حتى 5MB.</span>
+                                <b>{{ __('ارفع الملف') }}</b>
+                                <span>{{ __('xlsx أو xls، حتى 5MB.') }}</span>
                             </div>
                         </li>
                     </ol>
@@ -58,8 +58,8 @@
                             aria-describedby="im-drop-hint">
                         <span class="im-drop-empty">
                             <i class="ti ti-cloud-upload" aria-hidden="true"></i>
-                            <b>اسحب الملف إلى هنا</b>
-                            <span id="im-drop-hint">أو انقر لاختياره من جهازك</span>
+                            <b>{{ __('اسحب الملف إلى هنا') }}</b>
+                            <span id="im-drop-hint">{{ __('أو انقر لاختياره من جهازك') }}</span>
                         </span>
                         <span class="im-drop-file" hidden>
                             <span class="im-file-badge" aria-hidden="true">XLS</span>
@@ -67,30 +67,30 @@
                                 <b data-drop-name></b>
                                 <small data-drop-size dir="ltr"></small>
                             </span>
-                            <button type="button" class="ed-link" data-drop-clear>تغيير</button>
+                            <button type="button" class="ed-link" data-drop-clear>{{ __('تغيير') }}</button>
                         </span>
                     </label>
                     @if ($failed)
                         <div class="invalid-feedback d-block">{{ $errors->first('attachment') }}</div>
                     @endif
-                    <div class="im-drop-error" data-drop-error hidden>الملف يجب أن يكون xlsx أو xls وحجمه حتى 5MB.</div>
+                    <div class="im-drop-error" data-drop-error hidden>{{ __('الملف يجب أن يكون xlsx أو xls وحجمه حتى 5MB.') }}</div>
 
                     <details class="im-guide">
                         <summary>
                             <i class="ti ti-table" aria-hidden="true"></i>
-                            الأعمدة وما يُكتب فيها
+                            {{ __('الأعمدة وما يُكتب فيها') }}
                         </summary>
                         <table>
-                            <thead><tr><th>العمود</th><th></th><th>ما يُكتب فيه</th></tr></thead>
+                            <thead><tr><th>{{ __('العمود') }}</th><th></th><th>{{ __('ما يُكتب فيه') }}</th></tr></thead>
                             <tbody>
                                 @foreach ($columns as [$col, $required, $text])
                                     <tr>
                                         <td><code dir="ltr">{{ $col }}</code></td>
                                         <td>
                                             @if ($required)
-                                                <span class="im-req">مطلوب</span>
+                                                <span class="im-req">{{ __('مطلوب') }}</span>
                                             @else
-                                                <span class="im-opt">اختياري</span>
+                                                <span class="im-opt">{{ __('اختياري') }}</span>
                                             @endif
                                         </td>
                                         <td>{{ $text }}</td>
@@ -100,7 +100,7 @@
                         </table>
                         @if ($specializes->count())
                             <p class="im-specs">
-                                <span>أسماء التخصصات كما تُكتب في عمود <code dir="ltr">specialization</code>:</span>
+                                <span>{!! __('أسماء التخصصات كما تُكتب في عمود :column:', ['column' => '<code dir="ltr">specialization</code>']) !!}</span>
                                 @foreach ($specializes as $specialize)
                                     <span class="im-spec">{{ $specialize->name }}</span>
                                 @endforeach
@@ -110,11 +110,11 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
                     <button type="submit" class="btn btn-primary" data-import-submit disabled>
                         <span class="ed-spinner" aria-hidden="true"></span>
                         <i class="ti ti-upload me-1" aria-hidden="true"></i>
-                        استيراد
+                        {{ __('استيراد') }}
                     </button>
                 </div>
             </form>

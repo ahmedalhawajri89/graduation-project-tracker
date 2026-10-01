@@ -28,16 +28,15 @@
     <div class="dist-head">
         <span class="dist-head-title">
             <i class="ti ti-list-check" aria-hidden="true"></i>
-            مراحل المشروع
+            {{ __('مراحل المشروع') }}
         </span>
         @if ($project->milestones->count())
             @php $inReview = $project->milestones->filter->isSubmitted()->count(); @endphp
             <span class="dist-head-note">
                 @if ($inReview)
-                    <span class="ms-head-review">{{ $inReview }} بانتظار المراجعة</span> ·
+                    <span class="ms-head-review">{{ __(':n بانتظار المراجعة', ['n' => $inReview]) }}</span> ·
                 @endif
-                {{ $project->milestones->where('is_done', true)->count() }}
-                من {{ $project->milestones->count() }} منجزة
+                {{ __(':done من :total منجزة', ['done' => $project->milestones->where('is_done', true)->count(), 'total' => $project->milestones->count()]) }}
             </span>
         @endif
     </div>
@@ -48,22 +47,22 @@
             @csrf
             <input type="text" name="title" required maxlength="150"
                 class="form-control @error('title') is-invalid @enderror"
-                placeholder="مرحلة جديدة — مثال: تسليم فصل التحليل" aria-label="عنوان المرحلة"
+                placeholder="{{ __('مرحلة جديدة — مثال: تسليم فصل التحليل') }}" aria-label="{{ __('عنوان المرحلة') }}"
                 value="{{ old('title') }}">
-            <input type="date" name="due_date" class="form-control" aria-label="تاريخ الاستحقاق"
+            <input type="date" name="due_date" class="form-control" aria-label="{{ __('تاريخ الاستحقاق') }}"
                 value="{{ old('due_date') }}">
             <button type="submit" class="btn btn-primary" data-loading-text="..">
                 <i class="ti ti-plus me-1" aria-hidden="true"></i>
-                إضافة
+                {{ __('إضافة') }}
             </button>
         </form>
     @endif
 
     @if ($project->milestones->count() === 0)
-        <x-empty-state icon="ti-list-details" title="لم تُضَف مراحل بعد"
+        <x-empty-state icon="ti-list-details" :title="__('لم تُضَف مراحل بعد')"
             :text="$editable
-                ? 'قسّم المشروع إلى مراحل بمواعيد — يراها الفريق فور إضافتها، ومنها تُحسب نسبة الإنجاز.'
-                : 'يضع المشرف مراحل المشروع ومواعيدها، وستظهر هنا فور إضافتها.'"
+                ? __('قسّم المشروع إلى مراحل بمواعيد — يراها الفريق فور إضافتها، ومنها تُحسب نسبة الإنجاز.')
+                : __('يضع المشرف مراحل المشروع ومواعيدها، وستظهر هنا فور إضافتها.')"
             class="is-inline" />
     @else
         <div class="ms-progress"><span style="width: {{ $project->progress }}%"></span></div>
@@ -89,8 +88,8 @@
                         method="POST">
                         @csrf
                         <button type="submit" class="ms-check"
-                            title="{{ $milestone->is_done ? 'إرجاعها قيد التنفيذ' : 'وضع علامة منجزة' }}"
-                            aria-label="{{ $milestone->is_done ? 'إرجاع' : 'إنجاز' }} {{ $milestone->title }}">
+                            title="{{ $milestone->is_done ? __('إرجاعها قيد التنفيذ') : __('وضع علامة منجزة') }}"
+                            aria-label="{{ $milestone->is_done ? __('إرجاع :title', ['title' => $milestone->title]) : __('إنجاز :title', ['title' => $milestone->title]) }}">
                             <i class="ti {{ $icon }}" aria-hidden="true"></i>
                         </button>
                     </form>
@@ -104,14 +103,14 @@
                         {{-- عند المشرف: هذه المرحلة من خطته — تُعدَّل هناك لكل المجموعات --}}
                         @if ($editable && $milestone->stage)
                             <a href="{{ route('supervisor.plan') }}#stage-{{ $milestone->stage_id }}" class="ms-plan-tag"
-                                title="تُعدَّل من خطة المراحل لكل المجموعات">من الخطة</a>
+                                title="{{ __('تُعدَّل من خطة المراحل لكل المجموعات') }}">{{ __('من الخطة') }}</a>
                         @endif
                     </span>
                     @if ($milestone->due_date)
                         <span class="ms-due">
-                            الاستحقاق {{ $milestone->due_date->format('Y-m-d') }}
+                            {{ __('الاستحقاق :date', ['date' => $milestone->due_date->format('Y-m-d')]) }}
                             @if ($milestone->is_done && $milestone->done_at)
-                                · أُنجزت {{ $milestone->done_at->format('Y-m-d') }}
+                                · {{ __('أُنجزت :date', ['date' => $milestone->done_at->format('Y-m-d')]) }}
                             @endif
                         </span>
                     @endif
@@ -126,7 +125,7 @@
                             <a href="{{ route('stages.template', $milestone->stage_id) }}" class="ms-template">
                                 <span class="file-type {{ $tc }}" aria-hidden="true">{{ $tl }}</span>
                                 <span>
-                                    <b>قالب المشرف</b>
+                                    <b>{{ __('قالب المشرف') }}</b>
                                     <small>{{ $milestone->stage->template_name }}</small>
                                 </span>
                                 <i class="ti ti-download" aria-hidden="true"></i>
@@ -141,12 +140,12 @@
                                 <x-avatar :user="$latest->student" class="ctx-avatar ms-sub-avatar" />
                                 <span class="ms-sub-who">
                                     <b>{{ $latest->student->name }}</b>
-                                    {{ $latest->round > 1 ? 'أعاد التسليم' : 'سلّم' }}
+                                    {{ $latest->round > 1 ? __('أعاد التسليم') : __('سلّم') }}
                                     · <time datetime="{{ $latest->created_at->toIso8601String() }}"
                                         title="{{ $latest->created_at->format('Y-m-d H:i') }}">{{ $latest->created_at->diffForHumans() }}</time>
                                 </span>
                                 @if ($latest->round > 1)
-                                    <span class="ms-round">الجولة {{ $latest->round }}</span>
+                                    <span class="ms-round">{{ __('الجولة :n', ['n' => $latest->round]) }}</span>
                                 @endif
                             </div>
 
@@ -160,7 +159,7 @@
                                     <span class="file-type {{ $fc }}" aria-hidden="true">{{ $fl }}</span>
                                     <span>
                                         <b>{{ $latest->file_name }}</b>
-                                        <small>ملف التسليم</small>
+                                        <small>{{ __('ملف التسليم') }}</small>
                                     </span>
                                     <i class="ti ti-download" aria-hidden="true"></i>
                                 </a>
@@ -170,7 +169,7 @@
                                 <div class="ms-feedback" role="note">
                                     <i class="ti ti-message-2-exclamation" aria-hidden="true"></i>
                                     <span>
-                                        <b>{{ $editable ? 'طلبتَ تعديلاً' : 'طلب المشرف تعديلاً' }}</b>
+                                        <b>{{ $editable ? __('طلبتَ تعديلاً') : __('طلب المشرف تعديلاً') }}</b>
                                         <span class="ms-feedback-text">{{ $latest->feedback }}</span>
                                         <small>{{ $latest->reviewed_at?->diffForHumans() }}</small>
                                     </span>
@@ -178,7 +177,7 @@
                             @elseif ($latest->decision === \App\Models\ProjectMilestone::APPROVED)
                                 <div class="ms-approved">
                                     <i class="ti ti-circle-check" aria-hidden="true"></i>
-                                    اعتُمدت {{ $latest->reviewed_at?->diffForHumans() }}
+                                    {{ __('اعتُمدت :when', ['when' => $latest->reviewed_at?->diffForHumans()]) }}
                                 </div>
                             @endif
 
@@ -190,26 +189,26 @@
                                         <input type="hidden" name="decision" value="approve">
                                         <button type="submit" class="btn btn-success btn-sm">
                                             <i class="ti ti-check me-1" aria-hidden="true"></i>
-                                            اعتماد
+                                            {{ __('اعتماد') }}
                                         </button>
                                     </form>
                                     <details class="ms-revise" @if ($failedFor === $milestone->id) open @endif>
                                         <summary class="btn btn-outline-warning btn-sm">
                                             <i class="ti ti-pencil me-1" aria-hidden="true"></i>
-                                            مطلوب تعديل…
+                                            {{ __('مطلوب تعديل…') }}
                                         </summary>
                                         <form action="{{ route('supervisor.milestones.review', $milestone->id) }}" method="POST" class="ms-form">
                                             @csrf
                                             <input type="hidden" name="decision" value="revision">
                                             <input type="hidden" name="milestone_ref" value="{{ $milestone->id }}">
-                                            <label class="form-label" for="feedback-{{ $milestone->id }}">ما الذي يجب تعديله؟</label>
+                                            <label class="form-label" for="feedback-{{ $milestone->id }}">{{ __('ما الذي يجب تعديله؟') }}</label>
                                             <textarea id="feedback-{{ $milestone->id }}" name="feedback" rows="3" maxlength="2000" required
                                                 class="form-control {{ $failedFor === $milestone->id && $errors->has('feedback') ? 'is-invalid' : '' }}"
-                                                placeholder="مثال: ينقص مخطط الكيانات، والفصل الثاني يحتاج ثلاثة مراجع إضافية…">{{ $failedFor === $milestone->id ? old('feedback') : '' }}</textarea>
+                                                placeholder="{{ __('مثال: ينقص مخطط الكيانات، والفصل الثاني يحتاج ثلاثة مراجع إضافية…') }}">{{ $failedFor === $milestone->id ? old('feedback') : '' }}</textarea>
                                             @if ($failedFor === $milestone->id && $errors->has('feedback'))
                                                 <div class="invalid-feedback d-block">{{ $errors->first('feedback') }}</div>
                                             @endif
-                                            <button type="submit" class="btn btn-warning btn-sm">إرسال طلب التعديل</button>
+                                            <button type="submit" class="btn btn-warning btn-sm">{{ __('إرسال طلب التعديل') }}</button>
                                         </form>
                                     </details>
                                 </div>
@@ -217,11 +216,11 @@
 
                             @if ($older->isNotEmpty())
                                 <details class="ms-history">
-                                    <summary>الجولات السابقة ({{ $older->count() }})</summary>
+                                    <summary>{{ __('الجولات السابقة (:n)', ['n' => $older->count()]) }}</summary>
                                     <ol>
                                         @foreach ($older as $sub)
                                             <li>
-                                                <span class="ms-round">الجولة {{ $sub->round }}</span>
+                                                <span class="ms-round">{{ __('الجولة :n', ['n' => $sub->round]) }}</span>
                                                 <span>
                                                     {{ $sub->student->name }} · {{ $sub->created_at->format('Y-m-d') }}
                                                     @if ($sub->hasFile())
@@ -244,21 +243,21 @@
                         <details class="ms-submit" @if ($failedFor === $milestone->id) open @endif>
                             <summary class="btn btn-sm {{ $milestone->needsRevision() ? 'btn-warning' : 'btn-outline-primary' }}">
                                 <i class="ti ti-upload me-1" aria-hidden="true"></i>
-                                {{ $milestone->needsRevision() ? 'إعادة التسليم بعد التعديل' : 'تسليم المرحلة' }}
+                                {{ $milestone->needsRevision() ? __('إعادة التسليم بعد التعديل') : __('تسليم المرحلة') }}
                             </summary>
                             <form action="{{ route('student.milestones.submit', $milestone->id) }}" method="POST"
                                 enctype="multipart/form-data" class="ms-form">
                                 @csrf
                                 <input type="hidden" name="milestone_ref" value="{{ $milestone->id }}">
-                                <label class="form-label" for="note-{{ $milestone->id }}">ملاحظة للمشرف</label>
+                                <label class="form-label" for="note-{{ $milestone->id }}">{{ __('ملاحظة للمشرف') }}</label>
                                 <textarea id="note-{{ $milestone->id }}" name="note" rows="2" maxlength="2000"
                                     class="form-control {{ $failedFor === $milestone->id && $errors->has('note') ? 'is-invalid' : '' }}"
-                                    placeholder="{{ $milestone->needsRevision() ? 'ما الذي عدّلتموه؟' : 'ما الذي أنجزتموه في هذه المرحلة؟' }}">{{ $failedFor === $milestone->id ? old('note') : '' }}</textarea>
+                                    placeholder="{{ $milestone->needsRevision() ? __('ما الذي عدّلتموه؟') : __('ما الذي أنجزتموه في هذه المرحلة؟') }}">{{ $failedFor === $milestone->id ? old('note') : '' }}</textarea>
                                 <label class="ms-file">
                                     <i class="ti ti-paperclip" aria-hidden="true"></i>
-                                    <span>إرفاق ملف (اختياري — حتى 10MB)</span>
+                                    <span>{{ __('إرفاق ملف (اختياري — حتى 10MB)') }}</span>
                                     <input type="file" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar,.png,.jpg,.jpeg"
-                                        onchange="this.previousElementSibling.textContent = this.files[0] ? this.files[0].name : 'إرفاق ملف (اختياري — حتى 10MB)'">
+                                        onchange="this.previousElementSibling.textContent = this.files[0] ? this.files[0].name : {{ Js::from(__('إرفاق ملف (اختياري — حتى 10MB)')) }}">
                                 </label>
                                 @if ($failedFor === $milestone->id)
                                     @foreach (['note', 'file'] as $field)
@@ -267,9 +266,9 @@
                                         @endif
                                     @endforeach
                                 @endif
-                                <button type="submit" class="btn btn-primary btn-sm" data-loading-text="جارٍ التسليم…">
+                                <button type="submit" class="btn btn-primary btn-sm" data-loading-text="{{ __('جارٍ التسليم…') }}">
                                     <i class="ti ti-send me-1" aria-hidden="true"></i>
-                                    تسليم
+                                    {{ __('تسليم') }}
                                 </button>
                             </form>
                         </details>
@@ -281,25 +280,26 @@
                 @if ($milestone->isSubmitted())
                     @php $waiting = $latest ? (int) $latest->created_at->startOfDay()->diffInDays(today()) : 0; @endphp
                     <span class="ms-flag is-review">
-                        {{ $editable ? 'بانتظار مراجعتك' : ($isAdmin ? 'بانتظار المشرف' : 'بانتظار المراجعة') }}
+                        {{ $editable ? __('بانتظار مراجعتك') : ($isAdmin ? __('بانتظار المشرف') : __('بانتظار المراجعة')) }}
                         @if ($isAdmin && $waiting > 0)
-                            · {{ $waiting }} {{ $waiting === 1 ? 'يوم' : ($waiting === 2 ? 'يومان' : 'أيام') }}
+                            · {{ $waiting === 1 ? __(':n يوم', ['n' => $waiting]) : ($waiting === 2 ? __(':n يومان', ['n' => $waiting]) : __(':n أيام', ['n' => $waiting])) }}
                         @endif
                     </span>
                 @elseif ($milestone->needsRevision())
-                    <span class="ms-flag is-revision">مطلوب تعديل</span>
+                    <span class="ms-flag is-revision">{{ __('مطلوب تعديل') }}</span>
                 @elseif ($overdue)
-                    <span class="ms-flag">متأخّرة</span>
+                    <span class="ms-flag">{{ __('متأخّرة') }}</span>
                 @endif
 
                 @if ($editable)
                     <span class="ms-actions">
                         <form action="{{ route('supervisor.milestones.destroy', ['milestone' => $milestone->id]) }}"
-                            method="POST" onsubmit="return confirm({{ Js::from('حذف «' . $milestone->title . '»؟' . ($milestone->submissions->isNotEmpty() ? ' تُحذف معها تسليماتها.' : '')) }})">
+                            method="POST" onsubmit="return confirm({{ Js::from(__('حذف «:title»؟', ['title' => $milestone->title]) . ($milestone->submissions->isNotEmpty() ? ' ' . __('تُحذف معها تسليماتها.') : '')) }})">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-action btn-action--danger" title="حذف"
-                                aria-label="حذف {{ $milestone->title }}">
+                            <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}"
+                                aria-label="{{ __('حذف :title', ['title' => $milestone->title]) }}">
+
                                 <i class="ti ti-trash" aria-hidden="true"></i>
                             </button>
                         </form>

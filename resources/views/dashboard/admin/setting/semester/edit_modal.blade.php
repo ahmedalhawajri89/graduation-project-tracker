@@ -2,8 +2,8 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editLabel">تعديل بيانات الفصل الدراسي</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                <h5 class="modal-title" id="editLabel">{{ __('تعديل بيانات الفصل الدراسي') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('إغلاق') }}"></button>
             </div>
 
             <form action="{{ route('admin.semesters.update', 'test') }}" method="POST">
@@ -13,9 +13,9 @@
                 <div class="modal-body">
 
                     <div class="mb-3">
-                        <label for="name" class="form-label required">الفصل الدراسي</label>
+                        <label for="name" class="form-label required">{{ __('الفصل الدراسي') }}</label>
                         <input id="name" type="text" class="form-control @error('name') is-invalid @enderror"
-                            name="name" value="{{ old('name') }}" placeholder="الفصل الدراسي" required
+                            name="name" value="{{ old('name') }}" placeholder="{{ __('الفصل الدراسي') }}" required
                             autocomplete="off" autofocus>
                         @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -24,10 +24,10 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="button" class="btn" data-bs-dismiss="modal">{{ __('إغلاق') }}</button>
                     <button type="submit" class="btn btn-primary" name="submit" value="update">
                         <i class="ti ti-device-floppy me-1"></i>
-                        حفظ
+                        {{ __('حفظ') }}
                     </button>
                 </div>
             </form>

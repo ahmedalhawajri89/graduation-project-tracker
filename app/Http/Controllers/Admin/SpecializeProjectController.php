@@ -24,7 +24,7 @@ class SpecializeProjectController extends Controller
     {
         $specialize = Specialize::where('id', $specialize_id)->first();
         if (!$specialize) {
-            return redirect()->route('admin.specialize.index')->with('fail', 'لا توجد بيانات!!!');
+            return redirect()->route('admin.specialize.index')->with('fail', __('لا توجد بيانات!!!'));
         }
 
         $semesterId = Semester::current()->id;
@@ -71,13 +71,13 @@ class SpecializeProjectController extends Controller
             // dd($request->all());
 
             SpecializeProject::create($request->only(['name', 'specialize_id', 'min', 'max']));
-            return redirect()->route("admin.specialize.projects.index", $request->specialize_id)->with('success', "تم اضافة السجل بنجاح");
+            return redirect()->route("admin.specialize.projects.index", $request->specialize_id)->with('success', __('تم اضافة السجل بنجاح'));
 
         } catch (\Exception$ex) {
 
             \Illuminate\Support\Facades\Log::error('فشل إضافة نوع مشروع', ['exception' => $ex]);
 
-            return back()->with('fail', 'تعذّرت إضافة النوع. تأكّد أن الاسم غير مستعمل في هذا التخصص.');
+            return back()->with('fail', __('تعذّرت إضافة النوع. تأكّد أن الاسم غير مستعمل في هذا التخصص.'));
         }
 
     }
@@ -87,16 +87,16 @@ class SpecializeProjectController extends Controller
         try {
             $specialize = SpecializeProject::where('id', $request->id)->first();
             if (!$specialize) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             // بلا \u200Especialize_id\u200E: نقل نوعٍ مستعمَل إلى تخصص آخر يكسر حدود فرقه القائمة
             $specialize->update($request->only(['name', 'min', 'max']));
-            return redirect()->back()->with('success', "تم تعديل السجل بنجاح");
+            return redirect()->back()->with('success', __('تم تعديل السجل بنجاح'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 
@@ -107,7 +107,7 @@ class SpecializeProjectController extends Controller
         try {
             $specialize = SpecializeProject::where('id', request()->id)->first();
             if (!$specialize) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             // حماية: \u200Eprojects.specialize_project_id\u200E مفتاح \u200EnullOnDelete\u200E،
@@ -117,15 +117,15 @@ class SpecializeProjectController extends Controller
             $inUse = $specialize->projects()->count();
             if ($inUse > 0) {
                 return redirect()->back()->with('fail',
-                    "لا يمكن حذف «{$specialize->name}» — يستعمله {$inUse} مشروعاً. المشاريع القائمة ستفقد نوعها وحدود فريقها.");
+                    __('لا يمكن حذف «:name» — يستعمله :n مشروعاً. المشاريع القائمة ستفقد نوعها وحدود فريقها.', ['name' => $specialize->name, 'n' => $inUse]));
             }
 
             $specialize->delete();
-            return redirect()->back()->with('success', "تم حذف السجل بنجاح");
+            return redirect()->back()->with('success', __('تم حذف السجل بنجاح'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 

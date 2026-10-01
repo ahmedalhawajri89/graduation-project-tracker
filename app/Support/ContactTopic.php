@@ -84,9 +84,15 @@ class ContactTopic
         return 'other';
     }
 
+    /**
+     * الموضوع كما يُعرض: اسمه بلغة الواجهة. الردّ الجاهز يبقى عربياً —
+     * يُرسَل إلى صاحب الرسالة لا إلى من يقرأ اللوحة.
+     */
     public static function meta(string $key): array
     {
-        return self::TOPICS[$key] ?? self::OTHER;
+        $topic = self::TOPICS[$key] ?? self::OTHER;
+
+        return ['label' => __($topic['label'])] + $topic;
     }
 
     /** عدد الرسائل لكل موضوع — مرّ واحد على الرسائل، فهي قليلة بطبيعتها */

@@ -20,10 +20,10 @@ class DefenseIcs
         $utc = fn ($t) => $t->copy()->utc()->format('Ymd\THis\Z');
 
         $description = collect([
-            'مناقشة مشروع التخرج: ' . $d->project->title,
-            'الفريق: ' . $d->project->group->map(fn ($g) => $g->student?->name)->filter()->implode('، '),
-            'اللجنة: ' . $d->members->map(fn ($m) => $m->supervisor->name . ' (' . $m->role_label . ')')->implode('، '),
-            $d->needsLink() && $d->meeting_url ? 'رابط الاجتماع: ' . $d->meeting_url : null,
+            __('مناقشة مشروع التخرج: :title', ['title' => $d->project->title]),
+            __('الفريق: :names', ['names' => $d->project->group->map(fn ($g) => $g->student?->name)->filter()->implode(__('، '))]),
+            __('اللجنة: :names', ['names' => $d->members->map(fn ($m) => $m->supervisor->name . ' (' . $m->role_label . ')')->implode(__('، '))]),
+            $d->needsLink() && $d->meeting_url ? __('رابط الاجتماع: :url', ['url' => $d->meeting_url]) : null,
             $d->notes,
         ])->filter()->implode("\n");
 
@@ -44,7 +44,7 @@ class DefenseIcs
             'DTSTAMP:' . $utc(now()),
             'DTSTART:' . $utc($d->starts_at),
             'DTEND:' . $utc($d->endsAt()),
-            'SUMMARY:' . self::escape('مناقشة: ' . $d->project->title),
+            'SUMMARY:' . self::escape(__('مناقشة: :title', ['title' => $d->project->title])),
             'DESCRIPTION:' . self::escape($description),
             'LOCATION:' . self::escape($location),
             $d->needsLink() && $d->meeting_url ? 'URL:' . $d->meeting_url : null,
@@ -53,7 +53,7 @@ class DefenseIcs
             $cancelled ? null : 'BEGIN:VALARM',
             $cancelled ? null : 'TRIGGER:-PT1H',
             $cancelled ? null : 'ACTION:DISPLAY',
-            $cancelled ? null : 'DESCRIPTION:' . self::escape('المناقشة بعد ساعة'),
+            $cancelled ? null : 'DESCRIPTION:' . self::escape(__('المناقشة بعد ساعة')),
             $cancelled ? null : 'END:VALARM',
             'END:VEVENT',
             'END:VCALENDAR',

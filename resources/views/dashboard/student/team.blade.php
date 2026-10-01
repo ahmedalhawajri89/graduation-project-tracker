@@ -1,9 +1,9 @@
 @extends('layouts.admin.admin')
-@section('title', 'الفريق والأدوار')
+@section('title', __('الفريق والأدوار'))
 
 @section('crumbs')
-    <x-crumb :href="route('student.dashboard')">لوحتي</x-crumb>
-    <x-crumb>الفريق والأدوار</x-crumb>
+    <x-crumb :href="route('student.dashboard')">{{ __('لوحتي') }}</x-crumb>
+    <x-crumb>{{ __('الفريق والأدوار') }}</x-crumb>
 @endsection
 
 {{--
@@ -46,6 +46,9 @@
                 $roles->push(['key' => $key] + $def);
             }
         }
+        // تسميات الأدوار الجاهزة بلغة العرض — الحرّ نصّ كتبه القائد كما هو
+        $roles = $roles->map(fn ($r) => str_starts_with($r['key'], 'custom:') ? $r : ['label' => __($r['label'])] + $r)->values();
+        $loadLabel = fn ($n) => $n === 0 ? __('بلا دور') : ($n === 1 ? __('دور واحد') : ($n === 2 ? __('دوران') : __(':n أدوار', ['n' => $n])));
 
         $holders = fn ($key) => $members->filter(fn ($m) => in_array($key, $assign[$m->id], true))->values();
         $loads = collect($assign)->map(fn ($keys) => count($keys));
@@ -53,21 +56,21 @@
         $empty = $loads->filter(fn ($n) => $n === 0)->count();
 
         $balance = match (true) {
-            $loads->sum() === 0 => ['is-idle', 'ti-circle-dashed', 'لم يبدأ التوزيع'],
-            $empty > 0 => ['is-warn', 'ti-user-question', $empty === 1 ? 'عضو بلا دور' : $empty . ' أعضاء بلا دور'],
-            $loads->max() - $loads->min() > 1 => ['is-warn', 'ti-scale', 'الحمل غير متوازن'],
-            default => ['is-ok', 'ti-scale', 'الحمل متوازن'],
+            $loads->sum() === 0 => ['is-idle', 'ti-circle-dashed', __('لم يبدأ التوزيع')],
+            $empty > 0 => ['is-warn', 'ti-user-question', $empty === 1 ? __('عضو بلا دور') : __(':n أعضاء بلا دور', ['n' => $empty])],
+            $loads->max() - $loads->min() > 1 => ['is-warn', 'ti-scale', __('الحمل غير متوازن')],
+            default => ['is-ok', 'ti-scale', __('الحمل متوازن')],
         };
 
         $hasErrors = $errors->has('members') || collect($errors->keys())->contains(fn ($k) => str_starts_with($k, 'members.'));
     @endphp
 
-    <x-page-header title="الفريق والأدوار" subtitle="{{ $project->title }}" />
+    <x-page-header :title="__('الفريق والأدوار')" subtitle="{{ $project->title }}" />
 
     @if ($project->is_locked)
-        <p class="hint-bar mb-3"><i class="ti ti-lock" aria-hidden="true"></i><span>المشروع مؤرشف بعد التقييم — التوزيع سجلّ لا يُعدَّل.</span></p>
+        <p class="hint-bar mb-3"><i class="ti ti-lock" aria-hidden="true"></i><span>{{ __('المشروع مؤرشف بعد التقييم — التوزيع سجلّ لا يُعدَّل.') }}</span></p>
     @elseif (! $isLeader)
-        <p class="hint-bar mb-3"><i class="ti ti-info-circle" aria-hidden="true"></i><span>القائد يوزّع الأدوار. لتغيير دورك، كلّمه أو اكتب في <a href="{{ route('student.discussion') }}">النقاش</a>.</span></p>
+        <p class="hint-bar mb-3"><i class="ti ti-info-circle" aria-hidden="true"></i><span>{{ __('القائد يوزّع الأدوار. لتغيير دورك، كلّمه أو اكتب في') }} <a href="{{ route('student.discussion') }}">{{ __('النقاش') }}</a>.</span></p>
     @endif
 
     @if ($hasErrors)
@@ -86,8 +89,8 @@
         <section class="roles-summary-bar">
             <div class="roles-cover">
                 <span class="roles-cover-label">
-                    التغطية
-                    <b data-cover-text>{{ $covered }} من {{ $roles->count() }} أدوار</b>
+                    {{ __('التغطية') }}
+                    <b data-cover-text>{{ __(':covered من :total أدوار', ['covered' => $covered, 'total' => $roles->count()]) }}</b>
                 </span>
                 <span class="roles-cover-track" aria-hidden="true">
                     <span data-cover-fill style="width: {{ $roles->count() ? round($covered * 100 / $roles->count()) : 0 }}%"></span>
@@ -100,13 +103,13 @@
             @if ($canAssign)
                 <button type="button" class="btn btn-outline-primary roles-suggest" data-suggest>
                     <i class="ti ti-sparkles me-1" aria-hidden="true"></i>
-                    اقترح توزيعاً
+                    {{ __('اقترح توزيعاً') }}
                 </button>
             @endif
         </section>
 
         {{-- ===== لوحة الأدوار ===== --}}
-        <section class="role-board" data-board aria-label="الأدوار">
+        <section class="role-board" data-board aria-label="{{ __('الأدوار') }}">
             @foreach ($roles as $role)
                 @php $held = $holders($role['key']); @endphp
                 <article class="role-card {{ $held->isEmpty() ? 'is-vacant' : '' }} {{ $held->contains(fn ($m) => (int) $m->student_id === $meId) ? 'is-mine' : '' }}"
@@ -116,11 +119,11 @@
                         <span class="role-card-title">
                             <b>{{ $role['label'] }}</b>
                             <small data-role-status>
-                                {{ $held->isEmpty() ? 'بلا مسؤول' : ($held->count() === 1 ? 'مسؤول واحد' : $held->count() . ' مسؤولين') }}
+                                {{ $held->isEmpty() ? __('بلا مسؤول') : ($held->count() === 1 ? __('مسؤول واحد') : __(':n مسؤولين', ['n' => $held->count()])) }}
                             </small>
                         </span>
                         @if (str_starts_with($role['key'], 'custom:'))
-                            <span class="role-card-kind">دور حرّ</span>
+                            <span class="role-card-kind">{{ __('دور حرّ') }}</span>
                         @endif
                     </header>
 
@@ -135,9 +138,9 @@
 
                     @if ($canAssign)
                         <button type="button" class="role-assign-btn" data-assign="{{ $role['key'] }}"
-                            aria-haspopup="menu" aria-label="إسناد «{{ $role['label'] }}»">
+                            aria-haspopup="menu" aria-label="{{ __('إسناد «:role»', ['role' => $role['label']]) }}">
                             <i class="ti ti-user-plus" aria-hidden="true"></i>
-                            إسناد
+                            {{ __('إسناد') }}
                         </button>
                     @endif
                 </article>
@@ -146,31 +149,31 @@
             @if ($canAssign)
                 {{-- دور خارج المقترحات: حقل بزرّه، واقتراحات بنقرة --}}
                 @php
-                    $ideas = collect(['الأمن والصلاحيات', 'النشر والاستضافة', 'إدارة المخاطر', 'تجربة المستخدم'])
+                    $ideas = collect([__('الأمن والصلاحيات'), __('النشر والاستضافة'), __('إدارة المخاطر'), __('تجربة المستخدم')])
                         ->reject(fn ($label) => $roles->contains('label', $label))->take(3);
                 @endphp
                 <article class="role-card is-add">
                     <header class="role-card-head">
                         <span class="role-card-icon" aria-hidden="true"><i class="ti ti-circle-plus"></i></span>
                         <span class="role-card-title">
-                            <b>دور جديد</b>
-                            <small>خارج المقترحات — يُحفظ حين تسنده لعضو</small>
+                            <b>{{ __('دور جديد') }}</b>
+                            <small>{{ __('خارج المقترحات — يُحفظ حين تسنده لعضو') }}</small>
                         </span>
                     </header>
 
                     <div class="role-add-box">
                         <i class="ti ti-tag" aria-hidden="true"></i>
                         <input type="text" maxlength="30" data-new-role
-                            placeholder="اسم الدور…" aria-label="اسم الدور الجديد">
-                        <button type="button" class="role-add-submit" data-new-role-add disabled aria-label="إضافة الدور">
+                            placeholder="{{ __('اسم الدور…') }}" aria-label="{{ __('اسم الدور الجديد') }}">
+                        <button type="button" class="role-add-submit" data-new-role-add disabled aria-label="{{ __('إضافة الدور') }}">
                             <i class="ti ti-plus" aria-hidden="true"></i>
-                            <span>إضافة</span>
+                            <span>{{ __('إضافة') }}</span>
                         </button>
                     </div>
 
                     @if ($ideas->isNotEmpty())
                         <div class="role-add-ideas">
-                            <small>اقتراحات:</small>
+                            <small>{{ __('اقتراحات:') }}</small>
                             @foreach ($ideas as $idea)
                                 <button type="button" class="role-idea" data-role-idea="{{ $idea }}">{{ $idea }}</button>
                             @endforeach
@@ -184,8 +187,8 @@
         <section class="roster" aria-labelledby="roster-title">
             <h2 id="roster-title" class="roster-title">
                 <i class="ti ti-users" aria-hidden="true"></i>
-                الأعضاء
-                <span>الحمل والمسؤولية</span>
+                {{ __('الأعضاء') }}
+                <span>{{ __('الحمل والمسؤولية') }}</span>
             </h2>
 
             @foreach ($members as $m)
@@ -200,20 +203,20 @@
                     <div class="roster-who">
                         <b>{{ $m->student?->name }}</b>
                         @if ($m->type === 'leader')
-                            <span class="ctx-tag">قائد</span>
+                            <span class="ctx-tag">{{ __('قائد') }}</span>
                         @endif
                         @if ($isMe)
-                            <span class="cell-you">أنت</span>
+                            <span class="cell-you">{{ __('أنت') }}</span>
                         @endif
                     </div>
 
-                    <div class="roster-load" data-load title="{{ $load }} من {{ $max }}">
+                    <div class="roster-load" data-load title="{{ __(':load من :max', ['load' => $load, 'max' => $max]) }}">
                         <span class="load-dots" aria-hidden="true">
                             @for ($i = 1; $i <= $max; $i++)
                                 <i class="{{ $i <= $load ? 'is-on' : '' }}"></i>
                             @endfor
                         </span>
-                        <small data-load-text>{{ $load === 0 ? 'بلا دور' : ($load === 1 ? 'دور واحد' : ($load === 2 ? 'دوران' : $load . ' أدوار')) }}</small>
+                        <small data-load-text>{{ $loadLabel($load) }}</small>
                     </div>
 
                     <div class="roster-roles" data-chips>
@@ -227,11 +230,11 @@
 
                     <div class="roster-resp">
                         @if ($canAssign)
-                            <span class="roster-resp-view {{ $resp ? '' : 'is-placeholder' }}" data-resp-view>{{ $resp ?: 'أضف سطراً يصف مسؤوليته…' }}</span>
+                            <span class="roster-resp-view {{ $resp ? '' : 'is-placeholder' }}" data-resp-view>{{ $resp ?: __('أضف سطراً يصف مسؤوليته…') }}</span>
                             <input type="text" name="members[{{ $m->id }}][responsibility]" maxlength="160" value="{{ $resp }}"
                                 class="form-control form-control-sm roster-resp-input" data-resp hidden
-                                aria-label="مسؤولية {{ $m->student?->name }}" placeholder="مثال: واجهات الطالب والمشرف">
-                            <button type="button" class="btn-action" data-resp-edit aria-label="تعديل مسؤولية {{ $m->student?->name }}">
+                                aria-label="{{ __('مسؤولية :name', ['name' => $m->student?->name]) }}" placeholder="{{ __('مثال: واجهات الطالب والمشرف') }}">
+                            <button type="button" class="btn-action" data-resp-edit aria-label="{{ __('تعديل مسؤولية :name', ['name' => $m->student?->name]) }}">
                                 <i class="ti ti-pencil" aria-hidden="true"></i>
                             </button>
                         @elseif ($resp)
@@ -247,12 +250,12 @@
             <div class="roles-savebar" data-savebar>
                 <span class="roles-savebar-text">
                     <i class="ti ti-point-filled" aria-hidden="true"></i>
-                    تغييرات غير محفوظة
+                    {{ __('تغييرات غير محفوظة') }}
                 </span>
-                <button type="button" class="btn btn-outline-secondary" data-reset>تراجع</button>
-                <button type="submit" class="btn btn-primary" data-loading-text="جارٍ الحفظ…">
+                <button type="button" class="btn btn-outline-secondary" data-reset>{{ __('تراجع') }}</button>
+                <button type="submit" class="btn btn-primary" data-loading-text="{{ __('جارٍ الحفظ…') }}">
                     <i class="ti ti-check me-1" aria-hidden="true"></i>
-                    حفظ التوزيع
+                    {{ __('حفظ التوزيع') }}
                 </button>
             </div>
         </form>
@@ -261,7 +264,7 @@
         <div class="assign-menu" data-menu role="menu" hidden>
             <div class="assign-menu-head">
                 <b data-menu-title></b>
-                <button type="button" class="btn-close" data-menu-close aria-label="إغلاق"></button>
+                <button type="button" class="btn-close" data-menu-close aria-label="{{ __('إغلاق') }}"></button>
             </div>
             <div class="assign-menu-list">
                 @foreach ($members as $m)
@@ -301,6 +304,27 @@
                 var initial = @json($assign);
                 var state = JSON.parse(JSON.stringify(initial));
                 var suggested = {};
+                var T = {
+                    load0: @json(__('بلا دور')),
+                    load1: @json(__('دور واحد')),
+                    load2: @json(__('دوران')),
+                    loadN: @json(__(':n أدوار')),
+                    none: @json(__('بلا مسؤول')),
+                    one: @json(__('مسؤول واحد')),
+                    many: @json(__(':n مسؤولين')),
+                    cover: @json(__(':covered من :total أدوار')),
+                    idle: @json(__('لم يبدأ التوزيع')),
+                    empty1: @json(__('عضو بلا دور')),
+                    emptyN: @json(__(':n أعضاء بلا دور')),
+                    unbalanced: @json(__('الحمل غير متوازن')),
+                    balanced: @json(__('الحمل متوازن')),
+                    assignTo: @json(__('إسناد «:role»')),
+                    assign: @json(__('إسناد')),
+                    full: @json(__('بلغ الحدّ (:max)')),
+                    custom: @json(__('دور حرّ')),
+                    respPh: @json(__('أضف سطراً يصف مسؤوليته…')),
+                };
+                function fmt(s, o) { return s.replace(/:(\w+)/g, function (m, k) { return k in o ? o[k] : m; }); }
 
                 var board = form.querySelector('[data-board]');
                 var menu = document.querySelector('[data-menu]');
@@ -310,7 +334,7 @@
                 function roleOf(key) { return roles.find(function (r) { return r.key === key; }); }
                 function load(id) { return (state[id] || []).length; }
                 function holders(key) { return members.filter(function (m) { return state[m.id].indexOf(key) !== -1; }); }
-                function loadText(n) { return n === 0 ? 'بلا دور' : n === 1 ? 'دور واحد' : n === 2 ? 'دوران' : n + ' أدوار'; }
+                function loadText(n) { return n === 0 ? T.load0 : n === 1 ? T.load1 : n === 2 ? T.load2 : fmt(T.loadN, { n: n }); }
                 function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
                 function avatar(id) { return document.querySelector('template[data-avatar="' + id + '"]').innerHTML; }
                 function dirty() { return JSON.stringify(state) !== JSON.stringify(initial) || respDirty(); }
@@ -325,7 +349,7 @@
                         card.classList.toggle('is-vacant', list.length === 0);
                         card.classList.toggle('is-mine', list.some(function (m) { return m.me; }));
                         card.querySelector('[data-role-status]').textContent =
-                            list.length === 0 ? 'بلا مسؤول' : list.length === 1 ? 'مسؤول واحد' : list.length + ' مسؤولين';
+                            list.length === 0 ? T.none : list.length === 1 ? T.one : fmt(T.many, { n: list.length });
                         card.querySelector('[data-holders]').innerHTML = list.map(function (m) {
                             return '<li class="role-holder' + (m.me ? ' is-me' : '') + (suggested[m.id + '|' + key] ? ' is-suggested' : '') + '">' +
                                 avatar(m.id) + '<span>' + esc(m.first) + '</span></li>';
@@ -345,16 +369,16 @@
 
                     // الملخّص
                     var covered = roles.filter(function (r) { return holders(r.key).length; }).length;
-                    form.querySelector('[data-cover-text]').textContent = covered + ' من ' + roles.length + ' أدوار';
+                    form.querySelector('[data-cover-text]').textContent = fmt(T.cover, { covered: covered, total: roles.length });
                     form.querySelector('[data-cover-fill]').style.width = (roles.length ? Math.round(covered * 100 / roles.length) : 0) + '%';
 
                     var loads = members.map(function (m) { return load(m.id); });
                     var empty = loads.filter(function (n) { return n === 0; }).length;
                     var total = loads.reduce(function (a, b) { return a + b; }, 0);
-                    var b = total === 0 ? ['is-idle', 'ti-circle-dashed', 'لم يبدأ التوزيع']
-                        : empty ? ['is-warn', 'ti-user-question', empty === 1 ? 'عضو بلا دور' : empty + ' أعضاء بلا دور']
-                        : Math.max.apply(null, loads) - Math.min.apply(null, loads) > 1 ? ['is-warn', 'ti-scale', 'الحمل غير متوازن']
-                        : ['is-ok', 'ti-scale', 'الحمل متوازن'];
+                    var b = total === 0 ? ['is-idle', 'ti-circle-dashed', T.idle]
+                        : empty ? ['is-warn', 'ti-user-question', empty === 1 ? T.empty1 : fmt(T.emptyN, { n: empty })]
+                        : Math.max.apply(null, loads) - Math.min.apply(null, loads) > 1 ? ['is-warn', 'ti-scale', T.unbalanced]
+                        : ['is-ok', 'ti-scale', T.balanced];
                     var bal = form.querySelector('[data-balance]');
                     bal.className = 'roles-balance ' + b[0];
                     bal.innerHTML = '<i class="ti ' + b[1] + '" aria-hidden="true"></i><span>' + b[2] + '</span>';
@@ -365,13 +389,13 @@
 
                 // ===== قائمة الإسناد =====
                 function renderMenu() {
-                    menu.querySelector('[data-menu-title]').textContent = 'إسناد «' + roleOf(openRole).label + '»';
+                    menu.querySelector('[data-menu-title]').textContent = fmt(T.assignTo, { role: roleOf(openRole).label });
                     menu.querySelectorAll('[data-option]').forEach(function (opt) {
                         var id = opt.dataset.option, on = state[id].indexOf(openRole) !== -1, n = load(id);
                         opt.setAttribute('aria-checked', on ? 'true' : 'false');
                         opt.classList.toggle('is-on', on);
                         opt.disabled = !on && n >= MAX;
-                        opt.querySelector('[data-option-load]').textContent = n >= MAX && !on ? 'بلغ الحدّ (' + MAX + ')' : loadText(n);
+                        opt.querySelector('[data-option-load]').textContent = n >= MAX && !on ? fmt(T.full, { max: MAX }) : loadText(n);
                     });
                 }
 
@@ -427,9 +451,9 @@
                     card.dataset.role = key;
                     card.style.setProperty('--h', 220);
                     card.innerHTML = '<header class="role-card-head"><span class="role-card-icon" aria-hidden="true"><i class="ti ti-tag"></i></span>' +
-                        '<span class="role-card-title"><b>' + esc(label) + '</b><small data-role-status>بلا مسؤول</small></span>' +
-                        '<span class="role-card-kind">دور حرّ</span></header><ul class="role-holders" data-holders></ul>' +
-                        '<button type="button" class="role-assign-btn" data-assign="' + esc(key) + '" aria-haspopup="menu"><i class="ti ti-user-plus" aria-hidden="true"></i> إسناد</button>';
+                        '<span class="role-card-title"><b>' + esc(label) + '</b><small data-role-status>' + esc(T.none) + '</small></span>' +
+                        '<span class="role-card-kind">' + esc(T.custom) + '</span></header><ul class="role-holders" data-holders></ul>' +
+                        '<button type="button" class="role-assign-btn" data-assign="' + esc(key) + '" aria-haspopup="menu"><i class="ti ti-user-plus" aria-hidden="true"></i> ' + esc(T.assign) + '</button>';
                     board.insertBefore(card, board.querySelector('.role-card.is-add'));
                     newInput.value = '';
                     addBtn.disabled = true;
@@ -478,7 +502,7 @@
                     function done() {
                         input.hidden = true;
                         view.hidden = false;
-                        view.textContent = input.value.trim() || 'أضف سطراً يصف مسؤوليته…';
+                        view.textContent = input.value.trim() || T.respPh;
                         view.classList.toggle('is-placeholder', !input.value.trim());
                         render();
                     }
@@ -500,7 +524,7 @@
                     form.querySelectorAll('[data-resp]').forEach(function (i) {
                         i.value = i.defaultValue;
                         var v = i.closest('[data-member]').querySelector('[data-resp-view]');
-                        v.textContent = i.value || 'أضف سطراً يصف مسؤوليته…';
+                        v.textContent = i.value || T.respPh;
                         v.classList.toggle('is-placeholder', !i.value);
                     });
                     render();

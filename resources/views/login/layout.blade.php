@@ -6,17 +6,17 @@
     والخطوط ومسار المنصّة والعلامة والتذييل تنحرف بينها مع أول تعديل.
 --}}
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>@yield('title') — تخرُّج</title>
+    <title>@yield('title') — {{ __('تخرُّج') }}</title>
     <link rel="icon" href="{{ asset('assets/img/takharruj-logo.svg') }}">
     {{-- خطوط مستضافة محلياً بدل fonts.googleapis.com --}}
     <link rel="preload" href="{{ asset('assets/fonts/IBMPlexSansArabic-400-arabic.woff2') }}" as="font" type="font/woff2" crossorigin>
     <link href="{{ asset('assets/fonts/fonts.css') }}" rel="stylesheet">
-    <link href="{{ asset('vendor/tabler/css/tabler.rtl.min.css') }}" rel="stylesheet">
+    <link href="{{ asset(app()->getLocale() === 'ar' ? 'vendor/tabler/css/tabler.rtl.min.css' : 'vendor/tabler/css/tabler.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendor/tabler-icons/tabler-icons.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/dashboard.css') }}?v={{ filemtime(public_path('css/dashboard.css')) }}" rel="stylesheet">
 </head>
@@ -36,7 +36,7 @@
                         <circle cx="26" cy="16" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/>
                     </svg>
                 </span>
-                <span class="auth-brand-name">تخرُّج</span>
+                <span class="auth-brand-name">{{ __('تخرُّج') }}</span>
             </div>
 
             @yield('card')
@@ -50,16 +50,22 @@
                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M19 12H5M12 5l-7 7 7 7"/>
                         </svg>
-                        العودة إلى الموقع
+                        {{ __('العودة إلى الموقع') }}
                     </a>
                 @endif
             </div>
         </div>
 
-        <p class="auth-foot">© {{ date('Y') }} تخرُّج — جميع الحقوق محفوظة</p>
+        <p class="auth-foot">© {{ date('Y') }} {{ __('تخرُّج — جميع الحقوق محفوظة') }}</p>
     </main>
 
     <script>
+        var authText = {
+            show: @json(__('إظهار كلمة السر')),
+            hide: @json(__('إخفاء كلمة السر')),
+            busy: @json(__('جارٍ المعالجة…'))
+        };
+
         // إظهار/إخفاء كلمة السر
         document.querySelectorAll('.toggle-password').forEach(function (btn) {
             btn.addEventListener('click', function () {
@@ -70,7 +76,7 @@
                 input.type = show ? 'text' : 'password';
                 icon.classList.toggle('ti-eye', !show);
                 icon.classList.toggle('ti-eye-off', show);
-                btn.setAttribute('aria-label', show ? 'إخفاء كلمة السر' : 'إظهار كلمة السر');
+                btn.setAttribute('aria-label', show ? authText.hide : authText.show);
             });
         });
 
@@ -83,7 +89,7 @@
                 if (btn) {
                     btn.disabled = true;
                     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>'
-                        + (btn.dataset.loading || 'جارٍ المعالجة…');
+                        + (btn.dataset.loading || authText.busy);
                 }
             });
         }

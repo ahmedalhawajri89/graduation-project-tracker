@@ -8,17 +8,17 @@
 
 <div class="ed-field" data-ed-wrap="gender">
     <span class="form-label required" id="{{ $prefix }}-gender-label">
-        الجنس
-        <span class="ed-changed-dot" title="تغيّر" aria-hidden="true"></span>
+        {{ __('الجنس') }}
+        <span class="ed-changed-dot" title="{{ __('تغيّر') }}" aria-hidden="true"></span>
     </span>
     <div class="ed-segmented" role="radiogroup" aria-labelledby="{{ $prefix }}-gender-label">
         <label>
             <input type="radio" name="gender" value="male" required>
-            <span><i class="ti ti-gender-male" aria-hidden="true"></i> ذكر</span>
+            <span><i class="ti ti-gender-male" aria-hidden="true"></i> {{ __('ذكر') }}</span>
         </label>
         <label>
             <input type="radio" name="gender" value="female">
-            <span><i class="ti ti-gender-female" aria-hidden="true"></i> أنثى</span>
+            <span><i class="ti ti-gender-female" aria-hidden="true"></i> {{ __('أنثى') }}</span>
         </label>
     </div>
     @if ($mine && $errors->has('gender'))

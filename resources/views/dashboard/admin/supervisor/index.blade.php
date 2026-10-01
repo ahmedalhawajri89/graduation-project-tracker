@@ -1,8 +1,8 @@
 @extends('layouts.admin.admin')
-@section('title', 'بيانات المشرفين')
+@section('title', __('بيانات المشرفين'))
 
 @section('crumbs')
-    <x-crumb>بيانات المشرفين</x-crumb>
+    <x-crumb>{{ __('بيانات المشرفين') }}</x-crumb>
 @endsection
 
 @section('content')
@@ -20,34 +20,34 @@
     @if ($currentSpecializeName)
         <div class="scope-chip">
             <i class="ti ti-filter" aria-hidden="true"></i>
-            <span>مُصفّى حسب التخصص: <b>{{ $currentSpecializeName }}</b></span>
+            <span>{{ __('مُصفّى حسب التخصص:') }} <b>{{ $currentSpecializeName }}</b></span>
             <a href="{{ route('admin.supervisors.index', array_diff_key($filterQuery, ['specialize' => ''])) }}"
-                class="scope-chip-clear" title="إزالة تصفية التخصص" aria-label="إزالة تصفية التخصص">
+                class="scope-chip-clear" title="{{ __('إزالة تصفية التخصص') }}" aria-label="{{ __('إزالة تصفية التخصص') }}">
                 <i class="ti ti-x" aria-hidden="true"></i>
             </a>
         </div>
     @endif
 
-    <x-page-header title="بيانات المشرفين"
-        subtitle="{{ $countAll }} مشرفاً · {{ $countFree }} متاح · {{ $countOver }} تجاوز حدّه">
+    <x-page-header title="{{ __('بيانات المشرفين') }}"
+        subtitle="{{ __(':all مشرفاً · :free متاح · :over تجاوز حدّه', ['all' => $countAll, 'free' => $countFree, 'over' => $countOver]) }}">
         <x-slot:actions>
             {{-- فعل أساسي واحد بالحبر، وما عداه ثانوي بحدّ شعرة —
                  كان أزرق وأخضر يتنافسان --}}
             <button type="button" class="btn btn-primary btn-create" data-bs-toggle="offcanvas"
                 data-bs-target="#createDrawer">
                 <i class="ti ti-plus me-1" aria-hidden="true"></i>
-                إضافة مشرف
+                {{ __('إضافة مشرف') }}
             </button>
 
             <button type="button" class="btn btn-outline-primary btn-import" data-bs-toggle="modal"
                 data-bs-target="#importModal">
                 <i class="ti ti-upload me-1" aria-hidden="true"></i>
-                استيراد
+                {{ __('استيراد') }}
             </button>
 
             <a href="{{ route('admin.supervisors.export', $filterQuery) }}" class="btn btn-outline-primary">
                 <i class="ti ti-file-spreadsheet me-1" aria-hidden="true"></i>
-                تصدير
+                {{ __('تصدير') }}
             </a>
         </x-slot:actions>
     </x-page-header>
@@ -59,28 +59,28 @@
          «من يستطيع استقبال مجموعة أخرى؟». الحدّ \u200Emax_group\u200E كان مُخزَّناً
          ولا يُعرض، فالجواب كان يُستخرج يدوياً. --}}
     <div class="filter-bar mb-3">
-        <div class="filter-tabs" role="group" aria-label="تصفية حسب عبء الإشراف">
+        <div class="filter-tabs" role="group" aria-label="{{ __('تصفية حسب عبء الإشراف') }}">
             <a href="{{ route('admin.supervisors.index', array_diff_key($filterQuery, ['load' => ''])) }}"
                 class="filter-tab {{ is_null($currentLoad) ? 'is-active' : '' }}">
-                الكل
+                {{ __('الكل') }}
                 <span class="filter-count">{{ $countAll }}</span>
             </a>
             <a href="{{ route('admin.supervisors.index', array_merge($filterQuery, ['load' => 'free'])) }}"
                 class="filter-tab {{ $currentLoad === 'free' ? 'is-active' : '' }}">
                 <span class="filter-dot" style="background: #047857"></span>
-                متاح
+                {{ __('متاح') }}
                 <span class="filter-count">{{ $countFree }}</span>
             </a>
             <a href="{{ route('admin.supervisors.index', array_merge($filterQuery, ['load' => 'full'])) }}"
                 class="filter-tab {{ $currentLoad === 'full' ? 'is-active' : '' }}">
                 <span class="filter-dot" style="background: #b45309"></span>
-                مكتمل
+                {{ __('مكتمل') }}
                 <span class="filter-count">{{ $countFull }}</span>
             </a>
             <a href="{{ route('admin.supervisors.index', array_merge($filterQuery, ['load' => 'over'])) }}"
                 class="filter-tab {{ $currentLoad === 'over' ? 'is-active' : '' }}">
                 <span class="filter-dot" style="background: #be123c"></span>
-                تجاوز الحد
+                {{ __('تجاوز الحد') }}
                 <span class="filter-count">{{ $countOver }}</span>
             </a>
         </div>
@@ -95,7 +95,7 @@
                  يمنع Enter من الإرسال لأن البحث فوريّ. --}}
             <div class="filter-field filter-field--search">
                 {{-- المُعرِّف يضعه السكربت على الحقل بعد نقله --}}
-                <label class="form-label" for="dt-search-input">بحث</label>
+                <label class="form-label" for="dt-search-input">{{ __('بحث') }}</label>
                 <div class="filter-search-box">
                     <i class="ti ti-search filter-search-icon" aria-hidden="true"></i>
                     <div id="dt-search-slot"></div>
@@ -103,14 +103,14 @@
             </div>
 
             <div class="filter-field">
-                <label class="form-label" for="f-spec">التخصص</label>
+                <label class="form-label" for="f-spec">{{ __('التخصص') }}</label>
                 <select name="specialize" id="f-spec" class="form-select">
-                    <option value="">كل التخصصات</option>
+                    <option value="">{{ __('كل التخصصات') }}</option>
                     {{-- الموقوفة تبقى هنا: مشرفوها موجودون ولا بدّ من
                          الوصول إليهم --}}
                     @foreach ($filterSpecializes as $spec)
                         <option value="{{ $spec->id }}" @selected($currentSpecialize === $spec->id)>
-                            {{ $spec->name }}@if ($spec->isArchived()) (موقوف)@endif
+                            {{ $spec->name }}@if ($spec->isArchived()) ({{ __('موقوف') }})@endif
                         </option>
                     @endforeach
                 </select>
@@ -119,12 +119,12 @@
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
                     <i class="ti ti-filter me-1" aria-hidden="true"></i>
-                    تطبيق
+                    {{ __('تطبيق') }}
                 </button>
                 @if (count($filterQuery))
                     <a href="{{ route('admin.supervisors.index') }}" class="btn btn-ghost-secondary">
                         <i class="ti ti-x me-1" aria-hidden="true"></i>
-                        مسح
+                        {{ __('مسح') }}
                     </a>
                 @endif
             </div>
@@ -139,13 +139,13 @@
             <table class="table table-vcenter card-table" id="dataTable-1">
                 <thead>
                     <tr>
-                        <th>المشرف</th>
-                        <th>الرقم الجامعي</th>
-                        <th>التخصص</th>
-                        <th>رقم الجوال</th>
-                        <th class="w-1">عبء الإشراف</th>
-                        <th class="w-1" title="مراحل سلّمتها فرقه ولم يراجعها">بانتظار مراجعته</th>
-                        <th class="w-1">إجراءات</th>
+                        <th>{{ __('المشرف') }}</th>
+                        <th>{{ __('الرقم الجامعي') }}</th>
+                        <th>{{ __('التخصص') }}</th>
+                        <th>{{ __('رقم الجوال') }}</th>
+                        <th class="w-1">{{ __('عبء الإشراف') }}</th>
+                        <th class="w-1" title="{{ __('مراحل سلّمتها فرقه ولم يراجعها') }}">{{ __('بانتظار مراجعته') }}</th>
+                        <th class="w-1">{{ __('إجراءات') }}</th>
                     </tr>
                 </thead>
             </table>
@@ -156,7 +156,7 @@
     @include('dashboard.admin.supervisor.create_modal')
     @include('dashboard.admin.supervisor.edit_modal')
     @include('dashboard.component.delete_modal', [
-        'delete_title' => 'المشرف',
+        'delete_title' => __('المشرف'),
         'delete_controller_name' => 'admin.supervisors',
     ])
 
@@ -165,7 +165,7 @@
 
 @include('dashboard.component.datatables_style_script', [
     'urlData' => route('admin.supervisors.getData', $filterQuery),
-    'searchPlaceholder' => 'ابحث بالاسم أو الرقم الجامعي أو البريد…',
+    'searchPlaceholder' => __('ابحث بالاسم أو الرقم الجامعي أو البريد…'),
     // الفرز على ثلاثة أعمدة: الاسم والرقم الجامعي والعبء. لن يرتّب
     // أحد المشرفين حسب الجوال أو التخصص.
     'columnsData' => "[

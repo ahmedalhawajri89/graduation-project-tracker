@@ -26,17 +26,17 @@
         : null;
 
     $deadline = match (true) {
-        $defense && $defense->endsAt()->isPast() => ['is-done', 'ti-presentation', 'نوقش المشروع — بانتظار درجة اللجنة'],
+        $defense && $defense->endsAt()->isPast() => ['is-done', 'ti-presentation', __('نوقش المشروع — بانتظار درجة اللجنة')],
         (bool) $defense => [$defense->starts_at->isToday() ? 'is-warn' : '', 'ti-presentation',
-            'مناقشتك ' . ($defense->starts_at->isToday() ? 'اليوم' : ($defense->starts_at->isTomorrow() ? 'غداً' : $defense->starts_at->translatedFormat('l j F')))
+            __('مناقشتك :when', ['when' => $defense->starts_at->isToday() ? __('اليوم') : ($defense->starts_at->isTomorrow() ? __('غداً') : $defense->starts_at->translatedFormat('l j F'))])
             . ' · ' . $defense->starts_at->format('H:i') . ' · ' . $defense->place_label],
-        $project->status === 'complete' && is_null($project->grade) => ['is-done', 'ti-rosette-discount-check', 'اكتمل المشروع — بانتظار موعد المناقشة'],
-        $project->status === 'complete' => ['is-done', 'ti-rosette-discount-check', 'اكتمل المشروع'],
-        $project->status === 'request' => ['', 'ti-hourglass', 'بانتظار ردّ المشرف'],
-        is_null($daysLeft) => ['', 'ti-calendar', 'لا موعد نهائي بعد'],
-        $daysLeft < 0 => ['is-late', 'ti-alarm', 'تأخّر التسليم ' . abs($daysLeft) . ' يوماً'],
-        $daysLeft === 0 => ['is-warn', 'ti-alarm', 'التسليم النهائي اليوم'],
-        default => [$daysLeft <= 7 ? 'is-warn' : '', 'ti-calendar-due', 'التسليم النهائي بعد ' . $daysLeft . ' يوماً'],
+        $project->status === 'complete' && is_null($project->grade) => ['is-done', 'ti-rosette-discount-check', __('اكتمل المشروع — بانتظار موعد المناقشة')],
+        $project->status === 'complete' => ['is-done', 'ti-rosette-discount-check', __('اكتمل المشروع')],
+        $project->status === 'request' => ['', 'ti-hourglass', __('بانتظار ردّ المشرف')],
+        is_null($daysLeft) => ['', 'ti-calendar', __('لا موعد نهائي بعد')],
+        $daysLeft < 0 => ['is-late', 'ti-alarm', __('تأخّر التسليم :n يوماً', ['n' => abs($daysLeft)])],
+        $daysLeft === 0 => ['is-warn', 'ti-alarm', __('التسليم النهائي اليوم')],
+        default => [$daysLeft <= 7 ? 'is-warn' : '', 'ti-calendar-due', __('التسليم النهائي بعد :n يوماً', ['n' => $daysLeft])],
     };
 @endphp
 
@@ -44,7 +44,7 @@
     <div class="stu-hero-top">
         <div class="stu-hero-main">
             <p class="stu-hero-hello">
-                أهلاً، {{ $firstName }}
+                {{ __('أهلاً، :name', ['name' => $firstName]) }}
                 <span>· {{ $sem['term'] }}@if ($sem['year']) <span dir="ltr">{{ $sem['year'] }}</span>@endif</span>
             </p>
 
@@ -75,7 +75,7 @@
                             <span class="cell-avatar avatar-more" dir="ltr">+{{ $members->count() - 4 }}</span>
                         @endif
                     </span>
-                    {{ $members->count() }} {{ $members->count() === 1 ? 'عضو' : 'أعضاء' }}
+                    {{ $members->count() === 1 ? __(':n عضو', ['n' => 1]) : __(':n أعضاء', ['n' => $members->count()]) }}
                 </a>
             </div>
         </div>
@@ -83,23 +83,23 @@
         {{-- الإنجاز: حلقة بنسبته — وبلا مراحل كلمة تشرح لا «—» --}}
         <div class="stu-hero-progress">
             @if ($active && ! is_null($progress))
-                <span class="pct-ring is-xl" style="--p: {{ $progress }}" role="img" aria-label="الإنجاز {{ $progress }}%">
+                <span class="pct-ring is-xl" style="--p: {{ $progress }}" role="img" aria-label="{{ __('الإنجاز :p%', ['p' => $progress]) }}">
                     <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" /><circle cx="20" cy="20" r="17" pathLength="100" /></svg>
                     <b>{{ $progress }}%</b>
                 </span>
-                <small>{{ $project->milestones->where('is_done', true)->count() }} من {{ $project->milestones->count() }} مراحل</small>
+                <small>{{ __(':done من :total مراحل', ['done' => $project->milestones->where('is_done', true)->count(), 'total' => $project->milestones->count()]) }}</small>
             @elseif ($active)
                 <span class="hero-progress-empty" aria-hidden="true"><i class="ti ti-route"></i></span>
-                <small>بانتظار خطة المشرف</small>
+                <small>{{ __('بانتظار خطة المشرف') }}</small>
             @else
                 <span class="hero-progress-empty" aria-hidden="true"><i class="ti ti-hourglass"></i></span>
-                <small>قيد المراجعة</small>
+                <small>{{ __('قيد المراجعة') }}</small>
             @endif
         </div>
     </div>
 
     {{-- المسار مضغوطاً: كان لوحاً كاملاً بعرض الصفحة --}}
-    <ol class="hero-rail" aria-label="مسار المشروع">
+    <ol class="hero-rail" aria-label="{{ __('مسار المشروع') }}">
         @foreach ($steps as $i => $step)
             @php $n = $i + 1; @endphp
             <li class="{{ $n < $reached ? 'is-done' : ($n === $reached ? 'is-current' : '') }}"
@@ -127,11 +127,11 @@
             <span class="hero-defense-links">
                 @if ($defense->needsLink() && $defense->meeting_url)
                     <a href="{{ $defense->meeting_url }}" target="_blank" rel="noopener" class="btn btn-sm {{ $defense->isJoinable() ? 'btn-primary' : 'btn-outline-primary' }}">
-                        <i class="ti ti-video me-1" aria-hidden="true"></i>{{ $defense->isJoinable() ? 'انضم الآن' : 'رابط الاجتماع' }}
+                        <i class="ti ti-video me-1" aria-hidden="true"></i>{{ $defense->isJoinable() ? __('انضم الآن') : __('رابط الاجتماع') }}
                     </a>
                 @endif
                 <a href="{{ $defense->googleCalendarUrl() }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
-                    <i class="ti ti-calendar-plus me-1" aria-hidden="true"></i>تقويم Google
+                    <i class="ti ti-calendar-plus me-1" aria-hidden="true"></i>{{ __('تقويم Google') }}
                 </a>
             </span>
         @endif
@@ -139,7 +139,7 @@
         <div class="stu-hero-actions">
             <a href="{{ route('student.discussion') }}" class="btn btn-outline-secondary">
                 <i class="ti ti-messages me-1" aria-hidden="true"></i>
-                النقاش
+                {{ __('النقاش') }}
                 @if ($unreadMsgs)
                     <span class="sidebar-count ms-1">{{ $unreadMsgs }}</span>
                 @endif
@@ -147,7 +147,7 @@
             @if ($active && ! $project->is_locked)
                 <a href="#files" class="btn btn-primary">
                     <i class="ti ti-upload me-1" aria-hidden="true"></i>
-                    رفع ملف
+                    {{ __('رفع ملف') }}
                 </a>
             @endif
         </div>

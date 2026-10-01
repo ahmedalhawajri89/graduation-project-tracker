@@ -9,9 +9,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="archiveLabel">
-                    إيقاف التخصص (<span class="text-secondary" id="archive-name"></span>)
+                    {{ __('إيقاف التخصص') }} (<span class="text-secondary" id="archive-name"></span>)
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('إغلاق') }}"></button>
             </div>
 
             <form action="{{ route('admin.specialize.archive', 'placeholder') }}" method="POST" id="archive-form">
@@ -19,36 +19,34 @@
 
                 <div class="modal-body">
                     <p class="text-secondary mb-3">
-                        لا يمكن حذف تخصص عليه أشخاص: حذفه يترك طلابه ومشرفيه بلا تصنيف
-                        ويمحو أنواع مشاريعه نهائياً. الإيقاف يوقف التسجيل عليه ويُبقي كل شيء.
+                        {{ __('لا يمكن حذف تخصص عليه أشخاص: حذفه يترك طلابه ومشرفيه بلا تصنيف ويمحو أنواع مشاريعه نهائياً. الإيقاف يوقف التسجيل عليه ويُبقي كل شيء.') }}
                     </p>
 
                     <ul class="archive-effects">
                         <li class="is-stop">
                             <i class="ti ti-circle-x" aria-hidden="true"></i>
-                            لن يُسجَّل عليه طالب أو مشرف جديد، ولن يظهر في الاستيراد
+                            {{ __('لن يُسجَّل عليه طالب أو مشرف جديد، ولن يظهر في الاستيراد') }}
                         </li>
                         <li class="is-keep">
                             <i class="ti ti-circle-check" aria-hidden="true"></i>
-                            <b><span id="archive-students">0</span> طالباً</b> و<b><span
-                                    id="archive-supervisors">0</span> مشرفاً</b> يبقون كما هم
+                            {!! __(':students و:supervisors يبقون كما هم', ['students' => '<b><span id="archive-students">0</span> ' . e(__('طالباً')) . '</b>', 'supervisors' => '<b><span id="archive-supervisors">0</span> ' . e(__('مشرفاً')) . '</b>']) !!}
                         </li>
                         <li class="is-keep">
                             <i class="ti ti-circle-check" aria-hidden="true"></i>
-                            مشاريعه وأنواعه ودرجاته تبقى سليمة، وطلابه يواصلون العمل
+                            {{ __('مشاريعه وأنواعه ودرجاته تبقى سليمة، وطلابه يواصلون العمل') }}
                         </li>
                         <li class="is-keep">
                             <i class="ti ti-circle-check" aria-hidden="true"></i>
-                            يمكن استئنافه في أي وقت بنقرة
+                            {{ __('يمكن استئنافه في أي وقت بنقرة') }}
                         </li>
                     </ul>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="ti ti-archive me-1" aria-hidden="true"></i>
-                        إيقاف التخصص
+                        {{ __('إيقاف التخصص') }}
                     </button>
                 </div>
             </form>

@@ -1,13 +1,13 @@
 @extends('layouts.admin.admin')
-@section('title', 'النقاش')
+@section('title', __('النقاش'))
 
 @section('crumbs')
-    <x-crumb :href="route('supervisor.dashboard')">لوحتي</x-crumb>
+    <x-crumb :href="route('supervisor.dashboard')">{{ __('لوحتي') }}</x-crumb>
     @if ($project)
-        <x-crumb :href="route('supervisor.discussion')">النقاش</x-crumb>
+        <x-crumb :href="route('supervisor.discussion')">{{ __('النقاش') }}</x-crumb>
         <x-crumb>{{ $project->title }}</x-crumb>
     @else
-        <x-crumb>النقاش</x-crumb>
+        <x-crumb>{{ __('النقاش') }}</x-crumb>
     @endif
 @endsection
 
@@ -18,12 +18,12 @@
         $unreadGroups = count($unread);
     @endphp
 
-    <x-page-header title="النقاش" subtitle="رسائل مجموعاتك — ما لم يُقرأ أولاً" />
+    <x-page-header title="{{ __('النقاش') }}" subtitle="{{ __('رسائل مجموعاتك — ما لم يُقرأ أولاً') }}" />
 
     @if ($projects->isEmpty() && ! $project)
         <div class="dist-panel">
-            <x-empty-state icon="ti-messages-off" title="لا مجموعات هذا الفصل"
-                text="حين يطلب فريق إشرافك أو تقبل طلباً، يظهر نقاشه هنا." class="py-6" />
+            <x-empty-state icon="ti-messages-off" title="{{ __('لا مجموعات هذا الفصل') }}"
+                text="{{ __('حين يطلب فريق إشرافك أو تقبل طلباً، يظهر نقاشه هنا.') }}" class="py-6" />
         </div>
     @else
         {{-- على الجوال: القائمة وحدها، أو المحادثة وحدها إن اختيرت --}}
@@ -32,22 +32,22 @@
             <div class="chat-side">
                 <div class="chat-side-head">
                     <div class="chat-side-title">
-                        <b>المحادثات</b>
+                        <b>{{ __('المحادثات') }}</b>
                         <span>{{ $projects->count() }}</span>
                         @if ($unreadTotal)
-                            <span class="chat-side-unread">{{ $unreadTotal }} غير مقروءة</span>
+                            <span class="chat-side-unread">{{ __(':n غير مقروءة', ['n' => $unreadTotal]) }}</span>
                         @endif
                     </div>
                     {{-- البحث حين يستحقّ: أربع محادثات تُمسح بالعين --}}
                     @if ($projects->count() > 4)
                         <div class="chat-search">
                             <i class="ti ti-search" aria-hidden="true"></i>
-                            <input type="search" id="chat-search" placeholder="ابحث بمشروع أو طالب…" aria-label="بحث في المحادثات">
+                            <input type="search" id="chat-search" placeholder="{{ __('ابحث بمشروع أو طالب…') }}" aria-label="{{ __('بحث في المحادثات') }}">
                         </div>
                     @endif
                 </div>
 
-                <nav class="chat-list" aria-label="مجموعاتي">
+                <nav class="chat-list" aria-label="{{ __('مجموعاتي') }}">
                     @foreach ($projects as $p)
                         @php
                             $last = $p->comments->first();
@@ -74,12 +74,12 @@
                                 <span class="chat-item-bottom">
                                     <span class="chat-item-snippet">
                                         @if ($last)
-                                            <em>{{ $last->is_supervisor ? 'أنت' : \Illuminate\Support\Str::of($last->author->name ?? 'طالب')->explode(' ')->first() }}:</em>
+                                            <em>{{ $last->is_supervisor ? __('أنت') : \Illuminate\Support\Str::of($last->author->name ?? __('طالب'))->explode(' ')->first() }}:</em>
                                             {{ \Illuminate\Support\Str::limit($last->body, 60) }}
                                         @elseif ($p->status === 'request')
-                                            <span class="chat-item-flag">طلب إشراف معلّق</span>
+                                            <span class="chat-item-flag">{{ __('طلب إشراف معلّق') }}</span>
                                         @else
-                                            لا رسائل بعد — ابدأ النقاش
+                                            {{ __('لا رسائل بعد — ابدأ النقاش') }}
                                         @endif
                                     </span>
                                     @if ($n)
@@ -89,7 +89,7 @@
                             </span>
                         </a>
                     @endforeach
-                    <p class="chat-list-none d-none" id="chat-none">لا محادثة مطابقة.</p>
+                    <p class="chat-list-none d-none" id="chat-none">{{ __('لا محادثة مطابقة.') }}</p>
                 </nav>
             </div>
 
@@ -98,7 +98,7 @@
                     @php $members = $project->group->sortByDesc(fn ($g) => $g->type === 'leader')->values(); @endphp
                     <header class="chat-head">
                         <a href="{{ route('supervisor.discussion') }}" class="chat-back btn-action"
-                            aria-label="العودة إلى المجموعات">
+                            aria-label="{{ __('العودة إلى المجموعات') }}">
                             <i class="ti ti-arrow-right" aria-hidden="true"></i>
                         </a>
                         <span class="chat-mono is-lg" style="--h: {{ ($project->id * 47) % 360 }}" aria-hidden="true">
@@ -106,7 +106,7 @@
                         </span>
                         <span class="chat-head-body">
                             <b>{{ $project->title }}</b>
-                            <span>{{ $members->map(fn ($g) => $g->student?->name)->filter()->implode('، ') }}</span>
+                            <span>{{ $members->map(fn ($g) => $g->student?->name)->filter()->implode(__('، ')) }}</span>
                         </span>
                         <span class="avatar-stack chat-head-team" aria-hidden="true">
                             @foreach ($members->take(4) as $member)
@@ -117,7 +117,7 @@
                             <a href="{{ route('supervisor.projects.show', $project->id) }}"
                                 class="btn btn-outline-secondary chat-head-btn">
                                 <i class="ti ti-layout-dashboard me-1" aria-hidden="true"></i>
-                                <span>المشروع</span>
+                                <span>{{ __('المشروع') }}</span>
                             </a>
                         @else
                             <x-status-badge :status="$project->status" />
@@ -132,19 +132,19 @@
                 @else
                     <div class="chat-welcome">
                         <span class="chat-welcome-icon" aria-hidden="true"><i class="ti ti-messages"></i></span>
-                        <h2>اختر مجموعة لتفتح محادثتها</h2>
+                        <h2>{{ __('اختر مجموعة لتفتح محادثتها') }}</h2>
                         <p>
                             @if ($unreadTotal)
-                                {{ $unreadTotal }} {{ $unreadTotal === 1 ? 'رسالة غير مقروءة' : 'رسائل غير مقروءة' }}
-                                في {{ $unreadGroups === 1 ? 'مجموعة واحدة' : $unreadGroups . ' مجموعات' }} — في أعلى القائمة.
+                                {{ $unreadTotal === 1 ? __(':n رسالة غير مقروءة', ['n' => 1]) : __(':n رسائل غير مقروءة', ['n' => $unreadTotal]) }}
+                                {{ $unreadGroups === 1 ? __('في مجموعة واحدة') : __('في :n مجموعات', ['n' => $unreadGroups]) }} — {{ __('في أعلى القائمة.') }}
                             @else
-                                لا رسائل غير مقروءة — كل شيء مقروء.
+                                {{ __('لا رسائل غير مقروءة — كل شيء مقروء.') }}
                             @endif
                         </p>
                         @if ($unreadTotal)
                             <a href="{{ route('supervisor.discussion', $projects->first(fn ($p) => isset($unread[$p->id]))->id) }}" class="btn btn-primary">
                                 <i class="ti ti-message-dots me-1" aria-hidden="true"></i>
-                                افتح أول غير مقروءة
+                                {{ __('افتح أول غير مقروءة') }}
                             </a>
                         @endif
                     </div>

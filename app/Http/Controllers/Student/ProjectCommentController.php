@@ -74,8 +74,8 @@ class ProjectCommentController extends Controller
             'mentions' => ['nullable', 'array', 'max:10'],
             'mentions.*' => ['integer', 'in:' . implode(',', $mates ?: [0])],
         ], [
-            'mentions.*.in' => 'يُذكر زملاء الفريق وحدهم.',
-        ], ['body' => 'الرسالة']);
+            'mentions.*.in' => __('يُذكر زملاء الفريق وحدهم.'),
+        ], ['body' => __('الرسالة')]);
 
         $channel = ($data['channel'] ?? null) === ProjectComment::TEAM ? ProjectComment::TEAM : ProjectComment::SUPERVISOR;
 
@@ -108,7 +108,7 @@ class ProjectCommentController extends Controller
         }
 
         return redirect()->route('student.discussion', $channel === ProjectComment::TEAM ? ['tab' => 'team'] : [])
-            ->with('success', $mentions ? 'أُرسلت الرسالة ووصل التنبيه لمن ذكرتهم.' : 'تم إرسال الرسالة');
+            ->with('success', $mentions ? __('أُرسلت الرسالة ووصل التنبيه لمن ذكرتهم.') : __('تم إرسال الرسالة'));
     }
 
     public function destroy(ProjectComment $comment)
@@ -123,6 +123,6 @@ class ProjectCommentController extends Controller
         $comment->delete();
 
         return redirect()->route('student.discussion', $channel === ProjectComment::TEAM ? ['tab' => 'team'] : [])
-            ->with('success', 'تم حذف الرسالة');
+            ->with('success', __('تم حذف الرسالة'));
     }
 }

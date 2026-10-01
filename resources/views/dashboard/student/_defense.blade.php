@@ -13,11 +13,11 @@
     $ended = $defense->endsAt()->isPast();
     $live = ! $ended && $defense->starts_at->isPast();
     $state = match (true) {
-        $ended => ['is-done', 'نوقش المشروع — بانتظار درجة اللجنة'],
-        $live => ['is-live', 'المناقشة جارية الآن'],
-        $defense->starts_at->isToday() => ['is-today', 'اليوم'],
-        $defense->starts_at->isTomorrow() => ['is-soon', 'غداً'],
-        default => ['', 'قادمة'],
+        $ended => ['is-done', __('نوقش المشروع — بانتظار درجة اللجنة')],
+        $live => ['is-live', __('المناقشة جارية الآن')],
+        $defense->starts_at->isToday() => ['is-today', __('اليوم')],
+        $defense->starts_at->isTomorrow() => ['is-soon', __('غداً')],
+        default => ['', __('قادمة')],
     };
     $msDone = $project->milestones->where('is_done', true)->count();
     $msTotal = $project->milestones->count();
@@ -30,7 +30,7 @@
 
 <section class="sdf mb-4" id="defense" aria-labelledby="sdf-title">
     <header class="sdf-head">
-        <h2 id="sdf-title"><i class="ti ti-presentation" aria-hidden="true"></i> مناقشتك</h2>
+        <h2 id="sdf-title"><i class="ti ti-presentation" aria-hidden="true"></i> {{ __('مناقشتك') }}</h2>
         <span class="sdf-state {{ $state[0] }}">{{ $state[1] }}</span>
     </header>
 
@@ -44,7 +44,7 @@
             <div class="sdf-when-body">
                 <strong>{{ $defense->starts_at->translatedFormat('l j F Y') }}</strong>
                 <span dir="ltr" class="sdf-range">{{ $defense->starts_at->format('H:i') }}–{{ $defense->endsAt()->format('H:i') }}</span>
-                <span class="sdf-dur">{{ $defense->duration_minutes }} دقيقة</span>
+                <span class="sdf-dur">{{ __(':n دقيقة', ['n' => $defense->duration_minutes]) }}</span>
                 @unless ($ended || $live)
                     <span class="sdf-countdown" data-countdown="{{ $defense->starts_at->toIso8601String() }}" aria-live="polite"></span>
                 @endunless
@@ -56,20 +56,20 @@
             <span class="df-mode is-{{ $defense->mode }}"><i class="ti {{ $defense->mode_icon }}" aria-hidden="true"></i>{{ $defense->mode_label }}</span>
             @if ($defense->needsRoom())
                 <span class="sdf-room">
-                    <b>{{ $defense->room?->name ?? 'قاعة غير محدّدة' }}</b>
+                    <b>{{ $defense->room?->name ?? __('قاعة غير محدّدة') }}</b>
                     @if ($defense->room?->location)<small>{{ $defense->room->location }}</small>@endif
                 </span>
             @endif
             @if ($defense->needsLink() && $defense->meeting_url && ! $ended)
                 <a href="{{ $defense->meeting_url }}" target="_blank" rel="noopener" class="btn {{ $defense->isJoinable() ? 'btn-primary' : 'btn-outline-primary' }} btn-sm">
-                    <i class="ti ti-video me-1" aria-hidden="true"></i>{{ $defense->isJoinable() ? 'انضم الآن' : 'رابط الاجتماع' }}
+                    <i class="ti ti-video me-1" aria-hidden="true"></i>{{ $defense->isJoinable() ? __('انضم الآن') : __('رابط الاجتماع') }}
                 </a>
             @endif
         </div>
 
         {{-- اللجنة --}}
         <div class="sdf-committee">
-            <small>اللجنة</small>
+            <small>{{ __('اللجنة') }}</small>
             <ul>
                 @foreach ($defense->members as $m)
                     <li>
@@ -90,21 +90,21 @@
         <div class="sdf-slides {{ $slides ? 'is-ok' : '' }}" id="presentation">
             <span class="sdf-slides-icon" aria-hidden="true"><i class="ti {{ $slides ? 'ti-presentation-analytics' : 'ti-presentation' }}"></i></span>
             <div class="sdf-slides-body">
-                <b>العرض التقديمي</b>
+                <b>{{ __('العرض التقديمي') }}</b>
                 @if ($slides)
                     <small>
                         {{ strtoupper(pathinfo($slides->path, PATHINFO_EXTENSION)) }} · {{ $slides->human_size }} ·
-                        رُفع {{ $slides->created_at?->diffForHumans() }} — تراه اللجنة
+                        {{ __('رُفع :when — تراه اللجنة', ['when' => $slides->created_at?->diffForHumans()]) }}
                     </small>
                 @else
-                    <small>{{ $canUpload ? 'ارفعه قبل الموعد لتطّلع عليه اللجنة — PDF أو PowerPoint حتى 20 ميغابايت.' : 'لم يُرفع بعد — يرفعه قائد الفريق قبل الموعد.' }}</small>
+                    <small>{{ $canUpload ? __('ارفعه قبل الموعد لتطّلع عليه اللجنة — PDF أو PowerPoint حتى 20 ميغابايت.') : __('لم يُرفع بعد — يرفعه قائد الفريق قبل الموعد.') }}</small>
                 @endif
                 @error('presentation')<small class="text-danger d-block">{{ $message }}</small>@enderror
             </div>
             <div class="sdf-slides-actions">
                 @if ($slides)
                     <a href="{{ route('files.download', $slides->id) }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="ti ti-download me-1" aria-hidden="true"></i>تنزيل
+                        <i class="ti ti-download me-1" aria-hidden="true"></i>{{ __('تنزيل') }}
                     </a>
                 @endif
                 @if ($canUpload)
@@ -112,7 +112,7 @@
                         @csrf
                         <input type="file" name="presentation" id="sdf-slides-file" class="visually-hidden" accept=".pdf,.ppt,.pptx" required>
                         <label for="sdf-slides-file" class="btn {{ $slides ? 'btn-outline-primary' : 'btn-primary' }} btn-sm m-0">
-                            <i class="ti ti-upload me-1" aria-hidden="true"></i>{{ $slides ? 'استبدال' : 'رفع العرض' }}
+                            <i class="ti ti-upload me-1" aria-hidden="true"></i>{{ $slides ? __('استبدال') : __('رفع العرض') }}
                         </label>
                     </form>
                 @endif
@@ -126,20 +126,20 @@
             <ul class="sdf-ready">
                 <li class="{{ $msTotal && $msDone === $msTotal ? 'is-ok' : '' }}">
                     <i class="ti {{ $msTotal && $msDone === $msTotal ? 'ti-circle-check' : 'ti-circle-dashed' }}" aria-hidden="true"></i>
-                    المراحل {{ $msDone }} من {{ $msTotal }}
+                    {{ __('المراحل :done من :total', ['done' => $msDone, 'total' => $msTotal]) }}
                 </li>
                 <li class="{{ $project->files->count() ? 'is-ok' : '' }}">
                     <i class="ti {{ $project->files->count() ? 'ti-circle-check' : 'ti-circle-dashed' }}" aria-hidden="true"></i>
                     @php $nf = $project->files->count(); @endphp
-                    {{ match (true) { $nf === 0 => 'لا ملفات — اللجنة تحضّر من ملفاتكم', $nf === 1 => 'ملف واحد مرفوع تراه اللجنة', $nf === 2 => 'ملفان مرفوعان تراهما اللجنة', $nf <= 10 => $nf . ' ملفات مرفوعة تراها اللجنة', default => $nf . ' ملفاً مرفوعاً تراها اللجنة' } }}
+                    {{ match (true) { $nf === 0 => __('لا ملفات — اللجنة تحضّر من ملفاتكم'), $nf === 1 => __('ملف واحد مرفوع تراه اللجنة'), $nf === 2 => __('ملفان مرفوعان تراهما اللجنة'), $nf <= 10 => __(':n ملفات مرفوعة تراها اللجنة', ['n' => $nf]), default => __(':n ملفاً مرفوعاً تراها اللجنة', ['n' => $nf]) } }}
                 </li>
             </ul>
             <div class="sdf-cal">
                 <a href="{{ route('defenses.ics', $defense->id) }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="ti ti-calendar-down me-1" aria-hidden="true"></i>ملف التقويم
+                    <i class="ti ti-calendar-down me-1" aria-hidden="true"></i>{{ __('ملف التقويم') }}
                 </a>
                 <a href="{{ $defense->googleCalendarUrl() }}" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm">
-                    <i class="ti ti-brand-google me-1" aria-hidden="true"></i>تقويم Google
+                    <i class="ti ti-brand-google me-1" aria-hidden="true"></i>{{ __('تقويم Google') }}
                 </a>
             </div>
         </footer>
@@ -153,15 +153,19 @@
             var el = document.querySelector('[data-countdown]');
             if (!el) return;
             var at = new Date(el.dataset.countdown).getTime();
-            var plural = function (n, one, two, few, many) { return n === 1 ? one : n === 2 ? two : (n >= 3 && n <= 10 ? n + ' ' + few : n + ' ' + many); };
+            var en = document.documentElement.lang === 'en';
+            var plural = en
+                ? function (n, one, two, few, many, enOne, enMany) { return n + ' ' + (n === 1 ? enOne : enMany); }
+                : function (n, one, two, few, many) { return n === 1 ? one : n === 2 ? two : (n >= 3 && n <= 10 ? n + ' ' + few : n + ' ' + many); };
             function tick() {
                 var s = Math.max(0, Math.floor((at - Date.now()) / 1000));
                 var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
                 var parts = [];
-                if (d) parts.push(plural(d, 'يوم', 'يومين', 'أيام', 'يوماً'));
-                if (h) parts.push(plural(h, 'ساعة', 'ساعتين', 'ساعات', 'ساعة'));
-                if (!d && m) parts.push(plural(m, 'دقيقة', 'دقيقتين', 'دقائق', 'دقيقة'));
-                el.textContent = s <= 0 ? 'حان الموعد' : 'بعد ' + parts.join(' و');
+                if (d) parts.push(plural(d, 'يوم', 'يومين', 'أيام', 'يوماً', 'day', 'days'));
+                if (h) parts.push(plural(h, 'ساعة', 'ساعتين', 'ساعات', 'ساعة', 'hour', 'hours'));
+                if (!d && m) parts.push(plural(m, 'دقيقة', 'دقيقتين', 'دقائق', 'دقيقة', 'minute', 'minutes'));
+                el.textContent = s <= 0 ? @json(__('حان الموعد'))
+                    : (en ? 'in ' + parts.join(' and ') : 'بعد ' + parts.join(' و'));
             }
             tick();
             setInterval(tick, 30000);
@@ -175,7 +179,7 @@
                 if (!this.files.length) return;
                 var label = form.querySelector('label');
                 label.classList.add('disabled');
-                label.textContent = 'جارٍ الرفع…';
+                label.textContent = @json(__('جارٍ الرفع…'));
                 form.submit();
             });
         })();

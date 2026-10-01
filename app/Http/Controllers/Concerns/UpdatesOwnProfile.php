@@ -38,13 +38,13 @@ trait UpdatesOwnProfile
         // «تغيّر البريد» لا يُعبَّر عنه بقاعدة.
         if (($changingEmail || $changingPassword) && ! Hash::check($request->current_password, $user->password)) {
             return redirect()->back()
-                ->withErrors(['current_password' => 'كلمة السر الحالية غير صحيحة'])
+                ->withErrors(['current_password' => __('كلمة السر الحالية غير صحيحة')])
                 ->withInput($request->except(['password', 'password_confirmation', 'current_password']));
         }
 
         if ($changingEmail && ! $request->filled('current_password')) {
             return redirect()->back()
-                ->withErrors(['current_password' => 'أدخل كلمة السر الحالية لتغيير البريد الإلكتروني'])
+                ->withErrors(['current_password' => __('أدخل كلمة السر الحالية لتغيير البريد الإلكتروني')])
                 ->withInput($request->except(['password', 'password_confirmation', 'current_password']));
         }
 
@@ -64,7 +64,7 @@ trait UpdatesOwnProfile
 
         return redirect()->back()->with(
             'success',
-            $changingPassword ? 'تم تحديث بياناتك وكلمة السر بنجاح' : 'تم تحديث بياناتك بنجاح'
+            $changingPassword ? __('تم تحديث بياناتك وكلمة السر بنجاح') : __('تم تحديث بياناتك بنجاح')
         );
     }
 
@@ -85,16 +85,16 @@ trait UpdatesOwnProfile
                 'dimensions:min_width=100,min_height=100',
             ],
         ], [
-            'avatar.required' => 'اختر صورة أولاً.',
-            'avatar.image' => 'الملف ليس صورة.',
-            'avatar.mimes' => 'الصيغ المقبولة: JPG أو PNG أو WebP.',
-            'avatar.max' => 'حجم الصورة لا يتجاوز 2 ميغابايت.',
-            'avatar.dimensions' => 'الصورة صغيرة جداً — 100×100 بكسل على الأقل.',
+            'avatar.required' => __('اختر صورة أولاً.'),
+            'avatar.image' => __('الملف ليس صورة.'),
+            'avatar.mimes' => __('الصيغ المقبولة: JPG أو PNG أو WebP.'),
+            'avatar.max' => __('حجم الصورة لا يتجاوز 2 ميغابايت.'),
+            'avatar.dimensions' => __('الصورة صغيرة جداً — 100×100 بكسل على الأقل.'),
         ]);
 
         if (! AvatarProcessor::available()) {
             return redirect()->back()->withErrors([
-                'avatar' => 'إضافة GD غير مفعّلة على الخادم، فلا يمكن معالجة الصور.',
+                'avatar' => __('إضافة GD غير مفعّلة على الخادم، فلا يمكن معالجة الصور.'),
             ]);
         }
 
@@ -110,17 +110,17 @@ trait UpdatesOwnProfile
             Log::error('فشل رفع الصورة الشخصية', ['exception' => $e]);
 
             return redirect()->back()->withErrors([
-                'avatar' => 'تعذّر حفظ الصورة. حاول مرة أخرى، وإن تكرّر فراجع مسؤول النظام.',
+                'avatar' => __('تعذّر حفظ الصورة. حاول مرة أخرى، وإن تكرّر فراجع مسؤول النظام.'),
             ]);
         }
 
-        return redirect()->back()->with('success', 'تم تحديث صورتك الشخصية');
+        return redirect()->back()->with('success', __('تم تحديث صورتك الشخصية'));
     }
 
     public function destroyAvatar()
     {
         $this->profileUser()->deleteAvatar();
 
-        return redirect()->back()->with('success', 'تمت إزالة صورتك الشخصية');
+        return redirect()->back()->with('success', __('تمت إزالة صورتك الشخصية'));
     }
 }

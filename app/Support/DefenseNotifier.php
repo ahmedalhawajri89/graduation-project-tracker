@@ -17,9 +17,10 @@ class DefenseNotifier
     public static function when(Defense $d): string
     {
         // المدى معزول LTR (LRI…PDI): داخل نصّ عربي كان «10:00–10:45» يُقرأ «10:45–10:00»
-        return $d->starts_at->translatedFormat('l j F Y')
+        // يُحفظ في الإشعارات وسجلّ التدقيق: عربي دائماً مهما كانت لغة من جدول
+        return Arabic::run(fn () => $d->starts_at->translatedFormat('l j F Y')
             . ' · ' . self::range($d)
-            . ' · ' . $d->place_label;
+            . ' · ' . $d->place_label);
     }
 
     public static function range(Defense $d): string
@@ -97,7 +98,8 @@ class DefenseNotifier
         $d->loadMissing(['project.group', 'members.supervisor']);
         $project = $d->project;
         // ملف التقويم مع البريد: يُضاف إلى أي تقويم بنقرة، والإلغاء يحذفه منه
-        $ics = DefenseIcs::make($d, $d->status === Defense::CANCELLED);
+        // يُرفق بالبريد: عربي كالإشعار نفسه (التنزيل من اللوحة يتبع لغة المستخدم)
+        $ics = Arabic::run(fn () => DefenseIcs::make($d, $d->status === Defense::CANCELLED));
         $withIcs = fn ($n) => $n->attach($ics, DefenseIcs::filename($d), 'text/calendar');
 
         $data = [

@@ -24,7 +24,7 @@ class DefenseController extends Controller
 {
     public function index()
     {
-        abort_unless(DefenseScheduler::enabled(), 503, 'شغّل الترحيل أولاً: php artisan migrate');
+        abort_unless(DefenseScheduler::enabled(), 503, __('شغّل الترحيل أولاً: php artisan migrate'));
 
         $tab = in_array(request('tab'), ['awaiting', 'upcoming', 'past'], true) ? request('tab') : null;
 
@@ -128,7 +128,7 @@ class DefenseController extends Controller
         $defense = $this->schedule($project, $data);
 
         return redirect()->route('admin.defenses.index', ['tab' => 'awaiting', 'week' => $defense->starts_at->format('Y-m-d')])
-            ->with('success', 'جُدولت المناقشة وأُشعر الفريق واللجنة.');
+            ->with('success', __('جُدولت المناقشة وأُشعر الفريق واللجنة.'));
     }
 
     /**
@@ -178,8 +178,8 @@ class DefenseController extends Controller
 
         return redirect()->route('admin.defenses.index', array_filter(['tab' => 'awaiting', 'week' => $first?->format('Y-m-d')]))
             ->with($done ? 'success' : 'fail', $done
-                ? "جُدولت {$done} مناقشات وأُشعرت فرقها ولجانها." . ($skipped ? ' تعذّر: ' . implode('؛ ', $skipped) : '')
-                : 'لم تُجدول أي مناقشة: ' . implode('؛ ', $skipped));
+                ? __('جُدولت :n مناقشات وأُشعرت فرقها ولجانها.', ['n' => $done]) . ($skipped ? ' ' . __('تعذّر: :list', ['list' => implode(__('؛ '), $skipped)]) : '')
+                : __('لم تُجدول أي مناقشة: :list', ['list' => implode(__('؛ '), $skipped)]));
     }
 
     /** الحفظ والتدقيق والإشعار — لبند واحد صحّ تحقّقه */
@@ -210,7 +210,7 @@ class DefenseController extends Controller
         $project = $defense->project()->with('project_type')->firstOrFail();
 
         if ($defense->members()->whereNotNull('grade')->exists()) {
-            return back()->with('fail', 'بدأت اللجنة رصد الدرجات — لا يُعدَّل موعد مناقشة جرت.');
+            return back()->with('fail', __('بدأت اللجنة رصد الدرجات — لا يُعدَّل موعد مناقشة جرت.'));
         }
 
         $data = $this->validated($request);
@@ -231,19 +231,19 @@ class DefenseController extends Controller
         DefenseNotifier::rescheduled($defense, $before);
 
         return redirect()->route('admin.defenses.index', ['tab' => 'awaiting', 'week' => $defense->starts_at->format('Y-m-d')])
-            ->with('success', 'عُدّل موعد المناقشة وأُشعر الفريق واللجنة.');
+            ->with('success', __('عُدّل موعد المناقشة وأُشعر الفريق واللجنة.'));
     }
 
     public function cancel(Request $request, Defense $defense)
     {
-        $request->validate(['reason' => ['nullable', 'string', 'max:300']], [], ['reason' => 'سبب الإلغاء']);
+        $request->validate(['reason' => ['nullable', 'string', 'max:300']], [], ['reason' => __('سبب الإلغاء')]);
 
         if ($defense->status !== Defense::SCHEDULED) {
-            return back()->with('fail', 'المناقشة ليست مجدولة.');
+            return back()->with('fail', __('المناقشة ليست مجدولة.'));
         }
 
         if ($defense->members()->whereNotNull('grade')->exists()) {
-            return back()->with('fail', 'بدأت اللجنة رصد الدرجات — لا تُلغى مناقشة جرت.');
+            return back()->with('fail', __('بدأت اللجنة رصد الدرجات — لا تُلغى مناقشة جرت.'));
         }
 
         $defense->update(['status' => Defense::CANCELLED]);
@@ -256,7 +256,7 @@ class DefenseController extends Controller
         DefenseNotifier::cancelled($defense, $request->reason);
 
         return redirect()->route('admin.defenses.index', ['tab' => 'awaiting'])
-            ->with('success', 'أُلغيت المناقشة، وعاد المشروع إلى «بانتظار الجدولة».');
+            ->with('success', __('أُلغيت المناقشة، وعاد المشروع إلى «بانتظار الجدولة».'));
     }
 
     /** جدول المناقشات Excel — للفصل الحالي، بلا الملغاة */
@@ -279,34 +279,34 @@ class DefenseController extends Controller
             'name' => ['required', 'string', 'max:60', Rule::unique('defense_rooms', 'name')],
             'location' => ['nullable', 'string', 'max:120'],
             'capacity' => ['nullable', 'integer', 'min:1', 'max:1000'],
-        ], [], ['name' => 'اسم القاعة', 'location' => 'المكان', 'capacity' => 'السعة']);
+        ], [], ['name' => __('اسم القاعة'), 'location' => __('المكان'), 'capacity' => __('السعة')]);
 
         DefenseRoom::create($data + ['is_active' => true]);
 
-        return redirect()->route('admin.defenses.index', ['tab' => request('tab')])->with('success', 'أُضيفت القاعة.');
+        return redirect()->route('admin.defenses.index', ['tab' => request('tab')])->with('success', __('أُضيفت القاعة.'));
     }
 
     public function toggleRoom(DefenseRoom $room)
     {
         if ($room->is_active && $room->defenses()->active()->where('starts_at', '>=', now())->exists()) {
-            return back()->with('fail', 'على القاعة مناقشات قادمة — أعد جدولتها أولاً.');
+            return back()->with('fail', __('على القاعة مناقشات قادمة — أعد جدولتها أولاً.'));
         }
 
         $room->update(['is_active' => ! $room->is_active]);
 
-        return back()->with('success', $room->is_active ? 'فُعّلت القاعة.' : 'عُطّلت القاعة — لن تظهر في الجدولة.');
+        return back()->with('success', $room->is_active ? __('فُعّلت القاعة.') : __('عُطّلت القاعة — لن تظهر في الجدولة.'));
     }
 
     /** الحذف لقاعة بلا مناقشات؛ ذات السجلّ تُعطَّل ليبقى تاريخها */
     public function destroyRoom(DefenseRoom $room)
     {
         if ($room->defenses()->exists()) {
-            return back()->with('fail', 'للقاعة مناقشات مسجّلة — عطّلها بدل حذفها.');
+            return back()->with('fail', __('للقاعة مناقشات مسجّلة — عطّلها بدل حذفها.'));
         }
 
         $room->delete();
 
-        return back()->with('success', 'حُذفت القاعة.');
+        return back()->with('success', __('حُذفت القاعة.'));
     }
 
     /* ==================== مساعدات ==================== */
@@ -331,14 +331,14 @@ class DefenseController extends Controller
             'chair_id' => ['nullable', 'integer'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ], [
-            'examiner_ids.required' => 'اختر ممتحناً واحداً على الأقل.',
-            'examiner_ids.max' => "اللجنة لا تزيد على {$max} ممتحنين.",
-            'examiner_ids.*.distinct' => 'الممتحن نفسه مكرّر في اللجنة.',
-            'meeting_url.required_if' => 'رابط الاجتماع مطلوب للمناقشة عن بُعد أو المدمجة.',
-            'meeting_url.url' => 'رابط الاجتماع غير صالح — انسخه كاملاً من Google Meet أو غيره.',
+            'examiner_ids.required' => __('اختر ممتحناً واحداً على الأقل.'),
+            'examiner_ids.max' => __('اللجنة لا تزيد على :max ممتحنين.', ['max' => $max]),
+            'examiner_ids.*.distinct' => __('الممتحن نفسه مكرّر في اللجنة.'),
+            'meeting_url.required_if' => __('رابط الاجتماع مطلوب للمناقشة عن بُعد أو المدمجة.'),
+            'meeting_url.url' => __('رابط الاجتماع غير صالح — انسخه كاملاً من Google Meet أو غيره.'),
         ], [
-            'date' => 'التاريخ', 'time' => 'الوقت', 'duration_minutes' => 'المدة', 'mode' => 'النوع',
-            'room_id' => 'القاعة', 'meeting_url' => 'رابط الاجتماع', 'examiner_ids' => 'الممتحنون', 'examiner_ids.*' => 'الممتحن', 'notes' => 'الملاحظات',
+            'date' => __('التاريخ'), 'time' => __('الوقت'), 'duration_minutes' => __('المدة'), 'mode' => __('النوع'),
+            'room_id' => __('القاعة'), 'meeting_url' => __('رابط الاجتماع'), 'examiner_ids' => __('الممتحنون'), 'examiner_ids.*' => __('الممتحن'), 'notes' => __('الملاحظات'),
         ]);
 
         $v['starts_at'] = Carbon::createFromFormat('Y-m-d H:i', $v['date'] . ' ' . $v['time']);

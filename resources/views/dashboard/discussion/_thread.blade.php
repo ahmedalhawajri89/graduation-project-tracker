@@ -48,8 +48,8 @@
     );
 
     $dayLabel = function ($at) {
-        if ($at->isToday()) return 'اليوم';
-        if ($at->isYesterday()) return 'أمس';
+        if ($at->isToday()) return __('اليوم');
+        if ($at->isYesterday()) return __('أمس');
 
         return $at->translatedFormat($at->isCurrentYear() ? 'l j F' : 'j F Y');
     };
@@ -77,7 +77,7 @@
         @endif
 
         @if ($isNew)
-            <div class="chat-new" id="chat-new"><span>رسائل جديدة</span></div>
+            <div class="chat-new" id="chat-new"><span>{{ __('رسائل جديدة') }}</span></div>
         @endif
 
         {{-- رسالة تذكرني: تُميَّز بحدّ ولون الهوية --}}
@@ -94,9 +94,9 @@
             <div class="msg-body">
                 @unless ($mine || $cont)
                     <div class="msg-author">
-                        <b>{{ $comment->author->name ?? 'مستخدم محذوف' }}</b>
+                        <b>{{ $comment->author->name ?? __('مستخدم محذوف') }}</b>
                         @if ($comment->is_supervisor)
-                            <span class="msg-role">مشرف</span>
+                            <span class="msg-role">{{ __('مشرف') }}</span>
                         @endif
                     </div>
                 @endunless
@@ -113,11 +113,11 @@
             {{-- الطالب يحذف ما كتبه وحده؛ المشرف يحذف أيّ تعليق في مشروعه --}}
             @if ($mine || $role === 'supervisor')
                 <form action="{{ route($role . '.comments.destroy', ['comment' => $comment->id]) }}"
-                    method="POST" class="msg-del" onsubmit="return confirm('حذف هذه الرسالة؟')">
+                    method="POST" class="msg-del" onsubmit="return confirm({{ Js::from(__('حذف هذه الرسالة؟')) }})">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn-action btn-action--danger" title="حذف"
-                        aria-label="حذف الرسالة">
+                    <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}"
+                        aria-label="{{ __('حذف الرسالة') }}">
                         <i class="ti ti-trash" aria-hidden="true"></i>
                     </button>
                 </form>
@@ -126,13 +126,13 @@
     @empty
         <div class="chat-empty chat-start">
             <span class="chat-start-icon" aria-hidden="true"><i class="ti ti-messages"></i></span>
-            <h3>{{ $isTeam ? 'نقاش الفريق فارغ بعد' : 'لا رسائل بعد' }}</h3>
+            <h3>{{ $isTeam ? __('نقاش الفريق فارغ بعد') : __('لا رسائل بعد') }}</h3>
             <p>
                 {{ $isTeam
-                    ? 'مساحة الفريق وحده — نسّقوا المهام، واكتب @ لتنبيه زميل بعينه.'
+                    ? __('مساحة الفريق وحده — نسّقوا المهام، واكتب @ لتنبيه زميل بعينه.')
                     : ($role === 'student'
-                        ? 'اسأل مشرفك هنا — كل ما يُكتب يبقى مرجعاً لك وله.'
-                        : 'ابدأ النقاش مع الفريق — ملاحظة، سؤال، أو توجيه للمرحلة القادمة.') }}
+                        ? __('اسأل مشرفك هنا — كل ما يُكتب يبقى مرجعاً لك وله.')
+                        : __('ابدأ النقاش مع الفريق — ملاحظة، سؤال، أو توجيه للمرحلة القادمة.')) }}
             </p>
         </div>
     @endforelse
@@ -147,7 +147,7 @@
     {{-- قائمة @: الزملاء، تُصفّى بما يُكتب بعد @ --}}
     @if ($isTeam && $mates->isNotEmpty())
         <div class="mention-menu" data-mention-menu role="listbox" hidden>
-            <div class="mention-menu-head">تنبيه زميل</div>
+            <div class="mention-menu-head">{{ __('تنبيه زميل') }}</div>
             @foreach ($mates as $mate)
                 <button type="button" class="mention-option" role="option" data-mate="{{ $mate->id }}" data-name="{{ $mate->name }}">
                     <x-avatar :user="$mate" class="ctx-avatar" />
@@ -160,17 +160,17 @@
     <div class="compose-box">
         <textarea name="body" rows="1" required maxlength="1000" id="chat-body"
             class="@error('body') is-invalid @enderror"
-            placeholder="{{ $isTeam ? 'اكتب للفريق… و@ لتنبيه زميل' : ($role === 'student' ? 'اكتب سؤالك أو تحديثك للمشرف…' : 'اكتب ملاحظتك للفريق…') }}"
-            aria-label="نصّ الرسالة">{{ old('body') }}</textarea>
-        <button type="submit" class="compose-send" data-loading-text=" " aria-label="إرسال" title="إرسال (Ctrl + Enter)">
+            placeholder="{{ $isTeam ? __('اكتب للفريق… و@ لتنبيه زميل') : ($role === 'student' ? __('اكتب سؤالك أو تحديثك للمشرف…') : __('اكتب ملاحظتك للفريق…')) }}"
+            aria-label="{{ __('نصّ الرسالة') }}">{{ old('body') }}</textarea>
+        <button type="submit" class="compose-send" data-loading-text=" " aria-label="{{ __('إرسال') }}" title="{{ __('إرسال (Ctrl + Enter)') }}">
             <i class="ti ti-send" aria-hidden="true"></i>
         </button>
     </div>
     <span class="chat-hint">
         @if ($isTeam)
-            <kbd>@</kbd> لتنبيه زميل ·
+            <kbd>@</kbd> {{ __('لتنبيه زميل') }} ·
         @endif
-        <kbd>Ctrl</kbd> + <kbd>Enter</kbd> للإرسال · <span id="chat-count">0</span>/1000
+        <kbd>Ctrl</kbd> + <kbd>Enter</kbd> {{ __('للإرسال') }} · <span id="chat-count">0</span>/1000
     </span>
     @error('body')
         <div class="text-danger small">{{ $message }}</div>

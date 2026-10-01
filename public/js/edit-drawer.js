@@ -187,9 +187,9 @@
             if (/\d/.test(v) && /[^A-Za-z0-9]/.test(v)) level++;
             if (v.length < 8) level = v.length ? 1 : 0;
             pw.strength.dataset.level = level;
-            pw.label.textContent = !v.length ? '8 أحرف على الأقل'
-                : v.length < 8 ? 'قصيرة — 8 أحرف على الأقل'
-                : ['', 'ضعيفة', 'مقبولة', 'جيدة', 'قوية'][level];
+            pw.label.textContent = !v.length ? t('8 أحرف على الأقل')
+                : v.length < 8 ? t('قصيرة — 8 أحرف على الأقل')
+                : ['', t('ضعيفة'), t('مقبولة'), t('جيدة'), t('قوية')][level];
             if (pw.confirm) pw.confirm.value = v;
         }
 
@@ -247,10 +247,10 @@
 
             if (!create) {
                 saveBtn.disabled = count === 0;
-                changesEl.textContent = count === 0 ? 'لا تغييرات'
-                    : count === 1 ? 'تغيير واحد'
-                    : count === 2 ? 'تغييران'
-                    : count + ' تغييرات';
+                changesEl.textContent = count === 0 ? t('لا تغييرات')
+                    : count === 1 ? t('تغيير واحد')
+                    : count === 2 ? t('تغييران')
+                    : t(':n تغييرات', { n: count });
                 changesEl.classList.toggle('is-dirty', count > 0);
             }
             liveHead();
@@ -319,7 +319,7 @@
 
         drawer.addEventListener('hide.bs.offcanvas', function (e) {
             if (submitting || refresh() === 0) return;
-            if (!window.confirm('لديك بيانات لم تُحفظ. إغلاق الدرج وتجاهلها؟')) e.preventDefault();
+            if (!window.confirm(t('لديك بيانات لم تُحفظ. إغلاق الدرج وتجاهلها؟'))) e.preventDefault();
         });
 
         form.addEventListener('submit', function (e) {

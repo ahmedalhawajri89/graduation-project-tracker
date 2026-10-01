@@ -3,10 +3,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteLabel">
-                    حذف {{ $delete_title }}
+                    {{ __('حذف :name', ['name' => $delete_title]) }}
                     (<span class="text-danger" id="delete-name"></span>)
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('إغلاق') }}"></button>
             </div>
             <form action="{{ route("{$delete_controller_name}.destroy", 'test') }}" method="POST">
                 @csrf
@@ -20,15 +20,15 @@
                             {{-- المجموعات صار لها حذف ناعم واسترجاع، فقول
                                  «لا يمكن التراجع» صار كذباً يُخيف بلا داعٍ.
                                  الصفحة التي تملك استرجاعاً تمرّر نصّها. --}}
-                            <p class="mb-0">{{ $delete_note ?? 'هل أنت متأكد من عملية الحذف؟ لا يمكن التراجع عنها.' }}</p>
+                            <p class="mb-0">{{ $delete_note ?? __('هل أنت متأكد من عملية الحذف؟ لا يمكن التراجع عنها.') }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
                     <button type="submit" class="btn btn-danger" name="submit" value="delete">
                         <i class="ti ti-trash me-1"></i>
-                        حذف
+                        {{ __('حذف') }}
                     </button>
                 </div>
             </form>

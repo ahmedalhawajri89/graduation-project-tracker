@@ -1,8 +1,8 @@
 @extends('layouts.admin.admin')
-@section('title', 'تفاصيل المشروع')
+@section('title', __('تفاصيل المشروع'))
 
 @section('crumbs')
-    <x-crumb :href="route('admin.groups.index')">المجموعات</x-crumb>
+    <x-crumb :href="route('admin.groups.index')">{{ __('المجموعات') }}</x-crumb>
     <x-crumb>{{ $project->title }}</x-crumb>
 @endsection
 
@@ -31,10 +31,10 @@
 
         // مسار المشروع: الخطوة الجارية بالرقم، وما قبلها منجز — والمقيَّم كلّه منجز
         $steps = [
-            ['label' => 'تقديم الطلب', 'meta' => $project->created_at?->format('Y-m-d')],
-            ['label' => 'موافقة المشرف', 'meta' => null],
-            ['label' => 'التنفيذ والمتابعة', 'meta' => null],
-            ['label' => 'التقييم', 'meta' => $project->evaluated_at?->format('Y-m-d')],
+            ['label' => __('تقديم الطلب'), 'meta' => $project->created_at?->format('Y-m-d')],
+            ['label' => __('موافقة المشرف'), 'meta' => null],
+            ['label' => __('التنفيذ والمتابعة'), 'meta' => null],
+            ['label' => __('التقييم'), 'meta' => $project->evaluated_at?->format('Y-m-d')],
         ];
         $current = match ($project->status) {
             'request' => 2,
@@ -46,21 +46,21 @@
         // سطر الوقت تحت الحلقة — بحسب الحالة، لا «متبقٍّ» لمشروع انتهى
         $daysLeft = $project->days_left;
         [$timeText, $timeTone] = match (true) {
-            $rejected => ['رفضه المشرف', 'is-danger'],
-            $project->status === 'request' => ['بانتظار ردّ المشرف', ''],
-            $project->status === 'complete' && $graded => ['اكتمل وقُيّم ' . $project->evaluated_at?->format('Y-m-d'), 'is-success'],
-            $project->status === 'complete' => ['اكتمل — بانتظار التقييم', ''],
-            is_null($daysLeft) => ['لم يُحدَّد موعد نهائي', ''],
-            $daysLeft < 0 => ['تأخّر ' . abs($daysLeft) . ' يوماً عن الموعد', 'is-danger'],
-            $daysLeft === 0 => ['الموعد النهائي اليوم', 'is-warn'],
-            default => ['المتبقّي ' . $daysLeft . ' يوماً للموعد النهائي', ''],
+            $rejected => [__('رفضه المشرف'), 'is-danger'],
+            $project->status === 'request' => [__('بانتظار ردّ المشرف'), ''],
+            $project->status === 'complete' && $graded => [__('اكتمل وقُيّم :date', ['date' => $project->evaluated_at?->format('Y-m-d')]), 'is-success'],
+            $project->status === 'complete' => [__('اكتمل — بانتظار التقييم'), ''],
+            is_null($daysLeft) => [__('لم يُحدَّد موعد نهائي'), ''],
+            $daysLeft < 0 => [__('تأخّر :n يوماً عن الموعد', ['n' => abs($daysLeft)]), 'is-danger'],
+            $daysLeft === 0 => [__('الموعد النهائي اليوم'), 'is-warn'],
+            default => [__('المتبقّي :n يوماً للموعد النهائي', ['n' => $daysLeft]), ''],
         };
 
         $tabs = $started ? [
-            'milestones' => ['المراحل', 'ti-list-check', $msTotal ? $msDone . '/' . $msTotal : null],
-            'files' => ['الملفات', 'ti-files', $project->files->count() ?: null],
-            'discussion' => ['النقاش مع المشرف', 'ti-messages', $project->comments->count() ?: null],
-            'history' => ['سجلّ المشروع', 'ti-history', null],
+            'milestones' => [__('المراحل'), 'ti-list-check', $msTotal ? $msDone . '/' . $msTotal : null],
+            'files' => [__('الملفات'), 'ti-files', $project->files->count() ?: null],
+            'discussion' => [__('النقاش مع المشرف'), 'ti-messages', $project->comments->count() ?: null],
+            'history' => [__('سجلّ المشروع'), 'ti-history', null],
         ] : [];
     @endphp
 
@@ -68,7 +68,7 @@
         <x-slot:actions>
             <a href="{{ route('admin.groups.edit', $project->id) }}" class="btn btn-outline-primary">
                 <i class="ti ti-pencil me-1" aria-hidden="true"></i>
-                تعديل المجموعة
+                {{ __('تعديل المجموعة') }}
             </a>
         </x-slot:actions>
     </x-page-header>
@@ -78,7 +78,7 @@
         <x-status-badge :status="$project->status" />
         <span class="pg-chip">
             <i class="ti ti-category" aria-hidden="true"></i>
-            {{ $project->project_type->name ?? 'بلا نوع' }}
+            {{ $project->project_type->name ?? __('بلا نوع') }}
         </span>
         @if ($sem)
             <span class="pg-chip">
@@ -100,7 +100,7 @@
         <section class="pg-alerts mb-4" aria-labelledby="pg-alerts-title">
             <h2 class="pg-alerts-title" id="pg-alerts-title">
                 <i class="ti ti-alert-triangle" aria-hidden="true"></i>
-                يحتاج انتباهاً
+                {{ __('يحتاج انتباهاً') }}
             </h2>
             <ul class="pg-alerts-list">
                 @foreach ($issues as $key => [$title, $text, $icon])
@@ -124,10 +124,9 @@
                 <section class="stage-note">
                     <i class="ti {{ $rejected ? 'ti-circle-x' : 'ti-hourglass-high' }}" aria-hidden="true"></i>
                     <div>
-                        <b>{{ $rejected ? 'المشروع مرفوض' : 'المشروع بانتظار رد المشرف' }}</b>
+                        <b>{{ $rejected ? __('المشروع مرفوض') : __('المشروع بانتظار رد المشرف') }}</b>
                         <p>
-                            المراحل والملفات والنقاش تبدأ بعد اعتماد المشرف للمشروع —
-                            ولهذا لا يوجد منها شيء الآن.
+                            {{ __('المراحل والملفات والنقاش تبدأ بعد اعتماد المشرف للمشروع — ولهذا لا يوجد منها شيء الآن.') }}
                         </p>
                     </div>
                 </section>
@@ -135,8 +134,8 @@
                 @if ($history->count())
                     <div class="dist-panel mt-4">
                         <div class="dist-head">
-                            <span>سجلّ المشروع</span>
-                            <a href="{{ route('admin.audit.index') }}">السجلّ كاملاً</a>
+                            <span>{{ __('سجلّ المشروع') }}</span>
+                            <a href="{{ route('admin.audit.index') }}">{{ __('السجلّ كاملاً') }}</a>
                         </div>
                         <div class="audit-list">
                             @foreach ($history as $log)
@@ -148,7 +147,7 @@
             @else
                 {{-- تبويبات: بلا JavaScript تظهر اللوحات كلّها متتالية --}}
                 <div class="pg-tabs" data-tabs>
-                    <div class="pg-tablist" role="tablist" aria-label="أقسام المشروع">
+                    <div class="pg-tablist" role="tablist" aria-label="{{ __('أقسام المشروع') }}">
                         @foreach ($tabs as $key => [$label, $icon, $count])
                             <button type="button" role="tab" id="tab-btn-{{ $key }}" aria-controls="tab-{{ $key }}"
                                 aria-selected="{{ $loop->first ? 'true' : 'false' }}" data-tab="{{ $key }}">
@@ -168,8 +167,8 @@
                     <section class="pg-panel" id="tab-files" role="tabpanel" aria-labelledby="tab-btn-files">
                         <div class="dist-panel">
                             <div class="dist-head">
-                                <span>ملفات المشروع</span>
-                                <span class="dist-head-note">{{ $project->files->count() }} ملفاً</span>
+                                <span>{{ __('ملفات المشروع') }}</span>
+                                <span class="dist-head-note">{{ __(':n ملفاً', ['n' => $project->files->count()]) }}</span>
                             </div>
                             @forelse ($project->files as $file)
                                 <div class="file-row">
@@ -178,18 +177,18 @@
                                         <span class="file-name">{{ $file->title }}</span>
                                         <span class="file-meta">
                                             {{ $file->human_size }}
-                                            · {{ $file->uploader_type === \App\Models\Supervisor::class ? 'المشرف' : ($file->uploader->name ?? 'طالب') }}
+                                            · {{ $file->uploader_type === \App\Models\Supervisor::class ? __('المشرف') : ($file->uploader->name ?? __('طالب')) }}
                                             · {{ $file->created_at->format('Y-m-d') }}
                                         </span>
                                     </span>
                                     <a href="{{ route('files.download', ['file' => $file->id]) }}"
-                                        class="btn-action" title="تنزيل" aria-label="تنزيل {{ $file->title }}">
+                                        class="btn-action" title="{{ __('تنزيل') }}" aria-label="{{ __('تنزيل :name', ['name' => $file->title]) }}">
                                         <i class="ti ti-download" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             @empty
-                                <x-empty-state icon="ti-files" title="لا ملفات بعد"
-                                    text="ما يرفعه الفريق أو المشرف من ملفات يظهر هنا." class="is-inline" />
+                                <x-empty-state icon="ti-files" title="{{ __('لا ملفات بعد') }}"
+                                    text="{{ __('ما يرفعه الفريق أو المشرف من ملفات يظهر هنا.') }}" class="is-inline" />
                             @endforelse
                         </div>
                     </section>
@@ -197,9 +196,9 @@
                     <section class="pg-panel" id="tab-discussion" role="tabpanel" aria-labelledby="tab-btn-discussion">
                         <div class="dist-panel">
                             <div class="dist-head">
-                                <span>النقاش بين الفريق والمشرف</span>
+                                <span>{{ __('النقاش بين الفريق والمشرف') }}</span>
                                 {{-- نقاش الفريق الداخلي لا يصل الإدارة — يُقال صراحةً --}}
-                                <span class="dist-head-note">عرض فقط · نقاش الفريق الخاص لا يظهر هنا</span>
+                                <span class="dist-head-note">{{ __('عرض فقط · نقاش الفريق الخاص لا يظهر هنا') }}</span>
                             </div>
                             @forelse ($project->comments as $comment)
                                 <div class="cmt-row">
@@ -208,16 +207,16 @@
                                     </span>
                                     <div class="cmt-body">
                                         <div class="cmt-head">
-                                            <b>{{ $comment->author->name ?? 'مستخدم' }}</b>
-                                            <span class="cmt-role">{{ $comment->is_supervisor ? 'مشرف' : 'طالب' }}</span>
+                                            <b>{{ $comment->author->name ?? __('مستخدم') }}</b>
+                                            <span class="cmt-role">{{ $comment->is_supervisor ? __('مشرف') : __('طالب') }}</span>
                                             <span class="cmt-time">{{ $comment->created_at->diffForHumans() }}</span>
                                         </div>
                                         <p class="cmt-text">{{ $comment->body }}</p>
                                     </div>
                                 </div>
                             @empty
-                                <x-empty-state icon="ti-messages" title="لا رسائل بعد"
-                                    text="لم يتبادل الفريق والمشرف رسائل في هذا المشروع." class="is-inline" />
+                                <x-empty-state icon="ti-messages" title="{{ __('لا رسائل بعد') }}"
+                                    text="{{ __('لم يتبادل الفريق والمشرف رسائل في هذا المشروع.') }}" class="is-inline" />
                             @endforelse
                         </div>
                     </section>
@@ -226,8 +225,8 @@
                         {{-- من غيّر الدرجة ومتى، ومن فكّ اعتمادها ولماذا — مع سياق المشروع --}}
                         <div class="dist-panel">
                             <div class="dist-head">
-                                <span>سجلّ المشروع</span>
-                                <a href="{{ route('admin.audit.index') }}">السجلّ كاملاً</a>
+                                <span>{{ __('سجلّ المشروع') }}</span>
+                                <a href="{{ route('admin.audit.index') }}">{{ __('السجلّ كاملاً') }}</a>
                             </div>
                             @if ($history->count())
                                 <div class="audit-list">
@@ -236,8 +235,8 @@
                                     @endforeach
                                 </div>
                             @else
-                                <x-empty-state icon="ti-history" title="لا أحداث مسجّلة"
-                                    text="الدرجات والتسليمات والأدوار وحذف المراحل تُسجَّل هنا." class="is-inline" />
+                                <x-empty-state icon="ti-history" title="{{ __('لا أحداث مسجّلة') }}"
+                                    text="{{ __('الدرجات والتسليمات والأدوار وحذف المراحل تُسجَّل هنا.') }}" class="is-inline" />
                             @endif
                         </div>
                     </section>
@@ -256,9 +255,9 @@
                             <b>{{ is_null($progress) ? '—' : $progress . '%' }}</b>
                         </span>
                         <div>
-                            <span class="pg-progress-title">نسبة الإنجاز</span>
+                            <span class="pg-progress-title">{{ __('نسبة الإنجاز') }}</span>
                             <span class="pg-progress-sub">
-                                {{ $msTotal ? $msDone . ' من ' . $msTotal . ' مراحل معتمدة' : 'لم تُضَف مراحل بعد' }}
+                                {{ $msTotal ? __(':done من :total مراحل معتمدة', ['done' => $msDone, 'total' => $msTotal]) : __('لم تُضَف مراحل بعد') }}
                             </span>
                         </div>
                     </div>
@@ -298,7 +297,7 @@
                         @if ($project->isGradeLocked())
                             <span class="grade-locked">
                                 <i class="ti ti-lock-check" aria-hidden="true"></i>
-                                معتمدة
+                                {{ __('معتمدة') }}
                             </span>
                         @endif
                     </div>
@@ -306,12 +305,12 @@
                         <p class="pg-grade-note">{{ $project->evaluation_note }}</p>
                     @endif
                     <div class="pg-grade-meta">
-                        قُيّم {{ $project->evaluated_at?->format('Y-m-d') }}
+                        {{ __('قُيّم :date', ['date' => $project->evaluated_at?->format('Y-m-d')]) }}
                         @if ($project->graded_by && $project->grader->name)
                             · {{ $project->grader->name }}
                         @endif
                         @if ($project->isGradeLocked())
-                            · اعتُمد {{ $project->grade_locked_at?->format('Y-m-d') }}
+                            · {{ __('اعتُمد :date', ['date' => $project->grade_locked_at?->format('Y-m-d')]) }}
                         @endif
                     </div>
                     @if ($project->isGradeLocked())
@@ -319,7 +318,7 @@
                         <button type="button" class="btn btn-ghost-secondary btn-sm pg-grade-unlock"
                             data-bs-toggle="modal" data-bs-target="#unlockGradeModal">
                             <i class="ti ti-lock-open me-1" aria-hidden="true"></i>
-                            فكّ الاعتماد
+                            {{ __('فكّ الاعتماد') }}
                         </button>
                     @endif
                 </section>
@@ -328,8 +327,8 @@
             {{-- ═══ الفريق ═══ --}}
             <section class="pg-card">
                 <h2 class="pg-card-title">
-                    الفريق
-                    <span>{{ $project->group->count() }} أعضاء</span>
+                    {{ __('الفريق') }}
+                    <span>{{ __(':n أعضاء', ['n' => $project->group->count()]) }}</span>
                 </h2>
                 <ul class="pg-team">
                     @foreach ($project->group as $group)
@@ -337,9 +336,9 @@
                             <x-avatar :user="$group->student" class="ctx-avatar" />
                             <span class="pg-member">
                                 <span class="pg-member-name">
-                                    {{ $group->student?->name ?? 'طالب محذوف' }}
+                                    {{ $group->student?->name ?? __('طالب محذوف') }}
                                     @if ($group->type === 'leader')
-                                        <span class="ctx-tag">قائد</span>
+                                        <span class="ctx-tag">{{ __('قائد') }}</span>
                                     @endif
                                 </span>
                                 <span class="pg-member-meta">
@@ -358,7 +357,7 @@
                                             @endforeach
                                         </span>
                                     @elseif (! $graded)
-                                        <span class="role-chips"><span class="ctx-tag is-neutral">بلا دور</span></span>
+                                        <span class="role-chips"><span class="ctx-tag is-neutral">{{ __('بلا دور') }}</span></span>
                                     @endif
                                 @endif
                             </span>
@@ -369,33 +368,33 @@
 
             {{-- ═══ التفاصيل ═══ --}}
             <section class="pg-card">
-                <h2 class="pg-card-title">التفاصيل</h2>
+                <h2 class="pg-card-title">{{ __('التفاصيل') }}</h2>
                 <dl class="pg-dl">
-                    <dt>المشرف</dt>
+                    <dt>{{ __('المشرف') }}</dt>
                     <dd>
                         {{ $project->supervisor->name ?: '—' }}
                         @if ($project->supervisor->specialize->name ?? null)
                             <small>{{ $project->supervisor->specialize->name }}</small>
                         @endif
                     </dd>
-                    <dt>التقديم</dt>
+                    <dt>{{ __('التقديم') }}</dt>
                     <dd>{{ $project->created_at->format('Y-m-d') }}</dd>
-                    <dt>الموعد النهائي</dt>
-                    <dd>{{ $project->date_line ? $project->date_line->format('Y-m-d') : 'لم يُحدَّد' }}</dd>
+                    <dt>{{ __('الموعد النهائي') }}</dt>
+                    <dd>{{ $project->date_line ? $project->date_line->format('Y-m-d') : __('لم يُحدَّد') }}</dd>
                 </dl>
                 @if ($project->description)
                     @if (mb_strlen($project->description) > 180)
                         <details class="pg-desc">
                             <summary>
-                                <span class="pg-desc-label">وصف المشروع</span>
+                                <span class="pg-desc-label">{{ __('وصف المشروع') }}</span>
                                 <span class="pg-desc-preview">{{ \Illuminate\Support\Str::limit($project->description, 140) }}</span>
-                                <span class="pg-desc-more">عرض الكل</span>
+                                <span class="pg-desc-more">{{ __('عرض الكل') }}</span>
                             </summary>
                             <p>{{ $project->description }}</p>
                         </details>
                     @else
                         <div class="pg-desc">
-                            <span class="pg-desc-label">وصف المشروع</span>
+                            <span class="pg-desc-label">{{ __('وصف المشروع') }}</span>
                             <p>{{ $project->description }}</p>
                         </div>
                     @endif
@@ -410,24 +409,22 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="unlockGradeLabel">فكّ اعتماد الدرجة</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                        <h5 class="modal-title" id="unlockGradeLabel">{{ __('فكّ اعتماد الدرجة') }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('إغلاق') }}"></button>
                     </div>
 
                     <form action="{{ route('admin.groups.grade.unlock', $project->id) }}" method="POST">
                         @csrf
                         <div class="modal-body">
                             <p class="text-secondary mb-3">
-                                سيستطيع المشرف تعديل الدرجة ثانيةً. الدرجة الحالية
-                                <b>{{ rtrim(rtrim(number_format($project->grade, 2), '0'), '.') }}</b>
-                                تبقى كما هي حتى يغيّرها.
+                                {!! __('سيستطيع المشرف تعديل الدرجة ثانيةً. الدرجة الحالية :grade تبقى كما هي حتى يغيّرها.', ['grade' => '<b>' . e(rtrim(rtrim(number_format($project->grade, 2), '0'), '.')) . '</b>']) !!}
                             </p>
 
                             <div class="mb-2">
-                                <label class="form-label required" for="unlock-reason">سبب فكّ الاعتماد</label>
+                                <label class="form-label required" for="unlock-reason">{{ __('سبب فكّ الاعتماد') }}</label>
                                 <textarea id="unlock-reason" name="reason" rows="3" required minlength="10"
                                     maxlength="500" class="form-control @error('reason') is-invalid @enderror"
-                                    placeholder="مثال: خطأ في احتساب درجة المناقشة، اعتُمدت قبل رفع التقرير النهائي…">{{ old('reason') }}</textarea>
+                                    placeholder="{{ __('مثال: خطأ في احتساب درجة المناقشة، اعتُمدت قبل رفع التقرير النهائي…') }}">{{ old('reason') }}</textarea>
                                 @error('reason')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -435,15 +432,15 @@
 
                             {{-- السبب هو ما يُقرأ عند التنازع، لا حقل شكلي --}}
                             <div class="form-hint">
-                                يُحفظ في سجلّ التدقيق باسمك وتاريخه، ويظهر في تاريخ هذا المشروع.
+                                {{ __('يُحفظ في سجلّ التدقيق باسمك وتاريخه، ويظهر في تاريخ هذا المشروع.') }}
                             </div>
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
+                            <button type="button" class="btn" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
                             <button type="submit" class="btn btn-danger">
                                 <i class="ti ti-lock-open me-1" aria-hidden="true"></i>
-                                فكّ الاعتماد
+                                {{ __('فكّ الاعتماد') }}
                             </button>
                         </div>
                     </form>
@@ -489,7 +486,8 @@
                 });
                 t.addEventListener('keydown', function (e) {
                     // RTL: السهم الأيسر إلى التالي
-                    var step = { ArrowLeft: 1, ArrowRight: -1, Home: -i, End: tabs.length - 1 - i }[e.key];
+                    var fwd = document.documentElement.dir === 'rtl' ? 1 : -1;
+                    var step = { ArrowLeft: fwd, ArrowRight: -fwd, Home: -i, End: tabs.length - 1 - i }[e.key];
                     if (step === undefined) return;
                     e.preventDefault();
                     var next = tabs[(i + step + tabs.length) % tabs.length];

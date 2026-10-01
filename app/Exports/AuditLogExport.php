@@ -51,7 +51,7 @@ class AuditLogExport implements FromCollection, WithHeadings, WithMapping, Shoul
 
     public function headings(): array
     {
-        return ['التاريخ', 'الفاعل', 'الدور', 'الحدث', 'الكيان', 'التفاصيل'];
+        return [__('التاريخ'), __('الفاعل'), __('الدور'), __('الحدث'), __('الكيان'), __('التفاصيل')];
     }
 
     public function map($log): array
@@ -75,16 +75,16 @@ class AuditLogExport implements FromCollection, WithHeadings, WithMapping, Shoul
         if (isset($changes['grade'])) {
             $grade = $changes['grade'];
             $parts[] = isset($grade['from'])
-                ? "الدرجة: {$grade['from']} ← {$grade['to']}"
-                : "الدرجة: {$grade['to']}";
+                ? __('الدرجة: :from ← :to', ['from' => $grade['from'], 'to' => $grade['to']])
+                : __('الدرجة: :to', ['to' => $grade['to']]);
         }
 
         if (isset($changes['supervisor'])) {
-            $parts[] = "المشرف: {$changes['supervisor']['from']} ← {$changes['supervisor']['to']}";
+            $parts[] = __('المشرف: :from ← :to', ['from' => $changes['supervisor']['from'], 'to' => $changes['supervisor']['to']]);
         }
 
         if (! empty($changes['reason'])) {
-            $parts[] = "السبب: {$changes['reason']}";
+            $parts[] = __('السبب: :reason', ['reason' => $changes['reason']]);
         }
 
         return $parts ? implode(' · ', $parts) : '—';

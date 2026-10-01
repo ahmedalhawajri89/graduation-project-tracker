@@ -33,13 +33,15 @@ class ProjectActivity
         $isSupervisor = $viewer instanceof Supervisor;
 
         $who = fn ($person) => $person && $person->is($viewer)
-            ? 'أنت'
-            : ($person?->name ?? 'عضو سابق');
+            ? __('أنت')
+            : ($person?->name ?? __('عضو سابق'));
 
-        // الفعل يتبع الفاعل: «رفعتَ» لا «أنت رفع»
-        $did = fn ($person, string $he, string $you) => $person && $person->is($viewer)
-            ? $you
-            : ($person?->name ?? 'عضو سابق') . ' ' . $he;
+        // الفعل يتبع الفاعل: «رفعتَ» لا «أنت رفع». الجملتان مترجمتان كاملتين
+        // (__() بلا متغيّرات يُبقي :name و:title) ثم تُملآن هنا
+        $fill = fn (string $line, array $r) => strtr($line, collect($r)->mapWithKeys(fn ($v, $k) => [':' . $k => (string) $v])->all());
+        $did = fn ($person, string $he, string $you, array $r) => $person && $person->is($viewer)
+            ? $fill($you, $r)
+            : $fill($he, ['name' => $person?->name ?? __('عضو سابق')] + $r);
 
         // الروابط بحسب من يرى: المشرف إلى صفحة المشروع، والطالب إلى لوحته
         $projectUrl = fn (int $id, string $anchor = '') => ($isSupervisor
@@ -53,7 +55,7 @@ class ProjectActivity
                 'at' => $f->created_at,
                 'icon' => 'ti-file-upload',
                 'tone' => '',
-                'text' => $did($f->uploader, 'رفع', 'رفعتَ') . ' «' . $f->title . '»',
+                'text' => $did($f->uploader, __(':name رفع «:title»'), __('رفعتَ «:title»'), ['title' => $f->title]),
                 'project' => $f->project,
                 'href' => $projectUrl($f->project_id, '#files'),
             ]);
@@ -66,7 +68,9 @@ class ProjectActivity
             'at' => $s->created_at,
             'icon' => 'ti-upload',
             'tone' => 'is-brand',
-            'text' => ($s->round > 1 ? $did($s->student, 'أعاد تسليم', 'أعدتَ تسليم') : $did($s->student, 'سلّم', 'سلّمتَ')) . ' «' . $s->milestone->title . '»',
+            'text' => $s->round > 1
+                ? $did($s->student, __(':name أعاد تسليم «:title»'), __('أعدتَ تسليم «:title»'), ['title' => $s->milestone->title])
+                : $did($s->student, __(':name سلّم «:title»'), __('سلّمتَ «:title»'), ['title' => $s->milestone->title]),
             'project' => $s->milestone->project,
             'href' => $projectUrl($s->milestone->project_id, '#milestone-' . $s->milestone_id),
         ]);
@@ -76,9 +80,13 @@ class ProjectActivity
             'at' => $s->reviewed_at,
             'icon' => $s->decision === ProjectMilestone::APPROVED ? 'ti-circle-check' : 'ti-pencil',
             'tone' => $s->decision === ProjectMilestone::APPROVED ? 'is-success' : 'is-warn',
-            'text' => ($s->decision === ProjectMilestone::APPROVED
-                ? ($isSupervisor ? 'اعتمدتَ' : 'اعتمد المشرف') . ' «' . $s->milestone->title . '»'
-                : ($isSupervisor ? 'طلبتَ' : 'طلب المشرف') . ' تعديلاً في «' . $s->milestone->title . '»: ' . Str::limit((string) $s->feedback, 60)),
+            'text' => $s->decision === ProjectMilestone::APPROVED
+                ? ($isSupervisor
+                    ? __('اعتمدتَ «:title»', ['title' => $s->milestone->title])
+                    : __('اعتمد المشرف «:title»', ['title' => $s->milestone->title]))
+                : ($isSupervisor
+                    ? __('طلبتَ تعديلاً في «:title»: :feedback', ['title' => $s->milestone->title, 'feedback' => Str::limit((string) $s->feedback, 60)])
+                    : __('طلب المشرف تعديلاً في «:title»: :feedback', ['title' => $s->milestone->title, 'feedback' => Str::limit((string) $s->feedback, 60)])),
             'project' => $s->milestone->project,
             'href' => $projectUrl($s->milestone->project_id, '#milestone-' . $s->milestone_id),
         ]);
@@ -91,7 +99,7 @@ class ProjectActivity
                 'at' => $m->done_at,
                 'icon' => 'ti-circle-check',
                 'tone' => 'is-success',
-                'text' => 'أُنجزت مرحلة «' . $m->title . '»',
+                'text' => __('أُنجزت مرحلة «:title»', ['title' => $m->title]),
                 'project' => $m->project,
                 'href' => $projectUrl($m->project_id, '#milestone-' . $m->id),
             ]);
@@ -105,7 +113,9 @@ class ProjectActivity
                 'at' => $c->created_at,
                 'icon' => $c->isTeam() ? 'ti-users-group' : 'ti-message',
                 'tone' => '',
-                'text' => $who($c->author) . ($c->isTeam() ? ' في نقاش الفريق' : '') . ': ' . Str::limit($c->body, 70),
+                'text' => $c->isTeam()
+                    ? __(':who في نقاش الفريق: :body', ['who' => $who($c->author), 'body' => Str::limit($c->body, 70)])
+                    : $who($c->author) . ': ' . Str::limit($c->body, 70),
                 'project' => $c->project,
                 'href' => $c->isTeam() ? route('student.discussion', ['tab' => 'team']) : $chatUrl($c->project_id),
             ]);
@@ -119,7 +129,7 @@ class ProjectActivity
             'at' => $n->created_at,
             'icon' => 'ti-message-2-exclamation',
             'tone' => 'is-warn',
-            'text' => $did($n->author, 'ترك ملاحظة على', 'تركتَ ملاحظة على') . ' «' . $n->file->title . '»',
+            'text' => $did($n->author, __(':name ترك ملاحظة على «:title»'), __('تركتَ ملاحظة على «:title»'), ['title' => $n->file->title]),
             'project' => $n->file->project,
             'href' => $projectUrl($n->file->project_id, '#file-' . $n->project_file_id),
         ]);
@@ -128,7 +138,7 @@ class ProjectActivity
             'at' => $n->resolved_at,
             'icon' => 'ti-circle-check',
             'tone' => 'is-success',
-            'text' => $did($n->resolver, 'عالج ملاحظة على', 'عالجتَ ملاحظة على') . ' «' . $n->file->title . '»',
+            'text' => $did($n->resolver, __(':name عالج ملاحظة على «:title»'), __('عالجتَ ملاحظة على «:title»'), ['title' => $n->file->title]),
             'project' => $n->file->project,
             'href' => $projectUrl($n->file->project_id, '#file-' . $n->project_file_id),
         ]);

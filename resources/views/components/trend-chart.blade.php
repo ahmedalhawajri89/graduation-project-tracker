@@ -21,35 +21,38 @@
 @if ($enough)
     @php
         $points = $rows->map(fn ($r) => [
-            'd' => \Illuminate\Support\Carbon::parse($r->date)->locale('ar')->translatedFormat('j M'),
-            'full' => \Illuminate\Support\Carbon::parse($r->date)->locale('ar')->translatedFormat('l j F'),
+            'd' => \Illuminate\Support\Carbon::parse($r->date)->translatedFormat('j M'),
+            'full' => \Illuminate\Support\Carbon::parse($r->date)->translatedFormat('l j F'),
             'groups' => (int) $r->groups,
             'none' => (int) $r->not_has_group,
         ])->values();
 
+        // الوحدة بعد العدد: مفرد في العربية (١١ فما فوق) وجمع في الإنجليزية — فلا
+        // تصلح كلمة «مجموعة» المفردة مفتاحاً مشتركاً
+        $isAr = app()->getLocale() === 'ar';
         $metrics = [
-            ['key' => 'groups', 'title' => 'مجموعات نشطة', 'unit' => 'مجموعة', 'better' => 'up', 'icon' => 'ti-users-group'],
-            ['key' => 'none', 'title' => 'طلاب بلا فريق', 'unit' => 'طالب', 'better' => 'down', 'icon' => 'ti-user-exclamation'],
+            ['key' => 'groups', 'title' => __('مجموعات نشطة'), 'unit' => $isAr ? 'مجموعة' : 'groups', 'better' => 'up', 'icon' => 'ti-users-group'],
+            ['key' => 'none', 'title' => __('طلاب بلا فريق'), 'unit' => $isAr ? 'طالب' : 'students', 'better' => 'down', 'icon' => 'ti-user-exclamation'],
         ];
 
         // المدد الأقصر من المتوفّر وحدها، ثم «كل الفصل» — والافتراضي الكل
         $ranges = collect([7, 30])->filter(fn ($n) => $n < $rows->count())
-            ->map(fn ($n) => ['days' => $n, 'label' => $n . ' يوماً'])
-            ->push(['days' => $rows->count(), 'label' => 'كل الفصل'])
+            ->map(fn ($n) => ['days' => $n, 'label' => __(':n يوماً', ['n' => $n])])
+            ->push(['days' => $rows->count(), 'label' => __('كل الفصل')])
             ->values();
         $default = $rows->count();
     @endphp
 
     <div class="tc" id="{{ $id }}" data-range="{{ $default }}">
         <div class="tc-toolbar">
-            <div class="tc-range" role="group" aria-label="المدّة">
+            <div class="tc-range" role="group" aria-label="{{ __('المدّة') }}">
                 @foreach ($ranges as $r)
                     <button type="button" data-days="{{ $r['days'] }}" aria-pressed="{{ $r['days'] === $default ? 'true' : 'false' }}">
                         {{ $r['label'] }}
                     </button>
                 @endforeach
             </div>
-            <span class="tc-note">لقطة كل ليلة</span>
+            <span class="tc-note">{{ __('لقطة كل ليلة') }}</span>
         </div>
 
         <div class="tc-grid">
@@ -69,14 +72,14 @@
                     </header>
 
                     <div class="tc-plot">
-                        <canvas role="img" aria-label="{{ $m['title'] }} خلال المدّة المختارة"></canvas>
+                        <canvas role="img" aria-label="{{ __(':title خلال المدّة المختارة', ['title' => $m['title']]) }}"></canvas>
                     </div>
 
                     {{-- البيانات نفسها جدولاً — لمن لا يقرأ الرسم --}}
                     <details class="tc-table">
-                        <summary>عرض البيانات</summary>
+                        <summary>{{ __('عرض البيانات') }}</summary>
                         <table>
-                            <thead><tr><th>اليوم</th><th>{{ $m['title'] }}</th></tr></thead>
+                            <thead><tr><th>{{ __('التاريخ') }}</th><th>{{ $m['title'] }}</th></tr></thead>
                             <tbody>
                                 @foreach ($points->reverse() as $p)
                                     <tr><td>{{ $p['full'] }}</td><td>{{ $p[$m['key']] }}</td></tr>
@@ -177,8 +180,8 @@
                             plugins: {
                                 legend: { display: false },
                                 tooltip: {
-                                    rtl: true,
-                                    textDirection: 'rtl',
+                                    rtl: @json($isAr),
+                                    textDirection: @json($isAr ? 'rtl' : 'ltr'),
                                     backgroundColor: surface,
                                     borderColor: rule,
                                     borderWidth: 1,
@@ -211,7 +214,7 @@
                                     },
                                 },
                                 y: {
-                                    position: 'right',
+                                    position: @json($isAr ? 'right' : 'left'),
                                     grace: '15%',
                                     border: { display: false },
                                     grid: { color: rule, drawTicks: false },
@@ -252,8 +255,7 @@
                         el.appendChild(icon);
                         el.appendChild(document.createTextNode(
                             (diff > 0 ? '+' : diff < 0 ? '−' : '') + Math.abs(diff)
-                            + ' منذ ' + first.d
-                            + (good === null ? '' : good ? ' · تحسّن' : ' · تراجع')
+                            + ' ' + (good === null ? @json(__('منذ :date')) : good ? @json(__('منذ :date · تحسّن')) : @json(__('منذ :date · تراجع'))).replace(':date', first.d)
                         ));
                     });
                 }
@@ -274,7 +276,6 @@
 @else
     {{-- لا يُرسم خط من نقطتين. اللقطات تُلتقط ليلياً فيطول الخط تلقائياً. --}}
     <p class="dist-empty">
-        يحتاج الرسم {{ $min }} أيام من البيانات على الأقل — تُلتقط لقطة كل ليلة،
-        والمتوفّر الآن {{ $rows->count() }}.
+        {{ __('يحتاج الرسم :min أيام من البيانات على الأقل — تُلتقط لقطة كل ليلة، والمتوفّر الآن :count.', ['min' => $min, 'count' => $rows->count()]) }}
     </p>
 @endif

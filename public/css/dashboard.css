@@ -9863,3 +9863,18 @@ a.dsv-slides:hover { border-color: #34d399; }
     .df-cell:has(.df-block) .df-add { flex: 1 1 100%; min-height: 34px; }
     .dm-summary b { white-space: normal; }
 }
+
+/* ==================== الإنجليزية (LTR) ====================
+   الأسهم مرسومة لاتجاه العربية: «التالي» سهم لليسار. في LTR تنعكس كلها
+   أفقياً فيبقى المعنى (السابق/التالي، الدخول إلى عنصر) صحيحاً. */
+[dir="ltr"] .ti-arrow-left, [dir="ltr"] .ti-arrow-right,
+[dir="ltr"] .ti-chevron-left, [dir="ltr"] .ti-chevron-right,
+[dir="ltr"] .ti-chevrons-left, [dir="ltr"] .ti-chevrons-right,
+[dir="ltr"] .ti-arrow-narrow-left, [dir="ltr"] .ti-arrow-narrow-right,
+[dir="ltr"] .ti-arrow-back-up { display: inline-block; transform: scaleX(-1); }
+/* زر الإرسال معكوس للعربية أصلاً — في LTR يعود لرسمه */
+[dir="ltr"] .compose-send i { transform: none; }
+/* البيانات العربية (الأسماء والعناوين) داخل واجهة إنجليزية: كل مقطع سطري
+   يأخذ اتجاه أول حرف فيه، فلا تنقلب «د. هبة» إلى «هبة .د» ولا تتبعثر
+   العناوين المختلطة. يحمي الواجهة العربية من الأثر لأنه في LTR وحدها. */
+[dir="ltr"] :where(b, strong, span, a, small, em, label, td, th, h1, h2, h3, h4, h5, p, li, option) { unicode-bidi: plaintext; }

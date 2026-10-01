@@ -1,9 +1,9 @@
 @extends('layouts.admin.admin')
-@section('title', 'مشاريع منجزة')
+@section('title', __('مشاريع منجزة'))
 
 @section('crumbs')
-    <x-crumb :href="route('student.dashboard')">لوحتي</x-crumb>
-    <x-crumb>مشاريع منجزة</x-crumb>
+    <x-crumb :href="route('student.dashboard')">{{ __('لوحتي') }}</x-crumb>
+    <x-crumb>{{ __('مشاريع منجزة') }}</x-crumb>
 @endsection
 
 @section('content')
@@ -18,13 +18,13 @@
         ]));
     @endphp
 
-    <x-page-header title="مشاريع منجزة"
-        subtitle="قبل أن تقدّم فكرتك: ما الذي نُفّذ في تخصصك، ومع أيّ مشرف." />
+    <x-page-header :title="__('مشاريع منجزة')"
+        :subtitle="__('قبل أن تقدّم فكرتك: ما الذي نُفّذ في تخصصك، ومع أيّ مشرف.')" />
 
     <div class="filter-bar mb-3">
-        <div class="filter-tabs" role="group" aria-label="نطاق التخصص">
-            <a href="{{ $tabUrl(null) }}" class="filter-tab {{ $own ? 'is-active' : '' }}">تخصصي</a>
-            <a href="{{ $tabUrl('all') }}" class="filter-tab {{ is_null($specializeId) ? 'is-active' : '' }}">كل التخصصات</a>
+        <div class="filter-tabs" role="group" aria-label="{{ __('نطاق التخصص') }}">
+            <a href="{{ $tabUrl(null) }}" class="filter-tab {{ $own ? 'is-active' : '' }}">{{ __('تخصصي') }}</a>
+            <a href="{{ $tabUrl('all') }}" class="filter-tab {{ is_null($specializeId) ? 'is-active' : '' }}">{{ __('كل التخصصات') }}</a>
         </div>
 
         <form method="GET" action="{{ route('student.projects.explore') }}" class="filter-form">
@@ -33,19 +33,19 @@
             @endif
 
             <div class="filter-field filter-field--search">
-                <label class="form-label" for="explore-q">بحث</label>
+                <label class="form-label" for="explore-q">{{ __('بحث') }}</label>
                 <div class="filter-search-box">
                     <i class="ti ti-search filter-search-icon" aria-hidden="true"></i>
                     <input type="search" id="explore-q" name="q" value="{{ request('q') }}" class="form-control"
-                        placeholder="كلمة من فكرتك — مثال: التسرّب، الاحتيال، التوصية…">
+                        placeholder="{{ __('كلمة من فكرتك — مثال: التسرّب، الاحتيال، التوصية…') }}">
                 </div>
             </div>
 
             {{-- المشرف بعدد ما أنجزه: «من أشرف على ما يشبه فكرتي؟» --}}
             <div class="filter-field">
-                <label class="form-label" for="explore-supervisor">المشرف</label>
+                <label class="form-label" for="explore-supervisor">{{ __('المشرف') }}</label>
                 <select id="explore-supervisor" name="supervisor" class="form-select">
-                    <option value="">كل المشرفين</option>
+                    <option value="">{{ __('كل المشرفين') }}</option>
                     @foreach ($supervisors as $row)
                         <option value="{{ $row->supervisor_id }}" @selected(request('supervisor') == $row->supervisor_id)>
                             {{ $row->supervisor->name }} ({{ $row->n }})
@@ -57,11 +57,11 @@
             <div class="filter-actions">
                 <button type="submit" class="btn btn-primary">
                     <i class="ti ti-filter me-1" aria-hidden="true"></i>
-                    تصفية
+                    {{ __('تصفية') }}
                 </button>
                 @if ($hasFilters)
                     <a href="{{ $tabUrl(is_null($specializeId) ? 'all' : null) }}" class="btn btn-outline-secondary"
-                        title="مسح البحث والمشرف" aria-label="مسح البحث والمشرف">
+                        title="{{ __('مسح البحث والمشرف') }}" aria-label="{{ __('مسح البحث والمشرف') }}">
                         <i class="ti ti-x" aria-hidden="true"></i>
                     </a>
                 @endif
@@ -72,34 +72,34 @@
     @php
         $n = $projects->total();
         $countLabel = match (true) {
-            $n === 1 => 'مشروع منجز واحد',
-            $n === 2 => 'مشروعان منجزان',
-            $n >= 3 && $n <= 10 => $n . ' مشاريع منجزة',
-            default => $n . ' مشروعاً منجزاً',
+            $n === 1 => __('مشروع منجز واحد'),
+            $n === 2 => __('مشروعان منجزان'),
+            $n >= 3 && $n <= 10 => __(':n مشاريع منجزة', ['n' => $n]),
+            default => __(':n مشروعاً منجزاً', ['n' => $n]),
         };
     @endphp
     <p class="dist-head-note mb-3">
         {{ $countLabel }}
-        {{ $own ? 'في تخصصك' : ($specializeId ? '' : 'في كل التخصصات') }}
-        — المكتملة وحدها؛ مشاريع زملائك الجارية لا تُعرض.
+        {{ $own ? __('في تخصصك') : ($specializeId ? '' : __('في كل التخصصات')) }}
+        — {{ __('المكتملة وحدها؛ مشاريع زملائك الجارية لا تُعرض.') }}
     </p>
 
     @if ($projects->isEmpty())
         <div class="dist-panel">
             @if ($own && ! $hasFilters)
-                <x-empty-state icon="ti-telescope" title="لا مشاريع منجزة في تخصصك بعد"
-                    text="قد تكون من أوائل الدفعات. اطّلع على ما أُنجز في التخصصات الأخرى." class="py-6">
+                <x-empty-state icon="ti-telescope" :title="__('لا مشاريع منجزة في تخصصك بعد')"
+                    :text="__('قد تكون من أوائل الدفعات. اطّلع على ما أُنجز في التخصصات الأخرى.')" class="py-6">
                     <x-slot:action>
-                        <a href="{{ $tabUrl('all') }}" class="btn btn-primary">كل التخصصات</a>
+                        <a href="{{ $tabUrl('all') }}" class="btn btn-primary">{{ __('كل التخصصات') }}</a>
                     </x-slot:action>
                 </x-empty-state>
             @else
-                <x-empty-state icon="ti-search-off" title="لا مشاريع مطابقة"
-                    text="{{ $hasFilters ? 'فكرتك لم تُنفَّذ بهذه الكلمات — جيّد. جرّب كلمة أخرى للتأكّد.' : 'لا مشاريع منجزة بعد.' }}"
+                <x-empty-state icon="ti-search-off" :title="__('لا مشاريع مطابقة')"
+                    :text="$hasFilters ? __('فكرتك لم تُنفَّذ بهذه الكلمات — جيّد. جرّب كلمة أخرى للتأكّد.') : __('لا مشاريع منجزة بعد.')"
                     class="py-6">
                     @if ($own)
                         <x-slot:action>
-                            <a href="{{ $tabUrl('all') }}" class="btn btn-outline-secondary">ابحث في كل التخصصات</a>
+                            <a href="{{ $tabUrl('all') }}" class="btn btn-outline-secondary">{{ __('ابحث في كل التخصصات') }}</a>
                         </x-slot:action>
                     @endif
                 </x-empty-state>
@@ -132,7 +132,7 @@
                         </span>
                         <span class="group-fact">
                             <i class="ti ti-users" aria-hidden="true"></i>
-                            {{ $project->group_count }} أعضاء
+                            {{ __(':n أعضاء', ['n' => $project->group_count]) }}
                         </span>
                     </div>
                 </article>

@@ -49,15 +49,15 @@ class SupervisorsExport implements FromCollection, WithHeadings, WithMapping, Sh
     public function headings(): array
     {
         return [
-            'الرقم الجامعي',
-            'اسم المشرف',
-            'التخصص',
-            'البريد الإلكتروني',
-            'رقم الجوال',
-            'الجنس',
-            'المجموعات هذا الفصل',
-            'الحد الأقصى',
-            'الوضع',
+            __('الرقم الجامعي'),
+            __('اسم المشرف'),
+            __('التخصص'),
+            __('البريد الإلكتروني'),
+            __('رقم الجوال'),
+            __('الجنس'),
+            __('المجموعات هذا الفصل'),
+            __('الحد الأقصى'),
+            __('الوضع'),
         ];
     }
 
@@ -80,9 +80,9 @@ class SupervisorsExport implements FromCollection, WithHeadings, WithMapping, Sh
     private function label($supervisor): string
     {
         return match (true) {
-            $supervisor->projects_count > $supervisor->max_group => 'تجاوز الحد',
-            $supervisor->projects_count == $supervisor->max_group => 'مكتمل',
-            default => 'متاح',
+            $supervisor->projects_count > $supervisor->max_group => __('تجاوز الحد'),
+            $supervisor->projects_count == $supervisor->max_group => __('مكتمل'),
+            default => __('متاح'),
         };
     }
 }

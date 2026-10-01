@@ -36,7 +36,7 @@ class TeamRolesController extends Controller
             ->first(fn ($p) => $p && $p->status !== 'reject');
 
         if (! $project) {
-            return redirect()->route('student.dashboard')->with('fail', 'تظهر صفحة الفريق حين يكون لك مشروع.');
+            return redirect()->route('student.dashboard')->with('fail', __('تظهر صفحة الفريق حين يكون لك مشروع.'));
         }
 
         $project->load(['group.student', 'group.roles', 'supervisor', 'project_type']);
@@ -62,11 +62,11 @@ class TeamRolesController extends Controller
         );
 
         if ($project->status === 'reject') {
-            return back()->with('fail', 'المشروع مرفوض — لا توزيع أدوار له.');
+            return back()->with('fail', __('المشروع مرفوض — لا توزيع أدوار له.'));
         }
 
         if ($project->is_locked) {
-            return back()->with('fail', 'المشروع مؤرشف بعد التقييم — الأدوار سجلّ لا يُعدَّل.');
+            return back()->with('fail', __('المشروع مؤرشف بعد التقييم — الأدوار سجلّ لا يُعدَّل.'));
         }
 
         $max = TeamRoles::max();
@@ -76,9 +76,9 @@ class TeamRolesController extends Controller
             'members.*.roles.*' => ['string', 'max:40'],
             'members.*.responsibility' => ['nullable', 'string', 'max:160'],
         ], [
-            'members.*.roles.max' => "لكل عضو {$max} أدوار على الأكثر.",
+            'members.*.roles.max' => __('لكل عضو :max أدوار على الأكثر.', ['max' => $max]),
         ], [
-            'members.*.responsibility' => 'المسؤولية',
+            'members.*.responsibility' => __('المسؤولية'),
         ]);
 
         $groups = $project->group()->with('roles', 'student:id,name')->get()->keyBy('id');
@@ -86,7 +86,7 @@ class TeamRolesController extends Controller
 
         // عضو من فريق آخر لا يُمسّ — ولا يُسكت عنه
         if (array_diff(array_map('intval', array_keys($input)), $groups->keys()->all())) {
-            throw ValidationException::withMessages(['members' => 'في الطلب عضو ليس من فريق هذا المشروع.']);
+            throw ValidationException::withMessages(['members' => __('في الطلب عضو ليس من فريق هذا المشروع.')]);
         }
 
         $parsed = [];
@@ -95,7 +95,7 @@ class TeamRolesController extends Controller
             foreach ($member['roles'] ?? [] as $value) {
                 $role = $this->parseRole((string) $value);
                 if (! $role) {
-                    throw ValidationException::withMessages(['members' => 'دور غير معروف: ' . $value]);
+                    throw ValidationException::withMessages(['members' => __('دور غير معروف: :role', ['role' => $value])]);
                 }
                 $roles[$role['label']] = $role; // التكرار بالتسمية نفسها يُطوى
             }
@@ -145,7 +145,7 @@ class TeamRolesController extends Controller
             }
         }
 
-        return redirect()->route('student.team')->with('success', 'حُفظ توزيع الأدوار.');
+        return redirect()->route('student.team')->with('success', __('حُفظ توزيع الأدوار.'));
     }
 
     /** مفتاح جاهز، أو «custom:<تسمية>» لدور حرّ */

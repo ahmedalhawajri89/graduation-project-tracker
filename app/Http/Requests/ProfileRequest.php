@@ -49,24 +49,24 @@ class ProfileRequest extends FormRequest
     public function attributes()
     {
         return [
-            'name' => 'الاسم',
-            'email' => 'البريد الإلكتروني',
-            'phone' => 'رقم الجوال',
-            'gender' => 'الجنس',
-            'current_password' => 'كلمة السر الحالية',
-            'password' => 'كلمة السر الجديدة',
+            'name' => __('الاسم'),
+            'email' => __('البريد الإلكتروني'),
+            'phone' => __('رقم الجوال'),
+            'gender' => __('الجنس'),
+            'current_password' => __('كلمة السر الحالية'),
+            'password' => __('كلمة السر الجديدة'),
         ];
     }
 
     public function messages()
     {
         return [
-            'required' => ':attribute مطلوب.',
-            'phone.digits' => 'رقم الجوال يجب أن يكون 10 أرقام.',
-            'password.min' => 'كلمة السر الجديدة لا تقلّ عن 8 أحرف.',
-            'password.confirmed' => 'تأكيد كلمة السر غير مطابق.',
-            'email.unique' => 'هذا البريد مستعمل في حساب آخر.',
-            'current_password.required_with' => 'أدخل كلمة السر الحالية لتأكيد التغيير.',
+            'required' => __(':attribute مطلوب.'),
+            'phone.digits' => __('رقم الجوال يجب أن يكون 10 أرقام.'),
+            'password.min' => __('كلمة السر الجديدة لا تقلّ عن 8 أحرف.'),
+            'password.confirmed' => __('تأكيد كلمة السر غير مطابق.'),
+            'email.unique' => __('هذا البريد مستعمل في حساب آخر.'),
+            'current_password.required_with' => __('أدخل كلمة السر الحالية لتأكيد التغيير.'),
         ];
     }
 }

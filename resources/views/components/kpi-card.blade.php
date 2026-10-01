@@ -38,7 +38,7 @@
                 <div class="d-flex align-items-center gap-2">
                     <div class="h1 mb-0 lh-1">{{ $value }}</div>
                     @if (! is_null($trendVal))
-                        <span class="badge {{ $trendClass }}" title="مقارنة بآخر لقطة">
+                        <span class="badge {{ $trendClass }}" title="{{ __('مقارنة بآخر لقطة') }}">
                             <i class="ti {{ $trendIcon }}"></i>
                             {{ $trendVal > 0 ? '+' : '' }}{{ $trendVal }}%
                         </span>

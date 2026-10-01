@@ -730,7 +730,9 @@
     }
   };
 
-  var locale = localStorage.getItem("locale") || "ar";
+  // اختيار من اللوحة (كوكي) يتبعه الموقع العام أيضاً
+  var cookieLocale = (document.cookie.match(/(?:^|;\s*)locale=(ar|en)/) || [])[1];
+  var locale = cookieLocale || localStorage.getItem("locale") || "ar";
 
   /* لسان المبدّل ينزلق تحت الخيار النشط — يُقاس لا يُخمَّن */
   function moveLangThumb() {
@@ -750,6 +752,8 @@
     if (!d) return;
     locale = loc;
     localStorage.setItem("locale", loc);
+    // الكوكي نفسه تقرؤه اللوحات (SetLocale): اختيار واحد للموقع كله
+    document.cookie = "locale=" + loc + ";path=/;max-age=31536000;samesite=lax";
     document.documentElement.lang = loc;
     document.documentElement.dir = d.dir;
     if (d["meta.title"]) document.title = d["meta.title"];

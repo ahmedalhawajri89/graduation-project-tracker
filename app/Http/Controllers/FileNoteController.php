@@ -46,10 +46,10 @@ class FileNoteController extends Controller
     private function blocked(Project $project): ?string
     {
         if (! in_array($project->status, ['accept', 'complete'], true)) {
-            return 'تُكتب الملاحظات بعد قبول المشروع.';
+            return __('تُكتب الملاحظات بعد قبول المشروع.');
         }
 
-        return $project->is_locked ? 'المشروع مؤرشف بعد التقييم — لا ملاحظات جديدة.' : null;
+        return $project->is_locked ? __('المشروع مؤرشف بعد التقييم — لا ملاحظات جديدة.') : null;
     }
 
     private function back(ProjectFile $file)
@@ -74,9 +74,9 @@ class FileNoteController extends Controller
             // المنبَّه من الفريق نفسه — لا يُنبَّه طالب من خارجه عبر هذا الملف
             'mentioned_id' => ['nullable', 'integer', 'in:' . implode(',', $members ?: [0])],
         ], [
-            'mentioned_id.in' => 'العضو المختار ليس من فريق المشروع.',
+            'mentioned_id.in' => __('العضو المختار ليس من فريق المشروع.'),
         ], [
-            'body' => 'الملاحظة',
+            'body' => __('الملاحظة'),
         ]);
 
         $note = $file->notes()->create([
@@ -96,7 +96,9 @@ class FileNoteController extends Controller
             $this->notify($target, $project, $actor, 'ملاحظة على «' . $file->title . '»: ' . Str::limit($data['body'], 90));
         }
 
-        return $this->back($file)->with('success', 'أُضيفت الملاحظة' . ($target && ! $target->is($actor) ? ' ووصل ' . $target->name . ' تنبيهٌ بها.' : '.'));
+        return $this->back($file)->with('success', $target && ! $target->is($actor)
+            ? __('أُضيفت الملاحظة ووصل :name تنبيهٌ بها.', ['name' => $target->name])
+            : __('أُضيفت الملاحظة.'));
     }
 
     /** «عولجت» أو إعادة فتحها: الكاتب، والمنبَّه، والقائد، والمشرف */
@@ -108,7 +110,7 @@ class FileNoteController extends Controller
         $this->authorizeProject($project, $actor);
 
         if ($project->is_locked) {
-            return $this->back($file)->with('fail', 'المشروع مؤرشف بعد التقييم.');
+            return $this->back($file)->with('fail', __('المشروع مؤرشف بعد التقييم.'));
         }
 
         $isLeader = $actor instanceof Student
@@ -132,7 +134,7 @@ class FileNoteController extends Controller
             $this->notify($author, $project, $actor, 'عولجت ملاحظتك على «' . $file->title . '»');
         }
 
-        return $this->back($file)->with('success', $resolving ? 'عُلّمت الملاحظة: عولجت.' : 'أُعيد فتح الملاحظة.');
+        return $this->back($file)->with('success', $resolving ? __('عُلّمت الملاحظة: عولجت.') : __('أُعيد فتح الملاحظة.'));
     }
 
     /** الحذف: الكاتب، أو المشرف */
@@ -146,7 +148,7 @@ class FileNoteController extends Controller
 
         $note->delete();
 
-        return $this->back($file)->with('success', 'حُذفت الملاحظة.');
+        return $this->back($file)->with('success', __('حُذفت الملاحظة.'));
     }
 
     private function notify(Model $to, Project $project, Model $actor, string $msg): void

@@ -12,26 +12,26 @@
         <div class="dist-head">
             <span>
                 <i class="ti ti-file-alert me-1" aria-hidden="true"></i>
-                تقرير الاستيراد
+                {{ __('تقرير الاستيراد') }}
             </span>
             <span class="dist-head-note">
-                أُضيف {{ $report['added'] }} · تُخطّي {{ count($report['skipped']) + $report['errored'] }}
+                {{ __('أُضيف :added · تُخطّي :skipped', ['added' => $report['added'], 'skipped' => count($report['skipped']) + $report['errored']]) }}
             </span>
         </div>
 
         <p class="import-report-hint">
-            الصفوف أدناه لم تُضف. صحّحها في الملف ثم ارفعه مجدّداً — الصفوف المضافة لن تتكرّر، فالرقم الجامعي والبريد فريدان.
+            {{ __('الصفوف أدناه لم تُضف. صحّحها في الملف ثم ارفعه مجدّداً — الصفوف المضافة لن تتكرّر، فالرقم الجامعي والبريد فريدان.') }}
         </p>
 
         <ul class="import-report-list">
             @foreach (array_slice($report['skipped'], 0, 50, true) as $row => $reason)
-                <li><b>الصف {{ $row }}</b> {{ $reason }}</li>
+                <li><b>{{ __('الصف :n', ['n' => $row]) }}</b> {{ $reason }}</li>
             @endforeach
             @if (count($report['skipped']) > 50)
-                <li class="text-secondary">و{{ count($report['skipped']) - 50 }} صفّاً آخر.</li>
+                <li class="text-secondary">{{ __('و:n صفّاً آخر.', ['n' => count($report['skipped']) - 50]) }}</li>
             @endif
             @if ($report['errored'])
-                <li><b>{{ $report['errored'] }} صفّ</b> تعذّر حفظه لسبب غير متوقّع — التفصيل في سجلّ الخادم.</li>
+                <li><b>{{ __(':n صفّ', ['n' => $report['errored']]) }}</b> {{ __('تعذّر حفظه لسبب غير متوقّع — التفصيل في سجلّ الخادم.') }}</li>
             @endif
         </ul>
     </section>

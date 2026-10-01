@@ -6,11 +6,11 @@
 
     // موضع المشروع على مساره — المناقشة خطوة بين التنفيذ والدرجة
     $steps = [
-        ['key' => 'request', 'label' => 'تقديم الطلب'],
-        ['key' => 'accept', 'label' => 'موافقة المشرف'],
-        ['key' => 'work', 'label' => 'التنفيذ والمتابعة'],
-        ['key' => 'defense', 'label' => 'المناقشة'],
-        ['key' => 'grade', 'label' => 'الدرجة'],
+        ['key' => 'request', 'label' => __('تقديم الطلب')],
+        ['key' => 'accept', 'label' => __('موافقة المشرف')],
+        ['key' => 'work', 'label' => __('التنفيذ والمتابعة')],
+        ['key' => 'defense', 'label' => __('المناقشة')],
+        ['key' => 'grade', 'label' => __('الدرجة')],
     ];
     // موضع الخطوة **الحالية**: ما قبلها منجز. المكتمل ينتظر مناقشته (4)،
     // وبعد أن تجري ينتظر درجة اللجنة (5)، والمقيَّم أنهى المسار (6)
@@ -45,23 +45,23 @@
     <section class="grade-panel mb-4">
         <div class="grade-score">
             <span class="grade-num">{{ rtrim(rtrim(number_format($project->grade, 2), '0'), '.') }}</span>
-            <span class="grade-of">من 100</span>
+            <span class="grade-of">{{ __('من 100') }}</span>
         </div>
         <div class="grade-body">
             <div class="grade-head">
-                التقييم النهائي
+                {{ __('التقييم النهائي') }}
                 <span class="grade-label">{{ $project->grade_label }}</span>
                 @if ($project->isGradeLocked())
                     <span class="grade-locked">
                         <i class="ti ti-lock-check" aria-hidden="true"></i>
-                        معتمدة
+                        {{ __('معتمدة') }}
                     </span>
                 @endif
             </div>
             @if ($project->evaluation_note)
                 <p class="grade-note">{{ $project->evaluation_note }}</p>
             @endif
-            <div class="grade-date">قُيّم بتاريخ {{ $project->evaluated_at?->format('Y-m-d') }}</div>
+            <div class="grade-date">{{ __('قُيّم بتاريخ :date', ['date' => $project->evaluated_at?->format('Y-m-d')]) }}</div>
         </div>
     </section>
 @endif
@@ -84,7 +84,7 @@
         @include('dashboard.project._activity', [
             'activity' => $activity ?? collect(),
             'showProject' => false,
-            'emptyText' => 'يظهر هنا ما يحدث في مشروعكم: ملفات وتسليمات وردود المشرف ورسائل.',
+            'emptyText' => __('يظهر هنا ما يحدث في مشروعكم: ملفات وتسليمات وردود المشرف ورسائل.'),
         ])
 
         @include('dashboard.project._team-card', ['project' => $project, 'role' => 'student'])
@@ -94,7 +94,7 @@
             <div class="ctx-card" id="project-facts">
                 <div class="ctx-head">
                     <i class="ti ti-file-description" aria-hidden="true"></i>
-                    عن المشروع
+                    {{ __('عن المشروع') }}
                 </div>
                 @if ($project->description)
                     @include('dashboard.project._clamp', ['text' => $project->description])
@@ -105,11 +105,11 @@
                     && $project->group->contains(fn ($g) => $g->type === 'leader' && (int) $g->student_id === (int) auth('student')->id()))
                     <form action="{{ route('student.project.withdraw', $project->id) }}" method="POST" class="ctx-form">
                         @csrf
-                        <p class="withdraw-note">لم يردّ المشرف بعد؟ يمكنك سحب الطلب وتقديمه لمشرف آخر.</p>
+                        <p class="withdraw-note">{{ __('لم يردّ المشرف بعد؟ يمكنك سحب الطلب وتقديمه لمشرف آخر.') }}</p>
                         <button type="submit" class="btn btn-outline-danger w-100"
-                            onclick="return confirm('سحب الطلب يحذفه ويحرّر أعضاء الفريق، ويُبلَّغون بذلك. لا تراجع عنه. متابعة؟')">
+                            onclick="return confirm({{ Js::from(__('سحب الطلب يحذفه ويحرّر أعضاء الفريق، ويُبلَّغون بذلك. لا تراجع عنه. متابعة؟')) }})">
                             <i class="ti ti-arrow-back-up me-1" aria-hidden="true"></i>
-                            سحب الطلب
+                            {{ __('سحب الطلب') }}
                         </button>
                     </form>
                 @endif

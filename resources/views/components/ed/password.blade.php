@@ -20,8 +20,8 @@
         <button type="button" class="ed-password-toggle" data-ed-password-open @if ($invalid) hidden @endif>
             <i class="ti ti-key" aria-hidden="true"></i>
             <span>
-                <b>تعيين كلمة سر جديدة</b>
-                <small>كلمة السر الحالية تبقى كما هي ما لم تعيّن غيرها</small>
+                <b>{{ __('تعيين كلمة سر جديدة') }}</b>
+                <small>{{ __('كلمة السر الحالية تبقى كما هي ما لم تعيّن غيرها') }}</small>
             </span>
             <i class="ti ti-chevron-left" aria-hidden="true"></i>
         </button>
@@ -30,22 +30,22 @@
     <div class="ed-password-body" data-ed-password-body @unless ($open) hidden @endunless>
         <div class="ed-password-head">
             <label for="{{ $prefix }}-password" class="form-label {{ $create ? 'required' : '' }}">
-                {{ $create ? 'كلمة السر' : 'كلمة السر الجديدة' }}
+                {{ $create ? __('كلمة السر') : __('كلمة السر الجديدة') }}
             </label>
             @if ($create)
-                <span class="ed-hint m-0">يُبلَّغ بها صاحب الحساب ليدخل بها أول مرة</span>
+                <span class="ed-hint m-0">{{ __('يُبلَّغ بها صاحب الحساب ليدخل بها أول مرة') }}</span>
             @else
-                <button type="button" class="ed-link" data-ed-password-close>إلغاء — إبقاء الحالية</button>
+                <button type="button" class="ed-link" data-ed-password-close>{{ __('إلغاء — إبقاء الحالية') }}</button>
             @endif
         </div>
         <div class="ed-password-input">
             <input id="{{ $prefix }}-password" name="password" type="password" minlength="8" maxlength="60"
                 class="form-control {{ $invalid ? 'is-invalid' : '' }}" autocomplete="new-password" dir="ltr"
                 data-ed-password-input @if ($create) required @else disabled @endif>
-            <button type="button" class="ed-icon-btn" data-ed-password-show title="إظهار" aria-label="إظهار كلمة السر">
+            <button type="button" class="ed-icon-btn" data-ed-password-show title="{{ __('إظهار') }}" aria-label="{{ __('إظهار كلمة السر') }}">
                 <i class="ti ti-eye" aria-hidden="true"></i>
             </button>
-            <button type="button" class="ed-icon-btn" data-ed-password-generate title="توليد كلمة سر قوية" aria-label="توليد كلمة سر قوية">
+            <button type="button" class="ed-icon-btn" data-ed-password-generate title="{{ __('توليد كلمة سر قوية') }}" aria-label="{{ __('توليد كلمة سر قوية') }}">
                 <i class="ti ti-wand" aria-hidden="true"></i>
             </button>
         </div>
@@ -54,7 +54,7 @@
         @endif
         <div class="ed-strength" data-ed-strength data-level="0">
             <span></span><span></span><span></span><span></span>
-            <small data-ed-strength-label>8 أحرف على الأقل</small>
+            <small data-ed-strength-label>{{ __('8 أحرف على الأقل') }}</small>
         </div>
         @if ($invalid)
             <div class="invalid-feedback d-block">{{ $errors->first('password') }}</div>

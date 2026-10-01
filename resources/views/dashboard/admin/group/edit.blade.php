@@ -1,10 +1,10 @@
 @extends('layouts.admin.admin')
-@section('title', 'تعديل المجموعة')
+@section('title', __('تعديل المجموعة'))
 
 @section('crumbs')
-    <x-crumb :href="route('admin.groups.index')">المجموعات</x-crumb>
+    <x-crumb :href="route('admin.groups.index')">{{ __('المجموعات') }}</x-crumb>
     <x-crumb :href="route('admin.groups.show', $project->id)">{{ $project->title }}</x-crumb>
-    <x-crumb>تعديل</x-crumb>
+    <x-crumb>{{ __('تعديل') }}</x-crumb>
 @endsection
 
 @section('content')
@@ -18,14 +18,14 @@
 
     {{-- الصفحة كانت لا تذكر أي مجموعة تُعدَّل إطلاقاً — تفتحها فلا تعرف
          أين أنت. عنوان المشروع صار في الترويسة. --}}
-    <x-page-header title="تعديل المجموعة"
+    <x-page-header title="{{ __('تعديل المجموعة') }}"
         subtitle="{{ $project->title }}">
         {{-- زر «المجموعات» حُذف: المسار في الهيدر يؤدّي وظيفته، وكان
              موجوداً أصلاً لأن المسار كان ناقصاً. --}}
         <x-slot:actions>
             <a href="{{ route('admin.groups.show', $project->id) }}" class="btn btn-outline-primary">
                 <i class="ti ti-eye me-1" aria-hidden="true"></i>
-                عرض التفاصيل
+                {{ __('عرض التفاصيل') }}
             </a>
         </x-slot:actions>
     </x-page-header>
@@ -37,7 +37,7 @@
             <div class="ctx-card">
                 <div class="ctx-head">
                     <i class="ti ti-users-group" aria-hidden="true"></i>
-                    أعضاء الفريق
+                    {{ __('أعضاء الفريق') }}
                     <span class="ctx-badge {{ $typeMax && $currentCount > $typeMax ? 'is-over' : '' }}">
                         {{ $currentCount }}@if ($typeMax)<small>/{{ $typeMax }}</small>@endif
                     </span>
@@ -50,9 +50,9 @@
                         <x-avatar :user="$group->student" class="ctx-avatar" />
                         <span class="ctx-person-body">
                             <span class="ctx-person-name">
-                                {{ $group->student?->name ?? 'طالب محذوف' }}
+                                {{ $group->student?->name ?? __('طالب محذوف') }}
                                 @if ($group->type === 'leader')
-                                    <span class="ctx-tag">قائد</span>
+                                    <span class="ctx-tag">{{ __('قائد') }}</span>
                                 @endif
                             </span>
                             <span class="ctx-person-meta" dir="ltr">{{ $group->student?->university_id ?? '—' }}</span>
@@ -63,8 +63,8 @@
                                 <form action="{{ route('admin.groups.members.leader', [$project->id, $group->id]) }}"
                                     method="post">
                                     @csrf
-                                    <button type="submit" class="btn-action" title="تعيينه قائداً للفريق"
-                                        aria-label="تعيينه قائداً للفريق">
+                                    <button type="submit" class="btn-action" title="{{ __('تعيينه قائداً للفريق') }}"
+                                        aria-label="{{ __('تعيينه قائداً للفريق') }}">
                                         <i class="ti ti-crown" aria-hidden="true"></i>
                                     </button>
                                 </form>
@@ -74,8 +74,8 @@
                                     <button type="button" class="btn-action btn-action--danger btn-remove-member"
                                         data-bs-toggle="modal" data-bs-target="#removeMemberModal"
                                         data-action="{{ route('admin.groups.members.remove', [$project->id, $group->id]) }}"
-                                        data-name="{{ $group->student?->name ?? 'طالب محذوف' }}"
-                                        title="إزالة من الفريق" aria-label="إزالة من الفريق">
+                                        data-name="{{ $group->student?->name ?? __('طالب محذوف') }}"
+                                        title="{{ __('إزالة من الفريق') }}" aria-label="{{ __('إزالة من الفريق') }}">
                                         <i class="ti ti-user-minus" aria-hidden="true"></i>
                                     </button>
                                 @endif
@@ -83,7 +83,7 @@
                                 {{-- القائد يُنقل قبل أن يُزال: فريق بلا
                                      قائد لا مُخاطَب له --}}
                                 <span class="btn-action is-disabled"
-                                    title="قائد الفريق — عيّن قائداً آخر أولاً لتتمكّن من إزالته"
+                                    title="{{ __('قائد الفريق — عيّن قائداً آخر أولاً لتتمكّن من إزالته') }}"
                                     aria-disabled="true">
                                     <i class="ti ti-user-minus" aria-hidden="true"></i>
                                 </span>
@@ -96,7 +96,7 @@
             <div class="ctx-card">
                 <div class="ctx-head">
                     <i class="ti ti-user-star" aria-hidden="true"></i>
-                    المشرف الحالي
+                    {{ __('المشرف الحالي') }}
                 </div>
                 @php
                     $sv = $project->supervisor;
@@ -113,7 +113,7 @@
                 <div class="ctx-person">
                     <x-avatar :user="$sv" class="ctx-avatar" />
                     <span class="ctx-person-body">
-                        <span class="ctx-person-name">{{ $sv->name ?: 'بلا مشرف' }}</span>
+                        <span class="ctx-person-name">{{ $sv->name ?: __('بلا مشرف') }}</span>
                         <span class="ctx-person-meta">{{ $sv->specialize->name ?? '—' }}</span>
                     </span>
                 </div>
@@ -122,7 +122,7 @@
                      \u200E.load-cell\u200E نفسه المستعمل في جدول المشرفين. --}}
                 @if ($sv->id)
                     <a href="{{ route('admin.supervisors.groups', $sv->id) }}" class="ctx-load">
-                        <span class="ctx-load-label">عبء الإشراف هذا الفصل</span>
+                        <span class="ctx-load-label">{{ __('عبء الإشراف هذا الفصل') }}</span>
                         <span class="load-cell {{ $loadState }}">
                             <span class="load-figure">{{ $used }}<small>/{{ $max }}</small></span>
                             <span class="load-bar">
@@ -135,7 +135,7 @@
 
                 {{-- روابط لا نصوص تُنسخ يدوياً: الجوال يُطلَب من الهاتف --}}
                 <dl class="ctx-facts">
-                    <dt>البريد</dt>
+                    <dt>{{ __('البريد') }}</dt>
                     <dd>
                         @if ($sv->email)
                             <a href="mailto:{{ $sv->email }}" dir="ltr">{{ $sv->email }}</a>
@@ -143,7 +143,7 @@
                             —
                         @endif
                     </dd>
-                    <dt>الجوال</dt>
+                    <dt>{{ __('الجوال') }}</dt>
                     <dd>
                         @if ($sv->phone)
                             <a href="tel:{{ $sv->phone }}" dir="ltr">{{ $sv->phone }}</a>
@@ -160,7 +160,7 @@
             <div class="card-header">
                 <h3 class="card-title">
                     <i class="ti ti-pencil me-2" aria-hidden="true"></i>
-                    التعديلات
+                    {{ __('التعديلات') }}
                 </h3>
             </div>
             <div class="card-body">
@@ -170,16 +170,17 @@
                     <div class="limit-note {{ $isOver ? 'is-warn' : '' }}" role="status">
                         <i class="ti {{ $isOver ? 'ti-alert-triangle' : 'ti-info-circle' }}" aria-hidden="true"></i>
                         <span>
-                            نوع «{{ $project->project_type->name }}» يسمح بـ
-                            @if ($typeMin) <b>{{ $typeMin }}</b> إلى @endif <b>{{ $typeMax }}</b> أعضاء،
-                            والفريق الآن <b>{{ $currentCount }}</b>.
+                            @if ($typeMin)
+                                {!! __('نوع «:type» يسمح بـ :min إلى :max أعضاء، والفريق الآن :count.', ['type' => e($project->project_type->name), 'min' => '<b>' . e($typeMin) . '</b>', 'max' => '<b>' . e($typeMax) . '</b>', 'count' => '<b>' . e($currentCount) . '</b>']) !!}
+                            @else
+                                {!! __('نوع «:type» يسمح بـ :max أعضاء، والفريق الآن :count.', ['type' => e($project->project_type->name), 'max' => '<b>' . e($typeMax) . '</b>', 'count' => '<b>' . e($currentCount) . '</b>']) !!}
+                            @endif
                             {{-- التحذير يحمل مخرجه: كان يصف التجاوز ولا
                                  يقول ما يُفعل، ولم تكن الإزالة ممكنة أصلاً --}}
                             @if ($isOver)
-                                أزِل {{ $currentCount - $typeMax }} من الأعضاء من اللوح المجاور،
-                                أو اتركه استثناءً إدارياً.
+                                {{ __('أزِل :n من الأعضاء من اللوح المجاور، أو اتركه استثناءً إدارياً.', ['n' => $currentCount - $typeMax]) }}
                             @elseif ($overLimit)
-                                الفريق مكتمل — أي إضافة تتجاوز الحد، وهي مسموحة إدارياً للحالات الاستثنائية.
+                                {{ __('الفريق مكتمل — أي إضافة تتجاوز الحد، وهي مسموحة إدارياً للحالات الاستثنائية.') }}
                             @endif
                         </span>
                     </div>
@@ -191,11 +192,11 @@
                     <input type="hidden" name="id" value="{{ $project->id }}">
 
                     <div class="mb-4">
-                        <label class="form-label" for="supervisor_id">المشرف</label>
+                        <label class="form-label" for="supervisor_id">{{ __('المشرف') }}</label>
                         {{-- كان خياراً فارغاً بلا تسمية، والمشرف الحالي غير محدَّد،
                              فلا يُعرف معنى ترك الحقل فارغاً --}}
                         <select class="form-select" name="supervisor_id" id="supervisor_id">
-                            <option value="">— إبقاء المشرف الحالي ({{ $project->supervisor->name ?: 'بلا مشرف' }}) —</option>
+                            <option value="">— {{ __('إبقاء المشرف الحالي (:name)', ['name' => $project->supervisor->name ?: __('بلا مشرف')]) }} —</option>
                             {{-- كانت أسماء مجرّدة: تنقل مجموعة إلى مشرف
                                  بلا أن تعرف إن كان يحمل واحدة أو ستّاً،
                                  أو إن كان قد تجاوز حدّه أصلاً --}}
@@ -204,8 +205,8 @@
                                     $svUsed = (int) ($supervisor->projects_count ?? 0);
                                     $svMax = (int) $supervisor->max_group;
                                     $svNote = match (true) {
-                                        $svMax > 0 && $svUsed > $svMax => ' — تجاوز حدّه',
-                                        $svMax > 0 && $svUsed === $svMax => ' — مكتمل',
+                                        $svMax > 0 && $svUsed > $svMax => ' — ' . __('تجاوز حدّه'),
+                                        $svMax > 0 && $svUsed === $svMax => ' — ' . __('مكتمل'),
                                         default => '',
                                     };
                                 @endphp
@@ -215,23 +216,22 @@
                             @endforeach
                         </select>
                         <div class="form-hint">
-                            الرقم بجانب الاسم هو مجموعاته هذا الفصل من حدّه الأقصى.
-                            اتركه كما هو إن لم ترد تغيير المشرف.
+                            {{ __('الرقم بجانب الاسم هو مجموعاته هذا الفصل من حدّه الأقصى. اتركه كما هو إن لم ترد تغيير المشرف.') }}
                         </div>
                     </div>
 
                     <div class="mb-2">
-                        <label class="form-label">إضافة أعضاء</label>
+                        <label class="form-label">{{ __('إضافة أعضاء') }}</label>
                     </div>
                     @include('dashboard.student.group')
 
                     <div class="form-footer">
                         <button name="registerbtn" type="submit" class="btn btn-primary">
                             <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>
-                            حفظ التعديلات
+                            {{ __('حفظ التعديلات') }}
                         </button>
                         <a href="{{ route('admin.groups.show', $project->id) }}" class="btn btn-ghost-secondary">
-                            إلغاء
+                            {{ __('إلغاء') }}
                         </a>
                     </div>
                 </form>
@@ -246,9 +246,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="removeMemberLabel">
-                        إزالة <span class="text-danger" id="remove-member-name"></span> من الفريق
+                        {!! __('إزالة :name من الفريق', ['name' => '<span class="text-danger" id="remove-member-name"></span>']) !!}
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('إغلاق') }}"></button>
                 </div>
 
                 <form method="POST" id="remove-member-form">
@@ -259,24 +259,24 @@
                         <ul class="archive-effects">
                             <li class="is-stop">
                                 <i class="ti ti-circle-x" aria-hidden="true"></i>
-                                يخرج من هذا المشروع ويصير بلا فريق
+                                {{ __('يخرج من هذا المشروع ويصير بلا فريق') }}
                             </li>
                             <li class="is-keep">
                                 <i class="ti ti-circle-check" aria-hidden="true"></i>
-                                حسابه وبياناته تبقى كما هي، ويمكن ضمّه لفريق آخر
+                                {{ __('حسابه وبياناته تبقى كما هي، ويمكن ضمّه لفريق آخر') }}
                             </li>
                             <li class="is-keep">
                                 <i class="ti ti-circle-check" aria-hidden="true"></i>
-                                يُسجَّل الإجراء باسمك في سجلّ التدقيق
+                                {{ __('يُسجَّل الإجراء باسمك في سجلّ التدقيق') }}
                             </li>
                         </ul>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="button" class="btn" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
                         <button type="submit" class="btn btn-danger">
                             <i class="ti ti-user-minus me-1" aria-hidden="true"></i>
-                            إزالة من الفريق
+                            {{ __('إزالة من الفريق') }}
                         </button>
                     </div>
                 </form>
@@ -311,8 +311,8 @@
                     var total = current + selected;
                     if (total > max) {
                         var ok = confirm(
-                            'سيصبح عدد أعضاء الفريق ' + total + ' وهو أكبر من الحد الأقصى (' + max + ').\n\n' +
-                            'هل تريد المتابعة كاستثناء إداري؟'
+                            @json(__('سيصبح عدد أعضاء الفريق :total وهو أكبر من الحد الأقصى (:max).')).replace(':total', total).replace(':max', max) + '\n\n' +
+                            @json(__('هل تريد المتابعة كاستثناء إداري؟'))
                         );
                         if (!ok) e.preventDefault();
                     }

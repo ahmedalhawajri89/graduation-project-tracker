@@ -39,7 +39,7 @@ class AdminController extends Controller
 
             ->addColumn('identity', function ($row) use ($currentId) {
                 $you = (int) $row->id === $currentId
-                    ? '<span class="cell-you">أنت</span>'
+                    ? '<span class="cell-you">' . e(__('أنت')) . '</span>'
                     : '';
 
                 return '<div class="cell-identity">'
@@ -73,7 +73,7 @@ class AdminController extends Controller
 
                 $editBtn = "<button type='button' class='btn-action btn-edit' data-bs-toggle='offcanvas' data-bs-target='#editDrawer'"
                     . " data-record='" . EditRecord::attr(EditRecord::admin($row)) . "'"
-                    . " title='تعديل' aria-label='تعديل " . e($row->name) . "'><i class='ti ti-pencil'></i></button>";
+                    . " title='" . e(__('تعديل')) . "' aria-label='" . e(__('تعديل :name', ['name' => $row->name])) . "'><i class='ti ti-pencil'></i></button>";
 
                 // لا زرّ حذف على صفّك ولا على آخر حساب — والخادم يحرس
                 // الحالتين أيضاً في \u200Edestroy()\u200E، فالواجهة تريح لا تحمي
@@ -81,7 +81,7 @@ class AdminController extends Controller
 
                 $deleteBtn = $deletable
                     ? "<button type='button' class='btn-action btn-action--danger btn-delete' data-bs-toggle='modal' data-bs-target='#deleteModal'
-                              data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' title='حذف'>
+                              data-id='" . e($row->id) . "' data-name='" . e($row->name) . "' title='" . e(__('حذف')) . "'>
                               <i class='ti ti-trash'></i>
                           </button>"
                     : '';
@@ -107,12 +107,12 @@ class AdminController extends Controller
             Audit::record('admin.created', $created);
 
             return redirect()->route("admin.administrators.index")
-                ->with('success', "تمت إضافة «{$created->name}»")
+                ->with('success', __('تمت إضافة «:name»', ['name' => $created->name]))
                 ->with('reopen_create', $request->boolean('another'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
         }
 
     }
@@ -122,7 +122,7 @@ class AdminController extends Controller
         try {
             $admin = Admin::where('id', $request->id)->first();
             if (!$admin) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             $data = $request->except('password');
@@ -131,11 +131,11 @@ class AdminController extends Controller
             }
 
             $admin->update($data);
-            return redirect()->back()->with('success', "تم تعديل السجل بنجاح");
+            return redirect()->back()->with('success', __('تم تعديل السجل بنجاح'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 
@@ -146,7 +146,7 @@ class AdminController extends Controller
         try {
             $admin = Admin::where('id', request()->id)->first();
             if (!$admin) {
-                return redirect()->back()->with('fail', 'لا توجد بيانات!!!');
+                return redirect()->back()->with('fail', __('لا توجد بيانات!!!'));
             }
 
             // حارسان على الخادم لا في الواجهة وحدها: الطلب يصل بـ
@@ -155,25 +155,25 @@ class AdminController extends Controller
             // حذف حسابك يُخرجك من نظامك أثناء استعماله
             if ((int) $admin->id === (int) auth('admin')->id()) {
                 return redirect()->back()->with('fail',
-                    'لا يمكنك حذف حسابك أنت. اطلب من مسؤول آخر ذلك.');
+                    __('لا يمكنك حذف حسابك أنت. اطلب من مسؤول آخر ذلك.'));
             }
 
             // وحذف الأخير يقفل اللوحة على الجميع بلا طريق للتراجع —
             // لا استرجاع ولا «نسيت كلمة المرور» لحساب لم يعد موجوداً
             if (Admin::count() <= 1) {
                 return redirect()->back()->with('fail',
-                    'هذا آخر حساب مسؤول — حذفه يقفل لوحة التحكم على الجميع بلا رجعة.');
+                    __('هذا آخر حساب مسؤول — حذفه يقفل لوحة التحكم على الجميع بلا رجعة.'));
             }
 
             // قبل الحذف: بعده يفقد الحساب اسمه ومفتاحه
             Audit::record('admin.deleted', $admin);
 
             $admin->delete();
-            return redirect()->back()->with('success', "تم حذف السجل بنجاح");
+            return redirect()->back()->with('success', __('تم حذف السجل بنجاح'));
 
         } catch (\Exception$ex) {
 
-            return back()->with('fail', 'حدث خطأ .. الرجاء المحاولة مرة أخرى');
+            return back()->with('fail', __('حدث خطأ .. الرجاء المحاولة مرة أخرى'));
 
         }
 
