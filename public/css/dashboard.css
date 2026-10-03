@@ -9926,3 +9926,25 @@ a.dsv-slides:hover { border-color: #34d399; }
     .msg.is-arriving, .chat-jump { animation: none; }
     .msg.is-removing { transition: none; }
 }
+
+/* ==================== رفع الملفات بشريط تقدّم (upload.js) ==================== */
+.up-progress { flex: 1 1 100%; margin-top: 12px; padding: 10px 12px; border: 1px solid var(--ds-border); border-radius: 12px; background: var(--ds-surface); }
+.up-progress[hidden] { display: none; }
+.up-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.up-top[hidden], .up-bar[hidden] { display: none; }
+.up-pct { font-size: 15px; font-weight: 800; color: var(--ds-brand-600); font-variant-numeric: tabular-nums; min-width: 42px; }
+.up-meta { flex: 1; min-width: 0; font-size: 12.5px; color: var(--ds-ink-mute); font-variant-numeric: tabular-nums; }
+.up-cancel { padding: 3px 12px; border: 1px solid var(--ds-border-strong); border-radius: 999px; background: var(--ds-surface); color: var(--ds-ink-soft); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.up-cancel:hover { border-color: var(--ds-danger); color: var(--ds-danger); }
+.up-cancel[hidden] { display: none; }
+.up-bar { height: 6px; border-radius: 99px; background: var(--ds-accent-soft); overflow: hidden; }
+.up-bar span { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--ds-brand-600); transition: width .2s linear; }
+.up-progress.is-saving .up-bar span { background: linear-gradient(90deg, var(--ds-brand-600), #60a5fa, var(--ds-brand-600)); background-size: 200% 100%; animation: up-saving 1.2s linear infinite; }
+@keyframes up-saving { to { background-position: -200% 0; } }
+.up-progress.is-error { border-color: #fecaca; background: #fff1f2; }
+.up-msg { margin: 0; font-size: 13px; color: #be123c; }
+form.is-uploading .file-drop, form.is-uploading input[type="file"] + label { pointer-events: none; opacity: .7; }
+@media (prefers-reduced-motion: reduce) {
+    .up-bar span { transition: none; }
+    .up-progress.is-saving .up-bar span { animation: none; }
+}

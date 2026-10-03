@@ -73,7 +73,7 @@
                 <div class="stage-field is-wide">
                     <span class="form-label">{{ __('القالب') }} <small>{{ __('(اختياري — يراه الطلاب داخل المرحلة)') }}</small></span>
                     <label class="file-drop is-compact" for="new-template" data-template-drop>
-                        <input type="file" name="template" id="new-template" class="file-drop-input"
+                        <input type="file" data-max-mb="10" name="template" id="new-template" class="file-drop-input"
                             accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar,.png,.jpg,.jpeg">
                         <span class="file-drop-idle" data-idle>
                             <span class="file-drop-icon" aria-hidden="true"><i class="ti ti-file-upload"></i></span>
@@ -235,7 +235,7 @@
                                 <div class="stage-field is-wide">
                                     <span class="form-label">{{ __('القالب') }}</span>
                                     <label class="file-drop is-compact" for="f-{{ $stage->id }}" data-template-drop>
-                                        <input type="file" name="template" id="f-{{ $stage->id }}" class="file-drop-input"
+                                        <input type="file" data-max-mb="10" name="template" id="f-{{ $stage->id }}" class="file-drop-input"
                                             accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar,.png,.jpg,.jpeg">
                                         <span class="file-drop-idle" data-idle>
                                             <b>{{ $stage->hasTemplate() ? __('استبدل «:name»', ['name' => $stage->template_name]) : __('أضف قالباً') }} — <u>{{ __('اختر ملفاً') }}</u></b>

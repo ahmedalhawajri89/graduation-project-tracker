@@ -73,7 +73,7 @@
 
             {{-- المنطقة نفسها هي الدعوة والفعل: نقرة أو إفلات --}}
             <label class="file-drop" id="file-drop" for="file-input">
-                <input type="file" name="file" id="file-input" required class="file-drop-input"
+                <input type="file" data-max-mb="10" name="file" id="file-input" required class="file-drop-input"
                     accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar,.png,.jpg,.jpeg">
 
                 <span class="file-drop-idle" id="file-drop-idle">

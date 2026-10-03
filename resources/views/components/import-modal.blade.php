@@ -54,7 +54,7 @@
 
                     {{-- منطقة الإفلات: الـ input نفسه يغطّيها، فالنقر والإفلات ولوحة المفاتيح تعمل بلا سكربت --}}
                     <label class="im-drop {{ $failed ? 'is-invalid' : '' }}" data-drop>
-                        <input type="file" name="attachment" accept=".xlsx,.xls" required data-drop-input
+                        <input type="file" data-max-mb="5" name="attachment" accept=".xlsx,.xls" required data-drop-input
                             aria-describedby="im-drop-hint">
                         <span class="im-drop-empty">
                             <i class="ti ti-cloud-upload" aria-hidden="true"></i>

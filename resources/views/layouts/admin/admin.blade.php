@@ -111,6 +111,8 @@
     <script src="{{ asset('vendor/tabler/js/tabler.min.js') }}"></script>
     <script src="{{ asset('js/topbar.js') }}?v={{ filemtime(public_path('js/topbar.js')) }}"></script>
     <script src="{{ asset('js/dashboard-mobile.js') }}?v={{ filemtime(public_path('js/dashboard-mobile.js')) }}"></script>
+    {{-- رفع الملفات بشريط تقدّم — قبل سكربت «حالة التحميل» أدناه ليسبقه --}}
+    <script src="{{ asset('js/upload.js') }}?v={{ filemtime(public_path('js/upload.js')) }}"></script>
     {{-- الجرس وشارات الشريط الجانبي تتحدّث دون إعادة تحميل (LiveController) --}}
     <div hidden data-live-endpoint="{{ route('live') }}" data-live-now="{{ now()->toIso8601String() }}"></div>
     <script src="{{ asset('js/live.js') }}?v={{ filemtime(public_path('js/live.js')) }}"></script>

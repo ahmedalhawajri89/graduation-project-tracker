@@ -12,5 +12,14 @@
     "لديك بيانات لم تُحفظ. إغلاق الدرج وتجاهلها؟": "You have unsaved changes. Close the drawer and discard them?",
     "مقبولة": "Fair",
     "إشعار جديد": "New notification",
-    "إغلاق": "Close"
+    "إغلاق": "Close",
+    "نحو :n ثانية": "about :n s left",
+    "نحو :n دقيقة": "about :n min left",
+    "إلغاء": "Cancel",
+    "الملف «:name» حجمه :size — الحدّ :max ميغابايت.": "“:name” is :size — the limit is :max MB.",
+    ":done من :total": ":done of :total",
+    "جارٍ الحفظ…": "Saving…",
+    "الملف أكبر مما يقبله الخادم.": "The file is larger than the server accepts.",
+    "تعذّر الرفع — حاول مرة أخرى.": "The upload failed — try again.",
+    "انقطع الاتصال أثناء الرفع — الملف ما زال مختاراً، أعد المحاولة.": "The connection dropped during the upload — the file is still selected, try again."
 }

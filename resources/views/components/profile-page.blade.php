@@ -96,7 +96,7 @@
                 <div class="profile-form avatar-card">
                     <form action="{{ $avatarStore }}" method="POST" enctype="multipart/form-data" id="avatar-form">
                         @csrf
-                        <input type="file" name="avatar" id="avatar-input"
+                        <input type="file" data-max-mb="2" name="avatar" id="avatar-input"
                             accept="image/jpeg,image/png,image/webp" class="visually-hidden">
 
                         <label for="avatar-input" class="avatar-drop" id="avatar-drop">

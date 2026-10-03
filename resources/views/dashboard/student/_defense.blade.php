@@ -108,9 +108,9 @@
                     </a>
                 @endif
                 @if ($canUpload)
-                    <form action="{{ route('student.presentation.store', $defense->id) }}" method="post" enctype="multipart/form-data" data-slides-form>
+                    <form action="{{ route('student.presentation.store', $defense->id) }}" method="post" enctype="multipart/form-data" data-slides-form data-progress-into="#presentation">
                         @csrf
-                        <input type="file" name="presentation" id="sdf-slides-file" class="visually-hidden" accept=".pdf,.ppt,.pptx" required>
+                        <input type="file" data-max-mb="20" name="presentation" id="sdf-slides-file" class="visually-hidden" accept=".pdf,.ppt,.pptx" required>
                         <label for="sdf-slides-file" class="btn {{ $slides ? 'btn-outline-primary' : 'btn-primary' }} btn-sm m-0">
                             <i class="ti ti-upload me-1" aria-hidden="true"></i>{{ $slides ? __('استبدال') : __('رفع العرض') }}
                         </label>
@@ -180,7 +180,8 @@
                 var label = form.querySelector('label');
                 label.classList.add('disabled');
                 label.textContent = @json(__('جارٍ الرفع…'));
-                form.submit();
+                // requestSubmit لا submit: الأول يمرّ بشريط التقدّم (upload.js)
+                form.requestSubmit();
             });
         })();
     </script>
