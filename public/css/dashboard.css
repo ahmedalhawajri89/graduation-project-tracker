@@ -9948,3 +9948,28 @@ form.is-uploading .file-drop, form.is-uploading input[type="file"] + label { poi
     .up-bar span { transition: none; }
     .up-progress.is-saving .up-bar span { animation: none; }
 }
+
+/* ==================== النسخة التجريبية (DEMO_MODE) ==================== */
+.demo-try { margin-top: 18px; padding: 14px; border: 1.5px dashed var(--ds-brand-200); border-radius: 16px; background: var(--ds-accent-soft); }
+.demo-try-title { display: flex; align-items: center; gap: 6px; margin: 0 0 10px; font-size: 13px; font-weight: 800; color: var(--ds-accent-strong); }
+.demo-try-roles { display: grid; gap: 8px; }
+.demo-try-roles form { margin: 0; }
+.demo-role { width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--ds-border); border-radius: 12px; background: var(--ds-surface); color: var(--ds-ink); font: inherit; text-align: start; cursor: pointer; transition: border-color var(--ds-dur-fast) ease, box-shadow var(--ds-dur-fast) ease, transform var(--ds-dur-fast) var(--ds-ease); }
+.demo-role:hover, .demo-role:focus-visible { border-color: var(--ds-brand-600); box-shadow: 0 10px 22px -16px rgba(37, 99, 235, .7); transform: translateY(-1px); outline: 0; }
+.demo-role-icon { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--ds-accent-soft); color: var(--ds-brand-600); font-size: 18px; }
+.demo-role.is-supervisor .demo-role-icon { background: #f0fdfa; color: #0f766e; }
+.demo-role.is-admin .demo-role-icon { background: #f5f3ff; color: #6d28d9; }
+.demo-role-text { display: flex; flex-direction: column; min-width: 0; }
+.demo-role-text b { font-size: 13.5px; }
+.demo-role-text small { font-size: 11.5px; color: var(--ds-ink-mute); }
+
+.demo-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px 14px; padding: 7px 20px; background: linear-gradient(90deg, #eff6ff, #f5f3ff); border-bottom: 1px solid var(--ds-brand-200); font-size: 12.5px; color: var(--ds-accent-strong); }
+.demo-bar-note { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+.demo-bar-roles { display: inline-flex; align-items: center; gap: 6px; }
+.demo-bar-roles small { color: var(--ds-ink-mute); }
+.demo-bar-roles form { margin: 0; }
+.demo-chip { padding: 3px 12px; border: 1px solid var(--ds-brand-200); border-radius: 999px; background: var(--ds-surface); color: var(--ds-accent-strong); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.demo-chip:hover { border-color: var(--ds-brand-600); }
+.demo-chip.is-on { background: var(--ds-brand-600); border-color: var(--ds-brand-600); color: #fff; cursor: default; }
+@media (max-width: 640px) { .demo-bar { padding: 7px 12px; } .demo-bar-note { font-size: 11.5px; } }
+@media (prefers-reduced-motion: reduce) { .demo-role:hover { transform: none; } }

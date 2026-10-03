@@ -32,6 +32,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
 
+        // النسخة التجريبية: لا بريد حقيقي إلى عناوين وهمية — إلى السجلّ
+        if (config('demo.enabled')) {
+            config(['mail.default' => 'log']);
+        }
+
         /*
         | الترجمة: النصّ العربي نفسه مفتاح (__('المناقشات'))، فلا ملف ar.json
         | والعربية لا تنكسر أبداً. الإنجليزية في ملف JSON لكل جزء من الواجهة

@@ -137,6 +137,33 @@ vendor/bin/phpunit
    (environment, security, mail, queue, migrations, first admin, active semester, writable paths,
    upload limits, caches) and exits non-zero on anything critical. Run it after each deploy.
 
+### Live demo (demo mode)
+
+A public copy for a portfolio, where visitors try the platform without an account. It is off
+unless `DEMO_MODE=true` is set, and nothing below happens without it.
+
+- **One-click sign-in.** The sign-in page shows *Try as a student / supervisor / admin*. The
+  accounts are picked from the data (a team leader whose project reached its defense, that
+  project's supervisor, the first admin), or set them with `DEMO_STUDENT`, `DEMO_SUPERVISOR`,
+  `DEMO_ADMIN` (emails).
+- **Role switch.** A thin bar on every dashboard page switches between the three roles without
+  signing out, so a visitor can send a message as the student and read it as the supervisor.
+- **Protected.** Profile, password and avatar changes, password resets, deleting users, semesters
+  and specializations, imports and the demo accounts themselves are refused with a short notice.
+  Uploads are capped at `DEMO_UPLOAD_MB` (2). Mail goes to the log.
+- **Nightly reset.** `php artisan demo:snapshot` saves the current database and uploaded files to
+  `database/demo/` (run it once on the curated data and commit it). On the demo server,
+  `php artisan demo:reset` restores it — it refuses to run without `DEMO_MODE` — and shifts every
+  date by whole weeks since the snapshot, so the showcased defense stays upcoming and on a working
+  day. The scheduler runs it daily at `DEMO_RESET_AT` (03:00).
+
+```bash
+# on the demo server, after deploying
+DEMO_MODE=true                 # in .env
+php artisan migrate --force
+php artisan demo:reset         # load the snapshot
+```
+
 ### Next.js front end
 
 ```bash

@@ -440,5 +440,19 @@
     "تم استقبال رسالة جديدة": "A new message was received",
     "الفصل الأول": "First semester",
     "الفصل الثاني": "Second semester",
-    "الفصل الصيفي": "Summer semester"
+    "الفصل الصيفي": "Summer semester",
+    "جرّب المنصّة بنقرة — بلا تسجيل": "Try the platform in one click — no sign-up",
+    "جرّب كطالب": "Try as a student",
+    "جرّب كمشرف": "Try as a supervisor",
+    "جرّب كمسؤول": "Try as an admin",
+    "مشروع ومراحل ونقاش ومناقشة": "Project, milestones, chat and defense",
+    "مجموعات وطلبات ولجنة مناقشة": "Groups, requests and a defense committee",
+    "مخطِّط المناقشات والإحصائيات": "Defense planner and statistics",
+    "النسخة التجريبية": "Demo",
+    "نسخة تجريبية — جرّب بحرّية، البيانات تُعاد كل ليلة": "Demo — try anything, the data resets every night",
+    "شاهد كـ": "View as",
+    "مسؤول": "Administrator",
+    "هذا الإجراء معطّل في النسخة التجريبية — جرّب غيره بحرّية.": "This action is disabled in the demo — feel free to try anything else.",
+    "حساب التجربة لا يُعدَّل — جرّب على حساب آخر.": "The demo accounts can't be edited — try another account.",
+    "في النسخة التجريبية الملف حتى :n ميغابايت.": "In the demo, files are limited to :n MB."
 }

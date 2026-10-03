@@ -34,6 +34,11 @@ class Kernel extends ConsoleKernel
         // تذكير الفريق ولجنة المناقشة: قبلها بيوم وصباح يومها
         $schedule->command('defenses:remind')->dailyAt('08:00')->withoutOverlapping();
 
+        // النسخة التجريبية: ما فعله الزوار يزول، والبيانات تعود للّقطة كل ليلة
+        if (config('demo.enabled')) {
+            $schedule->command('demo:reset')->dailyAt(config('demo.reset_at', '03:00'))->withoutOverlapping();
+        }
+
     }
 
     /**

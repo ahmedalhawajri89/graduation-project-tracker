@@ -42,6 +42,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\SecurityHeaders::class,
             \App\Http\Middleware\UploadResponse::class,
+            \App\Http\Middleware\DemoGuard::class,
         ],
 
         'api' => [

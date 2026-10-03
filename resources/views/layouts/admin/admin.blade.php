@@ -14,6 +14,25 @@
 
         <div class="page-wrapper">
 
+            {{-- النسخة التجريبية: تنبيه رفيع ومبدّل أدوار — القصة من الجهتين دون خروج --}}
+            @if (\App\Support\Demo::enabled())
+                @php
+                    $demoNow = auth('admin')->check() ? 'admin' : (auth('supervisor')->check() ? 'supervisor' : 'student');
+                @endphp
+                <div class="demo-bar" role="region" aria-label="{{ __('النسخة التجريبية') }}">
+                    <span class="demo-bar-note"><i class="ti ti-flask" aria-hidden="true"></i> {{ __('نسخة تجريبية — جرّب بحرّية، البيانات تُعاد كل ليلة') }}</span>
+                    <span class="demo-bar-roles">
+                        <small>{{ __('شاهد كـ') }}</small>
+                        @foreach (['student' => __('طالب'), 'supervisor' => __('مشرف'), 'admin' => __('مسؤول')] as $role => $label)
+                            <form method="POST" action="{{ route('demo.enter', $role) }}">
+                                @csrf
+                                <button type="submit" class="demo-chip {{ $demoNow === $role ? 'is-on' : '' }}" @if ($demoNow === $role) aria-current="true" disabled @endif>{{ $label }}</button>
+                            </form>
+                        @endforeach
+                    </span>
+                </div>
+            @endif
+
             <div class="page-body">
                 <div class="container-xl">
                     @include('layouts.admin.inc.alert')

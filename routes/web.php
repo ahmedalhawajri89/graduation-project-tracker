@@ -40,6 +40,10 @@ Route::get('/locale/{locale}', function (string $locale) {
     return redirect()->back(fallback: '/')
         ->withCookie(cookie(\App\Http\Middleware\SetLocale::COOKIE, $locale, 60 * 24 * 365, null, null, null, false));
 })->name('locale.switch');
+
+// النسخة التجريبية: دخول بنقرة وتبديل الدور (404 خارج DEMO_MODE)
+Route::post('/demo/enter/{role}', [\App\Http\Controllers\DemoController::class, 'enter'])
+    ->whereIn('role', \App\Support\Demo::ROLES)->middleware('throttle:30,1')->name('demo.enter');
 // حد أقصى 5 رسائل تواصل بالدقيقة — حماية من السبام
 Route::post('/send', [HomeController::class, 'send'])->name('site.send')->middleware('throttle:5,1');
 

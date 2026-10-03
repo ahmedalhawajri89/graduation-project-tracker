@@ -1,0 +1,33 @@
+{
+    "taken_at": "2026-10-03T12:08:47+03:00",
+    "tables": [
+        "admins",
+        "audit_logs",
+        "contacts",
+        "defenses",
+        "defense_members",
+        "defense_rooms",
+        "discussion_reads",
+        "file_notes",
+        "groups",
+        "group_roles",
+        "migrations",
+        "milestone_submissions",
+        "notifications",
+        "password_reset_admins",
+        "password_reset_students",
+        "password_reset_supervisors",
+        "personal_access_tokens",
+        "projects",
+        "project_comments",
+        "project_files",
+        "project_milestones",
+        "semesters",
+        "specializes",
+        "specialize_projects",
+        "stat_snapshots",
+        "students",
+        "supervisors",
+        "supervisor_stages"
+    ]
+}

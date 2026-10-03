@@ -89,6 +89,28 @@
                 </p>
             </form>
 
+            {{-- النسخة التجريبية وحدها: دخول بنقرة بلا تسجيل (DemoController) --}}
+            @if (\App\Support\Demo::enabled())
+                <div class="demo-try">
+                    <p class="demo-try-title"><i class="ti ti-sparkles" aria-hidden="true"></i> {{ __('جرّب المنصّة بنقرة — بلا تسجيل') }}</p>
+                    <div class="demo-try-roles">
+                        @foreach ([
+                            ['student', 'ti-school', __('جرّب كطالب'), __('مشروع ومراحل ونقاش ومناقشة')],
+                            ['supervisor', 'ti-user-check', __('جرّب كمشرف'), __('مجموعات وطلبات ولجنة مناقشة')],
+                            ['admin', 'ti-adjustments', __('جرّب كمسؤول'), __('مخطِّط المناقشات والإحصائيات')],
+                        ] as [$role, $icon, $label, $hint])
+                            <form method="POST" action="{{ route('demo.enter', $role) }}">
+                                @csrf
+                                <button type="submit" class="demo-role is-{{ $role }}">
+                                    <span class="demo-role-icon" aria-hidden="true"><i class="ti {{ $icon }}"></i></span>
+                                    <span class="demo-role-text"><b>{{ $label }}</b><small>{{ $hint }}</small></span>
+                                </button>
+                            </form>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             {{-- يجيب السؤال الأكثر وروداً في نموذج التواصل: أين أسجّل؟ --}}
             <p class="auth-note">
                 {{ __('لا يوجد تسجيل ذاتي — الحسابات تُنشئها إدارة القسم. راجعهم إن تعذّر عليك الدخول.') }}
