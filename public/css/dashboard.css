@@ -9878,3 +9878,23 @@ a.dsv-slides:hover { border-color: #34d399; }
    يأخذ اتجاه أول حرف فيه، فلا تنقلب «د. هبة» إلى «هبة .د» ولا تتبعثر
    العناوين المختلطة. يحمي الواجهة العربية من الأثر لأنه في LTR وحدها. */
 [dir="ltr"] :where(b, strong, span, a, small, em, label, td, th, h1, h2, h3, h4, h5, p, li, option) { unicode-bidi: plaintext; }
+
+/* ==================== التحديث الحيّ (live.js) ====================
+   الشارات تُرسم دائماً وتُخفى بـ hidden حين تكون صفراً؛ وتنبيه منبثق
+   لكل إشعار يصل، يُفتح منه مكانه؛ والجرس يهتزّ مرة حين يزيد العدد. */
+[data-live-count][hidden], [data-live-badge][hidden] { display: none !important; }
+.app-toast.is-notify .app-toast-bar { background: var(--ds-brand-600); }
+.app-toast.is-notify .app-toast-icon { color: var(--ds-brand-600); }
+.app-toast-link { display: flex; flex-direction: column; gap: 1px; color: inherit; text-decoration: none; }
+.app-toast-link b { font-size: 13.5px; color: var(--ds-ink); }
+.app-toast-link span { font-size: 12.5px; color: var(--ds-ink-soft); line-height: 1.6; }
+.app-toast-link:hover b { color: var(--ds-brand-600); }
+.topbar-bell.is-ringing .ti-bell { animation: bell-ring .9s ease; transform-origin: 50% 2px; }
+@keyframes bell-ring {
+    0%, 100% { transform: rotate(0); }
+    15% { transform: rotate(14deg); } 30% { transform: rotate(-12deg); }
+    45% { transform: rotate(8deg); } 60% { transform: rotate(-6deg); } 75% { transform: rotate(3deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .topbar-bell.is-ringing .ti-bell { animation: none; }
+}

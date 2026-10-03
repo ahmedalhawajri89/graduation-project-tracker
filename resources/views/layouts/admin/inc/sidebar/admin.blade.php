@@ -1,9 +1,7 @@
 @php
-    $newMessagesCount = \App\Models\Contact::where('is_read', 0)->count();
-    // المكتملة التي تنتظر لجنةً وموعداً — تُتخطّى قبل تشغيل ترحيل المناقشات
-    $awaitingDefense = \App\Support\DefenseScheduler::enabled()
-        ? \App\Support\DefenseScheduler::awaiting()->count()
-        : null;
+    // من LiveCounts عبر الـ View Composer — والتحديث الحيّ يقرأ المصدر نفسه
+    $newMessagesCount = (int) ($layoutShared['counts']['contacts'] ?? 0);
+    $awaitingDefense = $layoutShared['counts']['defenses'] ?? null;
 @endphp
 
 {{-- ===== المتابعة ===== --}}
@@ -28,9 +26,7 @@
         <a class="nav-link" href="{{ route('admin.defenses.index') }}">
             <span class="nav-link-icon"><i class="ti ti-presentation"></i></span>
             <span class="nav-link-title">{{ __('المناقشات') }}</span>
-            @if ($awaitingDefense > 0)
-                <span class="sidebar-count">{{ $awaitingDefense }}</span>
-            @endif
+            <x-live-count key="defenses" :n="$awaitingDefense" />
         </a>
     </li>
 @endif
@@ -39,9 +35,7 @@
     <a class="nav-link" href="{{ route('admin.contact.index') }}">
         <span class="nav-link-icon"><i class="ti ti-mail-question"></i></span>
         <span class="nav-link-title">{{ __('رسائل الاستفسار') }}</span>
-        @if ($newMessagesCount > 0)
-            <span class="sidebar-count">{{ $newMessagesCount }}</span>
-        @endif
+        <x-live-count key="contacts" :n="$newMessagesCount" />
     </a>
 </li>
 

@@ -10,9 +10,7 @@
     <a class="nav-link" href="{{ route('student.discussion') }}">
         <span class="nav-link-icon"><i class="ti ti-messages"></i></span>
         <span class="nav-link-title">{{ __('النقاش') }}</span>
-        @if (($layoutShared['discussionUnread'] ?? 0) > 0)
-            <span class="sidebar-count">{{ $layoutShared['discussionUnread'] }}</span>
-        @endif
+        <x-live-count key="discussion" :n="$layoutShared['discussionUnread'] ?? 0" />
     </a>
 </li>
 
@@ -30,9 +28,7 @@
     <a class="nav-link" href="{{ route('student.showNotification') }}">
         <span class="nav-link-icon"><i class="ti ti-bell"></i></span>
         <span class="nav-link-title">{{ __('الإشعارات') }}</span>
-        @if (($layoutShared['unreadCount'] ?? 0) > 0)
-            <span class="sidebar-count">{{ $layoutShared['unreadCount'] }}</span>
-        @endif
+        <x-live-count key="notifications" :n="$layoutShared['unreadCount'] ?? 0" />
     </a>
 </li>
 

@@ -132,7 +132,7 @@ class SupervisorRequestsTest extends TestCase
             ->getContent();
 
         $this->assertMatchesRegularExpression(
-            '/طلبات الإشراف<\/span>\s*(?:\{\{--.*?--\}\}\s*)?<span class="sidebar-count">' . $pending . '<\/span>/su',
+            '/طلبات الإشراف<\/span>\s*(?:\{\{--.*?--\}\}\s*)?<span class="sidebar-count"[^>]*>' . $pending . '<\/span>/su',
             $html
         );
     }

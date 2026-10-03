@@ -15,21 +15,13 @@
 
 {{-- مناقشاتي: لجان هو عضو فيها، والعدد ما ينتظر درجته --}}
 @if (\App\Support\DefenseScheduler::enabled())
-    @php
-        $defensesToGrade = \App\Models\DefenseMember::where('supervisor_id', auth('supervisor')->id())
-            ->whereNull('grade')
-            ->whereHas('defense', fn ($q) => $q->whereIn('status', ['scheduled', 'done'])->where('starts_at', '<=', now())
-                ->whereHas('project', fn ($p) => $p->whereNull('grade_locked_at')))
-            ->count();
-    @endphp
+    @php $defensesToGrade = (int) ($layoutShared['counts']['defenses'] ?? 0); @endphp
     {{-- ظاهر دائماً: بلا مناقشات تشرح الصفحة متى تظهر فيها --}}
     <li class="nav-item {{ request()->routeIs('supervisor.defenses.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('supervisor.defenses.index') }}">
                 <span class="nav-link-icon"><i class="ti ti-presentation"></i></span>
                 <span class="nav-link-title">{{ __('مناقشاتي') }}</span>
-                @if ($defensesToGrade > 0)
-                    <span class="sidebar-count">{{ $defensesToGrade }}</span>
-                @endif
+                <x-live-count key="defenses" :n="$defensesToGrade" />
             </a>
         </li>
 @endif
@@ -39,9 +31,7 @@
     <a class="nav-link" href="{{ route('supervisor.discussion') }}">
         <span class="nav-link-icon"><i class="ti ti-messages"></i></span>
         <span class="nav-link-title">{{ __('النقاش') }}</span>
-        @if (($layoutShared['discussionUnread'] ?? 0) > 0)
-            <span class="sidebar-count">{{ $layoutShared['discussionUnread'] }}</span>
-        @endif
+        <x-live-count key="discussion" :n="$layoutShared['discussionUnread'] ?? 0" />
     </a>
 </li>
 
@@ -51,9 +41,7 @@
         <span class="nav-link-title">{{ __('طلبات الإشراف') }}</span>
         {{-- الطلبات المعلّقة وحدها: كان يجمع كل الإشعارات فلا تعرف أهي طلبات أم تحديثات.
              الجرس في الهيدر يبقى للإشعارات --}}
-        @if (($layoutShared['pendingRequests'] ?? 0) > 0)
-            <span class="sidebar-count">{{ $layoutShared['pendingRequests'] }}</span>
-        @endif
+        <x-live-count key="requests" :n="$layoutShared['pendingRequests'] ?? 0" />
     </a>
 </li>
 

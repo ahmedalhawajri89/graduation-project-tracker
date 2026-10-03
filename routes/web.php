@@ -280,6 +280,9 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
     Route::post('/file-notes/{note}/toggle', [FileNoteController::class, 'toggle'])->name('files.notes.toggle');
     Route::delete('/file-notes/{note}', [FileNoteController::class, 'destroy'])->name('files.notes.destroy');
 
+    // التحديث الحيّ: الجرس وشارات الشريط الجانبي (live.js يسأله كل بضع ثوانٍ)
+    Route::get('/live', \App\Http\Controllers\LiveController::class)->name('live');
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 });
