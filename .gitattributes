@@ -3,3 +3,6 @@
 public/vendor/**            linguist-vendored
 public/assets/vendor/**     linguist-vendored
 public/assets/css/login.css linguist-vendored
+
+# لقطة النسخة التجريبية: ملفات كما هي بلا تحويل نهايات الأسطر (PDF وغيرها)
+database/demo/** binary
