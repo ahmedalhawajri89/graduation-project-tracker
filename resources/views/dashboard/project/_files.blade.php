@@ -178,7 +178,7 @@
                         @if ($canDelete)
                             {{-- الحذف عند المرور على الحاسوب: فعل نادر لا يُعرض في كل صفّ دائماً --}}
                             <form action="{{ route($role . '.files.destroy', ['file' => $file->id]) }}" method="POST"
-                                class="is-reveal" onsubmit="return confirm({{ Js::from(__('حذف «:title»؟ لا يمكن التراجع.', ['title' => $file->title])) }})">
+                                class="is-reveal" data-confirm="{{ __('حذف «:title»؟ لا يمكن التراجع.', ['title' => $file->title]) }}">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}"
@@ -235,7 +235,7 @@
                                 @endif
                                 @if ($byMe || $role === 'supervisor')
                                     <form action="{{ route('files.notes.destroy', $note->id) }}" method="POST"
-                                        onsubmit="return confirm({{ Js::from(__('حذف هذه الملاحظة؟')) }})">
+                                        data-confirm="{{ __('حذف هذه الملاحظة؟') }}">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}" aria-label="{{ __('حذف الملاحظة') }}">

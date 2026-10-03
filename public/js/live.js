@@ -98,45 +98,10 @@
         (data.fresh || []).slice().reverse().forEach(toast);
     }
 
-    // تنبيه منبثق بأسلوب تنبيهات اللوحة (alert.blade.php)
+    // تنبيه منبثق بأسلوب تنبيهات اللوحة (dialog.js)
     function toast(item) {
-        var stack = document.querySelector('.toast-stack');
-        if (!stack) return;
-        var el = document.createElement('div');
-        el.className = 'app-toast is-notify';
-        el.setAttribute('role', 'status');
-        el.setAttribute('aria-live', 'polite');
-        el.innerHTML =
-            '<span class="app-toast-bar" aria-hidden="true"></span>' +
-            '<i class="ti ti-bell-ringing app-toast-icon" aria-hidden="true"></i>' +
-            '<a class="app-toast-text app-toast-link"></a>' +
-            '<button type="button" class="app-toast-close"><i class="ti ti-x" aria-hidden="true"></i></button>';
-        var link = el.querySelector('a');
-        link.href = item.href || '#';
-        var b = document.createElement('b');
-        b.textContent = item.title || tr('إشعار جديد');
-        var s = document.createElement('span');
-        s.textContent = item.text || '';
-        link.appendChild(b);
-        link.appendChild(s);
-        el.querySelector('.app-toast-close').setAttribute('aria-label', tr('إغلاق'));
-        stack.appendChild(el);
-
-        var t = null;
-        function dismiss() {
-            el.classList.add('is-leaving');
-            el.addEventListener('animationend', function () { el.remove(); }, { once: true });
-            // تقليل الحركة: لا حركة خروج فلا animationend
-            setTimeout(function () { el.remove(); }, 600);
-        }
-        function start() { t = setTimeout(dismiss, 8000); }
-        function stop() { clearTimeout(t); }
-        el.addEventListener('mouseenter', stop);
-        el.addEventListener('focusin', stop);
-        el.addEventListener('mouseleave', start);
-        el.addEventListener('focusout', start);
-        el.querySelector('.app-toast-close').addEventListener('click', function () { stop(); dismiss(); });
-        start();
+        if (!window.appToast) return;
+        window.appToast({ type: 'notify', title: item.title || tr('إشعار جديد'), text: item.text || '', href: item.href || '#' });
     }
 
     // العودة إلى التبويب أو استعادة الاتصال: سؤال فوري

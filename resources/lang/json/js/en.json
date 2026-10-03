@@ -21,5 +21,17 @@
     "جارٍ الحفظ…": "Saving…",
     "الملف أكبر مما يقبله الخادم.": "The file is larger than the server accepts.",
     "تعذّر الرفع — حاول مرة أخرى.": "The upload failed — try again.",
-    "انقطع الاتصال أثناء الرفع — الملف ما زال مختاراً، أعد المحاولة.": "The connection dropped during the upload — the file is still selected, try again."
+    "انقطع الاتصال أثناء الرفع — الملف ما زال مختاراً، أعد المحاولة.": "The connection dropped during the upload — the file is still selected, try again.",
+    "تأكيد الحذف": "Confirm deletion",
+    "حذف": "Delete",
+    "تأكيد": "Confirm",
+    "متابعة": "Continue",
+    "تمّ بنجاح": "Done",
+    "تعذّر الإتمام": "Couldn’t complete",
+    "راجع البيانات": "Check your input",
+    "للعلم": "Heads up",
+    "تنبيهات": "Alerts",
+    "تغييرات غير محفوظة": "Unsaved changes",
+    "تجاهل وإغلاق": "Discard and close",
+    "متابعة التعديل": "Keep editing"
 }

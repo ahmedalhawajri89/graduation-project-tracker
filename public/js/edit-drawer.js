@@ -317,9 +317,23 @@
             if (first) first.focus({ preventScroll: true });
         });
 
+        // نافذة التأكيد غير متزامنة: يُمنع الإغلاق، ثم يُغلق بعد «تجاهل»
+        var discarding = false;
         drawer.addEventListener('hide.bs.offcanvas', function (e) {
+            if (discarding) { discarding = false; return; }
             if (submitting || refresh() === 0) return;
-            if (!window.confirm(t('لديك بيانات لم تُحفظ. إغلاق الدرج وتجاهلها؟'))) e.preventDefault();
+            e.preventDefault();
+            window.appConfirm({
+                tone: 'warning',
+                title: t('تغييرات غير محفوظة'),
+                text: t('لديك بيانات لم تُحفظ. إغلاق الدرج وتجاهلها؟'),
+                ok: t('تجاهل وإغلاق'),
+                cancel: t('متابعة التعديل'),
+            }).then(function (yes) {
+                if (!yes) return;
+                discarding = true;
+                bootstrap.Offcanvas.getOrCreateInstance(drawer).hide();
+            });
         });
 
         form.addEventListener('submit', function (e) {

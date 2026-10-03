@@ -73,9 +73,10 @@
             <form action="{{ $replyUrl }}" method="POST">
                 @csrf
                 <button name="btnAccept" value="accept" class="btn btn-primary"
-                    onclick="return confirm({{ Js::from($lastSeat
+                    data-confirm-tone="primary" data-confirm-title="{{ __('قبول الإشراف') }}" data-confirm-ok="{{ __('قبول') }}"
+                    data-confirm="{{ $lastSeat
                         ? __('هذا آخر مقعد لك هذا الفصل — قبوله يرفض الطلبات الباقية تلقائياً. متابعة؟')
-                        : __('قبول «:title»؟ سيُبلَّغ الفريق.', ['title' => $project->title])) }})">
+                        : __('قبول «:title»؟ سيُبلَّغ الفريق.', ['title' => $project->title]) }}">
                     <i class="ti ti-check me-1" aria-hidden="true"></i>
                     {{ __('قبول الإشراف') }}
                 </button>
@@ -101,7 +102,8 @@
                 <textarea id="reason-{{ $project->id }}" name="reason" rows="2" maxlength="500" class="form-control"
                     placeholder="{{ __('مثال: الفكرة منفّذة سابقاً، أو نطاقها أوسع من فصل واحد..') }}"></textarea>
                 <button name="btnReject" value="reject" class="btn btn-outline-danger"
-                    onclick="return confirm({{ Js::from(__('رفض هذا الطلب؟ سيصل الفريقَ إشعار بالرفض والسبب إن كتبته.')) }})">
+                    data-confirm-title="{{ __('رفض الطلب') }}" data-confirm-ok="{{ __('رفض') }}"
+                    data-confirm="{{ __('رفض هذا الطلب؟ سيصل الفريقَ إشعار بالرفض والسبب إن كتبته.') }}">
                     {{ __('تأكيد الرفض') }}
                 </button>
             </form>

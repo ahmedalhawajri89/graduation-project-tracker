@@ -100,7 +100,7 @@
         {{-- الطالب يحذف ما كتبه وحده؛ المشرف يحذف أيّ تعليق في مشروعه --}}
         @if ($mine || $role === 'supervisor')
             <form action="{{ route($role . '.comments.destroy', ['comment' => $comment->id]) }}"
-                method="POST" class="msg-del" onsubmit="return confirm({{ Js::from(__('حذف هذه الرسالة؟')) }})">
+                method="POST" class="msg-del" data-confirm="{{ __('حذف هذه الرسالة؟') }}">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}"

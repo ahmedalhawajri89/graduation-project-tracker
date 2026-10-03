@@ -454,5 +454,12 @@
     "مسؤول": "Administrator",
     "هذا الإجراء معطّل في النسخة التجريبية — جرّب غيره بحرّية.": "This action is disabled in the demo — feel free to try anything else.",
     "حساب التجربة لا يُعدَّل — جرّب على حساب آخر.": "The demo accounts can't be edited — try another account.",
-    "في النسخة التجريبية الملف حتى :n ميغابايت.": "In the demo, files are limited to :n MB."
+    "في النسخة التجريبية الملف حتى :n ميغابايت.": "In the demo, files are limited to :n MB.",
+    "قبول": "Accept",
+    "رفض الطلب": "Reject request",
+    "رفض": "Reject",
+    "تأكيد الاكتمال": "Confirm completion",
+    "تمّ بنجاح": "Done",
+    "تعذّر الإتمام": "Couldn’t complete",
+    "راجع البيانات": "Check your input"
 }

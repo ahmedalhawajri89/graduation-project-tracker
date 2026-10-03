@@ -67,7 +67,9 @@
                                         </form>
 
                                         <form action="{{ route('admin.groups.forceDestroy', $project->id) }}"
-                                            method="post" class="force-form">
+                                            method="post" class="force-form"
+                                            data-confirm-title="{{ __('حذف نهائي') }}"
+                                            data-confirm="{{ __('حذف «:name» نهائياً؟', ['name' => $project->title]) }}&#10;{{ __('سيُمحى من قاعدة البيانات مع مراحله وملفاته وتعليقاته ودرجته، ولا يمكن استرجاعه بعدها.') }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn-action btn-action--danger"
@@ -95,19 +97,5 @@
         @endif
     </div>
 
-    @push('js')
-        <script>
-            // الحذف النهائي لا رجعة فيه — يتطلّب تأكيداً صريحاً
-            document.querySelectorAll('.force-form').forEach(function (form) {
-                form.addEventListener('submit', function (e) {
-                    var btn = form.querySelector('button[type="submit"]');
-                    var name = btn ? btn.dataset.title : @json(__('هذا المشروع'));
-                    if (!confirm(@json(__('حذف «:name» نهائياً؟')).replace(':name', name) + '\n\n' + @json(__('سيُمحى من قاعدة البيانات مع مراحله وملفاته وتعليقاته ودرجته، ولا يمكن استرجاعه بعدها.')))) {
-                        e.preventDefault();
-                    }
-                });
-            });
-        </script>
-    @endpush
 
 @endsection

@@ -391,7 +391,7 @@
                 msg.classList.add('is-sending');
                 fetch(del.action, { method: 'POST', body: new FormData(del), headers: headers, credentials: 'same-origin' })
                     .then(function (r) { if (!r.ok) throw new Error(r.status); removeMsg(msg); })
-                    .catch(function () { msg.classList.remove('is-sending'); window.alert(L.delFailed); });
+                    .catch(function () { msg.classList.remove('is-sending'); window.appToast({ type: 'danger', text: L.delFailed }); });
             });
         })();
     </script>

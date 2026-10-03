@@ -721,7 +721,7 @@
                                 </form>
 
                                 <form method="post" action="{{ route('admin.defenses.rooms.destroy', $r->id) }}"
-                                    onsubmit="return confirm(@js(__('حذف «:name»؟ القاعة التي لها مناقشات مسجّلة تُعطَّل ولا تُحذف.', ['name' => $r->name])))">
+                                    data-confirm="{{ __('حذف «:name»؟ القاعة التي لها مناقشات مسجّلة تُعطَّل ولا تُحذف.', ['name' => $r->name]) }}">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="dr-delete" title="{{ __('حذف القاعة') }}" aria-label="{{ __('حذف :name', ['name' => $r->name]) }}"><i class="ti ti-trash" aria-hidden="true"></i></button>
                                 </form>

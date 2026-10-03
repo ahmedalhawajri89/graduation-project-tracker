@@ -80,7 +80,8 @@
                 <form action="{{ route('supervisor.project.complete', ['project_id' => $project->id]) }}" method="POST">
                     @csrf
                     <button name="btnAccept" value="accept" class="btn btn-primary"
-                        onclick="return confirm({{ Js::from(__('تأكيد اكتمال المشروع؟ سيُشعر الفريق، ويُفتح التقييم.')) }})">
+                        data-confirm-tone="primary" data-confirm-title="{{ __('اكتمال المشروع') }}" data-confirm-ok="{{ __('تأكيد الاكتمال') }}"
+                        data-confirm="{{ __('تأكيد اكتمال المشروع؟ سيُشعر الفريق، ويُفتح التقييم.') }}">
                         <i class="ti ti-circle-check me-1" aria-hidden="true"></i>
                         {{ __('اكتمال المشروع') }}
                     </button>

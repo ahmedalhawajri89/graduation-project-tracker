@@ -3976,59 +3976,94 @@ a:focus-visible {
 .auth-forgot a:hover { color: var(--ds-brand-600); border-bottom-color: currentColor; }
 
 /* ==================== التنبيهات المنبثقة ====================
-   كانت \u200Etop-0 start-0\u200E — أعلى اليمين في RTL، فوق السايدبار وشريط البحث
-   تماماً: تحجب التنقّل وقت ما يحتاجه المستخدم. صارت أسفل الجهة
-   الأخرى، بعيداً عن السايدبار وعن الترويسة معاً. */
+   أسفل الجهة الأخرى من السايدبار — كانت أعلاه فتحجب التنقّل.
+   بطاقة بأيقونة في دائرة ملوّنة، وعنوان قصير ونصّ، وشريط وقت أسفلها:
+   انتهاؤه هو ما يغلقها، ويتوقّف عند المرور أو التركيز (dialog.js). */
 .toast-stack {
     position: fixed;
-    inset-block-end: 20px;
-    inset-inline-end: 20px;
+    inset-block-end: 22px;
+    inset-inline-end: 22px;
     z-index: 1090;
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 10px;
-    width: min(380px, calc(100vw - 32px));
+    width: min(390px, calc(100vw - 32px));
     pointer-events: none;
 }
 .app-toast {
+    --tone: var(--ds-brand-600);
+    --tone-soft: var(--ds-brand-50);
     position: relative;
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    padding: 13px 14px 13px 12px;
-    border: 1px solid var(--ds-border);
-    border-radius: var(--ds-radius-md);
-    background: var(--ds-surface);
-    box-shadow: 0 8px 24px rgba(9, 9, 11, .10), 0 2px 6px rgba(9, 9, 11, .06);
+    gap: 12px;
+    padding: 14px 12px 16px 14px;
+    border: 1px solid rgba(15, 23, 42, .07);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 18px 40px -14px rgba(15, 23, 42, .28);
     overflow: hidden;
     pointer-events: auto;
-    animation: toast-in var(--ds-dur) var(--ds-ease) both;
+    animation: toast-in .5s cubic-bezier(.21, 1.02, .73, 1) both;
 }
-/* شريط لوني على الحافة بدل تلوين النصّ كله: الرسالة تبقى مقروءة
-   بحبر عادي، والنغمة تُقال بالحافة */
-.app-toast-bar {
+/* هالة خفيفة بلون النغمة عند حافة البداية */
+.app-toast::before {
+    content: "";
     position: absolute;
     inset-block: 0;
     inset-inline-start: 0;
-    width: 3px;
+    width: 90px;
+    background: linear-gradient(to right, var(--tone-soft), transparent);
+    pointer-events: none;
 }
-.app-toast-icon { flex: none; font-size: 19px; margin-top: 1px; }
-.app-toast-text {
+[dir="rtl"] .app-toast::before { background: linear-gradient(to left, var(--tone-soft), transparent); }
+.app-toast-icon {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--tone);
+    color: #fff;
+    box-shadow: 0 0 0 5px var(--tone-soft), 0 6px 14px -4px var(--tone);
+    animation: toast-pop .55s cubic-bezier(.34, 1.56, .64, 1) .12s both;
+}
+.app-toast-icon i { font-size: 19px; }
+.app-toast-body {
+    position: relative;
     flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 1px;
+    color: inherit;
+    text-decoration: none;
+}
+.app-toast-title { font-size: 14px; font-weight: 700; color: var(--ds-ink); line-height: 1.45; }
+.app-toast-text {
     margin: 0;
     font-size: 13px;
     line-height: 1.65;
-    color: var(--ds-ink);
-    min-width: 0;
+    color: var(--ds-ink-soft);
     overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
+a.app-toast-body:hover .app-toast-title { color: var(--tone); }
 .app-toast-close {
+    position: relative;
     flex: none;
-    width: 24px; height: 24px;
+    width: 28px; height: 28px;
     display: grid; place-items: center;
     padding: 0;
     border: 0;
-    border-radius: 6px;
+    border-radius: 8px;
     background: transparent;
     color: var(--ds-ink-mute);
     cursor: pointer;
@@ -4036,33 +4071,185 @@ a:focus-visible {
 }
 .app-toast-close:hover { background: var(--ds-surface-sunk); color: var(--ds-ink); }
 .app-toast-close i { font-size: 15px; }
+/* شريط الوقت: يتقلّص نحو البداية، ويتوقّف بالمرور أو التركيز */
+.app-toast-timer {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    height: 3px;
+    background: var(--tone);
+    opacity: .55;
+    transform-origin: left;
+    animation: toast-timer var(--toast-delay, 5000ms) linear forwards;
+}
+[dir="rtl"] .app-toast-timer { transform-origin: right; }
+.app-toast:hover .app-toast-timer,
+.app-toast:focus-within .app-toast-timer { animation-play-state: paused; }
 
-.app-toast.is-success .app-toast-bar { background: #047857; }
-.app-toast.is-success .app-toast-icon { color: #047857; }
-.app-toast.is-danger .app-toast-bar { background: var(--ds-danger); }
-.app-toast.is-danger .app-toast-icon { color: var(--ds-danger); }
-.app-toast.is-warning .app-toast-bar { background: #b45309; }
-.app-toast.is-warning .app-toast-icon { color: #b45309; }
+.app-toast.is-success { --tone: #059669; --tone-soft: #ecfdf5; }
+.app-toast.is-danger  { --tone: #dc2626; --tone-soft: #fef2f2; }
+.app-toast.is-warning { --tone: #d97706; --tone-soft: #fffbeb; }
+.app-toast.is-info    { --tone: #0284c7; --tone-soft: #f0f9ff; }
+.app-toast.is-notify  { --tone: var(--ds-brand-600); --tone-soft: var(--ds-brand-50); }
+.app-toast.is-notify .app-toast-icon i { animation: toast-ring 1s ease .5s 2; transform-origin: 50% 10%; }
+
+/* الخروج: تنزلق جانباً ويُطوى ارتفاعها فتتحرّك الباقية بنعومة */
+.app-toast { --toast-out: 28px; }
+[dir="rtl"] .app-toast { --toast-out: -28px; }
+.app-toast.is-leaving {
+    animation: toast-out .4s cubic-bezier(.4, 0, .2, 1) forwards;
+    pointer-events: none;
+}
 
 @keyframes toast-in {
-    from { opacity: 0; transform: translateY(12px) scale(.98); }
+    from { opacity: 0; transform: translateY(18px) scale(.96); }
     to   { opacity: 1; transform: none; }
 }
 @keyframes toast-out {
-    to { opacity: 0; transform: translateY(8px) scale(.98); }
+    40%  { opacity: 0; transform: translateX(var(--toast-out)) scale(.98); }
+    100% { opacity: 0; transform: translateX(var(--toast-out)); height: 0; padding-block: 0; margin-block-start: -10px; border-width: 0; }
 }
-.app-toast.is-leaving { animation: toast-out var(--ds-dur-fast) ease forwards; }
+@keyframes toast-pop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes toast-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes toast-ring {
+    0%, 100% { transform: rotate(0); }
+    20% { transform: rotate(14deg); } 40% { transform: rotate(-12deg); }
+    60% { transform: rotate(8deg); } 80% { transform: rotate(-5deg); }
+}
 
 @media (prefers-reduced-motion: reduce) {
-    .app-toast, .app-toast.is-leaving { animation: none; }
-    .app-toast.is-leaving { opacity: 0; }
+    .app-toast, .app-toast-icon, .app-toast.is-notify .app-toast-icon i { animation: none; }
+    .app-toast.is-leaving { animation: none; opacity: 0; }
 }
 
 @media (max-width: 575.98px) {
-    .toast-stack { inset-inline: 16px; width: auto; inset-block-end: 16px; }
+    .toast-stack { inset-inline: 12px; width: auto; inset-block-end: 12px; }
 }
 
 .toast-container { z-index: 1090; }
+
+/* ==================== نافذة التأكيد ====================
+   بدل confirm() المتصفّح: <dialog> في الطبقة العليا (فوق الأدراج والنوافذ)
+   بأيقونة ولون حسب الخطورة. السلوك في dialog.js. */
+.app-dialog {
+    width: min(420px, calc(100vw - 32px));
+    max-width: none;
+    padding: 0;
+    border: 0;
+    border-radius: 22px;
+    background: transparent;
+    color: var(--ds-ink);
+    overflow: visible;
+}
+.app-dialog[open] { animation: dlg-in .38s cubic-bezier(.21, 1.02, .73, 1); }
+.app-dialog::backdrop {
+    background: rgba(15, 23, 42, .38);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    animation: dlg-fade .25s ease;
+}
+.app-dialog-card {
+    --tone: #dc2626;
+    --tone-soft: #fef2f2;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 30px 26px 22px;
+    border-radius: 22px;
+    background: var(--ds-surface);
+    text-align: center;
+    box-shadow: 0 30px 70px -20px rgba(15, 23, 42, .45), 0 0 0 1px rgba(15, 23, 42, .05);
+    overflow: hidden;
+}
+/* إشعاع ناعم بلون الخطورة خلف الأيقونة */
+.app-dialog-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 130px;
+    background: radial-gradient(60% 100% at 50% 0, var(--tone-soft), transparent 75%);
+    pointer-events: none;
+}
+.app-dialog[data-tone="warning"] .app-dialog-card { --tone: #d97706; --tone-soft: #fffbeb; }
+.app-dialog[data-tone="primary"] .app-dialog-card { --tone: var(--ds-brand-600); --tone-soft: var(--ds-brand-50); }
+.app-dialog-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 8px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--tone);
+    box-shadow: 0 0 0 8px var(--tone-soft), 0 10px 24px -8px var(--tone);
+}
+.app-dialog[open] .app-dialog-icon { animation: toast-pop .5s cubic-bezier(.34, 1.56, .64, 1) .08s both; }
+.app-dialog[open][data-tone="danger"] .app-dialog-icon i { animation: dlg-shake .5s ease .45s; }
+.app-dialog-icon i { font-size: 28px; }
+.app-dialog-title {
+    position: relative;
+    margin: 0;
+    font-family: var(--ds-font-display);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ds-ink);
+}
+.app-dialog-text {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ds-ink-soft);
+    overflow-wrap: anywhere;
+}
+/* الفقرة الثانية (ما يترتّب على القرار) في لوح ملوّن خفيف */
+.app-dialog-text small {
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: var(--tone-soft);
+    color: var(--ds-ink);
+    font-size: 12.5px;
+    line-height: 1.7;
+}
+.app-dialog-actions {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-top: 16px;
+}
+.app-dialog-actions .btn { min-height: 42px; border-radius: 12px; font-weight: 700; }
+.app-dialog-ok.btn-warning { color: #fff; }
+/* الإلغاء: زرّ هادئ أبيض — تلوين Bootstrap عند التركيز يجعله أثقل من «حذف» */
+.app-dialog-cancel.btn,
+.app-dialog-cancel.btn:focus,
+.app-dialog-cancel.btn:active { background: #fff; border: 1px solid var(--ds-border-strong); color: var(--ds-ink); }
+.app-dialog-cancel.btn:hover { background: var(--ds-surface-sunk); color: var(--ds-ink); }
+.app-dialog-actions .btn:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--ds-brand-200); }
+
+@keyframes dlg-in {
+    from { opacity: 0; transform: translateY(14px) scale(.95); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes dlg-fade { from { opacity: 0; } }
+@keyframes dlg-shake {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-12deg); } 50% { transform: rotate(10deg); } 75% { transform: rotate(-6deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .app-dialog[open], .app-dialog::backdrop, .app-dialog[open] .app-dialog-icon, .app-dialog[open] .app-dialog-icon i { animation: none; }
+}
+@media (max-width: 575.98px) {
+    .app-dialog-actions { grid-template-columns: 1fr; }
+}
 
 /* هيكل تحميل (Skeleton) */
 .chart-wrap { position: relative; min-height: 320px; }
@@ -9883,12 +10070,6 @@ a.dsv-slides:hover { border-color: #34d399; }
    الشارات تُرسم دائماً وتُخفى بـ hidden حين تكون صفراً؛ وتنبيه منبثق
    لكل إشعار يصل، يُفتح منه مكانه؛ والجرس يهتزّ مرة حين يزيد العدد. */
 [data-live-count][hidden], [data-live-badge][hidden] { display: none !important; }
-.app-toast.is-notify .app-toast-bar { background: var(--ds-brand-600); }
-.app-toast.is-notify .app-toast-icon { color: var(--ds-brand-600); }
-.app-toast-link { display: flex; flex-direction: column; gap: 1px; color: inherit; text-decoration: none; }
-.app-toast-link b { font-size: 13.5px; color: var(--ds-ink); }
-.app-toast-link span { font-size: 12.5px; color: var(--ds-ink-soft); line-height: 1.6; }
-.app-toast-link:hover b { color: var(--ds-brand-600); }
 .topbar-bell.is-ringing .ti-bell { animation: bell-ring .9s ease; transform-origin: 50% 2px; }
 @keyframes bell-ring {
     0%, 100% { transform: rotate(0); }

@@ -310,11 +310,23 @@
 
                     var total = current + selected;
                     if (total > max) {
-                        var ok = confirm(
-                            @json(__('سيصبح عدد أعضاء الفريق :total وهو أكبر من الحد الأقصى (:max).')).replace(':total', total).replace(':max', max) + '\n\n' +
-                            @json(__('هل تريد المتابعة كاستثناء إداري؟'))
-                        );
-                        if (!ok) e.preventDefault();
+                        if (form.dataset.overOk === '1') { delete form.dataset.overOk; return; }
+                        // نافذة التأكيد غير متزامنة: يُوقف الإرسال، ويُعاد بعد «متابعة»
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        var submitter = e.submitter;
+                        appConfirm({
+                            tone: 'warning',
+                            title: @json(__('تجاوز حدّ الفريق')),
+                            text: @json(__('سيصبح عدد أعضاء الفريق :total وهو أكبر من الحد الأقصى (:max).')).replace(':total', total).replace(':max', max) + '
+' +
+                                @json(__('هل تريد المتابعة كاستثناء إداري؟')),
+                            ok: @json(__('متابعة كاستثناء')),
+                        }).then(function (yes) {
+                            if (!yes) return;
+                            form.dataset.overOk = '1';
+                            form.requestSubmit(submitter);
+                        });
                     }
                 });
             })();

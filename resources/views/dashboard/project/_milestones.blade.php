@@ -294,7 +294,7 @@
                 @if ($editable)
                     <span class="ms-actions">
                         <form action="{{ route('supervisor.milestones.destroy', ['milestone' => $milestone->id]) }}"
-                            method="POST" onsubmit="return confirm({{ Js::from(__('حذف «:title»؟', ['title' => $milestone->title]) . ($milestone->submissions->isNotEmpty() ? ' ' . __('تُحذف معها تسليماتها.') : '')) }})">
+                            method="POST" data-confirm="{{ __('حذف «:title»؟', ['title' => $milestone->title]) . ($milestone->submissions->isNotEmpty() ? ' ' . __('تُحذف معها تسليماتها.') : '') }}">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}"

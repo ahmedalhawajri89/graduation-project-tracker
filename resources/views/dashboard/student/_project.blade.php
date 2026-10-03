@@ -107,7 +107,8 @@
                         @csrf
                         <p class="withdraw-note">{{ __('لم يردّ المشرف بعد؟ يمكنك سحب الطلب وتقديمه لمشرف آخر.') }}</p>
                         <button type="submit" class="btn btn-outline-danger w-100"
-                            onclick="return confirm({{ Js::from(__('سحب الطلب يحذفه ويحرّر أعضاء الفريق، ويُبلَّغون بذلك. لا تراجع عنه. متابعة؟')) }})">
+                            data-confirm-title="{{ __('سحب الطلب') }}" data-confirm-ok="{{ __('سحب الطلب') }}"
+                            data-confirm="{{ __('سحب الطلب يحذفه ويحرّر أعضاء الفريق، ويُبلَّغون بذلك. لا تراجع عنه. متابعة؟') }}">
                             <i class="ti ti-arrow-back-up me-1" aria-hidden="true"></i>
                             {{ __('سحب الطلب') }}
                         </button>

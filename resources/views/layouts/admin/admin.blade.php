@@ -128,6 +128,8 @@
     </script>
     <script src="{{ asset('vendor/jquery/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('vendor/tabler/js/tabler.min.js') }}"></script>
+    {{-- نافذة التأكيد (data-confirm / appConfirm) والتنبيهات (appToast) — قبل كل سكربت يستعملهما --}}
+    <script src="{{ asset('js/dialog.js') }}?v={{ filemtime(public_path('js/dialog.js')) }}"></script>
     <script src="{{ asset('js/topbar.js') }}?v={{ filemtime(public_path('js/topbar.js')) }}"></script>
     <script src="{{ asset('js/dashboard-mobile.js') }}?v={{ filemtime(public_path('js/dashboard-mobile.js')) }}"></script>
     {{-- رفع الملفات بشريط تقدّم — قبل سكربت «حالة التحميل» أدناه ليسبقه --}}

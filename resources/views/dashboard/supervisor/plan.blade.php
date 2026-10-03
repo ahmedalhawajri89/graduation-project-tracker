@@ -151,7 +151,7 @@
                                         <i class="ti ti-pencil" aria-hidden="true"></i>
                                     </button>
                                     <form action="{{ route('supervisor.plan.destroy', $stage->id) }}" method="POST"
-                                        onsubmit="return confirm({{ Js::from(__('حذف «:title» من الخطة؟ تُحذف من المجموعات التي لم تنجزها، ويبقى ما أُنجز.', ['title' => $stage->title])) }})">
+                                        data-confirm="{{ __('حذف «:title» من الخطة؟ تُحذف من المجموعات التي لم تنجزها، ويبقى ما أُنجز.', ['title' => $stage->title]) }}">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}" aria-label="{{ __('حذف :title', ['title' => $stage->title]) }}">

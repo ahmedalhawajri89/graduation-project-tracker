@@ -775,5 +775,7 @@
     "يُسجَّل الإجراء باسمك في سجلّ التدقيق": "The action is recorded under your name in the audit log",
     "يُشعَر كل فريق ولجنته عند الاعتماد": "Each team and its committee is notified on approval",
     "يُفتح في تبويب جديد — انسخ رابط الاجتماع والصقه هنا. روابط Zoom وTeams مقبولة أيضاً.": "Opens in a new tab — copy the meeting link and paste it here. Zoom and Teams links work too.",
-    "إبقاء المناقشة": "Keep the defense"
+    "إبقاء المناقشة": "Keep the defense",
+    "تجاوز حدّ الفريق": "Over the team limit",
+    "متابعة كاستثناء": "Continue as an exception"
 }
