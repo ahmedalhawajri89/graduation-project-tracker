@@ -107,6 +107,11 @@ class ProjectCommentController extends Controller
             }
         }
 
+        // الإرسال بلا تحميل (النقاش الحيّ): ما وصل بعد آخر رسالة معروضة، ومعه رسالتي
+        if ($request->expectsJson()) {
+            return response()->json(\App\Http\Controllers\DiscussionLiveController::payload($project, 'student', $channel, (int) $request->input('after', 0)));
+        }
+
         return redirect()->route('student.discussion', $channel === ProjectComment::TEAM ? ['tab' => 'team'] : [])
             ->with('success', $mentions ? __('أُرسلت الرسالة ووصل التنبيه لمن ذكرتهم.') : __('تم إرسال الرسالة'));
     }
@@ -121,6 +126,10 @@ class ProjectCommentController extends Controller
 
         $channel = $comment->channel;
         $comment->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
 
         return redirect()->route('student.discussion', $channel === ProjectComment::TEAM ? ['tab' => 'team'] : [])
             ->with('success', __('تم حذف الرسالة'));

@@ -436,5 +436,11 @@
     "جارٍ الحفظ…": "Saving…",
     "حفظ التوزيع": "Save assignments",
     "إغلاق": "Close",
-    "بلغ الحدّ (:max)": "Limit reached (:max)"
+    "بلغ الحدّ (:max)": "Limit reached (:max)",
+    "جارٍ الإرسال…": "Sending…",
+    "لم تُرسل": "Not sent",
+    "إعادة المحاولة": "Try again",
+    "رسالة جديدة": "1 new message",
+    ":n رسائل جديدة": ":n new messages",
+    "تعذّر حذف الرسالة — حاول مرة أخرى.": "Couldn't delete the message — try again."
 }

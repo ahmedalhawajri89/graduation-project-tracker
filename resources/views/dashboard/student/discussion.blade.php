@@ -45,9 +45,7 @@
                     <b>{{ __('مع المشرف') }}</b>
                     <small>{{ $project->supervisor->name ?? __('بلا مشرف') }}</small>
                 </span>
-                @if ($unread['supervisor'])
-                    <span class="sidebar-count">{{ $unread['supervisor'] }}</span>
-                @endif
+                <span class="sidebar-count" data-chat-unread="supervisor" @unless ($unread['supervisor']) hidden @endunless>{{ $unread['supervisor'] }}</span>
             </a>
             <a href="{{ route('student.discussion', ['tab' => 'team']) }}" class="chat-tab {{ $isTeam ? 'is-active' : '' }}"
                 @if ($isTeam) aria-current="page" @endif>
@@ -60,9 +58,7 @@
                     <b>{{ __('الفريق') }} <i class="ti ti-lock chat-tab-lock" aria-hidden="true"></i></b>
                     <small>{{ __(':n أعضاء · خاص', ['n' => $members->count()]) }}</small>
                 </span>
-                @if ($unread['team'])
-                    <span class="sidebar-count">{{ $unread['team'] }}</span>
-                @endif
+                <span class="sidebar-count" data-chat-unread="team" @unless ($unread['team']) hidden @endunless>{{ $unread['team'] }}</span>
             </a>
         </nav>
 

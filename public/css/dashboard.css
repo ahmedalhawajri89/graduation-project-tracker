@@ -9898,3 +9898,31 @@ a.dsv-slides:hover { border-color: #34d399; }
 @media (prefers-reduced-motion: reduce) {
     .topbar-bell.is-ringing .ti-bell { animation: none; }
 }
+
+/* ==================== النقاش الحيّ ====================
+   الرسالة تصل بانزلاق خفيف، ورسالتي شفافة حتى يثبتها الخادم، والفاشلة
+   بحدّ أحمر وزرّ يعيد نصّها؛ وزرّ «رسائل جديدة» يطفو فوق المجرى حين
+   يكون القارئ في رسائل قديمة. */
+.chat-stream-wrap { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+[data-chat-unread][hidden], [data-chat-unread-project][hidden] { display: none !important; }
+.msg.is-arriving { animation: msg-in .28s var(--ds-ease) both; }
+@keyframes msg-in { from { opacity: 0; transform: translateY(6px); } }
+.msg.is-sending { opacity: .55; }
+.msg.is-sending .msg-time { font-style: italic; }
+.msg.is-failed .msg-bubble { box-shadow: inset 0 0 0 1.5px var(--ds-danger); }
+.msg.is-failed .msg-time { color: var(--ds-danger); }
+.msg-retry { display: block; margin-top: 4px; padding: 0; border: 0; background: none; color: var(--ds-danger); font: inherit; font-size: 12px; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.msg.is-removing { opacity: 0; transform: scale(.97); transition: opacity .2s ease, transform .2s ease; }
+.chat-jump {
+    position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 2;
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;
+    border: 0; border-radius: 999px; background: var(--ds-brand-600); color: #fff;
+    font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 10px 24px -12px rgba(37, 99, 235, .8);
+    animation: msg-in .25s var(--ds-ease) both;
+}
+.chat-jump[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) {
+    .msg.is-arriving, .chat-jump { animation: none; }
+    .msg.is-removing { transition: none; }
+}

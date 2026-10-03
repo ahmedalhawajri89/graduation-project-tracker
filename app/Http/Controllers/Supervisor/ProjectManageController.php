@@ -339,6 +339,11 @@ class ProjectManageController extends Controller
         // لا إشعار: عدّاد النقاش يحلّ محلّه — انظر \App\Support\Discussion
         Discussion::markRead($project, auth('supervisor')->user());
 
+        // الإرسال بلا تحميل (النقاش الحيّ)
+        if ($request->expectsJson()) {
+            return response()->json(\App\Http\Controllers\DiscussionLiveController::payload($project, 'supervisor', \App\Models\ProjectComment::SUPERVISOR, (int) $request->input('after', 0)));
+        }
+
         return redirect()->back()->with('success', __('تم إضافة التعليق'));
     }
 
@@ -350,6 +355,10 @@ class ProjectManageController extends Controller
         abort_if($comment->isTeam(), 404);
 
         $comment->delete();
+
+        if (request()->expectsJson()) {
+            return response()->json(['ok' => true]);
+        }
 
         return redirect()->back()->with('success', __('تم حذف التعليق'));
     }

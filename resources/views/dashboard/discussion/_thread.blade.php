@@ -17,9 +17,6 @@
 
 @php
     $me = auth($role)->user();
-    $meType = $role === 'supervisor' ? \App\Models\Supervisor::class : \App\Models\Student::class;
-    $isMine = fn ($c) => $c->author_type === $meType && (int) $c->author_id === (int) $me->id;
-
     $channel = $channel ?? \App\Models\ProjectComment::SUPERVISOR;
     $isTeam = $channel === \App\Models\ProjectComment::TEAM;
     $comments = $comments ?? $project->comments;
@@ -28,102 +25,16 @@
     $mates = $isTeam
         ? $project->group->filter(fn ($g) => $g->student && (int) $g->student_id !== (int) $me->id)->map(fn ($g) => $g->student)->values()
         : collect();
-    $names = $project->group->mapWithKeys(fn ($g) => [(int) $g->student_id => $g->student?->name]);
-
-    // «@الاسم» وسمٌ في الفقاعة — للمذكورين المسجَّلين وحدهم، والنصّ مُهرَّب قبلها
-    $renderBody = function ($c) use ($names) {
-        $html = e($c->body);
-        foreach ($c->mentions ?? [] as $id) {
-            if ($name = $names[(int) $id] ?? null) {
-                $html = str_replace('@' . e($name), '<span class="mention">@' . e($name) . '</span>', $html);
-            }
-        }
-
-        return $html;
-    };
-
-    // أول رسالة من غيري لم أقرأها — عندها الفاصل
-    $firstNew = $comments->first(
-        fn ($c) => ! $isMine($c) && (is_null($lastRead) || $c->id > $lastRead)
-    );
-
-    $dayLabel = function ($at) {
-        if ($at->isToday()) return __('اليوم');
-        if ($at->isYesterday()) return __('أمس');
-
-        return $at->translatedFormat($at->isCurrentYear() ? 'l j F' : 'j F Y');
-    };
-
-    $prev = null;
 @endphp
 
-<div class="chat-stream" id="chat-stream">
-    @forelse ($comments as $comment)
-        @php
-            $mine = $isMine($comment);
-            $newDay = ! $prev || ! $prev->created_at->isSameDay($comment->created_at);
-            $isNew = $firstNew && $comment->id === $firstNew->id;
-
-            // تتمّة: الكاتب نفسه خلال خمس دقائق، بلا فاصل يوم أو «جديد» بينهما
-            $cont = $prev && ! $newDay && ! $isNew
-                && $prev->author_type === $comment->author_type
-                && (int) $prev->author_id === (int) $comment->author_id
-                && $prev->created_at->diffInMinutes($comment->created_at) < 5;
-            $prev = $comment;
-        @endphp
-
-        @if ($newDay)
-            <div class="chat-day"><span>{{ $dayLabel($comment->created_at) }}</span></div>
-        @endif
-
-        @if ($isNew)
-            <div class="chat-new" id="chat-new"><span>{{ __('رسائل جديدة') }}</span></div>
-        @endif
-
-        {{-- رسالة تذكرني: تُميَّز بحدّ ولون الهوية --}}
-        @php $mentionsMe = $isTeam && $role === 'student' && ! $mine && $comment->mentions((int) $me->id); @endphp
-        <div class="msg {{ $mine ? 'is-mine' : '' }} {{ $cont ? 'is-cont' : '' }} {{ $comment->is_supervisor ? 'is-supervisor' : '' }} {{ $mentionsMe ? 'is-mentioned' : '' }}">
-            @unless ($mine)
-                @if ($cont)
-                    <span class="msg-avatar-gap" aria-hidden="true"></span>
-                @else
-                    <x-avatar :user="$comment->author" class="ctx-avatar msg-avatar {{ $comment->is_supervisor ? 'is-supervisor' : '' }}" />
-                @endif
-            @endunless
-
-            <div class="msg-body">
-                @unless ($mine || $cont)
-                    <div class="msg-author">
-                        <b>{{ $comment->author->name ?? __('مستخدم محذوف') }}</b>
-                        @if ($comment->is_supervisor)
-                            <span class="msg-role">{{ __('مشرف') }}</span>
-                        @endif
-                    </div>
-                @endunless
-
-                <div class="msg-bubble">
-                    <p class="cmt-text">{!! $renderBody($comment) !!}</p>
-                    <time class="msg-time" datetime="{{ $comment->created_at->toIso8601String() }}"
-                        title="{{ $comment->created_at->format('Y-m-d H:i') }}">
-                        {{ $comment->created_at->format('H:i') }}
-                    </time>
-                </div>
-            </div>
-
-            {{-- الطالب يحذف ما كتبه وحده؛ المشرف يحذف أيّ تعليق في مشروعه --}}
-            @if ($mine || $role === 'supervisor')
-                <form action="{{ route($role . '.comments.destroy', ['comment' => $comment->id]) }}"
-                    method="POST" class="msg-del" onsubmit="return confirm({{ Js::from(__('حذف هذه الرسالة؟')) }})">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-action btn-action--danger" title="{{ __('حذف') }}"
-                        aria-label="{{ __('حذف الرسالة') }}">
-                        <i class="ti ti-trash" aria-hidden="true"></i>
-                    </button>
-                </form>
-            @endif
-        </div>
-    @empty
+{{-- النقاش الحيّ: السكربت يسأل نقطة السؤال عمّا بعد آخر رقم، ويُلحق الجديد --}}
+<div class="chat-stream-wrap">
+<div class="chat-stream" id="chat-stream"
+    data-live-url="{{ route('discussion.live', ['project' => $project->id, 'channel' => $channel]) }}"
+    data-last-id="{{ (int) ($comments->max('id') ?? 0) }}">
+    @if ($comments->isNotEmpty())
+        @include('dashboard.discussion._messages', ['withDivider' => true, 'lastRead' => $lastRead ?? null, 'prev' => null])
+    @else
         <div class="chat-empty chat-start">
             <span class="chat-start-icon" aria-hidden="true"><i class="ti ti-messages"></i></span>
             <h3>{{ $isTeam ? __('نقاش الفريق فارغ بعد') : __('لا رسائل بعد') }}</h3>
@@ -135,7 +46,12 @@
                         : __('ابدأ النقاش مع الفريق — ملاحظة، سؤال، أو توجيه للمرحلة القادمة.')) }}
             </p>
         </div>
-    @endforelse
+    @endif
+</div>
+{{-- وصل جديد والقارئ في رسائل قديمة: لا يُسحب من مكانه، بل يُدعى إليه --}}
+<button type="button" class="chat-jump" id="chat-jump" hidden>
+    <i class="ti ti-arrow-down" aria-hidden="true"></i> <span data-chat-jump-label>{{ __('رسائل جديدة') }}</span>
+</button>
 </div>
 
 <form action="{{ route($role . '.comments.store', ['project' => $project->id]) }}" method="POST"
@@ -293,6 +209,190 @@
                     box.innerHTML = html;
                 });
             }
+        })();
+    </script>
+    <script>
+        (function () {
+            var stream = document.getElementById('chat-stream');
+            if (!stream || !window.fetch) return;
+
+            var L = {
+                sending: @json(__('جارٍ الإرسال…')),
+                failed: @json(__('لم تُرسل')),
+                retry: @json(__('إعادة المحاولة')),
+                newOne: @json(__('رسالة جديدة')),
+                newMany: @json(__(':n رسائل جديدة')),
+                delFailed: @json(__('تعذّر حذف الرسالة — حاول مرة أخرى.')),
+            };
+            var url = stream.dataset.liveUrl;
+            var lastId = parseInt(stream.dataset.lastId || '0', 10);
+            var form = document.querySelector('.chat-compose');
+            var jump = document.getElementById('chat-jump');
+            var INTERVAL = 5000, timer = null, busy = false, unseen = 0, failures = 0;
+            var headers = { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
+
+            function nearBottom() { return stream.scrollHeight - stream.scrollTop - stream.clientHeight < 90; }
+            function toBottom(smooth) { stream.scrollTo({ top: stream.scrollHeight, behavior: smooth ? 'smooth' : 'auto' }); }
+
+            function showJump() {
+                if (!jump) return;
+                jump.hidden = unseen === 0;
+                jump.querySelector('[data-chat-jump-label]').textContent = unseen === 1 ? L.newOne : L.newMany.replace(':n', unseen);
+            }
+            if (jump) jump.addEventListener('click', function () { unseen = 0; showJump(); toBottom(true); });
+            stream.addEventListener('scroll', function () { if (unseen && nearBottom()) { unseen = 0; showJump(); } });
+
+            // إلحاق ما رسمه الخادم — وما هو معروض أصلاً (رسالتي) لا يتكرّر
+            function append(html, stick) {
+                if (!html) return;
+                var near = stick || nearBottom();
+                var tpl = document.createElement('template');
+                tpl.innerHTML = html;
+                tpl.content.querySelectorAll('.msg[data-id]').forEach(function (m) {
+                    if (stream.querySelector('.msg[data-id="' + m.dataset.id + '"]')) m.remove();
+                });
+                // فاصل يوم موجود أصلاً لا يتكرّر
+                tpl.content.querySelectorAll('.chat-day[data-day]').forEach(function (d) {
+                    if (stream.querySelector('.chat-day[data-day="' + d.dataset.day + '"]')) d.remove();
+                });
+                var added = tpl.content.querySelectorAll('.msg').length;
+                if (!added) return;
+                var empty = stream.querySelector('.chat-start');
+                if (empty) empty.remove();
+                tpl.content.querySelectorAll('.msg').forEach(function (m) { m.classList.add('is-arriving'); });
+                stream.appendChild(tpl.content);
+                if (near) { toBottom(true); } else { unseen += added; showJump(); }
+            }
+
+            function removeMsg(m) {
+                m.classList.add('is-removing');
+                setTimeout(function () { m.remove(); }, 220);
+            }
+
+            // ما حذفه الطرف الآخر يختفي هنا أيضاً
+            function syncDeleted(ids) {
+                if (!ids) return;
+                var keep = {};
+                ids.forEach(function (id) { keep[id] = true; });
+                stream.querySelectorAll('.msg[data-id]').forEach(function (m) {
+                    if (!keep[m.dataset.id]) removeMsg(m);
+                });
+            }
+
+            // عدّادات القناة الأخرى (الطالب) وقائمة المشاريع (المشرف)
+            function counters(unread) {
+                if (!unread) return;
+                document.querySelectorAll('[data-chat-unread]').forEach(function (el) {
+                    var n = unread[el.dataset.chatUnread] || 0;
+                    el.hidden = !n; el.textContent = n;
+                });
+                if (unread.projects !== undefined) {
+                    document.querySelectorAll('[data-chat-unread-project]').forEach(function (el) {
+                        var n = (unread.projects || {})[el.dataset.chatUnreadProject] || 0;
+                        el.hidden = !n; el.textContent = n;
+                        var item = el.closest('.chat-item');
+                        if (item && !item.classList.contains('is-active')) item.classList.toggle('is-unread', !!n);
+                    });
+                }
+            }
+
+            function schedule(ms) { clearTimeout(timer); timer = setTimeout(poll, ms); }
+
+            function poll() {
+                if (busy) return schedule(INTERVAL);
+                if (document.hidden) return schedule(INTERVAL);
+                busy = true;
+                fetch(url + '&after=' + lastId + '&read=1', { headers: headers, credentials: 'same-origin', cache: 'no-store' })
+                    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+                    .then(function (d) {
+                        append(d.html);
+                        lastId = Math.max(lastId, d.last_id || 0);
+                        syncDeleted(d.ids);
+                        counters(d.unread);
+                        failures = 0;
+                    })
+                    .catch(function () { failures++; })
+                    .finally(function () {
+                        busy = false;
+                        // تباطؤ عند الخطأ حتى دقيقة
+                        schedule(Math.min(INTERVAL * Math.pow(2, failures), 60000));
+                    });
+            }
+            document.addEventListener('visibilitychange', function () { if (!document.hidden) schedule(200); });
+            schedule(INTERVAL);
+
+            // ===== الإرسال بلا تحميل =====
+            // يأتي بعد مستمع الذكر أعلاه، فحقول mentions[] جاهزة حين نقرأ النموذج
+            if (form) {
+                var body = form.querySelector('textarea[name="body"]');
+                form.addEventListener('submit', function (e) {
+                    if (e.defaultPrevented) return;
+                    var text = body.value.trim();
+                    if (!text) return;
+                    e.preventDefault();
+
+                    var data = new FormData(form);
+                    data.append('after', lastId);
+
+                    // تظهر فوراً شفافةً «جارٍ الإرسال…»، وتثبت حين يردّ الخادم
+                    var pending = document.createElement('div');
+                    pending.className = 'msg is-mine is-sending';
+                    pending.innerHTML = '<div class="msg-body"><div class="msg-bubble"><p class="cmt-text"></p><span class="msg-time"></span></div></div>';
+                    pending.querySelector('.cmt-text').textContent = text;
+                    pending.querySelector('.msg-time').textContent = L.sending;
+                    var empty = stream.querySelector('.chat-start');
+                    if (empty) empty.remove();
+                    stream.appendChild(pending);
+                    toBottom(true);
+
+                    body.value = '';
+                    body.dispatchEvent(new Event('input'));
+                    var box = form.querySelector('[data-mention-inputs]');
+                    if (box) box.innerHTML = '';
+
+                    fetch(form.action, { method: 'POST', body: data, headers: headers, credentials: 'same-origin' })
+                        .then(function (r) {
+                            if (r.status === 422) return r.json().then(function (j) { throw { message: (j.errors && Object.values(j.errors)[0][0]) || j.message }; });
+                            if (!r.ok) throw { message: L.failed };
+                            return r.json();
+                        })
+                        .then(function (d) {
+                            pending.remove();
+                            append(d.html, true);
+                            lastId = Math.max(lastId, d.last_id || 0);
+                        })
+                        .catch(function (err) {
+                            // النصّ لا يضيع: «لم تُرسل» وزرّ يعيده إلى الصندوق
+                            pending.classList.remove('is-sending');
+                            pending.classList.add('is-failed');
+                            var t = pending.querySelector('.msg-time');
+                            t.textContent = (err && err.message) || L.failed;
+                            var again = document.createElement('button');
+                            again.type = 'button';
+                            again.className = 'msg-retry';
+                            again.textContent = L.retry;
+                            again.addEventListener('click', function () {
+                                body.value = text;
+                                body.dispatchEvent(new Event('input'));
+                                pending.remove();
+                                body.focus();
+                            });
+                            pending.querySelector('.msg-bubble').appendChild(again);
+                        });
+                });
+            }
+
+            // ===== الحذف بلا تحميل (بعد تأكيد النموذج نفسه) =====
+            stream.addEventListener('submit', function (e) {
+                var del = e.target.closest('.msg-del');
+                if (!del || e.defaultPrevented) return;
+                e.preventDefault();
+                var msg = del.closest('.msg');
+                msg.classList.add('is-sending');
+                fetch(del.action, { method: 'POST', body: new FormData(del), headers: headers, credentials: 'same-origin' })
+                    .then(function (r) { if (!r.ok) throw new Error(r.status); removeMsg(msg); })
+                    .catch(function () { msg.classList.remove('is-sending'); window.alert(L.delFailed); });
+            });
         })();
     </script>
 @endpush

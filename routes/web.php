@@ -282,6 +282,8 @@ Route::middleware(['auth:student,supervisor,admin', 'PreventBackHistory'])->grou
 
     // التحديث الحيّ: الجرس وشارات الشريط الجانبي (live.js يسأله كل بضع ثوانٍ)
     Route::get('/live', \App\Http\Controllers\LiveController::class)->name('live');
+    // النقاش الحيّ: ما وصل بعد آخر رسالة معروضة (الصلاحية في المتحكّم)
+    Route::get('/discussion/{project}/live', \App\Http\Controllers\DiscussionLiveController::class)->name('discussion.live');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

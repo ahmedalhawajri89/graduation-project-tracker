@@ -82,9 +82,7 @@
                                             {{ __('لا رسائل بعد — ابدأ النقاش') }}
                                         @endif
                                     </span>
-                                    @if ($n)
-                                        <span class="sidebar-count">{{ $n }}</span>
-                                    @endif
+                                    <span class="sidebar-count" data-chat-unread-project="{{ $p->id }}" @unless ($n) hidden @endunless>{{ $n }}</span>
                                 </span>
                             </span>
                         </a>
