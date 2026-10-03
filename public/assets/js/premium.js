@@ -29,6 +29,96 @@
       "bento.progress": "نسبة الإنجاز",
       "bento.project": "كشف الرسائل الاحتيالية",
       "bento.of": "من 5 مراحل",
+      "svx.1.t": "فريقك ومشرفك في دقائق",
+      "svx.1.l": "زملاء من تخصصك، ومشرف بمقاعد متاحة، وتنبيه إن نُفّذت فكرتك.",
+      "svx.2.t": "سلّم، واستلم ملاحظة",
+      "svx.2.l": "كل مرحلة بملف، والمشرف يعتمدها أو يطلب تعديلاً بسببه.",
+      "svx.3.t": "خطة مراحل جاهزة",
+      "svx.3.l": "يضعها المشرف مرّة بمواعيدها وقوالبها، فتصل كل مجموعاته.",
+      "svx.4.t": "نقاش حيّ",
+      "svx.4.l": "قناة خاصة بالفريق، وأخرى مع المشرف — والرسائل تصل فوراً.",
+      "svx.5.t": "مناقشة ودرجة معتمدة",
+      "svx.5.l": "لجنة وموعد وقاعة، ودرجة تُرصد ثم تُقفل.",
+      "svx.6.t": "استلهم من مشاريع سابقة",
+      "svx.6.l": "تصفّح مشاريع الدفعات السابقة بأنواعها ومشرفيها.",
+      "svx.s1.sup": "د. هبة الشوا",
+      "svx.s1.supl": "مشرفة · برمجة ذكاء صناعي",
+      "svx.s1.seats": "مقاعد",
+      "svx.s1.r1": "واجهات",
+      "svx.s1.r2": "الخادم",
+      "svx.s1.r3": "التوثيق",
+      "svx.s1.alert": "فكرة مشابهة نُفّذت في 2023 — راجعها قبل التقديم",
+      "svx.s2.file": "الفصل الثالث",
+      "svx.s2.warn": "مطلوب تعديل",
+      "svx.s2.ok": "اعتُمدت ✓",
+      "svx.s2.prog": "نسبة الإنجاز",
+      "svx.s3.title": "خطة مراحل الفصل",
+      "svx.s3.m1": "تحليل المتطلبات",
+      "svx.s3.m1d": "30 يونيو",
+      "svx.s3.m2": "تصميم قاعدة البيانات",
+      "svx.s3.m2d": "14 يوليو",
+      "svx.s3.m3": "الواجهات",
+      "svx.s3.m3d": "28 يوليو",
+      "svx.s3.m4": "التطوير والبرمجة",
+      "svx.s3.m4d": "11 أغسطس",
+      "svx.s3.m5": "الاختبار والتوثيق",
+      "svx.s3.m5d": "25 أغسطس",
+      "svx.s3.sent": "وصلت إلى 4 مجموعات ✓",
+      "svx.s4.head": "نقاش الفريق",
+      "svx.s4.lock": "🔒 خاص",
+      "svx.s4.m1": "رفعت الفصل الثالث ✅",
+      "svx.s4.at": "@آية",
+      "svx.s4.m2": "ممتاز، أراجعه الليلة",
+      "svx.s4.m3": "وأنا أجهّز العرض التقديمي 🎤",
+      "svx.s5.mon": "أكتوبر",
+      "svx.s5.when": "الأحد 09:00 · قاعة 204",
+      "svx.s5.who": "المشرف + ممتحنان · رئيس اللجنة",
+      "svx.s5.tag": "ممتاز · معتمدة 🔒",
+      "svx.s6.q": "ذكاء",
+      "svx.s6.p1": "كشف الأخبار الزائفة",
+      "svx.s6.p1t": "ذكاء صناعي · 2023",
+      "svx.s6.p2": "متجر إلكتروني",
+      "svx.s6.p2t": "برمجة ويب · 2022",
+      "svx.s6.p3": "تحليل صور الأشعة",
+      "svx.s6.p3t": "ذكاء صناعي · 2024",
+      "svx.s6.p4": "تطبيق حجز عيادات",
+      "svx.s6.p4t": "تطبيقات جوال · 2023",
+      "fh.1": "نقاش داخلي لا يراه المشرف",
+      "fh.2": "كل قرار محفوظ ومقفل",
+      "fh.3": "للفريق ومشرفه والإدارة فقط",
+      "fh.4": "ما يخصّك فقط، لا كل رسالة",
+      "fh.5": "والإنجليزية بنقرة",
+      "fh.6": "كل صفحة لشاشتك الصغيرة",
+      "st.1": "ببريدك أو رقمك الجامعي — حسابك جاهز.",
+      "st.2": "زملاء ومشرف بمقاعد، وفكرة لم تُنفَّذ.",
+      "st.3": "تسليم، فاعتماد أو تعديل بملاحظة.",
+      "st.4": "لجنة ودرجة معتمدة لا تتغيّر.",
+      "cmp.m1": "مين رفع الملف الأخير؟",
+      "cmp.m2": "الموعد بكرة ولا الأسبوع الجاي؟؟",
+      "cmp.m3": "مرفوض",
+      "cmp.m4": "Re: Re: Fwd: التعديلات",
+      "cmp.m5": "مين عليه الواجهات؟",
+      "cmp.m6": "كشف الدرجات (ورقي)",
+      "cmp.aria": "قارن قبل ومع تخرُّج",
+      "contact.bubble": "أهلاً! نقرأ كل رسالة 👋",
+      "journey.s1": "الفكرة",
+      "journey.s2": "الفريق",
+      "journey.s3": "موافقة المشرف",
+      "journey.s4": "المراحل",
+      "journey.s5": "المناقشة",
+      "journey.s6": "التخرّج",
+      "journey.c1": "فكرة جديدة",
+      "journey.c1s": "كشف الأخبار الزائفة بالذكاء الاصطناعي",
+      "journey.c2": "اكتمل الفريق",
+      "journey.c2s": "3 أعضاء · قائدة الفريق آية",
+      "journey.c3": "وافق المشرف",
+      "journey.c3s": "د. هبة قبلت الطلب",
+      "journey.c4": "اعتُمدت المرحلة",
+      "journey.c4s": "الفصل الثالث · 4 من 5",
+      "journey.c5": "جُدولت المناقشة",
+      "journey.c5s": "الأحد 09:00 · قاعة 204",
+      "journey.c6": "تخرّجنا! 🎓",
+      "journey.c6s": "الدرجة 96 من 100 · ممتاز",
       "bento.stage": "المرحلة الحالية",
       "bento.stageTitle": "الفصل الثاني — الدراسات السابقة",
       "bento.s1": "مفتوحة",
@@ -46,7 +136,7 @@
       "bento.excellent": "ممتاز",
       "bento.pending": "لم تُرصد بعد",
       "meta.title": "تخرُّج | منصة متابعة مشاريع التخرج",
-      "hero.title": "<span class=\"ink-line\"><span>تتبّع مشروع تخرجك</span></span><span class=\"ink-line\"><span>من الفكرة <span class=\"text-gradient\">إلى المناقشة</span></span></span>",
+      "hero.title": "<span class=\"ink-line\"><span>تتبّع مشروع تخرجك</span></span><span class=\"ink-line\"><span>من الفكرة <span class=\"text-gradient\">إلى <span class=\"rot\" data-rot=\"المناقشة|الدرجة|التخرّج\">المناقشة</span></span></span></span>",
       "hero.stageLabel": "مسار المشروع في المنصة",
       "hero.stageProject": "من التقديم إلى الدرجة النهائية",
       "hero.step1": "تقديم الطلب",
@@ -100,29 +190,6 @@
       "services.kicker": "الخدمات",
       "services.title": "كل ما يحتاجه مشروعك في مكان واحد",
       "services.text": "من تكوين الفريق إلى الدرجة المعتمدة — أدوات تغنيك عن مجموعات واتساب والبريد والملفات المبعثرة.",
-      "svc.1.title": "فريقك ومشرفك في دقائق",
-      "svc.1.text": "اختر زملاءك من المتاحين في تخصصك، وشاهد المقاعد المتبقية لكل مشرف — وتنبّهك المنصة إن كانت فكرتك نُفّذت من قبل.",
-      "svc.1.seats": "مقاعد متبقية لدى المشرف",
-      "svc.1.similar": "فكرة مشابهة نُفّذت في 2023 — راجعها قبل التقديم",
-      "svc.2.title": "سلّم مرحلتك، واستلم ملاحظة لا رفضاً",
-      "svc.2.text": "تسلّم كل مرحلة بملف وملاحظة، ويعتمدها مشرفك أو يطلب تعديلاً بسببه الواضح — وكل جولة محفوظة.",
-      "svc.2.s1": "سُلّمت",
-      "svc.2.s2": "مطلوب تعديل",
-      "svc.2.s3": "اعتُمدت",
-      "svc.2.noteT": "ملاحظة المشرف",
-      "svc.2.note": "ينقص مخطط الكيانات والعلاقات في الفصل الثالث.",
-      "svc.3.title": "خطة مراحل بقوالبها",
-      "svc.3.text": "يضعها المشرف مرّة بمواعيدها وقوالبها، فتصل كل مجموعاته.",
-      "svc.4.title": "نقاش خاص بالفريق",
-      "svc.4.text": "قناة لا يراها المشرف، و@ لتنبيه زميل بعينه.",
-      "svc.5.title": "ملاحظات على الملفات",
-      "svc.5.text": "«صفحة 3 ينقصها المرجع» — على الملف نفسه، حتى تُعالَج.",
-      "svc.6.title": "توزيع الأدوار",
-      "svc.6.text": "مَن على الواجهات ومَن على الخادم — يراه الفريق والمشرف.",
-      "svc.7.title": "مستكشف المشاريع السابقة",
-      "svc.7.text": "تصفّح مشاريع الدفعات السابقة بأنواعها ومشرفيها، واستلهم فكرتك.",
-      "svc.8.title": "درجة معتمدة لا تتغيّر",
-      "svc.8.text": "يرصد مشرفك الدرجة من 100 مع ملاحظاته، ويُحسب التقدير منها تلقائياً، وتُقفل بعد اعتمادها.",
       "features.5.title": "عربية أولاً",
       "features.5.text": "واجهة عربية كاملة من اليمين إلى اليسار، بخطوط مصمّمة للقراءة، والإنجليزية بنقرة.",
       "features.6.title": "على الجوال كما الحاسوب",
@@ -391,6 +458,96 @@
       "bento.progress": "Progress",
       "bento.project": "Fraud message detection",
       "bento.of": "of 5 stages",
+      "svx.1.t": "Team and supervisor in minutes",
+      "svx.1.l": "Classmates from your major, a supervisor with open seats, and a heads-up if your idea was done before.",
+      "svx.2.t": "Submit, get feedback",
+      "svx.2.l": "Each stage with a file — your supervisor approves it or asks for changes, with the reason.",
+      "svx.3.t": "A ready milestone plan",
+      "svx.3.l": "Set once by the supervisor, with dates and templates, and sent to all their groups.",
+      "svx.4.t": "Live discussion",
+      "svx.4.l": "A private team channel and one with your supervisor — messages arrive instantly.",
+      "svx.5.t": "Defense and a locked grade",
+      "svx.5.l": "A committee, a time and a room, and a grade that is recorded and then locked.",
+      "svx.6.t": "Learn from past projects",
+      "svx.6.l": "Browse earlier cohorts’ projects by type and supervisor.",
+      "svx.s1.sup": "Dr. Heba Alshawa",
+      "svx.s1.supl": "Supervisor · AI programming",
+      "svx.s1.seats": "seats",
+      "svx.s1.r1": "Front end",
+      "svx.s1.r2": "Back end",
+      "svx.s1.r3": "Docs",
+      "svx.s1.alert": "A similar idea was done in 2023 — review it first",
+      "svx.s2.file": "Chapter 3",
+      "svx.s2.warn": "Changes requested",
+      "svx.s2.ok": "Approved ✓",
+      "svx.s2.prog": "Progress",
+      "svx.s3.title": "This term’s milestone plan",
+      "svx.s3.m1": "Requirements",
+      "svx.s3.m1d": "Jun 30",
+      "svx.s3.m2": "Database design",
+      "svx.s3.m2d": "Jul 14",
+      "svx.s3.m3": "Interfaces",
+      "svx.s3.m3d": "Jul 28",
+      "svx.s3.m4": "Development",
+      "svx.s3.m4d": "Aug 11",
+      "svx.s3.m5": "Testing & docs",
+      "svx.s3.m5d": "Aug 25",
+      "svx.s3.sent": "Sent to 4 groups ✓",
+      "svx.s4.head": "Team chat",
+      "svx.s4.lock": "🔒 Private",
+      "svx.s4.m1": "Chapter three is uploaded ✅",
+      "svx.s4.at": "@Aya",
+      "svx.s4.m2": "great, I’ll review it tonight",
+      "svx.s4.m3": "I’m on the slides 🎤",
+      "svx.s5.mon": "October",
+      "svx.s5.when": "Sunday 09:00 · Room 204",
+      "svx.s5.who": "Supervisor + 2 examiners · a chair",
+      "svx.s5.tag": "Excellent · Locked 🔒",
+      "svx.s6.q": "AI",
+      "svx.s6.p1": "Fake-news detection",
+      "svx.s6.p1t": "AI · 2023",
+      "svx.s6.p2": "Online store",
+      "svx.s6.p2t": "Web · 2022",
+      "svx.s6.p3": "X-ray image analysis",
+      "svx.s6.p3t": "AI · 2024",
+      "svx.s6.p4": "Clinic booking app",
+      "svx.s6.p4t": "Mobile · 2023",
+      "fh.1": "A team chat your supervisor can’t see",
+      "fh.2": "Every decision saved and locked",
+      "fh.3": "Only the team, supervisor and admins",
+      "fh.4": "Only what concerns you",
+      "fh.5": "And English in one click",
+      "fh.6": "Every page fits your phone",
+      "st.1": "Email or university ID — your account is ready.",
+      "st.2": "Teammates, a supervisor with seats, a fresh idea.",
+      "st.3": "Submit, then approval or changes with a note.",
+      "st.4": "A committee and a grade that won’t change.",
+      "cmp.m1": "Who uploaded the latest file?",
+      "cmp.m2": "Is it due tomorrow or next week??",
+      "cmp.m3": "Rejected",
+      "cmp.m4": "Re: Re: Fwd: changes",
+      "cmp.m5": "Who’s on the front end?",
+      "cmp.m6": "Grade sheet (paper)",
+      "cmp.aria": "Compare before and with Takharruj",
+      "contact.bubble": "Hi! We read every message 👋",
+      "journey.s1": "Idea",
+      "journey.s2": "Team",
+      "journey.s3": "Supervisor approval",
+      "journey.s4": "Milestones",
+      "journey.s5": "Defense",
+      "journey.s6": "Graduation",
+      "journey.c1": "A new idea",
+      "journey.c1s": "Fake-news detection with AI",
+      "journey.c2": "Team complete",
+      "journey.c2s": "3 members · led by Aya",
+      "journey.c3": "Supervisor approved",
+      "journey.c3s": "Dr. Heba accepted the request",
+      "journey.c4": "Milestone approved",
+      "journey.c4s": "Chapter three · 4 of 5",
+      "journey.c5": "Defense scheduled",
+      "journey.c5s": "Sunday 09:00 · Room 204",
+      "journey.c6": "We graduated! 🎓",
+      "journey.c6s": "Grade 96 / 100 · Excellent",
       "bento.stage": "Current stage",
       "bento.stageTitle": "Chapter 2 — Literature review",
       "bento.s1": "Open",
@@ -408,7 +565,7 @@
       "bento.excellent": "Excellent",
       "bento.pending": "Not graded yet",
       "meta.title": "Takharruj | Graduation Project Tracking",
-      "hero.title": "<span class=\"ink-line\"><span>Track Your Graduation Project</span></span><span class=\"ink-line\"><span>From Idea <span class=\"text-gradient\">to Defense</span></span></span>",
+      "hero.title": "<span class=\"ink-line\"><span>Track Your Graduation Project</span></span><span class=\"ink-line\"><span>From Idea <span class=\"text-gradient\">to <span class=\"rot\" data-rot=\"Defense|Grading|Graduation\">Defense</span></span></span></span>",
       "hero.stageLabel": "The project path",
       "hero.stageProject": "From submission to final grade",
       "hero.step1": "Submit a proposal",
@@ -462,29 +619,6 @@
       "services.kicker": "Services",
       "services.title": "Everything Your Project Needs, in One Place",
       "services.text": "From forming your team to an approved grade — tools that replace scattered WhatsApp groups, emails and files.",
-      "svc.1.title": "Your team and supervisor in minutes",
-      "svc.1.text": "Pick teammates from your major, see each supervisor's open seats — and get warned if your idea has been done before.",
-      "svc.1.seats": "seats left with this supervisor",
-      "svc.1.similar": "A similar idea was done in 2023 — review it first",
-      "svc.2.title": "Submit a stage, get feedback — not a rejection",
-      "svc.2.text": "Submit each stage with a file and a note; your supervisor approves it or asks for changes with a clear reason. Every round is kept.",
-      "svc.2.s1": "Submitted",
-      "svc.2.s2": "Changes requested",
-      "svc.2.s3": "Approved",
-      "svc.2.noteT": "Supervisor's note",
-      "svc.2.note": "The ER diagram is missing from chapter 3.",
-      "svc.3.title": "A stage plan with templates",
-      "svc.3.text": "Your supervisor sets it once, with dates and templates, for all their groups.",
-      "svc.4.title": "A private team chat",
-      "svc.4.text": "A channel your supervisor can't see, with @ to ping a teammate.",
-      "svc.5.title": "Notes on files",
-      "svc.5.text": "“Page 3 is missing a reference” — right on the file, until it's fixed.",
-      "svc.6.title": "Team roles",
-      "svc.6.text": "Who owns the frontend, who owns the backend — visible to the team and supervisor.",
-      "svc.7.title": "Past projects explorer",
-      "svc.7.text": "Browse previous cohorts' projects by type and supervisor, and find your idea.",
-      "svc.8.title": "A grade that stays final",
-      "svc.8.text": "Your supervisor records a grade out of 100 with notes, the rating is derived from it automatically, and it locks once approved.",
       "features.5.title": "Arabic first",
       "features.5.text": "A fully right-to-left Arabic interface with fonts made for reading — and English one click away.",
       "features.6.title": "Mobile as well as desktop",
@@ -1009,10 +1143,501 @@
        الدائمة، والجسيمات الطافية. الحركة الباقية في CSS وحدها. */
 
     initBento();
+    initRotator();
+    initJourney();
+    initServices();
+    initFeatureHub();
+    initStairs();
+    initCompare();
+    initSeason();
     initContact();
     initRoles();
     initLangProof();
   });
+
+  /* ---------- الهيرو: رحلة المشروع ----------
+     الفريق يمشي على المسار من محطة إلى محطة، وعند كل وصول تُضاء المحطة
+     وتطفو بطاقتها، والأثر خلفه يمتلئ. في المحطة الأخيرة تُرمى القبعات
+     وتتناثر القصاصات، ثم تبدأ الرحلة من جديد. العالم يُرسم يساراً→يميناً
+     ويُعكس في العربية. على الشاشات الضيقة «كاميرا» تتبع الفريق (viewBox).
+     تتوقّف حين يخرج المشهد من الشاشة أو يُخفى التبويب. */
+  function initJourney() {
+    var scene = document.querySelector("[data-journey]");
+    if (!scene) return;
+    var svg = scene.querySelector(".hj-svg");
+    var world = svg.querySelector(".hj-world");
+    var path = svg.querySelector(".hj-path");
+    var trail = svg.querySelector(".hj-trail");
+    var team = svg.querySelector(".hj-team");
+    var stations = Array.prototype.slice.call(svg.querySelectorAll(".hj-station"));
+    var labels = scene.querySelectorAll("[data-label]");
+    var cards = scene.querySelectorAll("[data-card]");
+    var confetti = scene.querySelector(".hj-confetti");
+    var L = path.getTotalLength();
+    var STOPS = [0.02, 0.2, 0.39, 0.58, 0.78, 0.985];
+    var W = 1200;
+
+    trail.style.strokeDasharray = L;
+    trail.style.strokeDashoffset = L;
+
+    function rtl() { return document.documentElement.dir === "rtl"; }
+    function at(f) { return path.getPointAtLength(L * f); }
+
+    // العالم معكوس في العربية: الفريق يبدأ من اليمين كما يُقرأ السطر
+    function orient() {
+      world.setAttribute("transform", rtl() ? "translate(" + W + " 0) scale(-1 1)" : "");
+      svg.classList.toggle("is-rtl", rtl());
+    }
+
+    function placeStatics() {
+      stations.forEach(function (g, k) {
+        var p = at(STOPS[k]);
+        g.setAttribute("transform", "translate(" + p.x + " " + p.y + ")");
+        // الأيقونة تبقى مقروءة في الاتجاهين
+        g.querySelector(".hj-ico").setAttribute("transform", (rtl() ? "scale(-1 1) " : "") + "translate(-9 -9) scale(.75)");
+      });
+      svg.querySelectorAll(".hj-actor").forEach(function (u) {
+        var p = at(STOPS[+u.dataset.at]);
+        u.setAttribute("transform", "translate(" + (p.x + +u.dataset.dx) + " " + (p.y + +u.dataset.dy) + ")");
+      });
+    }
+
+    var f = STOPS[0];
+    function placeTeam() {
+      var p = at(f);
+      team.setAttribute("transform", "translate(" + p.x + " " + (p.y - 2) + ")");
+      trail.style.strokeDashoffset = L * (1 - f);
+      camera(p.x);
+    }
+
+    // كاميرا الشاشات الضيقة: نافذة بعرض 460 تتبع الفريق
+    var narrow = false;
+    function camera(x) {
+      if (!narrow) return;
+      var vx = rtl() ? W - x : x;
+      var left = Math.max(0, Math.min(W - 460, vx - 230));
+      svg.setAttribute("viewBox", left + " 40 460 260");
+      overlay();
+    }
+    function measure() {
+      narrow = scene.clientWidth < 760;
+      if (!narrow) svg.setAttribute("viewBox", "0 0 " + W + " 300");
+      placeTeam();
+      overlay();
+    }
+
+    // الأسماء والبطاقات (HTML) فوق المحطات
+    function overlay() {
+      var box = scene.getBoundingClientRect();
+      stations.forEach(function (g, k) {
+        var r = g.querySelector(".hj-node").getBoundingClientRect();
+        var x = r.left + r.width / 2 - box.left, y = r.top - box.top;
+        var off = r.right < box.left || r.left > box.right;
+        if (labels[k]) { labels[k].style.transform = "translate(" + x + "px," + (y + r.height + 8) + "px) translate(-50%, 0)"; labels[k].classList.toggle("is-out", off); }
+        if (cards[k]) {
+          var cw = cards[k].offsetWidth || 220;
+          var cx = Math.max(8, Math.min(box.width - cw - 8, x - cw / 2));
+          cards[k].style.transform = "translate(" + cx + "px," + (y - (narrow ? 96 : 112)) + "px) translate(0, -100%)";
+        }
+      });
+    }
+
+    function station(k) {
+      stations.forEach(function (g, i) { g.classList.toggle("is-done", i < k); g.classList.toggle("is-now", i === k); });
+      labels.forEach(function (l, i) { l.classList.toggle("is-now", i === k); l.classList.toggle("is-done", i < k); });
+      cards.forEach(function (c, i) { c.classList.toggle("is-show", i === k); });
+      overlay();
+    }
+
+    function burst() {
+      if (!confetti) return;
+      var colors = ["#2563eb", "#7c3aed", "#f59e0b", "#10b981", "#ec4899"];
+      var r = team.getBoundingClientRect(), box = scene.getBoundingClientRect();
+      for (var i = 0; i < 26; i++) {
+        var s = document.createElement("i");
+        s.style.left = (r.left + r.width / 2 - box.left) + "px";
+        s.style.top = (r.top - box.top + 10) + "px";
+        s.style.background = colors[i % colors.length];
+        s.style.setProperty("--dx", (Math.random() * 260 - 130) + "px");
+        s.style.setProperty("--dy", (-80 - Math.random() * 140) + "px");
+        s.style.setProperty("--r", (Math.random() * 720 - 360) + "deg");
+        s.style.animationDelay = (Math.random() * 120) + "ms";
+        confetti.appendChild(s);
+      }
+      setTimeout(function () { confetti.innerHTML = ""; }, 1900);
+    }
+
+    orient();
+    placeStatics();
+    measure();
+    window.addEventListener("resize", function () { measure(); });
+    // تبديل اللغة يقلب الاتجاه
+    new MutationObserver(function () { orient(); placeStatics(); measure(); })
+      .observe(document.documentElement, { attributes: true, attributeFilter: ["dir"] });
+
+    if (reduceMotion) {
+      f = STOPS[STOPS.length - 1];
+      placeTeam();
+      station(STOPS.length - 1);
+      scene.classList.add("is-graduated");
+      return;
+    }
+
+    // ===== الحلقة =====
+    var k = 0, running = false, visible = false, raf = 0, wait = 0, phase = "hold", t0 = 0, from = 0, to = 0;
+    var MOVE = 1700, HOLD = 1500, GRAD_HOLD = 3200;
+
+    function startMove() {
+      if (k >= STOPS.length - 1) {
+        // نهاية الرحلة: من جديد
+        scene.classList.add("is-fading");
+        wait = setTimeout(function () {
+          k = 0; f = STOPS[0]; placeTeam(); station(0);
+          scene.classList.remove("is-graduated", "is-fading");
+          wait = setTimeout(step, HOLD);
+        }, 600);
+        return;
+      }
+      from = STOPS[k]; to = STOPS[k + 1]; t0 = performance.now(); phase = "move";
+      cards.forEach(function (c) { c.classList.remove("is-show"); });
+      scene.classList.add("is-walking");
+      raf = requestAnimationFrame(frame);
+    }
+    function frame(now) {
+      if (!running) return;
+      var p = Math.min(1, (now - t0) / MOVE);
+      var e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      f = from + (to - from) * e;
+      placeTeam();
+      if (p < 1) { raf = requestAnimationFrame(frame); return; }
+      k++;
+      phase = "hold";
+      scene.classList.remove("is-walking");
+      station(k);
+      if (k === STOPS.length - 1) {
+        scene.classList.add("is-graduated");
+        burst();
+        wait = setTimeout(step, GRAD_HOLD);
+      } else {
+        wait = setTimeout(step, HOLD);
+      }
+    }
+    function step() { if (running) startMove(); else phase = "paused"; }
+
+    function sync() {
+      var should = visible && !document.hidden;
+      if (should === running) return;
+      running = should;
+      if (running) {
+        if (phase === "move") { t0 = performance.now() - (f - from) / ((to - from) || 1) * MOVE; raf = requestAnimationFrame(frame); }
+        else if (phase === "paused") { startMove(); }
+      } else {
+        cancelAnimationFrame(raf);
+        if (phase === "hold") { clearTimeout(wait); phase = "paused"; }
+      }
+    }
+
+    station(0);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; sync(); }, { threshold: 0.2 }).observe(scene);
+    } else { visible = true; }
+    document.addEventListener("visibilitychange", sync);
+    phase = "paused";
+    setTimeout(sync, 900);
+  }
+
+  /* ---------- العنوان: «من الفكرة إلى المناقشة · الدرجة · التخرّج» ----------
+     الكلمات كلها في خانة واحدة (inline-grid) فعرضها عرض أطولها: التبديل لا
+     يزيح السطر. القاموس يعيد كتابة العنوان عند تبديل اللغة، فيُقرأ العنصر في
+     كل دورة لا مرّة واحدة. لمن أوقف الحركة: الكلمة الأولى ثابتة. */
+  function initRotator() {
+    if (reduceMotion) return;
+    var i = 0;
+    function build(el) {
+      if (el.dataset.built === el.dataset.rot) return;
+      el.innerHTML = "";
+      el.dataset.rot.split("|").forEach(function (w, k) {
+        var s = document.createElement("span");
+        s.className = "rot-word" + (k === 0 ? " is-on" : "");
+        s.textContent = w;
+        el.appendChild(s);
+      });
+      el.dataset.built = el.dataset.rot;
+      i = 0;
+    }
+    setInterval(function () {
+      var el = document.querySelector("[data-rot]");
+      if (!el || document.hidden) return;
+      build(el);
+      var words = el.querySelectorAll(".rot-word");
+      var cur = words[i % words.length];
+      i = (i + 1) % words.length;
+      var nxt = words[i];
+      cur.classList.remove("is-on"); cur.classList.add("is-off");
+      nxt.classList.remove("is-off"); nxt.classList.add("is-on");
+      setTimeout(function () { cur.classList.remove("is-off"); }, 600);
+    }, 2600);
+    var first = document.querySelector("[data-rot]");
+    if (first) build(first);
+  }
+
+  /* ---------- الخدمات (القسم 02): قصّة متحركة ----------
+     القائمة تتقدّم مع التمرير: الخدمة التي تعبر منتصف الشاشة تصير نشطة،
+     ومسرحها يتبدّل وتبدأ حركته من أولها (الحركات في CSS تنتظر is-active).
+     هنا ما لا يقدر عليه CSS: الأرقام تعدّ (data-tween) والبحث يُكتب (data-type).
+     النقر على خدمة ينقل إليها. لمن أوقف الحركة: المشاهد بحالتها الأخيرة. */
+  function initServices() {
+    var root = document.querySelector("[data-svx]");
+    if (!root) return;
+    var items = Array.prototype.slice.call(root.querySelectorAll("[data-svx-item]"));
+    var scenes = root.querySelectorAll("[data-scene]");
+    var dots = root.querySelectorAll(".svx-dots i");
+    var cur = -1, timers = [];
+    root.classList.add("is-enhanced");
+
+    function clear() { timers.forEach(clearTimeout); timers = []; }
+
+    function finalOf(scene) {
+      scene.querySelectorAll("[data-tween]").forEach(function (el) { el.textContent = el.dataset.to; });
+      scene.querySelectorAll("[data-type]").forEach(function (el) { el.textContent = typeText(el); });
+    }
+
+    function typeText(el) {
+      var d = dict[locale] || {};
+      return d[el.getAttribute("data-i18n-type")] || el.textContent;
+    }
+
+    function play(scene) {
+      if (reduceMotion) { finalOf(scene); return; }
+      scene.querySelectorAll("[data-tween]").forEach(function (el) {
+        var from = +el.dataset.from, to = +el.dataset.to;
+        el.textContent = from;
+        timers.push(setTimeout(function () {
+          var t0 = performance.now();
+          (function tick(t) {
+            var k = Math.min(1, (t - t0) / 900), e = 1 - Math.pow(1 - k, 3);
+            el.textContent = Math.round(from + (to - from) * e);
+            if (k < 1 && scene.classList.contains("is-active")) requestAnimationFrame(tick);
+          })(t0);
+        }, +el.dataset.delay || 0));
+      });
+      scene.querySelectorAll("[data-type]").forEach(function (el) {
+        var text = typeText(el), i = 0;
+        el.textContent = "";
+        timers.push(setTimeout(function step() {
+          el.textContent = text.slice(0, ++i);
+          if (i < text.length) timers.push(setTimeout(step, 140));
+          else scene.classList.add("is-typed");
+        }, +el.dataset.delay || 0));
+      });
+    }
+
+    function activate(i) {
+      if (i === cur) return;
+      cur = i;
+      clear();
+      items.forEach(function (it, k) {
+        it.classList.toggle("is-active", k === i);
+        it.classList.toggle("is-past", k < i);
+        it.querySelector(".svx-btn").setAttribute("aria-current", k === i ? "true" : "false");
+      });
+      dots.forEach(function (d, k) { d.classList.toggle("is-on", k === i); });
+      scenes.forEach(function (s) { s.classList.remove("is-active", "is-typed"); });
+      var scene = scenes[i];
+      void scene.offsetWidth; // تعاد الحركة من أولها
+      scene.classList.add("is-active");
+      play(scene);
+    }
+
+    // النقر: إلى الخدمة نفسها (والتمرير يُكمل التفعيل)
+    items.forEach(function (it, k) {
+      it.querySelector(".svx-btn").addEventListener("click", function () {
+        activate(k);
+        it.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      });
+    });
+
+    if (!("IntersectionObserver" in window)) { activate(0); return; }
+
+    // الخدمة التي تعبر شريط منتصف الشاشة
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) activate(items.indexOf(e.target));
+      });
+    }, { rootMargin: window.matchMedia("(max-width: 900px)").matches ? "-64% 0px -30% 0px" : "-48% 0px -48% 0px" });
+    items.forEach(function (it) { io.observe(it); });
+
+    // أول ظهور للقسم: المشهد الأول يُلعب حين يُرى لا قبل
+    new IntersectionObserver(function (entries, obs) {
+      if (!entries[0].isIntersecting) return;
+      obs.disconnect();
+      if (cur <= 0) { cur = -1; activate(0); }
+    }, { threshold: 0.35 }).observe(root.querySelector(".svx-stage"));
+  }
+
+  /* ---------- المميزات (03): محور حول جهاز ----------
+     المميزة النشطة تتبدّل وحدها كل بضع ثوانٍ وتظهر حيّة على الشاشة؛ المرور
+     أو النقر يختار ويوقف التبديل حتى يبتعد المؤشّر. في «عربية أولاً» الجملة
+     تنقلب بين اللغتين أمامك. تتوقّف حين يخرج القسم من الشاشة. */
+  function initFeatureHub() {
+    var root = document.querySelector("[data-fhub]");
+    if (!root) return;
+    var tabs = Array.prototype.slice.call(root.querySelectorAll("[data-fh]"));
+    var views = root.querySelectorAll("[data-fh-view]");
+    var lang = root.querySelector("[data-fx-lang] .fx-lang-toggle");
+    var cur = 0, timer = 0, flip = 0, held = false, visible = false;
+
+    function show(i) {
+      cur = i;
+      tabs.forEach(function (t, k) {
+        t.setAttribute("aria-selected", k === i ? "true" : "false");
+        t.parentNode.classList.toggle("is-on", k === i);
+      });
+      views.forEach(function (v, k) { v.classList.toggle("is-on", k === i); });
+      // الجوال: المميزات شريط أفقي — النشطة تنزلق إلى منتصفه (أفقياً فقط)
+      var list = root.querySelector(".fh-pills"), pill = tabs[i].parentNode;
+      if (visible && list.scrollWidth > list.clientWidth + 4) {
+        var lr = list.getBoundingClientRect(), pr = pill.getBoundingClientRect();
+        list.scrollBy({ left: pr.left - lr.left - (lr.width - pr.width) / 2, behavior: reduceMotion ? "auto" : "smooth" });
+      }
+      clearInterval(flip);
+      if (i === 4 && lang && !reduceMotion) flip = setInterval(function () { lang.click(); }, 1600);
+    }
+    function tick() { if (visible && !held && !document.hidden) show((cur + 1) % tabs.length); }
+
+    tabs.forEach(function (t, k) {
+      t.addEventListener("click", function () { show(k); });
+      t.addEventListener("mouseenter", function () { held = true; show(k); });
+      t.addEventListener("focus", function () { held = true; show(k); });
+      t.addEventListener("keydown", function (e) {
+        var d = { ArrowDown: 1, ArrowUp: -1, ArrowLeft: 1, ArrowRight: -1 }[e.key];
+        if (d === undefined) return;
+        e.preventDefault();
+        var n = (k + d + tabs.length) % tabs.length;
+        tabs[n].focus();
+      });
+    });
+    root.addEventListener("mouseleave", function () { held = false; });
+    root.addEventListener("focusout", function () { held = false; });
+
+    if (!reduceMotion) timer = setInterval(tick, 3400);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }, { threshold: 0.3 }).observe(root);
+    } else { visible = true; }
+  }
+
+  /* ---------- كيف يعمل (04): طالب يصعد الدرج ----------
+     حين يظهر القسم يصعد الطالب درجةً درجة، وتُضاء كل درجة وشرحها عند وصوله،
+     وفي القمّة تظهر قبعة التخرّج. يُعاد حين يعود القسم إلى الشاشة. */
+  function initStairs() {
+    var root = document.querySelector("[data-stairs]");
+    if (!root) return;
+    var steps = Array.prototype.slice.call(root.querySelectorAll("[data-step]"));
+    var climber = root.querySelector(".st-climber");
+    var timers = [];
+
+    function place(k) {
+      var block = steps[k].querySelector(".st-block");
+      var box = root.getBoundingClientRect(), r = block.getBoundingClientRect();
+      var x = r.left + r.width / 2 - box.left - climber.offsetWidth / 2;
+      var y = r.top - box.top - climber.offsetHeight + 6;
+      climber.style.transform = "translate(" + x + "px," + y + "px)";
+    }
+    function light(k) {
+      steps.forEach(function (s, i) { s.classList.toggle("is-on", i <= k); s.classList.toggle("is-now", i === k); });
+      root.classList.toggle("is-top", k === steps.length - 1);
+    }
+    function climb() {
+      timers.forEach(clearTimeout); timers = [];
+      root.classList.remove("is-top");
+      if (reduceMotion) { place(steps.length - 1); light(steps.length - 1); return; }
+      root.classList.add("no-move"); place(0); light(-1);
+      void climber.offsetWidth;
+      root.classList.remove("no-move");
+      steps.forEach(function (s, k) {
+        timers.push(setTimeout(function () {
+          root.classList.add("is-hopping");
+          place(k);
+          timers.push(setTimeout(function () { root.classList.remove("is-hopping"); light(k); }, 520));
+        }, 400 + k * 1100));
+      });
+    }
+    window.addEventListener("resize", function () {
+      var on = steps.filter(function (s) { return s.classList.contains("is-now"); })[0];
+      place(on ? steps.indexOf(on) : 0);
+    });
+    place(0);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (e) { if (e[0].isIntersecting) climb(); }, { threshold: 0.45 }).observe(root);
+    } else { climb(); }
+  }
+
+  /* ---------- لماذا تخرُّج (07): قبل/بعد بشريط سحب ----------
+     المقبض يُسحب أو يُحرَّك بالأسهم (input range فيعمل بلوحة المفاتيح وقارئ
+     الشاشة)، وحين يظهر القسم أوّل مرة ينزلق وحده من «قبل» إلى «مع تخرُّج». */
+  function initCompare() {
+    var root = document.querySelector("[data-compare]");
+    if (!root) return;
+    var range = root.querySelector(".cmp-range");
+    function set(v) { root.style.setProperty("--pos", v + "%"); range.value = v; }
+    range.addEventListener("input", function () { root.classList.remove("is-auto"); set(+range.value); });
+    set(50);
+    if (reduceMotion || !("IntersectionObserver" in window)) { set(12); return; }
+    var io = new IntersectionObserver(function (e) {
+      if (!e[0].isIntersecting) return;
+      io.disconnect();
+      set(94);
+      root.classList.add("is-auto");
+      setTimeout(function () { set(12); }, 1200);
+      setTimeout(function () { root.classList.remove("is-auto"); }, 3000);
+    }, { threshold: 0.5 });
+    io.observe(root);
+  }
+
+  /* ---------- الأقسام والكليات (09): المسؤول يمشي دورة الفصل ----------
+     حين يظهر القسم يمشي مسؤول القسم من محطة إلى محطة، والخطّ خلفه يمتلئ،
+     وتُضاء كل محطة وميزتاها عند وصوله. يُعاد حين يعود القسم إلى الشاشة. */
+  function initSeason() {
+    var root = document.querySelector("[data-season]");
+    if (!root) return;
+    var sts = Array.prototype.slice.call(root.querySelectorAll("[data-st]"));
+    var walker = root.querySelector(".ds-walker");
+    var fill = root.querySelector(".ds-fill");
+    var timers = [];
+
+    function place(k) {
+      var node = sts[k].querySelector(".ds-node");
+      var box = root.getBoundingClientRect(), r = node.getBoundingClientRect();
+      var x = r.left + r.width / 2 - box.left - walker.offsetWidth / 2;
+      var y = r.top - box.top - walker.offsetHeight + 4;
+      walker.style.transform = "translate(" + x + "px," + y + "px)";
+      var first = sts[0].querySelector(".ds-node").getBoundingClientRect();
+      fill.style.width = Math.abs(r.left - first.left) + "px";
+    }
+    function light(k) { sts.forEach(function (s, i) { s.classList.toggle("is-on", i <= k); s.classList.toggle("is-now", i === k); }); }
+    function walk() {
+      timers.forEach(clearTimeout); timers = [];
+      if (reduceMotion) { place(sts.length - 1); light(sts.length - 1); return; }
+      root.classList.add("no-move"); place(0); light(-1);
+      void walker.offsetWidth;
+      root.classList.remove("no-move");
+      sts.forEach(function (s, k) {
+        timers.push(setTimeout(function () {
+          root.classList.add("is-walking");
+          place(k);
+          timers.push(setTimeout(function () { root.classList.remove("is-walking"); light(k); }, k ? 1100 : 300));
+        }, 300 + k * 1700));
+      });
+    }
+    window.addEventListener("resize", function () {
+      var now = sts.filter(function (s) { return s.classList.contains("is-now"); })[0];
+      place(now ? sts.indexOf(now) : 0);
+    });
+    place(0);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (e) { if (e[0].isIntersecting) walk(); }, { threshold: 0.45 }).observe(root);
+    } else { walk(); }
+  }
 
   /* ---------- دليل «عربية أولاً» (القسم 03) ----------
      المفتاح يقلب جملة المثال ولغتها واتجاهها — ما يفعله مبدّل اللغة في

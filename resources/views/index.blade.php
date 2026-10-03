@@ -122,191 +122,242 @@
         $siteStats['students'] = $siteStats['students'] ?: 400;
     @endphp
 
-    {{-- ======= Hero ======= --}}
-    <section id="hero" class="hero">
-        {{-- خلفية مرسومة لا صورة: وهج بلون الهوية خلف العنوان، ونقاط تتلاشى نحو
-             الحواف، وضوء خافت يتبع المؤشّر — حادّة بأيّ دقّة، ولا وزن لها على
-             التحميل، ولا تنافس العنوان على التباين كما تفعل الصورة --}}
+    {{-- ======= Hero: رحلة المشروع ======= --}}
+    {{-- بملء الشاشة: العنوان في الأعلى، وتحته مشهد مرسوم بالكود — مسار يعبر الشاشة
+         بستّ محطات (الفكرة، الفريق، المشرف، المراحل، المناقشة، التخرّج)، وفريق من
+         ثلاثة طلاب يمشي عليه، والمشرف واللجنة واقفون عند محطّاتهم، وعند كل محطة
+         بطاقة حقيقية من المنصة، وفي النهاية تُرمى قبعات التخرّج. الشخصيات SVG
+         حادّة بأيّ دقّة وبلا وزن صور. الحركة في initJourney (premium.js)،
+         ولمن أوقف الحركة يظهر المشهد الأخير ثابتاً. --}}
+    <section id="hero" class="hero hero--journey">
         <div class="hero-bg" aria-hidden="true">
             <span class="hero-glow"></span>
+            <span class="hero-aurora"><i></i><i></i><i></i></span>
             <span class="hero-dots"></span>
         </div>
 
-        {{-- شبكة الأعمدة الظاهرة — هي خلفية الهيرو --}}
-        <div class="hero-rules" aria-hidden="true">
-            <span></span><span></span><span></span><span></span><span></span><span></span>
+        <div class="container hj-top">
+            <span class="badge stagger d1">
+                <span class="dot"></span>
+                <span data-i18n="hero.badge">منصة إدارة مشاريع التخرج للجامعات</span>
+            </span>
+
+            <h1 class="stagger d2" data-i18n="hero.title" data-i18n-html>
+                <span class="ink-line"><span>تتبّع مشروع تخرجك</span></span>
+                <span class="ink-line"><span>من الفكرة <span class="text-gradient">إلى <span class="rot" data-rot="المناقشة|الدرجة|التخرّج">المناقشة</span></span></span></span>
+            </h1>
+
+            <p class="hero-sub stagger d3" data-i18n="hero.sub">
+                فريقك ومشرفك ومراحل مشروعك ودرجتك — تتابعها كلها من لوحة واحدة، ويتابعها مشرفك معك.
+            </p>
+
+            <div class="hero-ctas stagger d4">
+                <a href="{{ route('login') }}" class="btn btn-primary">
+                    <span data-i18n="hero.cta1">ابدأ الآن</span>
+                </a>
+                <a href="#about" class="btn-link">
+                    <span data-i18n="hero.cta2">اكتشف المزيد</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                </a>
+            </div>
+
+            {{-- أرقام حقيقية من قاعدة البيانات --}}
+            <div class="hero-figures stagger d5">
+                <div class="figure">
+                    <div class="figure-num" data-count="{{ $siteStats['projects'] }}">0</div>
+                    <div class="figure-label" data-i18n="hero.fact1">مشروع يُتابَع على المنصة</div>
+                </div>
+                <div class="figure">
+                    <div class="figure-num" data-count="{{ $siteStats['supervisors'] }}">0</div>
+                    <div class="figure-label" data-i18n="hero.fact2">مشرف أكاديمي</div>
+                </div>
+                <div class="figure">
+                    <div class="figure-num" data-count="{{ $siteStats['students'] }}">0</div>
+                    <div class="figure-label" data-i18n="hero.fact3">طالب وطالبة</div>
+                </div>
+            </div>
         </div>
 
-        <div class="container">
-            <div class="hero-grid">
-                <div class="hero-copy">
-                    <span class="badge stagger d1">
-                        <span class="dot"></span>
-                        <span data-i18n="hero.badge">منصة إدارة مشاريع التخرج للجامعات</span>
-                    </span>
+        {{-- المشهد — زخرفي لقارئ الشاشة، والمحطات نفسها مذكورة نصّاً في القائمة الخفية --}}
+        <div class="hj-scene" data-journey>
+            <ol class="hj-sr">
+                <li data-i18n="journey.s1">الفكرة</li><li data-i18n="journey.s2">الفريق</li><li data-i18n="journey.s3">موافقة المشرف</li>
+                <li data-i18n="journey.s4">المراحل</li><li data-i18n="journey.s5">المناقشة</li><li data-i18n="journey.s6">التخرّج</li>
+            </ol>
 
-                    <h1 class="stagger d2" data-i18n="hero.title" data-i18n-html>
-                        <span class="ink-line"><span>تتبّع مشروع تخرجك</span></span>
-                        <span class="ink-line"><span>من الفكرة <span class="text-gradient">إلى المناقشة</span></span></span>
-                    </h1>
+            <svg class="hj-svg" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+                <defs>
+                    <linearGradient id="hj-trail" x1="0" x2="1">
+                        <stop offset="0" stop-color="#2563eb" />
+                        <stop offset="1" stop-color="#7c3aed" />
+                    </linearGradient>
+                    <radialGradient id="hj-halo">
+                        <stop offset="0" stop-color="#2563eb" stop-opacity=".28" />
+                        <stop offset="1" stop-color="#2563eb" stop-opacity="0" />
+                    </radialGradient>
 
-                    <p class="hero-sub stagger d3" data-i18n="hero.sub">
-                        فريقك ومشرفك ومراحل مشروعك ودرجتك — تتابعها كلها من لوحة واحدة، ويتابعها مشرفك معك.
-                    </p>
+                    {{-- ===== الشخصيات: القدمان عند (0,0) والجسم إلى الأعلى ===== --}}
+                    {{-- طالب بقميص أزرق وحاسوب --}}
+                    <g id="hj-boy">
+                        <ellipse cx="0" cy="1" rx="13" ry="3" fill="#0f172a" opacity=".12" />
+                        <rect class="hj-leg is-a" x="-7" y="-26" width="6" height="26" rx="3" fill="#1e293b" />
+                        <rect class="hj-leg is-b" x="1" y="-26" width="6" height="26" rx="3" fill="#334155" />
+                        <rect x="-11" y="-53" width="22" height="31" rx="9" fill="#2563eb" />
+                        <rect class="hj-arm" x="-15" y="-50" width="6" height="21" rx="3" fill="#1d4ed8" />
+                        <rect x="6" y="-46" width="14" height="17" rx="2" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" />
+                        <circle cx="13" cy="-37.5" r="2" fill="#93c5fd" />
+                        <circle cx="0" cy="-63" r="10" fill="#f1c7a3" />
+                        <path d="M-10.5 -63 a10.5 10.5 0 0 1 21 0 q-3 -4 -8 -3.5 q-6 .5 -13 3.5z" fill="#1f2937" />
+                        <circle cx="4" cy="-63" r="1.3" fill="#1f2937" />
+                    </g>
+                    {{-- طالبة بحجاب بنفسجي ودفتر --}}
+                    <g id="hj-girl">
+                        <ellipse cx="0" cy="1" rx="13" ry="3" fill="#0f172a" opacity=".12" />
+                        <rect class="hj-leg is-a" x="-7" y="-22" width="6" height="22" rx="3" fill="#475569" />
+                        <rect class="hj-leg is-b" x="1" y="-22" width="6" height="22" rx="3" fill="#64748b" />
+                        <path d="M-13 -20 q0 -32 13 -34 q13 2 13 34z" fill="#0d9488" />
+                        <rect class="hj-arm" x="-15" y="-48" width="6" height="20" rx="3" fill="#0f766e" />
+                        <rect x="7" y="-44" width="11" height="14" rx="2" fill="#fde68a" stroke="#d97706" stroke-width="1" />
+                        <path d="M-12 -60 a12 12 0 0 1 24 0 v6 q-12 8 -24 0z" fill="#7c3aed" />
+                        <circle cx="1.5" cy="-61" r="7.5" fill="#f1c7a3" />
+                        <path d="M-12 -62 a12 12.5 0 0 1 24 0 q-4 -6 -12 -6.5 q-8 .5 -12 6.5z" fill="#7c3aed" />
+                        <circle cx="5" cy="-61" r="1.2" fill="#1f2937" />
+                    </g>
+                    {{-- طالب بشعر مجعّد وحقيبة ظهر --}}
+                    <g id="hj-boy2">
+                        <ellipse cx="0" cy="1" rx="13" ry="3" fill="#0f172a" opacity=".12" />
+                        <rect class="hj-leg is-a" x="-7" y="-26" width="6" height="26" rx="3" fill="#0f172a" />
+                        <rect class="hj-leg is-b" x="1" y="-26" width="6" height="26" rx="3" fill="#1e293b" />
+                        <rect x="-17" y="-50" width="9" height="20" rx="3" fill="#b45309" />
+                        <rect x="-11" y="-53" width="22" height="31" rx="9" fill="#f59e0b" />
+                        <rect class="hj-arm" x="7" y="-50" width="6" height="21" rx="3" fill="#d97706" />
+                        <circle cx="0" cy="-63" r="10" fill="#c99a76" />
+                        <circle cx="-6" cy="-70" r="4.5" fill="#111827" /><circle cx="0" cy="-73" r="5" fill="#111827" />
+                        <circle cx="6" cy="-70" r="4.5" fill="#111827" /><circle cx="-9" cy="-64" r="3.5" fill="#111827" />
+                        <circle cx="4" cy="-63" r="1.3" fill="#1f2937" />
+                    </g>
+                    {{-- المشرف: سترة كحلية ونظّارة ولوح ملاحظات --}}
+                    <g id="hj-supervisor">
+                        <ellipse cx="0" cy="1" rx="15" ry="3.5" fill="#0f172a" opacity=".12" />
+                        <rect x="-8" y="-30" width="7" height="30" rx="3" fill="#1e293b" />
+                        <rect x="1" y="-30" width="7" height="30" rx="3" fill="#1e293b" />
+                        <rect x="-13" y="-62" width="26" height="36" rx="10" fill="#1e3a8a" />
+                        <path d="M-4 -62 l4 12 l4 -12z" fill="#fff" />
+                        <rect x="-17" y="-58" width="6" height="24" rx="3" fill="#1e3a8a" />
+                        <g class="hj-wave"><rect x="11" y="-60" width="6" height="22" rx="3" fill="#1e3a8a" /></g>
+                        <rect x="12" y="-46" width="14" height="18" rx="2" fill="#fff" stroke="#cbd5e1" stroke-width="1.2" />
+                        <path d="M15 -41h8M15 -37h8M15 -33h5" stroke="#94a3b8" stroke-width="1.2" />
+                        <circle cx="0" cy="-73" r="11" fill="#e0b58f" />
+                        <path d="M-11 -75 a11 11 0 0 1 22 0 q-5 -3 -11 -3 q-6 0 -11 3z" fill="#6b7280" />
+                        <path d="M-8 -68 q8 9 16 0 v3 q-8 9 -16 0z" fill="#6b7280" />
+                        <circle cx="-3.5" cy="-74" r="3" fill="none" stroke="#111827" stroke-width="1.2" />
+                        <circle cx="4.5" cy="-74" r="3" fill="none" stroke="#111827" stroke-width="1.2" />
+                    </g>
+                    {{-- مسؤول القسم: قميص بنفسجي وبطاقة معلّقة ولوح بيده --}}
+                    <g id="hj-admin">
+                        <ellipse cx="0" cy="1" rx="15" ry="3.5" fill="#0f172a" opacity=".12" />
+                        <rect class="hj-leg is-a" x="-8" y="-29" width="7" height="29" rx="3" fill="#312e81" />
+                        <rect class="hj-leg is-b" x="1" y="-29" width="7" height="29" rx="3" fill="#3730a3" />
+                        <rect x="-13" y="-60" width="26" height="35" rx="10" fill="#7c3aed" />
+                        <path d="M-5 -60 l5 9 l5 -9z" fill="#ede9fe" />
+                        <path d="M-5 -59 L0 -44 L5 -59" fill="none" stroke="#facc15" stroke-width="1.6" />
+                        <rect x="-3" y="-45" width="6" height="7" rx="1.5" fill="#fff" stroke="#facc15" stroke-width="1" />
+                        <rect class="hj-arm" x="-17" y="-57" width="6" height="22" rx="3" fill="#6d28d9" />
+                        <rect x="11" y="-56" width="6" height="16" rx="3" fill="#6d28d9" />
+                        <rect x="10" y="-45" width="17" height="13" rx="2" fill="#1e293b" />
+                        <rect x="12" y="-43" width="13" height="9" rx="1" fill="#60a5fa" />
+                        <circle cx="0" cy="-71" r="10.5" fill="#d9a77e" />
+                        <path d="M-10.5 -72 a10.5 10.5 0 0 1 21 0 q-2 -6 -10.5 -6 q-8.5 0 -10.5 6z" fill="#3f2a1d" />
+                        <circle cx="4" cy="-71" r="1.3" fill="#1f2937" />
+                        <path d="M1 -66 q3 2 6 0" fill="none" stroke="#7c2d12" stroke-width="1.2" stroke-linecap="round" />
+                    </g>
+                    {{-- لجنة المناقشة: عضوان خلف طاولة --}}
+                    <g id="hj-committee">
+                        <ellipse cx="0" cy="1" rx="40" ry="4" fill="#0f172a" opacity=".12" />
+                        <circle cx="-17" cy="-52" r="9" fill="#e0b58f" /><path d="M-26 -53 a9 9 0 0 1 18 0 q-9 -4 -18 0z" fill="#374151" />
+                        <rect x="-28" y="-43" width="22" height="22" rx="8" fill="#334155" />
+                        <circle cx="17" cy="-52" r="9" fill="#f1c7a3" /><path d="M7 -55 a10 10 0 0 1 20 0 v6 q-10 6 -20 0z" fill="#be185d" />
+                        <rect x="6" y="-43" width="22" height="22" rx="8" fill="#9d174d" />
+                        <rect x="-38" y="-26" width="76" height="26" rx="4" fill="#e2e8f0" stroke="#cbd5e1" />
+                        <rect x="-14" y="-21" width="28" height="9" rx="2" fill="#2563eb" opacity=".85" />
+                    </g>
+                    {{-- قبعة تخرّج --}}
+                    <g id="hj-cap">
+                        <path d="M0 -8 L16 0 L0 8 L-16 0z" fill="#111827" />
+                        <rect x="-8" y="2" width="16" height="6" rx="2" fill="#1f2937" />
+                        <path d="M10 1 v9" stroke="#f59e0b" stroke-width="1.6" stroke-linecap="round" />
+                        <circle cx="10" cy="11" r="1.8" fill="#f59e0b" />
+                    </g>
+                </defs>
 
-                    <div class="hero-ctas stagger d4">
-                        <a href="{{ route('login') }}" class="btn btn-primary">
-                            <span data-i18n="hero.cta1">ابدأ الآن</span>
-                        </a>
-                        <a href="#about" class="btn-link">
-                            <span data-i18n="hero.cta2">اكتشف المزيد</span>
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-                        </a>
-                    </div>
+                {{-- العالم كلّه يُرسم يساراً→يميناً، ويُعكس في العربية فيمشي الفريق من اليمين --}}
+                <g class="hj-world">
+                    <path class="hj-ground" d="M0 262 H1200" />
+                    {{-- المسار: خلفية متقطّعة، وفوقها أثر يمتلئ خلف الفريق --}}
+                    <path class="hj-path" d="M40 220 C 170 220, 200 150, 300 150 S 450 230, 560 220 S 700 140, 800 150 S 950 230, 1040 210 S 1140 160, 1170 150" />
+                    <path class="hj-trail" d="M40 220 C 170 220, 200 150, 300 150 S 450 230, 560 220 S 700 140, 800 150 S 950 230, 1040 210 S 1140 160, 1170 150" />
 
-                    {{-- أرقام حقيقية من قاعدة البيانات — شريط أفقي تحت الأزرار
-                         (كانت عموداً جانبياً، والعمود صار للقطة المنتج) --}}
-                    <div class="hero-figures stagger d5">
-                        <div class="figure">
-                            <div class="figure-num" data-count="{{ $siteStats['projects'] }}">0</div>
-                            <div class="figure-label" data-i18n="hero.fact1">مشروع يُتابَع على المنصة</div>
-                        </div>
-                        <div class="figure">
-                            <div class="figure-num" data-count="{{ $siteStats['supervisors'] }}">0</div>
-                            <div class="figure-label" data-i18n="hero.fact2">مشرف أكاديمي</div>
-                        </div>
-                        <div class="figure">
-                            <div class="figure-num" data-count="{{ $siteStats['students'] }}">0</div>
-                            <div class="figure-label" data-i18n="hero.fact3">طالب وطالبة</div>
-                        </div>
-                    </div>
-                </div>
+                    {{-- المحطات: يضعها السكربت على المسار --}}
+                    <g class="hj-stations">
+                        @foreach (['idea', 'team', 'approve', 'stages', 'defense', 'grad'] as $k => $st)
+                            <g class="hj-station" data-station="{{ $k }}">
+                                <circle class="hj-halo" r="30" fill="url(#hj-halo)" />
+                                <circle class="hj-node" r="15" />
+                                <g class="hj-ico" transform="translate(-9 -9) scale(.75)">
+                                    @switch($st)
+                                        @case('idea')<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5.9 1.2.9 2V16h5.2v-.1c0-.8.3-1.5.9-2A6 6 0 0 0 12 3z" />@break
+                                        @case('team')<circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6" />@break
+                                        @case('approve')<path d="M20 6 9 17l-5-5" />@break
+                                        @case('stages')<path d="M9 6h11M9 12h11M9 18h11M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2" />@break
+                                        @case('defense')<path d="M3 4h18M4 4v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4M12 16v4M8 20h8" />@break
+                                        @case('grad')<path d="M22 10 12 5 2 10l10 5 10-5zM6 12v5c3 3 9 3 12 0v-5" />@break
+                                    @endswitch
+                                </g>
+                            </g>
+                        @endforeach
+                    </g>
 
-                {{-- بنتو حيّ: خمس بلاطات، كلٌّ ويدجت مبنيّة بالكود لا صورة — حادّة بأيّ
-                     دقّة وتُترجم. تحكي قصّة واحدة في حلقة: الفريق يتناقش ويُسلّم، والمشرف
-                     يعتمد فيرتفع الإنجاز، والأدوار تتوزّع، والدرجة تُرصد. المرور يوقفها،
-                     ولمن أوقف الحركة تظهر الحالة الأخيرة ثابتة. انظر initBento في premium.js --}}
-                <div class="hero-visual">
-                    <div class="bento" data-bento aria-label="لمحة من المنصة" data-i18n-aria="bento.aria">
+                    {{-- الواقفون عند محطّاتهم --}}
+                    <use href="#hj-supervisor" class="hj-actor" data-at="2" data-dx="34" data-dy="-6" />
+                    <use href="#hj-committee" class="hj-actor" data-at="4" data-dx="74" data-dy="-34" />
 
-                        {{-- ١) الإنجاز: حلقة ترتفع حين تُعتمد المرحلة --}}
-                        <article class="bento-tile is-progress">
-                            <header class="bento-head">
-                                <span class="bento-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="5"/></svg></span>
-                                <span data-i18n="bento.progress">نسبة الإنجاز</span>
-                            </header>
-                            <div class="bento-ring" data-ring style="--p: 38">
-                                <svg viewBox="0 0 120 120" aria-hidden="true">
-                                    <circle cx="60" cy="60" r="50" />
-                                    <circle cx="60" cy="60" r="50" pathLength="100" />
-                                </svg>
-                                <b><span data-ring-num>38</span>%</b>
-                            </div>
-                            <div class="bento-project">
-                                <b data-i18n="bento.project">كشف الرسائل الاحتيالية</b>
-                                <small><span data-ring-done>2</span> <span data-i18n="bento.of">من 5 مراحل</span></small>
-                            </div>
-                        </article>
+                    {{-- الفريق يمشي --}}
+                    <g class="hj-team">
+                        <g class="hj-walker" transform="translate(-30 0)"><use href="#hj-boy2" /></g>
+                        <g class="hj-walker" transform="translate(-6 4)"><use href="#hj-girl" /></g>
+                        <g class="hj-walker" transform="translate(18 0)"><use href="#hj-boy" /></g>
+                        {{-- القبعات تُرمى في المحطة الأخيرة --}}
+                        <g class="hj-caps">
+                            <use href="#hj-cap" class="hj-cap is-1" x="-28" y="-80" />
+                            <use href="#hj-cap" class="hj-cap is-2" x="-4" y="-84" />
+                            <use href="#hj-cap" class="hj-cap is-3" x="20" y="-80" />
+                        </g>
+                    </g>
+                </g>
+            </svg>
 
-                        {{-- ٢) المرحلة: مفتوحة ← سُلّمت ← اعتُمدت --}}
-                        <article class="bento-tile is-stage">
-                            <header class="bento-head">
-                                <span class="bento-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h11l-2 4 2 4H5"/></svg></span>
-                                <span data-i18n="bento.stage">المرحلة الحالية</span>
-                            </header>
-                            <b class="bento-stage-title" data-i18n="bento.stageTitle">الفصل الثاني — الدراسات السابقة</b>
-                            <ol class="bento-steps" data-steps>
-                                <li class="is-on"><i></i><span data-i18n="bento.s1">مفتوحة</span></li>
-                                <li><i></i><span data-i18n="bento.s2">سُلّمت</span></li>
-                                <li><i></i><span data-i18n="bento.s3">اعتُمدت</span></li>
-                            </ol>
-                        </article>
-
-                        {{-- ٣) نقاش الفريق: رسالة تُكتب حرفاً حرفاً --}}
-                        <article class="bento-tile is-chat">
-                            <header class="bento-head">
-                                <span class="bento-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
-                                <span data-i18n="bento.chat">نقاش الفريق</span>
-                                <span class="bento-lock" data-i18n="bento.private">خاص</span>
-                            </header>
-                            <div class="bento-msg">
-                                <span class="bento-avatar">دع</span>
-                                <p class="bento-bubble"><span data-typed></span><i class="bento-caret" aria-hidden="true"></i></p>
-                            </div>
-                            {{-- مصدر النصّ المكتوب — يُترجم كغيره، ويقرؤه السكربت في كل دورة --}}
-                            <span class="bento-src" data-type-src data-i18n="bento.msg" hidden>@آية راجعي الفصل الثاني قبل الخميس</span>
-                            <span class="bento-src" data-type-at data-i18n="bento.at" hidden>@آية</span>
-                        </article>
-
-                        {{-- ٤) الأدوار: تتوزّع على الفريق --}}
-                        <article class="bento-tile is-roles">
-                            <header class="bento-head">
-                                <span class="bento-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg></span>
-                                <span data-i18n="bento.roles">أدوار الفريق</span>
-                            </header>
-                            <ul class="bento-roles" data-roles>
-                                <li style="--h: 217"><span class="bento-avatar">دع</span><em data-i18n="bento.r1">واجهات</em></li>
-                                <li style="--h: 262"><span class="bento-avatar">حس</span><em data-i18n="bento.r2">الخادم</em></li>
-                                <li style="--h: 160"><span class="bento-avatar">آي</span><em data-i18n="bento.r3">التوثيق</em></li>
-                            </ul>
-                        </article>
-
-                        {{-- ٥) الدرجة: تُرصد في النهاية --}}
-                        <article class="bento-tile is-grade">
-                            <header class="bento-head">
-                                <span class="bento-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="m8.5 14.5-1.5 7 5-3 5 3-1.5-7"/></svg></span>
-                                <span data-i18n="bento.grade">التقييم النهائي</span>
-                            </header>
-                            <div class="bento-grade">
-                                <b data-grade>—</b><small>/100</small>
-                            </div>
-                            {{-- قبل الرصد «لم تُرصد بعد» لا «0»، فلا تبدو البطاقة معطّلة --}}
-                            <span class="bento-grade-label is-pending" data-i18n="bento.pending">لم تُرصد بعد</span>
-                            <span class="bento-grade-label is-final" data-i18n="bento.excellent">ممتاز</span>
-                        </article>
-                    </div>
-                </div>
+            {{-- أسماء المحطات وبطاقاتها: HTML فوق المشهد — تُترجم وتبقى حادّة --}}
+            <div class="hj-labels">
+                @foreach (['الفكرة', 'الفريق', 'موافقة المشرف', 'المراحل', 'المناقشة', 'التخرّج'] as $k => $name)
+                    <span class="hj-label" data-label="{{ $k }}" data-i18n="journey.s{{ $k + 1 }}">{{ $name }}</span>
+                @endforeach
             </div>
-
-            {{-- مسار المشروع الحقيقي كما تعرّفه config/statuses.php --}}
-            <div class="stage">
-                <div class="stage-head">
-                    <span class="stage-label" data-i18n="hero.stageLabel">مسار المشروع في المنصة</span>
-                    <span class="stage-project" data-i18n="hero.stageProject">من التقديم إلى الدرجة النهائية</span>
-                </div>
-
-                <div class="rail">
-                    {{-- المسار يمتد بين مركزَي العقدتين الأولى والأخيرة، فطوله ٧٥٪ من
-                         الشريط. العقدة الثالثة عند ٦٢٫٥٪ منه = ٦٦٫٦٪ من المسار --}}
-                    <span class="rail-line" style="--progress: 66.67%" aria-hidden="true"></span>
-                    <ol class="rail-steps">
-                        <li class="step-node done">
-                            <span class="node" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                            </span>
-                            <span class="step-name" data-i18n="hero.step1">تقديم الطلب</span>
-                            <span class="step-meta" data-i18n="hero.step1m">الطالب وفريقه</span>
-                        </li>
-                        <li class="step-node done">
-                            <span class="node" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                            </span>
-                            <span class="step-name" data-i18n="hero.step2">موافقة المشرف</span>
-                            <span class="step-meta" data-i18n="hero.step2m">قبول أو رفض مسبّب</span>
-                        </li>
-                        <li class="step-node current" aria-current="step">
-                            <span class="node" aria-hidden="true"></span>
-                            <span class="step-name" data-i18n="hero.step3">متابعة التنفيذ</span>
-                            <span class="step-meta" data-i18n="hero.step3m">مراحل وملفات ونقاش</span>
-                        </li>
-                        <li class="step-node">
-                            <span class="node" aria-hidden="true"></span>
-                            <span class="step-name" data-i18n="hero.step4">المناقشة والتقييم</span>
-                            <span class="step-meta" data-i18n="hero.step4m">درجة نهائية موثّقة</span>
-                        </li>
-                    </ol>
-                </div>
+            <div class="hj-cards">
+                @foreach ([
+                    ['is-amber', 'M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5.9 1.2.9 2V16h5.2v-.1c0-.8.3-1.5.9-2A6 6 0 0 0 12 3z', 'فكرة جديدة', 'كشف الأخبار الزائفة بالذكاء الاصطناعي'],
+                    ['is-blue', 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87', 'اكتمل الفريق', '3 أعضاء · قائدة الفريق آية'],
+                    ['is-green', 'M20 6 9 17l-5-5', 'وافق المشرف', 'د. هبة قبلت الطلب'],
+                    ['is-blue', 'M9 6h11M9 12h11M9 18h11M3 6l1 1 2-2M3 12l1 1 2-2', 'اعتُمدت المرحلة', 'الفصل الثالث · 4 من 5'],
+                    ['is-violet', 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z', 'جُدولت المناقشة', 'الأحد 09:00 · قاعة 204'],
+                    ['is-gold', 'M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM8.5 14.5 7 22l5-3 5 3-1.5-7.5', 'تخرّجنا! 🎓', 'الدرجة 96 من 100 · ممتاز'],
+                ] as $k => [$tone, $icon, $title, $sub])
+                    <div class="hj-card" data-card="{{ $k }}">
+                        <span class="hj-card-ico {{ $tone }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ $icon }}" /></svg></span>
+                        <span><b data-i18n="journey.c{{ $k + 1 }}">{{ $title }}</b><small data-i18n="journey.c{{ $k + 1 }}s">{{ $sub }}</small></span>
+                    </div>
+                @endforeach
             </div>
+            <div class="hj-confetti" aria-hidden="true"></div>
         </div>
     </section>
 
@@ -369,6 +420,10 @@
                         $panelMax = max(1, max(array_column($panel['rows'], 'n') ?: [1]));
                     @endphp
                     <div class="about-panel reveal d1">
+                        {{-- الطالبة والمشرف والمسؤول يطلّون فوق اللوحة — من شخصيات الهيرو --}}
+                        <svg class="ab-crowd" viewBox="-100 -100 200 104" aria-hidden="true">
+                            <use href="#hj-girl" x="-58" /><use href="#hj-supervisor" x="0" /><use href="#hj-admin" x="58" />
+                        </svg>
                         <div class="panel-head">
                             <span data-i18n="about.panelTitle">المنصة الآن</span>
                             <span class="panel-live"><i aria-hidden="true"></i><span data-i18n="about.live">مباشر</span></span>
@@ -432,83 +487,139 @@
                     </div>
                 </div>
 
-                <div class="svc-grid reveal">
-                    {{-- ١) الفريق والمشرف — كبيرة --}}
-                    <article class="svc-tile is-wide">
-                        <div class="svc-copy">
-                            <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-                            <h3 data-i18n="svc.1.title">فريقك ومشرفك في دقائق</h3>
-                            <p data-i18n="svc.1.text">اختر زملاءك من المتاحين في تخصصك، وشاهد المقاعد المتبقية لكل مشرف — وتنبّهك المنصة إن كانت فكرتك نُفّذت من قبل.</p>
-                        </div>
-                        <div class="svc-scene" aria-hidden="true">
-                            <div class="scene-team">
-                                <span class="scene-avatars"><i>دع</i><i>حس</i><i>آي</i><i class="is-add">+</i></span>
-                                <span class="scene-chip"><b>2</b> <span data-i18n="svc.1.seats">مقاعد متبقية لدى المشرف</span></span>
-                            </div>
-                            <div class="scene-alert">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-                                <span data-i18n="svc.1.similar">فكرة مشابهة نُفّذت في 2023 — راجعها قبل التقديم</span>
-                            </div>
-                        </div>
-                    </article>
+                {{-- قصّة الخدمات: قائمة قصيرة تتقدّم مع التمرير، ومسرح ثابت بجانبها
+                     يحرّك كل خدمة بشخصيات الهيرو نفسها (رموز #hj-* — بلا نسخ).
+                     كانت ثماني بطاقات بكلام كثير؛ صارت ستّاً: عنوان وسطر، والمشهد
+                     يشرح الباقي. الحركة في initServices (premium.js). --}}
+                <div class="svx" data-svx>
+                    <ol class="svx-list">
+                        @foreach ([
+                            ['team', 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', 'فريقك ومشرفك في دقائق', 'زملاء من تخصصك، ومشرف بمقاعد متاحة، وتنبيه إن نُفّذت فكرتك.'],
+                            ['review', 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12', 'سلّم، واستلم ملاحظة', 'كل مرحلة بملف، والمشرف يعتمدها أو يطلب تعديلاً بسببه.'],
+                            ['plan', 'M9 6h11M9 12h11M9 18h11M3 6l1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2', 'خطة مراحل جاهزة', 'يضعها المشرف مرّة بمواعيدها وقوالبها، فتصل كل مجموعاته.'],
+                            ['chat', 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z', 'نقاش حيّ', 'قناة خاصة بالفريق، وأخرى مع المشرف — والرسائل تصل فوراً.'],
+                            ['defense', 'M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM8.5 14.5 7 22l5-3 5 3-1.5-7.5', 'مناقشة ودرجة معتمدة', 'لجنة وموعد وقاعة، ودرجة تُرصد ثم تُقفل.'],
+                            ['explore', 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3', 'استلهم من مشاريع سابقة', 'تصفّح مشاريع الدفعات السابقة بأنواعها ومشرفيها.'],
+                        ] as $k => [$key, $icon, $title, $line])
+                            <li class="svx-item {{ $k === 0 ? 'is-active' : '' }}" data-svx-item="{{ $k }}">
+                                <button type="button" class="svx-btn" aria-controls="svx-scene-{{ $key }}">
+                                    <span class="svx-num">{{ str_pad($k + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                    <span class="svx-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ $icon }}" /></svg></span>
+                                    <span class="svx-text">
+                                        <b data-i18n="svx.{{ $k + 1 }}.t">{{ $title }}</b>
+                                        <span data-i18n="svx.{{ $k + 1 }}.l">{{ $line }}</span>
+                                    </span>
+                                </button>
+                            </li>
+                        @endforeach
+                    </ol>
 
-                    {{-- ٢) التسليم والمراجعة — كبيرة --}}
-                    <article class="svc-tile is-wide">
-                        <div class="svc-copy">
-                            <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5M12 3v12"/></svg></span>
-                            <h3 data-i18n="svc.2.title">سلّم مرحلتك، واستلم ملاحظة لا رفضاً</h3>
-                            <p data-i18n="svc.2.text">تسلّم كل مرحلة بملف وملاحظة، ويعتمدها مشرفك أو يطلب تعديلاً بسببه الواضح — وكل جولة محفوظة.</p>
-                        </div>
-                        <div class="svc-scene" aria-hidden="true">
-                            <ol class="scene-steps">
-                                <li class="is-done"><i></i><span data-i18n="svc.2.s1">سُلّمت</span></li>
-                                <li class="is-warn"><i></i><span data-i18n="svc.2.s2">مطلوب تعديل</span></li>
-                                <li class="is-ok"><i></i><span data-i18n="svc.2.s3">اعتُمدت</span></li>
-                            </ol>
-                            <div class="scene-note">
-                                <b data-i18n="svc.2.noteT">ملاحظة المشرف</b>
-                                <span data-i18n="svc.2.note">ينقص مخطط الكيانات والعلاقات في الفصل الثالث.</span>
+                    <div class="svx-stage-wrap">
+                        <div class="svx-stage" aria-hidden="true">
+                            <span class="svx-glow"></span>
+
+                            {{-- ١) الفريق: ينضمّون واحداً واحداً، والمقاعد تنقص --}}
+                            <div class="svx-scene is-active" id="svx-scene-team" data-scene="0">
+                                <div class="sx-card sx-top">
+                                    <span class="sx-av is-sup">هب</span>
+                                    <span><b data-i18n="svx.s1.sup">د. هبة الشوا</b><small data-i18n="svx.s1.supl">مشرفة · برمجة ذكاء صناعي</small></span>
+                                    <span class="sx-seats"><b data-tween data-from="3" data-to="2" data-delay="1500">3</b> <small data-i18n="svx.s1.seats">مقاعد</small></span>
+                                </div>
+                                <svg class="sx-people" viewBox="0 0 360 150">
+                                    <use href="#hj-boy2" class="sx-pop" style="--d: .3s" transform="translate(110 140) scale(1.5)" />
+                                    <use href="#hj-girl" class="sx-pop" style="--d: .6s" transform="translate(180 144) scale(1.5)" />
+                                    <use href="#hj-boy" class="sx-pop" style="--d: .9s" transform="translate(250 140) scale(1.5)" />
+                                </svg>
+                                <div class="sx-chips">
+                                    <span class="sx-chip sx-in" style="--d: 1.2s" data-i18n="svx.s1.r1">واجهات</span>
+                                    <span class="sx-chip sx-in" style="--d: 1.35s" data-i18n="svx.s1.r2">الخادم</span>
+                                    <span class="sx-chip sx-in" style="--d: 1.5s" data-i18n="svx.s1.r3">التوثيق</span>
+                                </div>
+                                <div class="sx-card sx-alert sx-in" style="--d: 2s">
+                                    <span class="sx-alert-ico">!</span>
+                                    <span data-i18n="svx.s1.alert">فكرة مشابهة نُفّذت في 2023 — راجعها قبل التقديم</span>
+                                </div>
                             </div>
-                        </div>
-                    </article>
 
-                    {{-- ٣–٦) أدوات يومية --}}
-                    <article class="svc-tile">
-                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3 6 1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/></svg></span>
-                        <h3 data-i18n="svc.3.title">خطة مراحل بقوالبها</h3>
-                        <p data-i18n="svc.3.text">يضعها المشرف مرّة بمواعيدها وقوالبها، فتصل كل مجموعاته.</p>
-                    </article>
-                    <article class="svc-tile">
-                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M9 10h.01M13 10h.01"/></svg></span>
-                        <h3 data-i18n="svc.4.title">نقاش خاص بالفريق</h3>
-                        <p data-i18n="svc.4.text">قناة لا يراها المشرف، و@ لتنبيه زميل بعينه.</p>
-                    </article>
-                    <article class="svc-tile">
-                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 14h6M9 17h3"/></svg></span>
-                        <h3 data-i18n="svc.5.title">ملاحظات على الملفات</h3>
-                        <p data-i18n="svc.5.text">«صفحة 3 ينقصها المرجع» — على الملف نفسه، حتى تُعالَج.</p>
-                    </article>
-                    <article class="svc-tile">
-                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 9h3M15 13h3M6 16c.6-1.5 1.7-2 3-2s2.4.5 3 2"/></svg></span>
-                        <h3 data-i18n="svc.6.title">توزيع الأدوار</h3>
-                        <p data-i18n="svc.6.text">مَن على الواجهات ومَن على الخادم — يراه الفريق والمشرف.</p>
-                    </article>
+                            {{-- ٢) التسليم: الملف يطير إلى المشرف، فيُختم ثم يُعتمد --}}
+                            <div class="svx-scene" id="svx-scene-review" data-scene="1">
+                                <svg class="sx-people" viewBox="0 0 360 150">
+                                    <use href="#hj-girl" transform="translate(70 144) scale(1.5)" />
+                                    <use href="#hj-supervisor" transform="translate(290 146) scale(1.35)" />
+                                </svg>
+                                <div class="sx-file">
+                                    <span class="sx-file-ext">PDF</span>
+                                    <span class="sx-file-text"><b data-i18n="svx.s2.file">الفصل الثالث</b><small>PDF · 2.4 MB</small></span>
+                                </div>
+                                <div class="sx-stamp is-warn" data-i18n="svx.s2.warn">مطلوب تعديل</div>
+                                <div class="sx-stamp is-ok" data-i18n="svx.s2.ok">اعتُمدت ✓</div>
+                                <div class="sx-card sx-progress">
+                                    <span data-i18n="svx.s2.prog">نسبة الإنجاز</span>
+                                    <b><span data-tween data-from="40" data-to="60" data-delay="3600">40</span>%</b>
+                                    <i><em></em></i>
+                                </div>
+                            </div>
 
-                    {{-- ٧–٨) --}}
-                    <article class="svc-tile is-half">
-                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
-                        <div>
-                            <h3 data-i18n="svc.7.title">مستكشف المشاريع السابقة</h3>
-                            <p data-i18n="svc.7.text">تصفّح مشاريع الدفعات السابقة بأنواعها ومشرفيها، واستلهم فكرتك.</p>
+                            {{-- ٣) الخطة: مراحل بمواعيدها تظهر على خطّ زمني --}}
+                            <div class="svx-scene" id="svx-scene-plan" data-scene="2">
+                                <div class="sx-card sx-plan">
+                                    <b class="sx-plan-title" data-i18n="svx.s3.title">خطة مراحل الفصل</b>
+                                    <ol class="sx-timeline">
+                                        @foreach ([['svx.s3.m1', 'تحليل المتطلبات', '30 يونيو'], ['svx.s3.m2', 'تصميم قاعدة البيانات', '14 يوليو'], ['svx.s3.m3', 'الواجهات', '28 يوليو'], ['svx.s3.m4', 'التطوير والبرمجة', '11 أغسطس'], ['svx.s3.m5', 'الاختبار والتوثيق', '25 أغسطس']] as $m => [$mk, $mt, $md])
+                                            <li class="sx-in" style="--d: {{ .25 + $m * .22 }}s">
+                                                <i></i><span data-i18n="{{ $mk }}">{{ $mt }}</span><small data-i18n="{{ $mk }}d">{{ $md }}</small>
+                                                @if ($m === 1)<em class="sx-tpl">DOCX</em>@endif
+                                            </li>
+                                        @endforeach
+                                    </ol>
+                                </div>
+                                <div class="sx-chip is-strong sx-in" style="--d: 1.6s" data-i18n="svx.s3.sent">وصلت إلى 4 مجموعات ✓</div>
+                            </div>
+
+                            {{-- ٤) النقاش: فقاعات تُكتب أمامك --}}
+                            <div class="svx-scene" id="svx-scene-chat" data-scene="3">
+                                <div class="sx-card sx-chat">
+                                    <div class="sx-chat-head"><b data-i18n="svx.s4.head">نقاش الفريق</b><span class="sx-lock" data-i18n="svx.s4.lock">🔒 خاص</span></div>
+                                    <div class="sx-msg is-in sx-in" style="--d: .3s"><span class="sx-av">آي</span><p data-i18n="svx.s4.m1">رفعت الفصل الثالث ✅</p></div>
+                                    <div class="sx-msg is-in sx-in" style="--d: 1.1s"><span class="sx-av is-2">حس</span><p><span class="sx-mention" data-i18n="svx.s4.at">@آية</span> <span data-i18n="svx.s4.m2">ممتاز، أراجعه الليلة</span></p></div>
+                                    <div class="sx-msg is-mine sx-in" style="--d: 1.9s"><p data-i18n="svx.s4.m3">وأنا أجهّز العرض التقديمي 🎤</p></div>
+                                    <div class="sx-typing sx-in" style="--d: 2.6s"><i></i><i></i><i></i></div>
+                                </div>
+                            </div>
+
+                            {{-- ٥) المناقشة: لجنة وموعد، ودرجة تُرصد ثم تُقفل --}}
+                            <div class="svx-scene" id="svx-scene-defense" data-scene="4">
+                                <div class="sx-card sx-top sx-in" style="--d: .2s">
+                                    <span class="sx-cal"><b>11</b><small data-i18n="svx.s5.mon">أكتوبر</small></span>
+                                    <span><b data-i18n="svx.s5.when">الأحد 09:00 · قاعة 204</b><small data-i18n="svx.s5.who">المشرف + ممتحنان · رئيس اللجنة</small></span>
+                                </div>
+                                <svg class="sx-people" viewBox="0 0 360 150">
+                                    <use href="#hj-committee" transform="translate(180 138) scale(1.5)" />
+                                </svg>
+                                <div class="sx-card sx-grade sx-in" style="--d: .9s">
+                                    <b><span data-tween data-from="0" data-to="96" data-delay="1200">0</span><small>/100</small></b>
+                                    <span class="sx-grade-tag" data-i18n="svx.s5.tag">ممتاز · معتمدة 🔒</span>
+                                </div>
+                            </div>
+
+                            {{-- ٦) الاستكشاف: البحث يُكتب فتُرشَّح المشاريع --}}
+                            <div class="svx-scene" id="svx-scene-explore" data-scene="5">
+                                <div class="sx-card sx-search">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
+                                    <span data-type data-delay="500" data-i18n-type="svx.s6.q">ذكاء</span><i class="sx-caret"></i>
+                                </div>
+                                <div class="sx-projects">
+                                    <div class="sx-proj is-hit"><b data-i18n="svx.s6.p1">كشف الأخبار الزائفة</b><small data-i18n="svx.s6.p1t">ذكاء صناعي · 2023</small></div>
+                                    <div class="sx-proj is-miss"><b data-i18n="svx.s6.p2">متجر إلكتروني</b><small data-i18n="svx.s6.p2t">برمجة ويب · 2022</small></div>
+                                    <div class="sx-proj is-hit"><b data-i18n="svx.s6.p3">تحليل صور الأشعة</b><small data-i18n="svx.s6.p3t">ذكاء صناعي · 2024</small></div>
+                                    <div class="sx-proj is-miss"><b data-i18n="svx.s6.p4">تطبيق حجز عيادات</b><small data-i18n="svx.s6.p4t">تطبيقات جوال · 2023</small></div>
+                                </div>
+                            </div>
+
+                            {{-- مؤشّر الخدمات: ستّ نقاط تتبع القائمة --}}
+                            <div class="svx-dots"><i class="is-on"></i><i></i><i></i><i></i><i></i><i></i></div>
                         </div>
-                    </article>
-                    <article class="svc-tile is-half">
-                        <span class="svc-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="m8.5 14.5-1.5 7 5-3 5 3-1.5-7"/></svg></span>
-                        <div>
-                            <h3 data-i18n="svc.8.title">درجة معتمدة لا تتغيّر</h3>
-                            <p data-i18n="svc.8.text">يرصد مشرفك الدرجة من 100 مع ملاحظاته، ويُحسب التقدير منها تلقائياً، وتُقفل بعد اعتمادها.</p>
-                        </div>
-                    </article>
+                    </div>
                 </div>
             </div>
         </section>
@@ -528,93 +639,72 @@
                     </div>
                 </div>
 
-                {{-- لوحتان: ضمانات الثقة (داكنة) وراحة كل يوم (فاتحة). كانت ست بطاقات متطابقة
-                     تخلط ما يُعتمد عليه عند الاعتراض بما يريح في الاستعمال، وكل ميزة ادّعاء
-                     نصّي — الآن لكلٍّ دليل مرسوم من شكلها الحقيقي في المنصة --}}
-                <div class="fx reveal">
-                    <section class="fx-panel is-trust" aria-labelledby="fx-trust-title">
-                        <header class="fx-panel-head">
-                            <span class="fx-kicker" data-i18n="features.trust.label">ضمانات الثقة</span>
-                            <h3 id="fx-trust-title" class="fx-panel-title" data-i18n="features.trust.text">ما يُعتمد عليه عند الاعتراض والتدقيق</h3>
-                        </header>
-                        <ul class="fx-list">
-                            <li class="fx-item">
-                                <div class="fx-text">
-                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><span class="cell-index">01</span></span>
-                                    <h3 data-i18n="features.1.title">خصوصية الفريق</h3>
-                                    <p data-i18n="features.1.text">نقاش الفريق الداخلي لا يراه المشرف ولا الإدارة — يكتب الطلاب بحرّية بدل الهروب إلى واتساب.</p>
-                                </div>
-                                <div class="fx-proof fx-chat" aria-hidden="true">
-                                    <span class="fx-bubble"><i>نب</i><span data-i18n="features.p1.msg">ننهي فصل التحليل الليلة؟</span></span>
-                                    <span class="fx-seen"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="features.p1.seen">مرئي للفريق فقط</span></span>
-                                    <span class="fx-nope"><span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg><span data-i18n="features.p1.sup">المشرف</span></span><span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg><span data-i18n="features.p1.adm">الإدارة</span></span></span>
-                                </div>
+                {{-- محور المميزات: جهاز في المنتصف والمميزات الست حوله — كانت لوحتين
+                     بثلاث بطاقات مليئة بالكلام. المميزة النشطة (تتبدّل وحدها، والمرور أو
+                     النقر يختار) تُعرض حيّة على شاشة الجهاز بدليلها من شكلها الحقيقي.
+                     الحركة في initFeatureHub (premium.js). --}}
+                <div class="fh reveal" data-fhub>
+                    @php
+                        $fhub = [
+                            ['lock', 'M8 11V7a4 4 0 0 1 8 0v4M6 11h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z', 'features.1.title', 'خصوصية الفريق', 'fh.1', 'نقاش داخلي لا يراه المشرف'],
+                            ['log', 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6zM9 12l2 2 4-4', 'features.3.title', 'سجلّ لا يُعدَّل', 'fh.2', 'كل قرار محفوظ ومقفل'],
+                            ['file', 'M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6', 'features.4.title', 'ملفات محمية', 'fh.3', 'للفريق ومشرفه والإدارة فقط'],
+                            ['bell', 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0', 'features.2.title', 'إشعارات بلا ضجيج', 'fh.4', 'ما يخصّك فقط، لا كل رسالة'],
+                            ['lang', 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18', 'features.5.title', 'عربية أولاً', 'fh.5', 'والإنجليزية بنقرة'],
+                            ['phone', 'M9 2h6a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM11 18h2', 'features.6.title', 'على الجوال كما الحاسوب', 'fh.6', 'كل صفحة لشاشتك الصغيرة'],
+                        ];
+                    @endphp
+
+                    <ul class="fh-pills" role="tablist" aria-label="المميزات" data-i18n-aria="features.kicker">
+                        @foreach ($fhub as $k => [$key, $icon, $tk, $title, $lk, $line])
+                            <li class="fh-pill is-{{ $k < 3 ? 'a' : 'b' }} {{ $k === 0 ? 'is-on' : '' }}" style="--k: {{ $k % 3 }}">
+                                <button type="button" role="tab" aria-selected="{{ $k === 0 ? 'true' : 'false' }}" data-fh="{{ $k }}">
+                                    <span class="fh-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ $icon }}" /></svg></span>
+                                    <span class="fh-txt"><b data-i18n="{{ $tk }}">{{ $title }}</b><small data-i18n="{{ $lk }}">{{ $line }}</small></span>
+                                </button>
                             </li>
-                            <li class="fx-item">
-                                <div class="fx-text">
-                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="cell-index">02</span></span>
-                                    <h3 data-i18n="features.3.title">سجلّ لا يُعدَّل</h3>
-                                    <p data-i18n="features.3.text">الدرجة تُقفل بعد اعتمادها، وكل قرار مهم يُحفظ في سجلّ تدقيق — مرجع واضح عند أيّ اعتراض.</p>
+                        @endforeach
+                    </ul>
+
+                    {{-- الجهاز: إطار حاسوب، وعلى شاشته دليل المميزة النشطة --}}
+                    <div class="fh-device" aria-hidden="true">
+                        <div class="fh-screen">
+                            <div class="fh-bar"><i></i><i></i><i></i><span>takharruj.app</span></div>
+                            <div class="fh-view is-on" data-fh-view="0">
+                                <div class="fx-proof fx-chat">
+                                    <span class="fx-bubble"><i>نب</i><span data-i18n="features.p1.msg">ننهي فصل التحليل الليلة؟</span></span>
+                                    <span class="fx-seen"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="features.p1.seen">مرئي للفريق فقط</span></span>
+                                    <span class="fx-nope"><span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg><span data-i18n="features.p1.sup">المشرف</span></span><span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg><span data-i18n="features.p1.adm">الإدارة</span></span></span>
                                 </div>
-                                <div class="fx-proof fx-log" aria-hidden="true">
+                            </div>
+                            <div class="fh-view" data-fh-view="1">
+                                <div class="fx-proof fx-log">
                                     <span class="fx-log-row"><i class="fx-dot-amber"></i><b data-i18n="features.p3.l1">اعتماد درجة</b><small dir="ltr">14:32</small></span>
                                     <span class="fx-log-row"><i class="fx-dot-rose"></i><b data-i18n="features.p3.l2">فكّ اعتماد — بسبب مكتوب</b><small dir="ltr">09:05</small></span>
-                                    <span class="fx-seen"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="features.p3.lock">لا تعديل ولا حذف</span></span>
+                                    <span class="fx-seen"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="features.p3.lock">لا تعديل ولا حذف</span></span>
                                 </div>
-                            </li>
-                            <li class="fx-item">
-                                <div class="fx-text">
-                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"/><path d="M8 9h8M8 13h5"/><circle cx="18" cy="18" r="3"/><path d="m20.2 20.2 1.8 1.8"/></svg></span><span class="cell-index">03</span></span>
-                                    <h3 data-i18n="features.4.title">ملفات محمية</h3>
-                                    <p data-i18n="features.4.text">ملفات المشروع والتسليمات على قرص خاص، لا يُنزلها إلا الفريق ومشرفه والإدارة.</p>
-                                </div>
-                                <div class="fx-proof fx-file" aria-hidden="true">
+                            </div>
+                            <div class="fh-view" data-fh-view="2">
+                                <div class="fx-proof fx-file">
                                     <span class="fx-file-row"><i>PDF</i><span dir="ltr">final-report.pdf</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
-                                    <span class="fx-seen"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="features.p4.who">تنزيل للفريق ومشرفه والإدارة فقط</span></span>
+                                    <span class="fx-seen"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="features.p4.who">تنزيل للفريق ومشرفه والإدارة فقط</span></span>
                                 </div>
-                            </li>
-                        </ul>
-                    </section>
-
-                    <section class="fx-panel is-daily" aria-labelledby="fx-daily-title">
-                        <header class="fx-panel-head">
-                            <span class="fx-kicker" data-i18n="features.daily.label">راحة كل يوم</span>
-                            <h3 id="fx-daily-title" class="fx-panel-title" data-i18n="features.daily.text">ما يجعل العمل اليومي أخفّ</h3>
-                        </header>
-                        <ul class="fx-list">
-                            <li class="fx-item">
-                                <div class="fx-text">
-                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span><span class="cell-index">04</span></span>
-                                    <h3 data-i18n="features.2.title">إشعارات بلا ضجيج</h3>
-                                    <p data-i18n="features.2.text">يصلك التنبيه حين يخصّك الأمر: طلب تعديل، أو ذكرك زميل، أو اعتُمدت مرحلة — لا مع كل رسالة.</p>
-                                </div>
-                                <div class="fx-proof fx-notes" aria-hidden="true">
+                            </div>
+                            <div class="fh-view" data-fh-view="3">
+                                <div class="fx-proof fx-notes">
                                     <span class="fx-note is-on"><i class="is-warn"></i><span data-i18n="features.p2.a">مطلوب تعديل في «الفصل الثالث»</span></span>
                                     <span class="fx-note is-on"><i class="is-brand"></i><span data-i18n="features.p2.b">ذكرك زميل في نقاش الفريق</span></span>
                                     <span class="fx-note is-off"><i></i><span data-i18n="features.p2.c">رسالة عادية في النقاش</span><small data-i18n="features.p2.muted">بلا تنبيه</small></span>
                                 </div>
-                            </li>
-                            <li class="fx-item">
-                                <div class="fx-text">
-                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span><span class="cell-index">05</span></span>
-                                    <h3 data-i18n="features.5.title">عربية أولاً</h3>
-                                    <p data-i18n="features.5.text">واجهة عربية كاملة من اليمين إلى اليسار، بخطوط مصمّمة للقراءة، والإنجليزية بنقرة.</p>
-                                </div>
-                                {{-- المفتاح يقلب الجملة واتجاهها حيّاً — كما يفعل مبدّل اللغة في المنصة --}}
+                            </div>
+                            <div class="fh-view" data-fh-view="4">
                                 <div class="fx-proof fx-lang" data-fx-lang>
-                                    <button type="button" class="fx-lang-toggle" aria-pressed="false" data-i18n-aria="features.p5.btn" aria-label="تبديل اللغة في المثال">
-                                        <span>ع</span><span>EN</span>
-                                    </button>
+                                    <span class="fx-lang-toggle" aria-pressed="false"><span>ع</span><span>EN</span></span>
                                     <span class="fx-lang-line" dir="rtl" data-ar="مرحباً بك في مشروعك" data-en="Welcome to your project">مرحباً بك في مشروعك</span>
                                 </div>
-                            </li>
-                            <li class="fx-item">
-                                <div class="fx-text">
-                                    <span class="fx-head"><span class="fx-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></span><span class="cell-index">06</span></span>
-                                    <h3 data-i18n="features.6.title">على الجوال كما الحاسوب</h3>
-                                    <p data-i18n="features.6.text">سلّم مرحلة أو ردّ على مشرفك من هاتفك — كل صفحة مصمّمة للشاشة الصغيرة.</p>
-                                </div>
-                                <div class="fx-proof fx-phone" aria-hidden="true">
+                            </div>
+                            <div class="fh-view" data-fh-view="5">
+                                <div class="fx-proof fx-phone">
                                     <span class="fx-phone-frame">
                                         <span class="fx-phone-notch"></span>
                                         <small data-i18n="features.p6.stage">الفصل الثالث</small>
@@ -622,9 +712,12 @@
                                         <span class="fx-phone-btn" data-i18n="features.p6.btn">تسليم المرحلة</span>
                                     </span>
                                 </div>
-                            </li>
-                        </ul>
-                    </section>
+                            </div>
+                        </div>
+                        <div class="fh-base"></div>
+                        {{-- الطالبة تشير إلى الشاشة — من شخصيات الهيرو --}}
+                        <svg class="fh-buddy" viewBox="-30 -90 60 95"><use href="#hj-girl" /></svg>
+                    </div>
                 </div>
             </div>
         </section>
@@ -644,28 +737,35 @@
                     </div>
                 </div>
 
-                <ol class="journey reveal">
-                    <li class="journey-step">
-                        <span class="journey-node"><span class="cell-index">01</span></span>
-                        <h3 data-i18n="how.1.title">ادخل إلى المنصة</h3>
-                        <p data-i18n="how.1.text">ببريدك أو رقمك الجامعي — حسابك جاهز من إدارة القسم.</p>
-                    </li>
-                    <li class="journey-step">
-                        <span class="journey-node"><span class="cell-index">02</span></span>
-                        <h3 data-i18n="how.2.title">كوّن فريقك وقدّم فكرتك</h3>
-                        <p data-i18n="how.2.text">اختر زملاءك ومشرفاً لديه مقاعد، واكتب فكرتك بعد أن تتأكد أنها لم تُنفَّذ.</p>
-                    </li>
-                    <li class="journey-step">
-                        <span class="journey-node"><span class="cell-index">03</span></span>
-                        <h3 data-i18n="how.3.title">سلّم مراحلك</h3>
-                        <p data-i18n="how.3.text">مرحلة بعد مرحلة: تسليم، فاعتماد أو تعديل بملاحظة، ونقاش مع فريقك ومشرفك.</p>
-                    </li>
-                    <li class="journey-step is-accent">
-                        <span class="journey-node"><span class="cell-index">04</span></span>
-                        <h3 data-i18n="how.4.title">ناقش واستلم درجتك</h3>
-                        <p data-i18n="how.4.text">بعد المناقشة يرصد مشرفك درجتك مع ملاحظاته، وتُعتمد فلا تتغيّر.</p>
-                    </li>
-                </ol>
+                {{-- أربع درجات يصعدها طالب: كل درجة خطوة، وحين يصل إليها تُضاء
+                     ويظهر شرحها؛ وفي الأعلى قبعة التخرّج. كانت أربع دوائر على خطّ
+                     — المسار الثالث في الصفحة بعد الهيرو والخدمات. الحركة في initStairs. --}}
+                <div class="st reveal" data-stairs>
+                    <ol class="st-steps">
+                        @foreach ([
+                            ['how.1.title', 'ادخل إلى المنصة', 'st.1', 'ببريدك أو رقمك الجامعي — حسابك جاهز.'],
+                            ['how.2.title', 'كوّن فريقك وقدّم فكرتك', 'st.2', 'زملاء ومشرف بمقاعد، وفكرة لم تُنفَّذ.'],
+                            ['how.3.title', 'سلّم مراحلك', 'st.3', 'تسليم، فاعتماد أو تعديل بملاحظة.'],
+                            ['how.4.title', 'ناقش واستلم درجتك', 'st.4', 'لجنة ودرجة معتمدة لا تتغيّر.'],
+                        ] as $k => [$tk, $title, $lk, $line])
+                            <li class="st-step" style="--k: {{ $k }}" data-step="{{ $k }}">
+                                <div class="st-copy" style="grid-column: {{ $k + 1 }}">
+                                    <span class="st-num">{{ str_pad($k + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                    <b data-i18n="{{ $tk }}">{{ $title }}</b>
+                                    <small data-i18n="{{ $lk }}">{{ $line }}</small>
+                                </div>
+                                <span class="st-block" style="grid-column: {{ $k + 1 }}"></span>
+                            </li>
+                        @endforeach
+                    </ol>
+                    {{-- الطالب الصاعد، وقبعته تظهر في القمّة --}}
+                    <div class="st-climber" aria-hidden="true">
+                        <svg viewBox="-30 -100 60 105">
+                            <use href="#hj-boy" class="st-body" />
+                            <use href="#hj-cap" class="st-cap" x="0" y="-74" />
+                        </svg>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -716,6 +816,7 @@
 
                     <section class="rx-panel" id="rx-panel-student" role="tabpanel" aria-labelledby="rx-tab-student" data-panel="student">
                         <div class="rx-scene" aria-hidden="true">
+                            <svg class="rx-person" viewBox="-32 -98 64 102"><use href="#hj-girl" /></svg>
                             <div class="rx-card">
                                 <span class="rx-card-label" data-i18n="roles.scene.s.now">ماذا عليّ الآن</span>
                                 <div class="rx-task">
@@ -762,6 +863,7 @@
 
                     <section class="rx-panel" id="rx-panel-supervisor" role="tabpanel" aria-labelledby="rx-tab-supervisor" data-panel="supervisor">
                         <div class="rx-scene" aria-hidden="true">
+                            <svg class="rx-person" viewBox="-32 -98 64 102"><use href="#hj-supervisor" /></svg>
                             <div class="rx-card">
                                 <span class="rx-card-label" data-i18n="roles.scene.v.review">بانتظار مراجعتك</span>
                                 <div class="rx-sub">
@@ -804,6 +906,7 @@
 
                     <section class="rx-panel" id="rx-panel-admin" role="tabpanel" aria-labelledby="rx-tab-admin" data-panel="admin">
                         <div class="rx-scene" aria-hidden="true">
+                            <svg class="rx-person" viewBox="-32 -98 64 102"><use href="#hj-admin" /></svg>
                             <div class="rx-card">
                                 <span class="rx-card-label" data-i18n="roles.scene.a.health">متابعة الفرق</span>
                                 <div class="rx-health">
@@ -874,7 +977,7 @@
              الآن تُنزع اللاحقة ويُكتفى بعنوان واحد لكل مشروع. وتقول البطاقة ما مرّ به
              المشروع على المنصة (مراحله ومدّتها) — بلا أسماء طلاب ولا درجة فريق بعينه --}}
         @php
-            $showcase = \Illuminate\Support\Facades\Cache::remember('site_showcase_v4', 3600, function () {
+            $showcase = \Illuminate\Support\Facades\Cache::remember('site_showcase_v5', 3600, function () {
                 $bare = fn ($title) => trim(preg_replace('/\s*—\s*نسخة\s*\d+\s*$/u', '', $title));
                 $done = fn ($q) => $q->where('status', 'complete')->whereNotNull('grade');
 
@@ -888,7 +991,7 @@
                     ->get()
                     ->each(fn ($p) => $p->setAttribute('bare_title', $bare($p->title)))
                     ->unique('bare_title')
-                    ->take(4)
+                    ->take(12)
                     ->values();
 
                 // المميّز يعرض أسماء مراحله المعتمدة — مسار المشروع على المنصة نفسه
@@ -923,90 +1026,75 @@
                         </div>
                     </div>
 
-                    {{-- أرقام إجمالية حقيقية — المتوسط العام لا درجة فريق بعينه --}}
-                    <div class="sc-stats reveal">
-                        <div class="sc-stat"><b>{{ $showStats['done'] }}</b><span data-i18n="show.stat.done">مشروعاً مكتملاً</span></div>
-                        @if ($showStats['avg'])
-                            <div class="sc-stat"><b>{{ $showStats['avg'] }}</b><span data-i18n="show.stat.avg">متوسط الدرجات</span></div>
-                        @endif
-                        <div class="sc-stat"><b>{{ $showStats['specs'] }}</b><span data-i18n="show.stat.specs">تخصصات</span></div>
-                        @if ($showStats['stages'])
-                            <div class="sc-stat"><b>{{ $showStats['stages'] }}</b><span data-i18n="show.stat.stages">مراحل معتمدة لكل مشروع</span></div>
-                        @endif
-                    </div>
+                    {{-- معرض الملصقات: كل مشروع ملصق بغلاف لونه من نوعه ورمزه، يمرّ في شريط
+                         متحرك لا ينتهي (يتوقّف عند المرور). كانت أربع بطاقات طويلة بالنصوص.
+                         الأرقام الإجمالية حقيقية — المتوسط العام لا درجة فريق بعينه. --}}
+                    <div class="pz reveal" data-posters>
+                        <div class="pz-stats">
+                            <div class="pz-stat"><b data-count="{{ $showStats['done'] }}">0</b><span data-i18n="show.stat.done">مشروعاً مكتملاً</span></div>
+                            @if ($showStats['avg'])
+                                <div class="pz-stat is-accent"><b>{{ $showStats['avg'] }}</b><span data-i18n="show.stat.avg">متوسط الدرجات</span></div>
+                            @endif
+                            <div class="pz-stat"><b data-count="{{ $showStats['specs'] }}">0</b><span data-i18n="show.stat.specs">تخصصات</span></div>
+                            @if ($showStats['stages'])
+                                <div class="pz-stat"><b data-count="{{ $showStats['stages'] }}">0</b><span data-i18n="show.stat.stages">مراحل معتمدة لكل مشروع</span></div>
+                            @endif
+                            {{-- خرّيجون يرمون قبعاتهم — من شخصيات الهيرو --}}
+                            <svg class="pz-grads" viewBox="-80 -100 160 104" aria-hidden="true">
+                                <use href="#hj-girl" x="-48" /><use href="#hj-boy" x="0" /><use href="#hj-boy2" x="48" />
+                                <use href="#hj-cap" class="pz-cap" x="-48" y="-82" /><use href="#hj-cap" class="pz-cap is-2" x="0" y="-86" /><use href="#hj-cap" class="pz-cap is-3" x="48" y="-86" />
+                            </svg>
+                        </div>
 
-                    <div class="sc-grid is-{{ $showProjects->count() }} reveal d1">
-                        @foreach ($showProjects as $project)
-                            @php
-                                $sem = $project->semester?->parts();
-                                $weeks = $project->first_due && $project->last_due
-                                    ? max(1, (int) ceil(\Illuminate\Support\Carbon::parse($project->first_due)->diffInDays(\Illuminate\Support\Carbon::parse($project->last_due)) / 7))
-                                    : null;
-                            @endphp
-                            <article class="sc-card {{ $loop->first ? 'is-featured' : '' }}">
-                                <div class="sc-top">
-                                    <span class="sc-type" dir="auto">{{ $project->project_type->name }}</span>
-                                    <span class="sc-done">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                                        <span data-i18n="state.done">مكتمل</span>
-                                    </span>
-                                </div>
-
-                                <h3 class="sc-title" dir="auto">{{ $project->bare_title }}</h3>
-                                @if ($project->description)
-                                    <p class="sc-desc" dir="auto">{{ \Illuminate\Support\Str::limit($project->description, $loop->first ? 170 : 110) }}</p>
-                                @endif
-
-                                @if ($loop->first && $project->relationLoaded('milestones') && $project->milestones->count())
-                                    <ol class="sc-path">
-                                        @foreach ($project->milestones->take(6) as $stage)
-                                            <li>
-                                                <span class="sc-path-node" aria-hidden="true">
-                                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                                                </span>
-                                                <span class="sc-path-title" dir="auto">{{ $stage->title }}</span>
-                                            </li>
-                                        @endforeach
-                                    </ol>
-                                @endif
-
-                                {{-- ما مرّ به على المنصة: مراحله المعتمدة ومدّتها --}}
-                                @if ($project->stages_done)
-                                    <div class="sc-journey">
-                                        <span class="sc-steps" aria-hidden="true">
-                                            @for ($i = 0; $i < min($project->stages_done, 8); $i++)
-                                                <i></i>
-                                            @endfor
-                                        </span>
-                                        <span class="sc-journey-text">
-                                            <b>{{ $project->stages_done }}</b> <span data-i18n="show.stages">مراحل معتمدة</span>
-                                            @if ($weeks)
-                                                · <b>{{ $weeks }}</b> <span data-i18n="show.weeks">أسابيع</span>
-                                            @endif
-                                        </span>
-                                    </div>
-                                @endif
-
-                                <div class="sc-meta">
-                                    <span class="sc-team" title="{{ $project->group_count }}">
-                                        <span class="sc-dots" aria-hidden="true">
-                                            @for ($i = 0; $i < min($project->group_count, 5); $i++)
-                                                <i></i>
-                                            @endfor
-                                        </span>
-                                        {{ $project->group_count }} <span data-i18n="unit.members">أعضاء</span>
-                                    </span>
-                                    @if ($sem)
-                                        <span>
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                                            {{ $sem['term'] }}
-                                            {{-- السنة معزولة LTR: داخل نصّ عربي تنقلب «2021–22» إلى «22–2021» --}}
-                                            @if ($sem['year'])<span class="sc-sep">·</span><bdi dir="ltr">&#x2066;{{ $sem['year'] }}&#x2069;</bdi>@endif
-                                        </span>
-                                    @endif
-                                </div>
-                            </article>
-                        @endforeach
+                        @php
+                            $glyphs = [
+                                'ai' => 'M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 3 3v1a3 3 0 0 1-1 2.2V15a3 3 0 0 1-3 3h-1v2h-4v-2H9a3 3 0 0 1-3-3v-1.8A3 3 0 0 1 5 11v-1a3 3 0 0 1 3-3V6a4 4 0 0 1 4-4zM9 11h.01M15 11h.01M9.5 15h5',
+                                'web' => 'M3 5h18v14H3zM3 9h18M7 7h.01M10 7h.01',
+                                'mobile' => 'M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM11 18h2',
+                                'work' => 'M4 7h16v13H4zM9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M4 12h16',
+                                'research' => 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5zM8 7h8M8 11h6',
+                                'code' => 'M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16',
+                            ];
+                            $glyphOf = function ($type) {
+                                return match (true) {
+                                    str_contains($type, 'ذكاء') => 'ai',
+                                    str_contains($type, 'ويب') => 'web',
+                                    str_contains($type, 'جوال') || str_contains($type, 'تطبيقات') => 'mobile',
+                                    str_contains($type, 'تدريب') => 'work',
+                                    str_contains($type, 'بحث') || str_contains($type, 'ابحاث') => 'research',
+                                    default => 'code',
+                                };
+                            };
+                        @endphp
+                        <div class="pz-wrap">
+                            <div class="pz-track">
+                                @foreach ([false, true] as $copy)
+                                    @foreach ($showProjects as $project)
+                                        @php
+                                            $type = $project->project_type->name ?? '';
+                                            $sem = $project->semester?->parts();
+                                        @endphp
+                                        <article class="pz-card" style="--h: {{ crc32($type) % 360 }}" @if ($copy) aria-hidden="true" @endif>
+                                            <div class="pz-cover">
+                                                <span class="pz-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ $glyphs[$glyphOf($type)] }}" /></svg></span>
+                                                <span class="pz-type" dir="auto">{{ $type }}</span>
+                                                <span class="pz-done"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span data-i18n="state.done">مكتمل</span></span>
+                                            </div>
+                                            <div class="pz-body">
+                                                <h3 dir="auto">{{ $project->bare_title }}</h3>
+                                                <div class="pz-meta">
+                                                    @if ($project->stages_done)
+                                                        <span class="pz-steps" aria-hidden="true">@for ($i = 0; $i < min($project->stages_done, 6); $i++)<i></i>@endfor</span>
+                                                        <span><b>{{ $project->stages_done }}</b> <span data-i18n="show.stages">مراحل معتمدة</span></span>
+                                                    @endif
+                                                    @if ($sem)<span class="pz-sem">{{ $sem['term'] }} @if ($sem['year'])<bdi dir="ltr">&#x2066;{{ $sem['year'] }}&#x2069;</bdi>@endif</span>@endif
+                                                </div>
+                                            </div>
+                                        </article>
+                                    @endforeach
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
 
                     <a href="{{ route('login') }}" class="link-more sc-more reveal">
@@ -1033,49 +1121,46 @@
                     </div>
                 </div>
 
-                <div class="lifecycle is-vs reveal">
-                    <div class="vs-head" aria-hidden="true">
-                        <span></span>
-                        <span></span>
-                        <span data-i18n="lc.before">قبل</span>
-                        <span data-i18n="lc.after">مع تخرُّج</span>
+                {{-- قبل/بعد بشريط سحب: الفوضى التي يعرفها كل فريق (رسائل وملفات مبعثرة)
+                     تحت المنصة المرتّبة، والمقبض يكشف الفرق. كان جدولاً من ستة صفوف
+                     بنصوص طويلة. المقبض يُسحب أو يُحرَّك بالأسهم (range)، ويتحرّك وحده
+                     مرة حين يظهر القسم ليدلّ على نفسه. الحركة في initCompare. --}}
+                <div class="cmp reveal" data-compare style="--pos: 50%">
+                    {{-- قبل: فوضى --}}
+                    <div class="cmp-side is-before" aria-hidden="true">
+                        <span class="cmp-tag" data-i18n="lc.before">قبل</span>
+                        <div class="cmp-mess">
+                            <span class="mess is-wa" style="--x: 8%; --y: 12%; --r: -6deg"><b>💬 15</b> <span data-i18n="cmp.m1">مين رفع الملف الأخير؟</span></span>
+                            <span class="mess is-file" style="--x: 52%; --y: 8%; --r: 5deg">📄 <span dir="ltr">final_v3_FINAL(2).docx</span></span>
+                            <span class="mess is-wa" style="--x: 30%; --y: 34%; --r: 3deg"><b>💬</b> <span data-i18n="cmp.m2">الموعد بكرة ولا الأسبوع الجاي؟؟</span></span>
+                            <span class="mess is-red" style="--x: 60%; --y: 46%; --r: -4deg">❌ <span data-i18n="cmp.m3">مرفوض</span></span>
+                            <span class="mess is-mail" style="--x: 6%; --y: 58%; --r: -3deg">✉️ <span data-i18n="cmp.m4">Re: Re: Fwd: التعديلات</span></span>
+                            <span class="mess is-wa" style="--x: 40%; --y: 74%; --r: 6deg"><b>💬</b> <span data-i18n="cmp.m5">مين عليه الواجهات؟</span></span>
+                            <span class="mess is-paper" style="--x: 10%; --y: 84%; --r: -7deg">📝 <span data-i18n="cmp.m6">كشف الدرجات (ورقي)</span></span>
+                        </div>
                     </div>
-                    <div class="lc-row">
-                        <span class="lc-num">01</span>
-                        <h3 class="lc-title" data-i18n="lc.1.title">التنسيق</h3>
-                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.1.before">مجموعة واتساب يقرؤها الجميع وتضيع فيها المهام</span></p>
-                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.1.after">نقاش فريق خاص، و@ لتنبيه زميل بعينه</span></p>
+                    {{-- مع تخرُّج: مرتّب — كل مشكلة وحلّها --}}
+                    <div class="cmp-side is-after">
+                        <span class="cmp-tag is-after" data-i18n="lc.after">مع تخرُّج</span>
+                        <ul class="cmp-grid">
+                            @foreach ([
+                                ['lc.1.title', 'التنسيق', 'lc.1.after', 'نقاش فريق خاص، و@ لتنبيه زميل بعينه'],
+                                ['lc.2.title', 'الملفات', 'lc.2.after', 'ملف واحد، وملاحظاته عليه حتى تُعالَج'],
+                                ['lc.3.title', 'المواعيد', 'lc.3.after', 'خطة مراحل بمواعيدها وقوالبها تصل كل مجموعة'],
+                                ['lc.4.title', 'الملاحظات', 'lc.4.after', '«مطلوب تعديل» بسبب واضح، وكل جولة محفوظة'],
+                                ['lc.5.title', 'المسؤوليات', 'lc.5.after', 'أدوار معلنة يراها الفريق والمشرف'],
+                                ['lc.6.title', 'الدرجة', 'lc.6.after', 'درجة معتمدة مقفلة، وسجلّ لكل قرار'],
+                            ] as $k => [$tk, $t, $ak, $a])
+                                <li class="cmp-card" style="--k: {{ $k }}">
+                                    <span class="cmp-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg></span>
+                                    <span><b data-i18n="{{ $tk }}">{{ $t }}</b><small data-i18n="{{ $ak }}">{{ $a }}</small></span>
+                                </li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <div class="lc-row">
-                        <span class="lc-num">02</span>
-                        <h3 class="lc-title" data-i18n="lc.2.title">الملفات</h3>
-                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.2.before">نسخ متضاربة بين البريد والرسائل</span></p>
-                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.2.after">ملف واحد، وملاحظاته عليه حتى تُعالَج</span></p>
-                    </div>
-                    <div class="lc-row">
-                        <span class="lc-num">03</span>
-                        <h3 class="lc-title" data-i18n="lc.3.title">المواعيد</h3>
-                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.3.before">جدول يُرسل مرّة ثم يضيع بين الرسائل</span></p>
-                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.3.after">خطة مراحل بمواعيدها وقوالبها تصل كل مجموعة</span></p>
-                    </div>
-                    <div class="lc-row">
-                        <span class="lc-num">04</span>
-                        <h3 class="lc-title" data-i18n="lc.4.title">الملاحظات</h3>
-                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.4.before">«مرفوض» بلا سبب، وتخمين ما المطلوب</span></p>
-                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.4.after">«مطلوب تعديل» بسبب واضح، وكل جولة محفوظة</span></p>
-                    </div>
-                    <div class="lc-row">
-                        <span class="lc-num">05</span>
-                        <h3 class="lc-title" data-i18n="lc.5.title">المسؤوليات</h3>
-                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.5.before">لا أحد يعرف مَن فعل ماذا حتى المناقشة</span></p>
-                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.5.after">أدوار معلنة يراها الفريق والمشرف</span></p>
-                    </div>
-                    <div class="lc-row">
-                        <span class="lc-num">06</span>
-                        <h3 class="lc-title" data-i18n="lc.6.title">الدرجة</h3>
-                        <p class="vs-before"><span class="vs-mark" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span data-i18n="lc.6.before">كشف ورقي يتغيّر ولا أثر لمن غيّره</span></p>
-                        <p class="vs-after"><span class="vs-mark" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span data-i18n="lc.6.after">درجة معتمدة مقفلة، وسجلّ لكل قرار</span></p>
-                    </div>
+                    {{-- المقبض --}}
+                    <div class="cmp-handle" aria-hidden="true"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6" /></svg></span></div>
+                    <input type="range" class="cmp-range" min="4" max="96" value="50" aria-label="قارن قبل ومع تخرُّج" data-i18n-aria="cmp.aria">
                 </div>
             </div>
         </section>
@@ -1102,6 +1187,7 @@
                             <button type="button" class="fq-filter" data-fq-filter="track" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-5"/></svg><span data-i18n="faq.cat.track">المتابعة والتقييم</span></button>
                         </div>
                         <div class="fq-ask reveal d2">
+                            <span class="fq-person" aria-hidden="true"><svg viewBox="-30 -98 60 102"><use href="#hj-boy2" /></svg><i>؟</i></span>
                             <span class="fq-ask-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
                             <div>
                                 <b data-i18n="faq.ask.title">ما وجدت جوابك؟</b>
@@ -1199,103 +1285,40 @@
                     </div>
                 </div>
 
-                {{-- النقاط الست على دورة الفصل: قبله، في بدايته، وحتى إغلاقه --}}
-                <ol class="dx-phases">
-                        <li class="dx-phase reveal d1">
-                            <div class="dx-phase-head">
-                                <span class="dx-node">1</span>
-                                <div>
-                                    <small data-i18n="dept.p1.when">قبل الفصل</small>
-                                    <h3 data-i18n="dept.p1.name">التجهيز</h3>
-                                </div>
-                            </div>
-                            <div class="dx-item">
-                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
-                                <div class="dx-text">
-                                    <b data-i18n="dept.6.title">فصول دراسية تُفتح وتُغلق</b>
-                                    <span data-i18n="dept.6.text">تفتح فصلاً جديداً للتقديم وتغلق السابق، فتبقى مشاريع كل دفعة في فصلها.</span>
-                                    <div class="dx-proof" aria-hidden="true">
-                                        <span class="dx-chip is-closed"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="dept.pf.term2">الفصل الثاني</span> <bdi dir="ltr">&#x2066;2021–22&#x2069;</bdi></span>
-                                        <span class="dx-chip is-open"><i></i><span data-i18n="dept.file.term">الفصل الأول</span> <bdi dir="ltr">&#x2066;2022–23&#x2069;</bdi></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="dx-item">
-                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg></span>
-                                <div class="dx-text">
-                                    <b data-i18n="dept.2.title">استيراد الطلاب والمشرفين من ملف Excel</b>
-                                    <span data-i18n="dept.2.text">ترفع كشف الدفعة مرة واحدة فتُنشأ الحسابات كلها بلا إدخال يدوي.</span>
-                                    <div class="dx-proof" aria-hidden="true">
-                                        <span class="dx-file-chip"><i>XLS</i><bdi dir="ltr">students.xlsx</bdi></span>
-                                        <span class="dx-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></span>
-                                        <span class="dx-count"><bdi dir="ltr">312</bdi> <span data-i18n="dept.pf.accounts">حساباً</span></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="dx-phase reveal d2">
-                            <div class="dx-phase-head">
-                                <span class="dx-node">2</span>
-                                <div>
-                                    <small data-i18n="dept.p2.when">بداية الفصل</small>
-                                    <h3 data-i18n="dept.p2.name">التوزيع</h3>
-                                </div>
-                            </div>
-                            <div class="dx-item">
-                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></span>
-                                <div class="dx-text">
-                                    <b data-i18n="dept.3.title">أنواع مشاريع بحدود فريق لكل تخصص</b>
-                                    <span data-i18n="dept.3.text">تضبط لكل تخصص أنواع مشاريعه والحد الأدنى والأقصى لأعضاء الفريق.</span>
-                                    <div class="dx-proof" aria-hidden="true">
-                                        <span class="dx-type" data-i18n="dept.pf.type">مشروع برمجي</span>
-                                        <span class="dx-seats"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span>
-                                        <span class="dx-range"><bdi dir="ltr">3–5</bdi> <span data-i18n="dept.pf.members">أعضاء</span></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="dx-item">
-                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-                                <div class="dx-text">
-                                    <b data-i18n="dept.1.title">توزيع المشرفين بحدّ أقصى لكل واحد</b>
-                                    <span data-i18n="dept.1.text">تحدد للمشرف عدد المجموعات التي يقبلها، والنظام يرفض ما زاد تلقائياً.</span>
-                                    <div class="dx-proof" aria-hidden="true">
-                                        <span class="dx-meter"><i style="width:80%"></i></span>
-                                        <span class="dx-count"><bdi dir="ltr">4 / 5</bdi> <span data-i18n="dept.pf.groups">مجموعات</span></span>
-                                        <span class="dx-reject"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg><span data-i18n="dept.pf.sixth">السادسة مرفوضة</span></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="dx-phase reveal d3">
-                            <div class="dx-phase-head">
-                                <span class="dx-node">3</span>
-                                <div>
-                                    <small data-i18n="dept.p3.when">حتى نهايته</small>
-                                    <h3 data-i18n="dept.p3.name">المتابعة والإغلاق</h3>
-                                </div>
-                            </div>
-                            <div class="dx-item">
-                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
-                                <div class="dx-text">
-                                    <b data-i18n="dept.5.title">سجلّ تدقيق لكل قرار</b>
-                                    <span data-i18n="dept.5.text">كل اعتماد وفتح درجة وتغيير مهم يُحفظ باسم صاحبه ووقته.</span>
-                                    <div class="dx-proof" aria-hidden="true">
-                                        <span class="dx-log"><i></i><span data-i18n="dept.pf.audit">اعتماد فكرة مشروع</span><small><bdi dir="ltr">09:14</bdi></small><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="dx-item">
-                                <span class="dx-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg></span>
-                                <div class="dx-text">
-                                    <b data-i18n="dept.4.title">تصدير كشف المجموعات إلى Excel</b>
-                                    <span data-i18n="dept.4.text">تُخرج كشفاً بالمجموعات ومشرفيها ودرجاتها في أي لحظة من الفصل.</span>
-                                    <div class="dx-proof" aria-hidden="true">
-                                        <span class="dx-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg><span data-i18n="dept.pf.export">تنزيل الكشف</span><bdi dir="ltr">.xlsx</bdi></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                </ol>
+                {{-- دورة الفصل: ثلاث محطات (قبله، بدايته، حتى إغلاقه) يمشيها مسؤول القسم،
+                     ولكل محطة ميزتان بعنوانيهما — كانت ست بطاقات بأمثلة ونصوص طويلة.
+                     الحركة في initSeason (premium.js). --}}
+                <div class="ds reveal" data-season>
+                    <div class="ds-rail" aria-hidden="true"><span class="ds-fill"></span></div>
+                    <ol class="ds-stations">
+                        @foreach ([
+                            ['dept.p1.when', 'قبل الفصل', 'dept.p1.name', 'التجهيز', 'M3 4h18v18H3zM16 2v4M8 2v4M3 10h18', [
+                                ['M3 4h18v18H3zM16 2v4M8 2v4M3 10h18', 'dept.6.title', 'فصول دراسية تُفتح وتُغلق'],
+                                ['M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12', 'dept.2.title', 'استيراد الطلاب والمشرفين من ملف Excel'],
+                            ]],
+                            ['dept.p2.when', 'بداية الفصل', 'dept.p2.name', 'التوزيع', 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87', [
+                                ['m12 2 10 5-10 5L2 7zM2 17l10 5 10-5M2 12l10 5 10-5', 'dept.3.title', 'أنواع مشاريع بحدود فريق لكل تخصص'],
+                                ['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8', 'dept.1.title', 'توزيع المشرفين بحدّ أقصى لكل واحد'],
+                            ]],
+                            ['dept.p3.when', 'حتى نهايته', 'dept.p3.name', 'المتابعة والإغلاق', 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4', [
+                                ['M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4', 'dept.5.title', 'سجلّ تدقيق لكل قرار'],
+                                ['M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3', 'dept.4.title', 'تصدير كشف المجموعات إلى Excel'],
+                            ]],
+                        ] as $k => [$wk, $when, $nk, $name, $icon, $items])
+                            <li class="ds-st" data-st="{{ $k }}">
+                                <span class="ds-node" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ $icon }}" /></svg></span>
+                                <small data-i18n="{{ $wk }}">{{ $when }}</small>
+                                <h3 data-i18n="{{ $nk }}">{{ $name }}</h3>
+                                <ul class="ds-items">
+                                    @foreach ($items as [$ii, $ik, $it])
+                                        <li><span class="ds-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="{{ $ii }}" /></svg></span><b data-i18n="{{ $ik }}">{{ $it }}</b></li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        @endforeach
+                    </ol>
+                    <div class="ds-walker" aria-hidden="true"><svg viewBox="-30 -96 60 100"><use href="#hj-admin" /></svg></div>
+                </div>
             </div>
         </section>
 
@@ -1337,6 +1360,11 @@
                                 <span data-i18n="contact.pointHours">من الأحد إلى الخميس</span>
                             </li>
                         </ul>
+
+                        <div class="ct-person" aria-hidden="true">
+                            <svg viewBox="-32 -98 64 102"><use href="#hj-admin" /></svg>
+                            <span class="ct-bubble" data-i18n="contact.bubble">أهلاً! نقرأ كل رسالة 👋</span>
+                        </div>
 
                         <a href="#faq" class="contact-faq">
                             <span>
