@@ -442,5 +442,8 @@
     "إعادة المحاولة": "Try again",
     "رسالة جديدة": "1 new message",
     ":n رسائل جديدة": ":n new messages",
-    "تعذّر حذف الرسالة — حاول مرة أخرى.": "Couldn't delete the message — try again."
+    "تعذّر حذف الرسالة — حاول مرة أخرى.": "Couldn't delete the message — try again.",
+    "مبروك!": "Congratulations!",
+    "رُصدت درجة مشروعك": "Your project has been graded",
+    "رحلة «:title» اكتملت — من الفكرة حتى الدرجة.": "The journey of “:title” is complete — from idea to grade."
 }

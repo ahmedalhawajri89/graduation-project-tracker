@@ -66,6 +66,94 @@
     </section>
 @endif
 
+{{-- لحظة التخرّج: أول مرة يفتح فيها الطالب لوحته بعد رصد درجته — نافذة
+     احتفال بقصاصات ملوّنة وفريقه يرمي قبعاته والدرجة تُعدّ. مرة واحدة لكل
+     مشروع (يحفظها المتصفّح)، وتُغلق بـ Esc أو بالزرّ أو بالنقر خارجها. --}}
+@if ($graded)
+    @php
+        $gradeText = rtrim(rtrim(number_format($project->grade, 2), '0'), '.');
+        $party = $project->group->sortBy(fn ($m) => $m->type === 'leader' ? 0 : 1)->take(3)->values()
+            ->map(fn ($m, $i) => $m->student?->gender === 'female' ? 'hj-girl' : ($i % 2 ? 'hj-boy2' : 'hj-boy'));
+        $partyX = match ($party->count()) { 1 => [0], 2 => [-24, 24], default => [-48, 0, 48] };
+    @endphp
+    <dialog class="celebrate" data-celebrate="celebrate:{{ $project->id }}:{{ $gradeText }}" aria-labelledby="celebrate-title">
+        <div class="celebrate-card">
+            <div class="celebrate-confetti" aria-hidden="true"></div>
+            <svg class="celebrate-team" viewBox="-84 -116 168 122" aria-hidden="true">
+                <ellipse cx="0" cy="2" rx="80" ry="5" fill="#2563eb" opacity=".08" />
+                @foreach ($party as $i => $who)
+                    <g transform="translate({{ $partyX[$i] }} 0)">
+                        <use href="#{{ $who }}" />
+                        <g transform="translate(0 {{ $who === 'hj-girl' ? -70 : -73 }})"><g class="celebrate-cap" style="animation-delay: {{ .35 + $i * .12 }}s"><use href="#hj-cap" /></g></g>
+                    </g>
+                @endforeach
+            </svg>
+            <p class="celebrate-kicker">{{ __('مبروك!') }}</p>
+            <h2 class="celebrate-title" id="celebrate-title">{{ __('رُصدت درجة مشروعك') }}</h2>
+            <div class="celebrate-grade">
+                <b data-count-to="{{ $gradeText }}">{{ $gradeText }}</b>
+                <span>{{ __('من 100') }}</span>
+                @if ($project->grade_label)
+                    <span class="celebrate-label">{{ $project->grade_label }}</span>
+                @endif
+            </div>
+            <p class="celebrate-text">{{ __('رحلة «:title» اكتملت — من الفكرة حتى الدرجة.', ['title' => $project->title]) }}</p>
+            <button type="button" class="btn btn-primary celebrate-ok" data-celebrate-close>{{ __('عرض التفاصيل') }}</button>
+        </div>
+    </dialog>
+
+    @push('js')
+        <script>
+            (function () {
+                var dlg = document.querySelector('[data-celebrate]');
+                if (!dlg || !dlg.showModal) return;
+                var key = dlg.dataset.celebrate;
+                try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (e) { return; }
+                var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                // قصاصات بألوان المنصة، كلٌّ بمسار وتوقيت مختلف
+                var box = dlg.querySelector('.celebrate-confetti');
+                var colors = ['#2563eb', '#7c3aed', '#f59e0b', '#10b981', '#ec4899', '#60a5fa'];
+                if (!still) for (var i = 0; i < 46; i++) {
+                    var c = document.createElement('i');
+                    c.style.setProperty('--x', (Math.random() * 100) + '%');
+                    c.style.setProperty('--drift', (Math.random() * 120 - 60) + 'px');
+                    c.style.setProperty('--spin', (Math.random() * 720 - 360) + 'deg');
+                    c.style.setProperty('--d', (1.6 + Math.random() * 1.4) + 's');
+                    c.style.setProperty('--delay', (Math.random() * .5) + 's');
+                    c.style.background = colors[i % colors.length];
+                    if (i % 3 === 0) c.style.borderRadius = '50%';
+                    box.appendChild(c);
+                }
+
+                // الدرجة تُعدّ من الصفر
+                var num = dlg.querySelector('[data-count-to]');
+                var to = parseFloat(num.dataset.countTo), dec = (num.dataset.countTo.split('.')[1] || '').length;
+                if (!still) {
+                    num.textContent = '0';
+                    var t0 = null;
+                    setTimeout(function () {
+                        requestAnimationFrame(function step(now) {
+                            if (t0 === null) t0 = now;
+                            var k = Math.min(1, (now - t0) / 1200);
+                            num.textContent = (to * (1 - Math.pow(1 - k, 3))).toFixed(dec);
+                            if (k < 1) requestAnimationFrame(step);
+                        });
+                    }, 350);
+                }
+
+                dlg.querySelector('[data-celebrate-close]').addEventListener('click', function () { dlg.close(); });
+                dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+                dlg.addEventListener('close', function () {
+                    var panel = document.querySelector('.grade-panel');
+                    if (panel) panel.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' });
+                });
+                setTimeout(function () { dlg.showModal(); dlg.querySelector('[data-celebrate-close]').focus(); }, 500);
+            })();
+        </script>
+    @endpush
+@endif
+
 {{-- عمودان: المتن ما يُعمل عليه، والجانب ما يُرجَع إليه --}}
 <div class="dash-grid">
 

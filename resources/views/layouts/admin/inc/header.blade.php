@@ -110,6 +110,10 @@
                             {{ __('الموقع العام') }}
                             <i class="ti ti-external-link user-menu-ext" aria-hidden="true"></i>
                         </a>
+                        <a href="#" class="dropdown-item" data-tour-start>
+                            <span class="user-menu-icon"><i class="ti ti-route"></i></span>
+                            {{ __('جولة تعريفية') }}
+                        </a>
                         @php $otherLocale = app()->getLocale() === 'en' ? 'ar' : 'en'; @endphp
                         <a href="{{ route('locale.switch', $otherLocale) }}" class="dropdown-item" lang="{{ $otherLocale }}">
                             <span class="user-menu-icon"><i class="ti ti-language"></i></span>

@@ -122,7 +122,7 @@
                     @foreach ($cast as $who)
                         <svg class="rail-member" viewBox="-30 -104 60 108">
                             <use href="#{{ $who }}" />
-                            @if ($graduated)<use href="#hj-cap" class="rail-member-cap" y="{{ $who === 'hj-girl' ? -70 : -73 }}" />@endif
+                            @if ($graduated)<g transform="translate(0 {{ $who === 'hj-girl' ? -70 : -73 }})"><g class="rail-member-cap"><use href="#hj-cap" /></g></g>@endif
                         </svg>
                     @endforeach
                 </span>

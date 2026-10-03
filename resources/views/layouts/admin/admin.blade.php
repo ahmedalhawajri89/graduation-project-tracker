@@ -172,6 +172,9 @@
         });
     </script>
 
+    {{-- الجولة التعريفية: أول دخول، وتُعاد من قائمة المستخدم --}}
+    @include('layouts.admin.inc._tour')
+
     @stack('js')
 </body>
 

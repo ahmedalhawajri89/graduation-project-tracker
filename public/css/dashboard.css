@@ -10315,3 +10315,147 @@ form.is-uploading .file-drop, form.is-uploading input[type="file"] + label { poi
 .demo-chip.is-on { background: var(--ds-brand-600); border-color: var(--ds-brand-600); color: #fff; cursor: default; }
 @media (max-width: 640px) { .demo-bar { padding: 7px 12px; } .demo-bar-note { font-size: 11.5px; } }
 @media (prefers-reduced-motion: reduce) { .demo-role:hover { transform: none; } }
+
+/* ==================== لحظة التخرّج ====================
+   نافذة احتفال مرة واحدة بعد اعتماد الدرجة (student/_project.blade.php):
+   قصاصات تتساقط، والفريق يرمي قبعاته، والدرجة تُعدّ. */
+.celebrate {
+    width: min(460px, calc(100vw - 32px));
+    max-width: none;
+    padding: 0;
+    border: 0;
+    border-radius: 26px;
+    background: transparent;
+    overflow: visible;
+}
+.celebrate[open] { animation: dlg-in .5s cubic-bezier(.21, 1.02, .73, 1); }
+.celebrate::backdrop { background: rgba(15, 23, 42, .45); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); animation: dlg-fade .3s ease; }
+.celebrate-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 26px 28px 26px;
+    border-radius: 26px;
+    background:
+        radial-gradient(80% 60% at 50% 0, #eff6ff, transparent 70%),
+        radial-gradient(60% 50% at 100% 100%, #f5f3ff, transparent 70%),
+        #fff;
+    text-align: center;
+    box-shadow: 0 40px 90px -30px rgba(15, 23, 42, .5);
+    overflow: hidden;
+}
+.celebrate-confetti { position: absolute; inset: 0; pointer-events: none; }
+.celebrate-confetti i {
+    position: absolute;
+    top: -14px;
+    left: var(--x);
+    width: 8px;
+    height: 12px;
+    border-radius: 2px;
+    opacity: 0;
+    animation: confetti-fall var(--d) cubic-bezier(.25, .6, .4, 1) var(--delay) forwards;
+}
+@keyframes confetti-fall {
+    0% { opacity: 1; transform: translate(0, 0) rotate(0); }
+    85% { opacity: 1; }
+    100% { opacity: 0; transform: translate(var(--drift), 520px) rotate(var(--spin)); }
+}
+.celebrate-team { position: relative; width: 200px; height: 146px; overflow: visible; margin-bottom: 6px; }
+.celebrate-cap { transform-box: fill-box; transform-origin: center; animation: celebrate-toss 1.3s cubic-bezier(.2, .7, .3, 1) both; }
+@keyframes celebrate-toss {
+    0% { translate: 0 0; rotate: 0deg; }
+    45% { translate: 0 -42px; rotate: 220deg; }
+    100% { translate: 0 0; rotate: 360deg; }
+}
+.celebrate-kicker {
+    position: relative;
+    margin: 0;
+    padding: 4px 12px;
+    border-radius: 99px;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 13px;
+    font-weight: 800;
+}
+.celebrate-title { position: relative; margin: 10px 0 6px; font-family: var(--ds-font-display); font-size: 22px; font-weight: 800; color: var(--ds-ink); }
+.celebrate-grade { position: relative; display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 6px 8px; margin: 4px 0 8px; }
+.celebrate-grade b {
+    font-family: var(--ds-font-display);
+    font-size: 54px;
+    font-weight: 800;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.celebrate-grade span { font-size: 14px; color: var(--ds-ink-mute); }
+.celebrate-grade .celebrate-label { align-self: center; padding: 3px 10px; border-radius: 99px; background: #ecfdf5; color: #047857; font-size: 12.5px; font-weight: 700; }
+.celebrate-text { position: relative; margin: 0 0 18px; font-size: 14px; line-height: 1.8; color: var(--ds-ink-soft); }
+.celebrate-ok { position: relative; min-width: 180px; min-height: 44px; border-radius: 12px; font-weight: 700; }
+@media (prefers-reduced-motion: reduce) {
+    .celebrate[open], .celebrate::backdrop, .celebrate-cap { animation: none; }
+}
+
+/* ==================== الجولة التعريفية ====================
+   بقعة تضيء العنصر وظلّها الواسع يعتم الصفحة، وبطاقة بشخصية الدور.
+   السلوك في public/js/tour.js. */
+.tour { position: fixed; inset: 0; z-index: 1100; }
+.tour[hidden] { display: none; }
+.tour-spot {
+    position: fixed;
+    border-radius: 14px;
+    box-shadow: 0 0 0 9999px rgba(15, 23, 42, .5), 0 0 0 3px rgba(255, 255, 255, .9), 0 0 0 7px rgba(37, 99, 235, .45);
+    transition: left .4s var(--ds-ease), top .4s var(--ds-ease), width .4s var(--ds-ease), height .4s var(--ds-ease), border-radius .4s ease;
+    pointer-events: none;
+    animation: tour-fade .3s ease both;
+}
+.tour-spot.is-center { border-radius: 50%; box-shadow: 0 0 0 9999px rgba(15, 23, 42, .5); }
+.tour-pop {
+    position: fixed;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 14px;
+    width: min(380px, calc(100vw - 24px));
+    padding: 18px 18px 14px;
+    border-radius: 20px;
+    background:
+        radial-gradient(70% 60% at 0 0, var(--ds-brand-50), transparent 70%),
+        var(--ds-surface);
+    box-shadow: 0 30px 70px -24px rgba(15, 23, 42, .55), 0 0 0 1px rgba(15, 23, 42, .06);
+    transition: left .4s var(--ds-ease), top .4s var(--ds-ease);
+}
+.tour-pop.is-in .tour-body { animation: tour-rise .4s var(--ds-ease) both; }
+.tour-pop.is-in .tour-who { animation: tour-hop .5s cubic-bezier(.34, 1.56, .64, 1) both; }
+.tour-who { grid-row: span 1; align-self: end; width: 52px; height: 82px; overflow: visible; }
+[dir="ltr"] .tour-who { transform: scaleX(-1); }
+.tour-body { min-width: 0; }
+.tour-count { display: block; font-size: 11.5px; font-weight: 700; color: var(--ds-brand-600); }
+.tour-title { margin: 2px 0 4px; font-family: var(--ds-font-display); font-size: 17px; font-weight: 800; color: var(--ds-ink); }
+.tour-text { margin: 0; font-size: 13.5px; line-height: 1.75; color: var(--ds-ink-soft); }
+.tour-foot {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ds-border);
+}
+.tour-dots { display: inline-flex; gap: 5px; margin-inline-end: auto; }
+.tour-dots i { width: 6px; height: 6px; border-radius: 99px; background: var(--ds-border-strong); transition: width .3s var(--ds-ease), background-color .3s ease; }
+.tour-dots i.is-on { width: 18px; background: var(--ds-brand-600); }
+.tour-skip { padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 13px; font-weight: 600; color: var(--ds-ink-mute); cursor: pointer; }
+.tour-skip:hover { color: var(--ds-ink); background: var(--ds-surface-sunk); }
+.tour-foot .btn { min-height: 36px; padding-inline: 14px; border-radius: 10px; font-weight: 700; }
+.tour-foot [hidden] { display: none; }
+.tour.is-leaving { animation: tour-fade .25s ease reverse forwards; }
+@keyframes tour-fade { from { opacity: 0; } }
+@keyframes tour-rise { from { opacity: 0; transform: translateY(6px); } }
+@keyframes tour-hop { from { opacity: 0; translate: 0 10px; } }
+@media (prefers-reduced-motion: reduce) {
+    .tour-spot, .tour-pop { transition: none; animation: none; }
+    .tour-pop.is-in .tour-body, .tour-pop.is-in .tour-who, .tour.is-leaving { animation: none; }
+}

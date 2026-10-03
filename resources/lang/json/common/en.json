@@ -461,5 +461,22 @@
     "تأكيد الاكتمال": "Confirm completion",
     "تمّ بنجاح": "Done",
     "تعذّر الإتمام": "Couldn’t complete",
-    "راجع البيانات": "Check your input"
+    "راجع البيانات": "Check your input",
+    "أهلاً :name 👋": "Hi :name 👋",
+    "هنا تتابع مشروعك من الفكرة حتى الدرجة: فريقك ومراحلك وملفاتك ونقاشك مع المشرف.": "Follow your project here from idea to grade: your team, stages, files and talks with your supervisor.",
+    "هنا تتابع مجموعاتك: الطلبات، وخطة المراحل، ومراجعة التسليمات، والدرجات.": "Follow your groups here: requests, the stage plan, reviewing submissions, and grades.",
+    "هنا تضبط الفصل كلّه: الحسابات والتخصصات والمجموعات والمناقشات وسجلّ القرارات.": "Run the whole term here: accounts, majors, groups, defenses and the decision log.",
+    "مشروعك ومساره": "Your project and its path",
+    "فريقك يقف عند مرحلتك الحالية، والحلقة تقول كم أنجزتم.": "Your team stands at your current step, and the ring shows how much you have done.",
+    "كل صفحاتك هنا": "All your pages are here",
+    "القائمة الجانبية فيها كل ما تحتاجه، والأرقام بجانبها تتحدّث وحدها.": "The sidebar has everything you need, and its counts update on their own.",
+    "القائمة": "Menu",
+    "كل صفحاتك في هذه القائمة.": "All your pages are in this menu.",
+    "اكتب اسم أي صفحة وانتقل إليها — أو اضغط Ctrl K من أي مكان.": "Type the name of any page to jump to it — or press Ctrl K from anywhere.",
+    "تصلك لحظياً دون إعادة تحميل: ردّ المشرف، تسليم جديد، موعد قريب.": "They arrive live, without a reload: a supervisor reply, a new submission, an upcoming deadline.",
+    "ملفك الشخصي واللغة، وهذه الجولة إن أردت رؤيتها مجدداً.": "Your profile and language, and this tour if you want to see it again.",
+    "ابدأ الآن": "Get started",
+    "تخطَّ": "Skip",
+    ":n من :total": ":n of :total",
+    "جولة تعريفية": "Welcome tour"
 }
