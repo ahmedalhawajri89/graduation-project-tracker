@@ -4284,6 +4284,60 @@ a.app-toast-body:hover .app-toast-title { color: var(--tone); }
 .empty .empty-icon {
     color: var(--ds-brand-300);
 }
+/* مشهد الحالة الفارغة: شخصية في هالة، وأيقونة الحالة شارة تطفو بجانبها */
+.empty-scene {
+    position: relative;
+    display: grid;
+    place-items: end center;
+    width: 168px;
+    height: 118px;
+    margin: 0 auto;
+}
+.empty-scene::before {
+    content: "";
+    position: absolute;
+    inset: 4px 14px 0;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--ds-brand-50), transparent);
+}
+.empty-scene::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    width: 110px;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, var(--ds-border-strong), transparent);
+}
+.empty-cast {
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+    margin-bottom: 2px;
+    animation: empty-rise .6s cubic-bezier(.34, 1.4, .64, 1) both;
+    transform-origin: 50% 100%;
+}
+.empty-badge {
+    position: absolute;
+    z-index: 2;
+    top: 6px;
+    inset-inline-end: 10px;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--ds-surface);
+    color: var(--ds-brand-600);
+    box-shadow: 0 0 0 1px var(--ds-border), 0 10px 22px -10px rgba(37, 99, 235, .45);
+    animation: empty-rise .6s cubic-bezier(.34, 1.4, .64, 1) .15s both, empty-float 3s ease-in-out .8s infinite alternate;
+}
+.empty-badge i { font-size: 20px; }
+@keyframes empty-rise { from { opacity: 0; transform: translateY(10px) scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes empty-float { to { translate: 0 -5px; } }
+@media (prefers-reduced-motion: reduce) {
+    .empty-cast, .empty-badge { animation: none; }
+}
 
 /* ==================== 14) Auth pages (login) ====================
    فاتحة، والبطاقة تجلس على مسار المنصة: الخط يدخل من اليمين ويمرّ خلفها
@@ -4405,6 +4459,54 @@ a.app-toast-body:hover .app-toast-title { color: var(--tone); }
 .station.s2 .station-dot { animation-delay: .8s; }  .station.s2 .station-card { animation-delay: .9s; }
 .station.s3 .station-dot { animation-delay: 1.3s; } .station.s3 .station-card { animation-delay: 1.4s; }
 .station.s4 .station-dot { animation-delay: 1.5s; } .station.s4 .station-card { animation-delay: 1.6s; }
+
+/* ---- شخصيات المسار: الفريق يمشي حتى المشرف، واللجنة تنتظر ----
+   المواضع من public/js/auth-cast.js (على المنحنى نفسه). الشخصيات من
+   partials/cast.blade.php — هي نفسها في الصفحة الرئيسية. */
+.cast-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.auth-cast { position: absolute; inset: 0; }
+.cast-team { position: absolute; inset: 0; opacity: 0; transition: opacity .5s ease; }
+.cast-actor, .cast-walker {
+    position: absolute; top: 0; left: 0;
+    overflow: visible;
+    opacity: 0;
+    transition: opacity .5s ease;
+}
+.cast-actor.is-supervisor { width: 49px; height: 84px; }
+.cast-actor.is-committee { width: 69px; height: 58px; }
+.cast-walker { width: 49px; height: 84px; opacity: 1; }
+.auth-cast.is-ready .cast-team { opacity: 1; transition-delay: .8s; }
+.auth-cast.is-ready .cast-actor.is-supervisor { opacity: 1; transition-delay: .9s; }
+.auth-cast.is-ready .cast-actor.is-committee { opacity: 1; transition-delay: 1.6s; }
+/* الوجوه: الفريق يتّجه في سيره، والمشرف واللجنة يستقبلانه */
+[dir="rtl"] .cast-walker > use,
+[dir="ltr"] .cast-actor > use { transform: scaleX(-1); }
+
+.auth-path .hj-leg, .auth-path .hj-arm { transform-box: fill-box; transform-origin: 50% 8%; }
+.auth-path.is-walking .hj-leg.is-a { animation: cast-step .42s ease-in-out infinite alternate; }
+.auth-path.is-walking .hj-leg.is-b { animation: cast-step .42s ease-in-out infinite alternate-reverse; }
+.auth-path.is-walking .hj-arm { animation: cast-step .42s ease-in-out infinite alternate-reverse; }
+.auth-path.is-walking .cast-walker { animation: cast-bob .42s ease-in-out infinite alternate; }
+.auth-path.is-walking .cast-walker:nth-child(2) { animation-delay: -.14s; }
+.auth-path.is-walking .cast-walker:nth-child(3) { animation-delay: -.28s; }
+.auth-path .hj-wave { transform-box: fill-box; transform-origin: 50% 0; animation: cast-wave 2.4s ease-in-out infinite; }
+/* وصل الفريق: قفزة فرح صغيرة */
+.auth-cast.is-arrived .cast-walker { animation: cast-hop .5s ease-out 2; }
+.auth-cast.is-arrived .cast-walker:nth-child(2) { animation-delay: .1s; }
+.auth-cast.is-arrived .cast-walker:nth-child(3) { animation-delay: .2s; }
+@keyframes cast-step { from { transform: rotate(-18deg); } to { transform: rotate(18deg); } }
+@keyframes cast-bob { to { translate: 0 -3px; } }
+@keyframes cast-hop { 50% { translate: 0 -7px; } }
+@keyframes cast-wave { 0%, 60%, 100% { transform: rotate(0); } 70% { transform: rotate(-28deg); } 80% { transform: rotate(-8deg); } 90% { transform: rotate(-26deg); } }
+
+/* حين تقترب المحطّات من البطاقة تزاحمها الشخصيات */
+@media (max-width: 1100px), (max-height: 620px) {
+    .auth-cast { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cast-actor, .cast-team { transition: none; }
+    .auth-path .hj-wave, .auth-cast.is-arrived .cast-walker { animation: none; }
+}
 
 .auth-col {
     position: relative;
@@ -6834,6 +6936,65 @@ a.hero-team:hover { color: var(--ds-brand-600); }
 .hero-rail li.is-current .hero-rail-node::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ds-brand-600); }
 .hero-rail-label { font-size: 12px; color: var(--ds-ink-mute); }
 .hero-rail li.is-current .hero-rail-label { font-weight: 700; color: var(--ds-ink); }
+
+/* ---- «رحلة المشروع» على مسار البطاقة ----
+   الشخصيات نفسها من الصفحة الرئيسية (partials/cast.blade.php، مضمَّنة مرة في
+   القالب). كل عنصر في عمود خطوته: (i + ½) ÷ n من العرض، وقدماه على الخط. */
+.hero-journey { position: relative; }
+.hero-journey:has(.rail-cast) .hero-rail { margin-top: 0; padding-top: 52px; }
+.rail-cast { position: absolute; inset: 0 0 auto; height: 54px; pointer-events: none; }
+.rail-actor, .rail-team {
+    position: absolute;
+    bottom: 0;
+    inset-inline-start: calc((var(--i) + .5) / var(--n) * 100%);
+}
+.rail-actor.is-supervisor { width: 28px; height: 48px; margin-inline-start: 18px; }
+.rail-actor.is-committee  { width: 46px; height: 39px; margin-inline-start: 16px; }
+.rail-actor.is-cap        { width: 28px; height: 20px; bottom: 16px; margin-inline-start: -14px; animation: rail-float 2.6s ease-in-out infinite alternate; }
+.rail-actor, .rail-member { overflow: visible; }
+/* الفريق متلاصق ومتمركز على خطوته؛ ينتقل بين الخطوات بالمشي */
+.rail-team {
+    display: flex;
+    width: 66px;
+    margin-inline-start: -33px;
+    transition: inset-inline-start 2.2s cubic-bezier(.45, .05, .35, 1);
+}
+.rail-team.is-meeting { margin-inline-start: -64px; }
+.rail-member { flex: none; width: 28px; height: 50px; }
+.rail-member + .rail-member { margin-inline-start: -9px; }
+/* الوجوه: الفريق نحو الخطوة التالية، والمشرف واللجنة نحو الفريق القادم */
+[dir="rtl"] .rail-member > use,
+[dir="ltr"] .rail-actor > use { transform: scaleX(-1); }
+[dir="rtl"] .rail-member .rail-member-cap { transform: scaleX(-1); }
+
+.rail-actor.is-supervisor .hj-wave,
+.rail-cast .hj-wave { transform-box: fill-box; transform-origin: 50% 0; }
+.cast-defs .hj-wave { transform-box: fill-box; transform-origin: 50% 0; animation: cast-wave 2.6s ease-in-out infinite; }
+.cast-defs .hj-leg, .cast-defs .hj-arm { transform-box: fill-box; transform-origin: 50% 8%; }
+.cast-defs.is-walking .hj-leg.is-a { animation: cast-step .4s ease-in-out infinite alternate; }
+.cast-defs.is-walking .hj-leg.is-b { animation: cast-step .4s ease-in-out infinite alternate-reverse; }
+.cast-defs.is-walking .hj-arm { animation: cast-step .4s ease-in-out infinite alternate-reverse; }
+.rail-team.is-walking .rail-member { animation: cast-bob .4s ease-in-out infinite alternate; }
+.rail-team.is-walking .rail-member:nth-child(2) { animation-delay: -.13s; }
+.rail-team.is-walking .rail-member:nth-child(3) { animation-delay: -.26s; }
+
+/* التخرّج: القبعات تُرمى مرة ثم تستقرّ على الرؤوس */
+.rail-member-cap { transform-box: fill-box; transform-origin: center; animation: rail-toss 1.1s cubic-bezier(.2, .7, .3, 1) .5s both; }
+.rail-member:nth-child(2) .rail-member-cap { animation-delay: .62s; }
+.rail-member:nth-child(3) .rail-member-cap { animation-delay: .74s; }
+@keyframes rail-toss { 0% { translate: 0 0; rotate: 0deg; } 45% { translate: 0 -30px; rotate: 200deg; } 100% { translate: 0 0; rotate: 360deg; } }
+@keyframes rail-float { to { translate: 0 -4px; } }
+
+@media (max-width: 575.98px) {
+    .rail-actor.is-supervisor, .rail-actor.is-committee, .rail-actor.is-cap { display: none; }
+    .rail-team, .rail-team.is-meeting { width: 54px; margin-inline-start: -27px; }
+    .rail-member { width: 24px; height: 43px; }
+    .hero-journey:has(.rail-cast) .hero-rail { padding-top: 46px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .rail-team { transition: none; }
+    .rail-actor.is-cap, .rail-member-cap, .cast-defs .hj-wave { animation: none; }
+}
 
 .stu-hero-foot {
     display: flex;

@@ -48,4 +48,21 @@
             </span>
         </span>
     @endforeach
+
+    {{-- شخصيات الصفحة الرئيسية على المسار نفسه: الفريق يمشي من الحافة حتى
+         المشرف الواقف عند «موافقة المشرف»، واللجنة تنتظر عند «المناقشة».
+         المواضع تُحسب على المنحنى في public/js/auth-cast.js. الـ defs داخل
+         ‎.auth-path‎ لتتحرّك الأرجل حين يحمل الصنف is-walking. --}}
+    <svg class="cast-defs" width="0" height="0" focusable="false"><defs>@include('partials.cast')</defs></svg>
+    <div class="auth-cast" data-auth-cast data-route="{{ $route }}">
+        <svg class="cast-actor is-supervisor" data-near="1060,610" data-dt=".045" viewBox="-30 -98 60 102"><use href="#hj-supervisor" /></svg>
+        <svg class="cast-actor is-committee" data-near="200,600" data-dt="-.022" viewBox="-44 -70 88 74"><use href="#hj-committee" /></svg>
+        {{-- الفريق: كل طالب على المنحنى بمفرده، واحداً خلف الآخر --}}
+        <div class="cast-team" data-near="1060,610" data-dt="-.028">
+            @foreach (['hj-girl', 'hj-boy', 'hj-boy2'] as $who)
+                <svg class="cast-walker" viewBox="-30 -98 60 102"><use href="#{{ $who }}" /></svg>
+            @endforeach
+        </div>
+    </div>
 </div>
+<script src="{{ asset('js/auth-cast.js') }}?v={{ filemtime(public_path('js/auth-cast.js')) }}" defer></script>

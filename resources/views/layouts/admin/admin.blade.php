@@ -6,6 +6,8 @@
 </head>
 
 <body>
+    {{-- شخصيات «رحلة المشروع» (partials/cast.blade.php) — تُستعمل بـ <use href="#hj-…"> --}}
+    <svg class="cast-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>@include('partials.cast')</defs></svg>
     <div class="page">
 
         @include('layouts.admin.inc.sidebar')

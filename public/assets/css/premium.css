@@ -1918,171 +1918,203 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
 }
 
 /* ==========================================================
-   05 — مستكشف الأدوار
-   تبويبات بأيقوناتها، ولوحة لكل دور: مشهد مرسوم من شاشته الحقيقية،
-   وما يفعله، وما لا يراه. وتحتها خطّ يربط الأدوار بما ينتقل بينها.
+   05 — مستكشف الأدوار بروح الهيرو
+   كل دور بطاقة بشخصيته في هالة بلونه (الطالب أزرق، المشرف نيلي،
+   الإدارة بنفسجي)، ولوحة فيها نموذج من شاشته وما يفعله وما لا يراه،
+   وتحتها خطّ يربط الأدوار بما ينتقل بينها. لا مربعات سوداء.
    ========================================================== */
-.rx { border: 1px solid var(--rule); border-radius: 22px; background: var(--paper-raised); overflow: hidden; }
+.rx { --rx-dur: 7s; }
+.rx .is-student { --role: #2563eb; --role-soft: #eff6ff; --role-line: #bfdbfe; }
+.rx .is-supervisor { --role: #4f46e5; --role-soft: #eef2ff; --role-line: #c7d2fe; }
+.rx .is-admin { --role: #7c3aed; --role-soft: #f5f3ff; --role-line: #ddd6fe; }
 
-.rx-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--rule); }
+/* ---- بطاقات الأدوار ---- */
+.rx-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 16px; }
 .rx-tab {
-  display: flex; align-items: center; gap: 12px;
-  padding: 18px 22px; border: 0; background: transparent; text-align: start;
-  font: inherit; color: var(--ink-mute); cursor: pointer;
   position: relative;
-  transition: background-color .25s ease, color .25s ease;
-}
-.rx-tab + .rx-tab { border-inline-start: 1px solid var(--rule); }
-.rx-tab::after {
-  content: ""; position: absolute; inset-inline: 22px; bottom: -1px; height: 2px;
-  background: var(--accent); transform: scaleX(0); transition: transform .35s var(--ease-expo);
-}
-.rx-tab:hover { background: var(--paper); color: var(--ink); }
-.rx-tab[aria-selected="true"] { color: var(--ink); background: var(--paper); }
-.rx-tab[aria-selected="true"]::after { transform: scaleX(1); }
-.rx-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
-.rx-tab-icon {
-  flex: none; display: grid; place-items: center;
-  width: 42px; height: 42px; border-radius: 12px;
-  border: 1px solid var(--rule); background: var(--paper-raised); color: var(--ink-soft);
-  transition: background-color .25s ease, color .25s ease, border-color .25s ease;
-}
-.rx-tab[aria-selected="true"] .rx-tab-icon { background: var(--ink); border-color: var(--ink); color: #fff; }
-.rx-tab-text b { display: block; font-family: var(--font-display); font-size: 16px; font-weight: 800; color: inherit; }
-.rx-tab-text small { display: block; margin-top: 2px; font-size: 12.5px; color: var(--ink-mute); }
-
-.rx-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 0; }
-.rx-panel + .rx-panel { border-top: 1px solid var(--rule); }
-.rx.is-enhanced .rx-panel + .rx-panel { border-top: 0; }
-.rx-panel[hidden] { display: none; }
-.rx-panel.is-in .rx-scene > * { animation: rx-rise .5s var(--ease-expo) both; }
-.rx-panel.is-in .rx-scene > *:nth-child(2) { animation-delay: .08s; }
-.rx-panel.is-in .rx-caps li { animation: rx-rise .5s var(--ease-expo) both; }
-.rx-panel.is-in .rx-caps li:nth-child(2) { animation-delay: .05s; }
-.rx-panel.is-in .rx-caps li:nth-child(3) { animation-delay: .1s; }
-.rx-panel.is-in .rx-caps li:nth-child(4) { animation-delay: .15s; }
-@keyframes rx-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-/* المشهد: واجهة مرسومة لا صورة */
-.rx-scene {
-  display: flex; flex-direction: column; justify-content: center; gap: 12px;
-  padding: 32px;
-  border-inline-end: 1px solid var(--rule);
-  background:
-    radial-gradient(90% 80% at 0% 0%, rgba(37, 99, 235, .07), transparent 60%),
-    var(--paper);
-}
-.rx-card {
-  display: flex; flex-direction: column; gap: 10px;
-  padding: 16px; border: 1px solid var(--rule); border-radius: 16px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px 14px 14px;
+  border: 1px solid var(--rule); border-radius: 20px;
   background: var(--paper-raised);
-  box-shadow: 0 1px 2px rgba(9, 9, 11, .04), 0 14px 30px -22px rgba(9, 9, 11, .3);
+  font: inherit; color: var(--ink-mute); text-align: start;
+  cursor: pointer; overflow: hidden;
+  transition: border-color .3s ease, box-shadow .3s ease, transform .3s var(--ease-expo), background-color .3s ease;
 }
-.rx-card-label { font-size: 11.5px; font-weight: 700; letter-spacing: .03em; color: var(--ink-mute); }
+.rx-tab:hover { transform: translateY(-2px); border-color: var(--role-line); }
+.rx-tab[aria-selected="true"] {
+  border-color: var(--role-line);
+  background: linear-gradient(135deg, var(--role-soft), var(--paper-raised) 70%);
+  color: var(--ink);
+  box-shadow: 0 22px 44px -30px var(--role);
+}
+.rx-tab:focus-visible { outline: 2px solid var(--role); outline-offset: 3px; }
+/* الشخصية في هالة بلون الدور — خافتة حتى يُختار دورها */
+.rx-tab-art {
+  flex: none; position: relative;
+  display: grid; place-items: end center;
+  width: 64px; height: 64px; border-radius: 18px;
+  background: radial-gradient(circle at 50% 70%, var(--role-soft), #fff 75%);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  overflow: hidden;
+  transition: box-shadow .3s ease, background .3s ease;
+}
+.rx-tab-art svg { width: 46px; height: 72px; margin-bottom: -10px; overflow: visible; filter: grayscale(.55); opacity: .75; transition: filter .3s ease, opacity .3s ease, transform .4s var(--ease-expo); }
+.rx-tab[aria-selected="true"] .rx-tab-art { background: radial-gradient(circle at 50% 75%, #fff, var(--role-soft) 70%); box-shadow: inset 0 0 0 1.5px var(--role-line), 0 10px 20px -12px var(--role); }
+.rx-tab[aria-selected="true"] .rx-tab-art svg, .rx-tab:hover .rx-tab-art svg { filter: none; opacity: 1; transform: translateY(-3px); }
+.rx-tab-text { flex: 1; min-width: 0; }
+.rx-tab-text b { display: block; font-family: var(--font-display); font-size: 17px; font-weight: 800; color: inherit; }
+.rx-tab-text small { display: block; margin-top: 3px; font-size: 12.5px; color: var(--ink-mute); }
+.rx-tab-num { align-self: flex-start; font-family: var(--font-display); font-size: 12px; font-weight: 800; color: var(--rule-strong); transition: color .3s ease; }
+.rx-tab[aria-selected="true"] .rx-tab-num { color: var(--role); }
+/* شريط الجولة: يمتلئ أسفل البطاقة النشطة */
+.rx-tab::after {
+  content: ""; position: absolute; inset-inline: 18px; bottom: 0; height: 3px; border-radius: 3px 3px 0 0;
+  background: var(--role); transform: scaleX(0); transition: transform .3s ease;
+}
+.rx-tab[aria-selected="true"]::after { transform: scaleX(1); }
+.rx.is-playing .rx-tab[aria-selected="true"]::after { transform-origin: right; animation: rx-progress var(--rx-dur) linear both; }
+[dir="ltr"] .rx.is-playing .rx-tab[aria-selected="true"]::after { transform-origin: left; }
+.rx.is-playing.is-paused .rx-tab[aria-selected="true"]::after { animation-play-state: paused; }
+@keyframes rx-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* ---- لوحة الدور ---- */
+.rx-panel {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 0;
+  border: 1px solid var(--rule); border-radius: 24px;
+  background: var(--paper-raised);
+  overflow: hidden;
+}
+.rx-panel + .rx-panel { margin-top: 16px; }
+.rx.is-enhanced .rx-panel + .rx-panel { margin-top: 0; }
+.rx-panel[hidden] { display: none; }
+
+/* المشهد: نموذج من شاشة الدور، والشخصية تقف بجانبه */
+.rx-scene {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  padding: 34px 34px 34px 70px;
+  background:
+    radial-gradient(70% 80% at 30% 20%, var(--role-soft), transparent 70%),
+    radial-gradient(rgba(15, 23, 42, .07) 1px, transparent 1.2px) 0 0 / 18px 18px,
+    var(--paper);
+  border-inline-end: 1px solid var(--rule);
+}
+[dir="rtl"] .rx-scene { padding: 34px 70px 34px 34px; }
+.rx-screen {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 420px;
+  border: 1px solid var(--rule); border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 30px 60px -36px rgba(15, 23, 42, .45), 0 0 0 6px rgba(255, 255, 255, .6);
+  overflow: hidden;
+}
+.rx-screen-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--rule); background: var(--paper); }
+.rx-screen-bar i { width: 8px; height: 8px; border-radius: 50%; background: var(--rule-strong); }
+.rx-screen-bar i:first-child { background: var(--role); }
+.rx-screen-bar span { margin-inline-start: 6px; font-size: 12px; font-weight: 700; color: var(--ink-soft); }
+.rx-screen-body { display: flex; flex-direction: column; gap: 10px; padding: 14px; }
+.rx-card { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid var(--rule); border-radius: 12px; background: #fff; }
+.rx-card-label { font-size: 11.5px; font-weight: 700; color: var(--ink-mute); }
 .rx-task { display: flex; align-items: center; gap: 10px; }
 .rx-task > span:nth-child(2) { flex: 1; min-width: 0; }
 .rx-task b, .rx-sub b { display: block; font-size: 13.5px; font-weight: 700; color: var(--ink); }
 .rx-task small, .rx-sub small { display: block; font-size: 12px; color: var(--ink-mute); }
-.rx-task-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 0 4px #fef3c7; }
-.rx-btn {
-  flex: none; display: inline-flex; align-items: center; justify-content: center;
-  padding: 7px 13px; border-radius: 9px;
-  font-size: 12.5px; font-weight: 700; white-space: nowrap;
-}
-.rx-btn.is-primary { background: var(--ink); color: #fff; }
+.rx-task-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 0 4px #fef3c7; animation: rx-ping 1.8s ease-in-out infinite; }
+@keyframes rx-ping { 50% { box-shadow: 0 0 0 7px rgba(254, 243, 199, .4); } }
+.rx-btn { flex: none; display: inline-flex; align-items: center; padding: 7px 12px; border-radius: 9px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.rx-btn.is-primary { background: var(--role); color: #fff; box-shadow: 0 8px 16px -8px var(--role); }
 .rx-btn.is-ok { background: #059669; color: #fff; }
 .rx-btn.is-warn { border: 1px solid #fcd34d; background: #fffbeb; color: #92400e; }
 .rx-progress-head { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--ink-mute); }
 .rx-progress-head b { color: var(--ink); }
 .rx-progress { display: block; height: 7px; border-radius: 99px; background: var(--paper-sunk); overflow: hidden; }
-.rx-progress i { display: block; height: 100%; border-radius: 99px; background: var(--accent); }
+.rx-progress i { display: block; width: var(--w); height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--role), #60a5fa); }
+.rx-panel.is-in .rx-progress i { animation: rx-fill 1.1s var(--ease-expo) .3s both; }
+@keyframes rx-fill { from { width: 0; } }
 .rx-avatars { display: inline-flex; }
-.rx-avatars i {
-  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
-  border: 2px solid var(--paper-raised); background: var(--ink); color: #fff;
-  font-style: normal; font-size: 10.5px; font-weight: 700;
-}
+.rx-avatars i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; background: var(--role); color: #fff; font-style: normal; font-size: 10.5px; font-weight: 800; }
 .rx-avatars i + i { margin-inline-start: -8px; }
-.rx-avatars i:nth-child(2) { background: #1e3a8a; }
-.rx-avatars i:nth-child(3) { background: #334155; }
+.rx-avatars i:nth-child(2) { background: #0d9488; }
+.rx-avatars i:nth-child(3) { background: #f59e0b; }
 .rx-sub { display: flex; align-items: center; gap: 10px; }
-.rx-av { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-deep); font-size: 12px; font-weight: 800; }
+.rx-av { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--role-soft); color: var(--role); font-size: 12px; font-weight: 800; }
 .rx-file { display: inline-flex; align-items: center; gap: 8px; width: max-content; padding: 6px 10px; border-radius: 9px; background: var(--paper); border: 1px solid var(--rule); font-size: 12.5px; color: var(--ink-soft); }
 .rx-file i { font-style: normal; font-size: 10px; font-weight: 800; padding: 2px 5px; border-radius: 4px; background: #fee2e2; color: #b91c1c; }
 .rx-actions { display: flex; gap: 8px; }
-.rx-health { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
-.rx-health span { display: flex; flex-direction: column; gap: 2px; padding: 12px; background: var(--paper-raised); }
-.rx-health b { font-family: var(--font-display); font-size: 22px; font-weight: 800; line-height: 1; color: var(--ink-mute); }
+.rx-health { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rx-health span { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 10px; background: var(--paper); }
+.rx-health b { font-family: var(--font-display); font-size: 24px; font-weight: 800; line-height: 1; color: var(--ink-mute); }
 .rx-health small { font-size: 11.5px; color: var(--ink-mute); }
+.rx-health .is-alert { background: #fffbeb; }
 .rx-health .is-alert b { color: #b45309; }
+/* صاحب الدور يقف عند حافة الشاشة */
+.rx-person {
+  position: absolute; z-index: 2; bottom: 22px; inset-inline-start: 14px;
+  width: 64px; height: 100px; overflow: visible;
+}
+[dir="ltr"] .rx-person { transform: scaleX(-1); }
+.rx-panel.is-in .rx-person { animation: rx-hop .7s cubic-bezier(.34, 1.56, .64, 1) both; }
+@keyframes rx-hop { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
 
-/* ما يفعله الدور */
+.rx-panel.is-in .rx-screen { animation: rx-rise .55s var(--ease-expo) both; }
+.rx-panel.is-in .rx-card + .rx-card { animation: rx-rise .55s var(--ease-expo) .1s both; }
+.rx-panel.is-in .rx-caps li { animation: rx-rise .5s var(--ease-expo) both; }
+.rx-panel.is-in .rx-caps li:nth-child(2) { animation-delay: .06s; }
+.rx-panel.is-in .rx-caps li:nth-child(3) { animation-delay: .12s; }
+.rx-panel.is-in .rx-caps li:nth-child(4) { animation-delay: .18s; }
+@keyframes rx-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* ما يفعله الدور: بطاقات بأيقونات ملوّنة خفيفة */
 .rx-info { display: flex; flex-direction: column; padding: 30px 32px; }
-.rx-title { margin: 0 0 16px; font-family: var(--font-display); font-size: 22px; font-weight: 800; }
-.rx-caps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 22px; }
-.rx-caps li { display: flex; flex-direction: column; gap: 4px; padding-inline-start: 14px; border-inline-start: 2px solid var(--rule); }
+.rx-title { margin: 0 0 18px; font-family: var(--font-display); font-size: 24px; font-weight: 800; }
+.rx-caps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.rx-caps li {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 14px; border: 1px solid var(--rule); border-radius: 14px; background: var(--paper);
+  transition: border-color .25s ease, background-color .25s ease, transform .25s var(--ease-expo);
+}
+.rx-caps li:hover { border-color: var(--role-line); background: #fff; transform: translateY(-2px); }
+.rx-cap-icon { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 6px; border-radius: 10px; background: var(--role-soft); color: var(--role); }
+.rx-cap-icon svg { width: 18px; height: 18px; }
 .rx-caps b { font-size: 14.5px; font-weight: 700; color: var(--ink); }
-.rx-caps span { font-size: 13.5px; line-height: 1.8; color: var(--ink-mute); }
+.rx-caps span:not(.rx-cap-icon) { font-size: 13px; line-height: 1.75; color: var(--ink-mute); }
 .rx-private {
-  display: flex; align-items: center; gap: 8px;
-  margin: auto 0 0; padding: 11px 14px; margin-top: 22px;
-  border-radius: 12px; background: var(--paper-sunk);
-  font-size: 13px; color: var(--ink-soft);
+  display: flex; align-items: center; gap: 8px; margin: 16px 0 0; padding: 11px 14px;
+  border-radius: 12px; background: var(--role-soft); color: var(--ink-soft); font-size: 13px;
 }
-.rx-private svg { flex: none; color: var(--ink-mute); }
+.rx-private svg { flex: none; color: var(--role); }
 
-/* كيف تتصل الأدوار */
-.rx-foot { display: flex; align-items: center; gap: 14px; padding-inline-end: 18px; border-top: 1px solid var(--rule); background: var(--paper); }
-.rx-flow {
-  list-style: none; margin: 0; padding: 18px 28px;
-  display: flex; align-items: center; gap: 10px;
-  flex: 1; min-width: 0;
+/* ---- كيف تتصل الأدوار ---- */
+.rx-foot { display: flex; align-items: center; gap: 14px; margin-top: 16px; padding: 12px 18px; border: 1px solid var(--rule); border-radius: 18px; background: var(--paper-raised); }
+.rx-flow { flex: 1; display: flex; align-items: center; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.rx-node { display: inline-flex; align-items: center; gap: 9px; flex: none; }
+.rx-node-face {
+  display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--role-soft); box-shadow: inset 0 0 0 1px var(--role-line);
+  overflow: hidden; transition: box-shadow .3s ease, transform .3s var(--ease-expo);
 }
-.rx-node { display: inline-flex; align-items: center; gap: 9px; flex: none; cursor: pointer; }
-.rx-node-icon {
-  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
-  border: 1px solid var(--rule-strong); background: var(--paper-raised); color: var(--ink-mute);
-  transition: background-color .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease;
-}
-.rx-node-icon svg { width: 16px; height: 16px; }
+.rx-node-face svg { width: 34px; height: 34px; filter: grayscale(.5); opacity: .8; transition: filter .3s ease, opacity .3s ease; }
 .rx-node b { font-size: 13.5px; font-weight: 700; color: var(--ink-mute); transition: color .25s ease; }
 .rx-node small { font-size: 12px; color: var(--ink-mute); }
-.rx-node.is-active .rx-node-icon { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 0 5px var(--accent-soft); }
+.rx-node.is-active .rx-node-face { box-shadow: inset 0 0 0 2px var(--role), 0 0 0 5px var(--role-soft); transform: scale(1.06); }
+.rx-node.is-active .rx-node-face svg { filter: none; opacity: 1; }
 .rx-node.is-active b { color: var(--ink); }
 .rx-edge { flex: 1; display: flex; align-items: center; gap: 8px; min-width: 40px; font-size: 12px; color: var(--ink-mute); white-space: nowrap; }
-.rx-edge::before, .rx-edge::after { content: ""; flex: 1; height: 1px; background: repeating-linear-gradient(90deg, var(--rule-strong) 0 5px, transparent 5px 9px); }
-
-/* ---- الجولة التلقائية ----
-   خطّ التبويب النشط شريط تقدّم يمتلئ من بداية السطر؛ اكتماله (animationend)
-   ينقل للدور التالي. الإيقاف يجمّده مكانه. */
-.rx { --rx-dur: 7s; }
-.rx.is-playing .rx-tab[aria-selected="true"]::after {
-  transform-origin: right; animation: rx-progress var(--rx-dur) linear both;
-}
-[dir="ltr"] .rx.is-playing .rx-tab[aria-selected="true"]::after { transform-origin: left; }
-.rx.is-playing.is-paused .rx-tab[aria-selected="true"]::after { animation-play-state: paused; }
-@keyframes rx-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-/* خلف الشريط أثر خافت للمسافة الباقية */
-.rx.is-playing .rx-tab[aria-selected="true"]::before {
-  content: ""; position: absolute; inset-inline: 22px; bottom: -1px; height: 2px; background: var(--accent-soft);
-}
-
-/* وصلة التسليم إلى الدور التالي: نقاطها تجري في اتجاهه */
-.rx-edge.is-flowing { color: var(--ink-soft); }
+.rx-edge::before, .rx-edge::after { content: ""; flex: 1; height: 2px; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--rule-strong) 0 5px, transparent 5px 10px); background-size: 10px 2px; }
+.rx-edge.is-flowing { color: var(--ink-soft); font-weight: 600; }
 .rx-edge.is-flowing::before, .rx-edge.is-flowing::after {
-  background: repeating-linear-gradient(90deg, var(--accent) 0 5px, transparent 5px 9px);
-  background-size: 18px 1px; animation: rx-flow 1s linear infinite;
+  background-image: repeating-linear-gradient(90deg, var(--accent) 0 5px, transparent 5px 10px);
+  animation: rx-flow .7s linear infinite;
 }
+@keyframes rx-flow { to { background-position: 10px 0; } }
 [dir="rtl"] .rx-edge.is-flowing::before, [dir="rtl"] .rx-edge.is-flowing::after { animation-direction: reverse; }
 .rx:not(.is-playing) .rx-edge.is-flowing::before, .rx:not(.is-playing) .rx-edge.is-flowing::after,
 .rx.is-paused .rx-edge.is-flowing::before, .rx.is-paused .rx-edge.is-flowing::after { animation-play-state: paused; }
-@keyframes rx-flow { to { background-position: 18px 0; } }
 
-/* زرّ الجولة */
 .rx-tour {
-  flex: none; display: inline-flex; align-items: center; gap: 7px;
-  padding: 7px 13px; border: 1px solid var(--rule-strong); border-radius: 999px;
-  background: var(--paper-raised); color: var(--ink-soft); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;
+  flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px;
+  border: 1px solid var(--rule); border-radius: 99px; background: #fff;
+  font: inherit; font-size: 12.5px; font-weight: 700; color: var(--ink-soft); cursor: pointer;
   transition: border-color .2s ease, color .2s ease, background-color .2s ease;
 }
 .rx-tour[hidden] { display: none; }
@@ -2091,31 +2123,34 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
 .rx-tour .rx-tour-play { display: none; }
 .rx-tour.is-off .rx-tour-play { display: block; }
 .rx-tour.is-off .rx-tour-pause { display: none; }
-.rx-tour.is-off { border-color: var(--accent); background: var(--accent); color: #fff; }
+.rx-tour.is-off { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 
 @media (max-width: 980px) {
   .rx-panel { grid-template-columns: 1fr; }
-  .rx-scene { border-inline-end: 0; border-bottom: 1px solid var(--rule); padding: 24px; }
+  .rx-scene { border-inline-end: 0; border-bottom: 1px solid var(--rule); }
 }
 @media (max-width: 640px) {
-  .rx-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .rx-tab { flex-direction: column; justify-content: center; gap: 6px; padding: 14px 8px; text-align: center; }
-  .rx-tab-text small { display: none; }
+  .rx-tabs { gap: 8px; }
+  .rx-tab { flex-direction: column; justify-content: center; gap: 8px; padding: 12px 6px 14px; text-align: center; border-radius: 16px; }
+  .rx-tab-art { width: 52px; height: 52px; border-radius: 14px; }
+  .rx-tab-art svg { width: 38px; height: 60px; }
+  .rx-tab-text small, .rx-tab-num { display: none; }
   .rx-tab-text b { font-size: 14px; }
-  .rx-tab-icon { width: 36px; height: 36px; }
-  .rx-info { padding: 22px; }
-  .rx-caps { grid-template-columns: 1fr; gap: 14px; }
-  .rx-flow { flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px 22px; }
-  .rx-foot { flex-direction: column; align-items: stretch; gap: 0; padding: 0 22px 16px; }
-  .rx-foot .rx-flow { padding-inline: 0; }
+  .rx-scene, [dir="rtl"] .rx-scene { padding: 22px 18px 22px 18px; }
+  .rx-person { display: none; }
+  .rx-info { padding: 22px 18px; }
+  .rx-caps { grid-template-columns: 1fr; gap: 10px; }
+  .rx-foot { flex-direction: column; align-items: stretch; gap: 10px; padding: 14px 16px; }
+  .rx-flow { flex-direction: column; align-items: flex-start; gap: 6px; }
   .rx-tour { align-self: flex-start; }
-  .rx-edge { padding-inline-start: 16px; min-height: 26px; }
+  .rx-edge { padding-inline-start: 17px; min-height: 24px; }
   .rx-edge::before { display: none; }
-  .rx-edge::after { flex: none; order: -1; width: 1px; height: 22px; background: repeating-linear-gradient(180deg, var(--rule-strong) 0 4px, transparent 4px 7px); }
+  .rx-edge::after { flex: none; order: -1; width: 2px; height: 20px; background: repeating-linear-gradient(180deg, var(--rule-strong) 0 4px, transparent 4px 7px); animation: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .rx-panel.is-in .rx-scene > *, .rx-panel.is-in .rx-caps li { animation: none; }
-  .rx-tab::after { transition: none; }
+  .rx-panel.is-in .rx-screen, .rx-panel.is-in .rx-card + .rx-card, .rx-panel.is-in .rx-caps li,
+  .rx-panel.is-in .rx-person, .rx-panel.is-in .rx-progress i, .rx-task-dot { animation: none; }
+  .rx-tab, .rx-tab::after, .rx-tab-art svg { transition: none; }
   .rx-edge.is-flowing::before, .rx-edge.is-flowing::after { animation: none; }
 }
 
@@ -3270,11 +3305,6 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
 /* ==========================================================
    شخصيات في الأقسام الباقية
    ========================================================== */
-/* الأدوار (05): صاحب الدور في مشهده */
-.rx-scene { position: relative; padding-bottom: 120px; }
-.rx-person { position: absolute; z-index: 2; bottom: 10px; inset-inline-end: 18px; width: 64px; height: 102px; overflow: visible; animation: hj-bob 1.8s ease-in-out infinite alternate; }
-[dir="rtl"] .rx-person { transform: scaleX(-1); }
-.rx-panel.is-in .rx-person { animation: sx-pop .6s cubic-bezier(.34, 1.56, .64, 1) both, hj-bob 1.8s ease-in-out .6s infinite alternate; }
 
 /* عن المنصة (01): الأدوار الثلاثة فوق اللوحة */
 .about-panel { position: relative; overflow: visible; margin-top: 86px; }
@@ -3308,6 +3338,6 @@ html.no-entrance .bento-tile { opacity: 1; animation: none; }
 @media (prefers-reduced-motion: reduce) {
   .pz-track { animation: none; }
   .pz-wrap { overflow-x: auto; }
-  .pz-cap, .rx-person, .fq-person i, .ct-bubble, .ab-crowd use { animation: none !important; }
+  .pz-cap, .fq-person i, .ct-bubble, .ab-crowd use { animation: none !important; }
   .ds-fill, .ds-walker, .ds-items li { transition: none; }
 }

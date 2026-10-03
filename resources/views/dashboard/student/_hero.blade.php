@@ -98,21 +98,52 @@
         </div>
     </div>
 
-    {{-- المسار مضغوطاً: كان لوحاً كاملاً بعرض الصفحة --}}
-    <ol class="hero-rail" aria-label="{{ __('مسار المشروع') }}">
-        @foreach ($steps as $i => $step)
-            @php $n = $i + 1; @endphp
-            <li class="{{ $n < $reached ? 'is-done' : ($n === $reached ? 'is-current' : '') }}"
-                @if ($n === $reached) aria-current="step" @endif>
-                <span class="hero-rail-node" aria-hidden="true">
-                    @if ($n < $reached)
-                        <i class="ti ti-check"></i>
-                    @endif
+    {{-- المسار مضغوطاً، وعليه «رحلة المشروع» كما في الصفحة الرئيسية: فريقك
+         واقف عند خطوتك الحالية، والمشرف عند موافقته، واللجنة عند المناقشة،
+         والقبعة عند الدرجة. حين تتقدّم خطوة يمشي الفريق إليها (journey-rail في
+         public/js/dialog.js يحفظ آخر خطوة رآها). بعد الدرجة يرمي قبعاته. --}}
+    @php
+        $railAt = min($reached, count($steps)) - 1; // موضع الفريق (من صفر)
+        $graduated = $reached > count($steps);
+        $cast = $members->take(3)->values()->map(fn ($m, $i) => $m->student?->gender === 'female'
+            ? 'hj-girl' : ($i % 2 ? 'hj-boy2' : 'hj-boy'));
+    @endphp
+    <div class="hero-journey" style="--n: {{ count($steps) }}" data-journey-rail
+        data-journey-key="journey:{{ $project->id }}" data-journey-at="{{ $railAt }}">
+        @if ($railAt >= 0)
+            <div class="rail-cast" aria-hidden="true">
+                <svg class="rail-actor is-supervisor" style="--i: 1" viewBox="-30 -98 60 102"><use href="#hj-supervisor" /></svg>
+                <svg class="rail-actor is-committee" style="--i: 3" viewBox="-44 -70 88 74"><use href="#hj-committee" /></svg>
+                @unless ($railAt === count($steps) - 1)
+                    <svg class="rail-actor is-cap" style="--i: {{ count($steps) - 1 }}" viewBox="-18 -12 36 26"><use href="#hj-cap" /></svg>
+                @endunless
+                {{-- عند المشرف أو اللجنة يقف الفريق قبل الخطوة، وهما بعدها --}}
+                <span class="rail-team {{ $graduated ? 'is-graduated' : '' }} {{ in_array($railAt, [1, 3], true) ? 'is-meeting' : '' }}" style="--i: {{ $railAt }}">
+                    @foreach ($cast as $who)
+                        <svg class="rail-member" viewBox="-30 -104 60 108">
+                            <use href="#{{ $who }}" />
+                            @if ($graduated)<use href="#hj-cap" class="rail-member-cap" y="{{ $who === 'hj-girl' ? -70 : -73 }}" />@endif
+                        </svg>
+                    @endforeach
                 </span>
-                <span class="hero-rail-label">{{ $step['label'] }}</span>
-            </li>
-        @endforeach
-    </ol>
+            </div>
+        @endif
+
+        <ol class="hero-rail" aria-label="{{ __('مسار المشروع') }}">
+            @foreach ($steps as $i => $step)
+                @php $n = $i + 1; @endphp
+                <li class="{{ $n < $reached ? 'is-done' : ($n === $reached ? 'is-current' : '') }}"
+                    @if ($n === $reached) aria-current="step" @endif>
+                    <span class="hero-rail-node" aria-hidden="true">
+                        @if ($n < $reached)
+                            <i class="ti ti-check"></i>
+                        @endif
+                    </span>
+                    <span class="hero-rail-label">{{ $step['label'] }}</span>
+                </li>
+            @endforeach
+        </ol>
+    </div>
 
     <div class="stu-hero-foot">
         <span class="hero-chip {{ $deadline[0] }}">
@@ -153,3 +184,34 @@
         </div>
     </div>
 </section>
+
+{{-- يمشي الفريق من آخر خطوة رآها الطالب إلى خطوته الآن — مرة عند كل تقدّم،
+     لا في كل زيارة. أول زيارة: من البداية. --}}
+@push('js')
+    <script>
+        (function () {
+            var rail = document.querySelector('[data-journey-rail]');
+            var team = rail && rail.querySelector('.rail-team');
+            if (!team) return;
+            var at = parseInt(rail.dataset.journeyAt, 10), seen = null;
+            try { seen = localStorage.getItem(rail.dataset.journeyKey); localStorage.setItem(rail.dataset.journeyKey, at); } catch (e) {}
+            var from = seen === null ? 0 : Math.min(parseInt(seen, 10) || 0, at);
+            if (from === at || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            var legs = document.querySelector('.cast-defs');
+            team.style.transition = 'none';
+            team.style.setProperty('--i', from);
+            void team.offsetWidth;
+            team.style.transition = '';
+            team.style.transitionDuration = Math.min(3.2, .9 * (at - from) + .4) + 's';
+            setTimeout(function () {
+                team.classList.add('is-walking');
+                if (legs) legs.classList.add('is-walking');
+                team.style.setProperty('--i', at);
+            }, 600);
+            team.addEventListener('transitionend', function () {
+                team.classList.remove('is-walking');
+                if (legs) legs.classList.remove('is-walking');
+            }, { once: true });
+        })();
+    </script>
+@endpush

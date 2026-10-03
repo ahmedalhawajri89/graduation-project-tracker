@@ -196,98 +196,7 @@
                         <stop offset="1" stop-color="#2563eb" stop-opacity="0" />
                     </radialGradient>
 
-                    {{-- ===== الشخصيات: القدمان عند (0,0) والجسم إلى الأعلى ===== --}}
-                    {{-- طالب بقميص أزرق وحاسوب --}}
-                    <g id="hj-boy">
-                        <ellipse cx="0" cy="1" rx="13" ry="3" fill="#0f172a" opacity=".12" />
-                        <rect class="hj-leg is-a" x="-7" y="-26" width="6" height="26" rx="3" fill="#1e293b" />
-                        <rect class="hj-leg is-b" x="1" y="-26" width="6" height="26" rx="3" fill="#334155" />
-                        <rect x="-11" y="-53" width="22" height="31" rx="9" fill="#2563eb" />
-                        <rect class="hj-arm" x="-15" y="-50" width="6" height="21" rx="3" fill="#1d4ed8" />
-                        <rect x="6" y="-46" width="14" height="17" rx="2" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" />
-                        <circle cx="13" cy="-37.5" r="2" fill="#93c5fd" />
-                        <circle cx="0" cy="-63" r="10" fill="#f1c7a3" />
-                        <path d="M-10.5 -63 a10.5 10.5 0 0 1 21 0 q-3 -4 -8 -3.5 q-6 .5 -13 3.5z" fill="#1f2937" />
-                        <circle cx="4" cy="-63" r="1.3" fill="#1f2937" />
-                    </g>
-                    {{-- طالبة بحجاب بنفسجي ودفتر --}}
-                    <g id="hj-girl">
-                        <ellipse cx="0" cy="1" rx="13" ry="3" fill="#0f172a" opacity=".12" />
-                        <rect class="hj-leg is-a" x="-7" y="-22" width="6" height="22" rx="3" fill="#475569" />
-                        <rect class="hj-leg is-b" x="1" y="-22" width="6" height="22" rx="3" fill="#64748b" />
-                        <path d="M-13 -20 q0 -32 13 -34 q13 2 13 34z" fill="#0d9488" />
-                        <rect class="hj-arm" x="-15" y="-48" width="6" height="20" rx="3" fill="#0f766e" />
-                        <rect x="7" y="-44" width="11" height="14" rx="2" fill="#fde68a" stroke="#d97706" stroke-width="1" />
-                        <path d="M-12 -60 a12 12 0 0 1 24 0 v6 q-12 8 -24 0z" fill="#7c3aed" />
-                        <circle cx="1.5" cy="-61" r="7.5" fill="#f1c7a3" />
-                        <path d="M-12 -62 a12 12.5 0 0 1 24 0 q-4 -6 -12 -6.5 q-8 .5 -12 6.5z" fill="#7c3aed" />
-                        <circle cx="5" cy="-61" r="1.2" fill="#1f2937" />
-                    </g>
-                    {{-- طالب بشعر مجعّد وحقيبة ظهر --}}
-                    <g id="hj-boy2">
-                        <ellipse cx="0" cy="1" rx="13" ry="3" fill="#0f172a" opacity=".12" />
-                        <rect class="hj-leg is-a" x="-7" y="-26" width="6" height="26" rx="3" fill="#0f172a" />
-                        <rect class="hj-leg is-b" x="1" y="-26" width="6" height="26" rx="3" fill="#1e293b" />
-                        <rect x="-17" y="-50" width="9" height="20" rx="3" fill="#b45309" />
-                        <rect x="-11" y="-53" width="22" height="31" rx="9" fill="#f59e0b" />
-                        <rect class="hj-arm" x="7" y="-50" width="6" height="21" rx="3" fill="#d97706" />
-                        <circle cx="0" cy="-63" r="10" fill="#c99a76" />
-                        <circle cx="-6" cy="-70" r="4.5" fill="#111827" /><circle cx="0" cy="-73" r="5" fill="#111827" />
-                        <circle cx="6" cy="-70" r="4.5" fill="#111827" /><circle cx="-9" cy="-64" r="3.5" fill="#111827" />
-                        <circle cx="4" cy="-63" r="1.3" fill="#1f2937" />
-                    </g>
-                    {{-- المشرف: سترة كحلية ونظّارة ولوح ملاحظات --}}
-                    <g id="hj-supervisor">
-                        <ellipse cx="0" cy="1" rx="15" ry="3.5" fill="#0f172a" opacity=".12" />
-                        <rect x="-8" y="-30" width="7" height="30" rx="3" fill="#1e293b" />
-                        <rect x="1" y="-30" width="7" height="30" rx="3" fill="#1e293b" />
-                        <rect x="-13" y="-62" width="26" height="36" rx="10" fill="#1e3a8a" />
-                        <path d="M-4 -62 l4 12 l4 -12z" fill="#fff" />
-                        <rect x="-17" y="-58" width="6" height="24" rx="3" fill="#1e3a8a" />
-                        <g class="hj-wave"><rect x="11" y="-60" width="6" height="22" rx="3" fill="#1e3a8a" /></g>
-                        <rect x="12" y="-46" width="14" height="18" rx="2" fill="#fff" stroke="#cbd5e1" stroke-width="1.2" />
-                        <path d="M15 -41h8M15 -37h8M15 -33h5" stroke="#94a3b8" stroke-width="1.2" />
-                        <circle cx="0" cy="-73" r="11" fill="#e0b58f" />
-                        <path d="M-11 -75 a11 11 0 0 1 22 0 q-5 -3 -11 -3 q-6 0 -11 3z" fill="#6b7280" />
-                        <path d="M-8 -68 q8 9 16 0 v3 q-8 9 -16 0z" fill="#6b7280" />
-                        <circle cx="-3.5" cy="-74" r="3" fill="none" stroke="#111827" stroke-width="1.2" />
-                        <circle cx="4.5" cy="-74" r="3" fill="none" stroke="#111827" stroke-width="1.2" />
-                    </g>
-                    {{-- مسؤول القسم: قميص بنفسجي وبطاقة معلّقة ولوح بيده --}}
-                    <g id="hj-admin">
-                        <ellipse cx="0" cy="1" rx="15" ry="3.5" fill="#0f172a" opacity=".12" />
-                        <rect class="hj-leg is-a" x="-8" y="-29" width="7" height="29" rx="3" fill="#312e81" />
-                        <rect class="hj-leg is-b" x="1" y="-29" width="7" height="29" rx="3" fill="#3730a3" />
-                        <rect x="-13" y="-60" width="26" height="35" rx="10" fill="#7c3aed" />
-                        <path d="M-5 -60 l5 9 l5 -9z" fill="#ede9fe" />
-                        <path d="M-5 -59 L0 -44 L5 -59" fill="none" stroke="#facc15" stroke-width="1.6" />
-                        <rect x="-3" y="-45" width="6" height="7" rx="1.5" fill="#fff" stroke="#facc15" stroke-width="1" />
-                        <rect class="hj-arm" x="-17" y="-57" width="6" height="22" rx="3" fill="#6d28d9" />
-                        <rect x="11" y="-56" width="6" height="16" rx="3" fill="#6d28d9" />
-                        <rect x="10" y="-45" width="17" height="13" rx="2" fill="#1e293b" />
-                        <rect x="12" y="-43" width="13" height="9" rx="1" fill="#60a5fa" />
-                        <circle cx="0" cy="-71" r="10.5" fill="#d9a77e" />
-                        <path d="M-10.5 -72 a10.5 10.5 0 0 1 21 0 q-2 -6 -10.5 -6 q-8.5 0 -10.5 6z" fill="#3f2a1d" />
-                        <circle cx="4" cy="-71" r="1.3" fill="#1f2937" />
-                        <path d="M1 -66 q3 2 6 0" fill="none" stroke="#7c2d12" stroke-width="1.2" stroke-linecap="round" />
-                    </g>
-                    {{-- لجنة المناقشة: عضوان خلف طاولة --}}
-                    <g id="hj-committee">
-                        <ellipse cx="0" cy="1" rx="40" ry="4" fill="#0f172a" opacity=".12" />
-                        <circle cx="-17" cy="-52" r="9" fill="#e0b58f" /><path d="M-26 -53 a9 9 0 0 1 18 0 q-9 -4 -18 0z" fill="#374151" />
-                        <rect x="-28" y="-43" width="22" height="22" rx="8" fill="#334155" />
-                        <circle cx="17" cy="-52" r="9" fill="#f1c7a3" /><path d="M7 -55 a10 10 0 0 1 20 0 v6 q-10 6 -20 0z" fill="#be185d" />
-                        <rect x="6" y="-43" width="22" height="22" rx="8" fill="#9d174d" />
-                        <rect x="-38" y="-26" width="76" height="26" rx="4" fill="#e2e8f0" stroke="#cbd5e1" />
-                        <rect x="-14" y="-21" width="28" height="9" rx="2" fill="#2563eb" opacity=".85" />
-                    </g>
-                    {{-- قبعة تخرّج --}}
-                    <g id="hj-cap">
-                        <path d="M0 -8 L16 0 L0 8 L-16 0z" fill="#111827" />
-                        <rect x="-8" y="2" width="16" height="6" rx="2" fill="#1f2937" />
-                        <path d="M10 1 v9" stroke="#f59e0b" stroke-width="1.6" stroke-linecap="round" />
-                        <circle cx="10" cy="11" r="1.8" fill="#f59e0b" />
-                    </g>
+                    @include('partials.cast')
                 </defs>
 
                 {{-- العالم كلّه يُرسم يساراً→يميناً، ويُعكس في العربية فيمشي الفريق من اليمين --}}
@@ -782,190 +691,157 @@
                     </div>
                 </div>
 
-                {{-- مستكشف الأدوار: تبويب لكل دور، ولوحة بمشهد من شاشته الحقيقية وما يفعله
-                     وما لا يراه، وتحتها خطّ يربط الأدوار بما ينتقل بينها. كانت ثلاث بطاقات
-                     متطابقة بثلاثة أسطر لكلٍّ — قائمة ميزات لا تجربة مختلفة لكل دور.
-                     بلا JavaScript تظهر اللوحات الثلاث متتالية (premium.js › initRoles) --}}
+                {{-- مستكشف الأدوار بروح الهيرو: كل دور بطاقة بشخصيته (الطالبة، المشرف،
+                     المسؤول) في هالة بلون الدور، ولوحة فيها نموذج من شاشته وما يفعله
+                     وما لا يراه، وتحتها خطّ يربط الأدوار بما ينتقل بينها.
+                     الجولة التلقائية والتبديل في premium.js › initRoles (الخطافات نفسها:
+                     role=tab و data-role و data-panel و data-node و data-edge).
+                     بلا JavaScript تظهر اللوحات الثلاث متتالية. --}}
+                @php
+                    $rxIcon = fn ($d) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' . $d . '"/></svg>';
+                    $rxRoles = [
+                        'student' => ['hj-girl', 'roles.student.name', 'الطالب', 'roles.student.role', 'الفريق والتسليم والنقاش', 'roles.screen.s', 'لوحة الطالب'],
+                        'supervisor' => ['hj-supervisor', 'roles.supervisor.name', 'المشرف', 'roles.supervisor.role', 'التخطيط والمراجعة والتقييم', 'roles.screen.v', 'لوحة المشرف'],
+                        'admin' => ['hj-admin', 'roles.admin.name', 'الإدارة', 'roles.admin.role', 'ضبط النظام وتنظيم الفصل', 'roles.screen.a', 'لوحة الإدارة'],
+                    ];
+                    $rxCaps = [
+                        'student' => [
+                            ['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75', 'c1', 'تكوين الفريق', 'زملاؤك من تخصصك، ومشرف لديه مقاعد متاحة'],
+                            ['M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12', 'c2', 'تسليم المراحل', 'ملف وملاحظة لكل مرحلة، وإعادة بعد التعديل'],
+                            ['M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z', 'c3', 'نقاش الفريق', 'قناة خاصة بالفريق، و@ لتنبيه زميل بعينه'],
+                            ['M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0', 'c4', 'الأدوار والتذكير', 'يوزّع القائد المسؤوليات، ويصل تذكير قبل كل موعد'],
+                        ],
+                        'supervisor' => [
+                            ['M22 12h-6l-2 3h-4l-2-3H2M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z', 'c1', 'قبول الطلبات', 'حسب مقاعده، مع تنبيه للفكرة المشابهة'],
+                            ['M3 4h18v18H3zM16 2v4M8 2v4M3 10h18', 'c2', 'خطة المراحل', 'مواعيد وقوالب تصل كل مجموعاته مرّة واحدة'],
+                            ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M9 15l2 2 4-4', 'c3', 'المراجعة', 'اعتماد، أو «مطلوب تعديل» بسبب مكتوب'],
+                            ['M12 15a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM8.21 13.89 7 23l5-3 5 3-1.21-9.12', 'c4', 'الدرجة', 'رصد بالتقدير والملاحظات، ثم اعتماد يقفلها'],
+                        ],
+                        'admin' => [
+                            ['m12 2 10 5-10 5L2 7zM2 17l10 5 10-5M2 12l10 5 10-5', 'c1', 'إعداد الفصل', 'التخصصات وأنواع المشاريع وحدود الفرق والفصول'],
+                            ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h8M10 9H8', 'c2', 'الحسابات', 'استيراد الطلاب والمشرفين من Excel دفعة واحدة'],
+                            ['M22 12h-4l-3 9L9 3l-3 9H2', 'c3', 'متابعة الفرق', 'المتأخّر والمتوقّف وما ينتظر المشرف، بنقرة'],
+                            ['M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4', 'c4', 'سجلّ التدقيق', 'كل قرار مسجّل، وفتح الدرجة المعتمدة بسبب مكتوب'],
+                        ],
+                    ];
+                    $rxPrivate = [
+                        'student' => 'نقاش الفريق الخاص لا يصل المشرف ولا الإدارة',
+                        'supervisor' => 'يرى مجموعاته وحدها — ونقاش الفريق الخاص يبقى للفريق',
+                        'admin' => 'ترى كل شيء إلا نقاش الفرق الخاص — وكل قرار لها في السجلّ',
+                    ];
+                @endphp
                 <div class="rx reveal" data-role-explorer>
                     <div class="rx-tabs" role="tablist" aria-label="أدوار المنصة" data-i18n-aria="roles.kicker">
-                        <button type="button" role="tab" class="rx-tab" id="rx-tab-student" aria-controls="rx-panel-student"
-                            aria-selected="true" data-role="student">
-                            <span class="rx-tab-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
-                            <span class="rx-tab-text">
-                                <b data-i18n="roles.student.name">الطالب</b>
-                                <small data-i18n="roles.student.role">الفريق والتسليم والنقاش</small>
-                            </span>
-                        </button>
-                        <button type="button" role="tab" class="rx-tab" id="rx-tab-supervisor" aria-controls="rx-panel-supervisor"
-                            aria-selected="false" data-role="supervisor">
-                            <span class="rx-tab-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span>
-                            <span class="rx-tab-text">
-                                <b data-i18n="roles.supervisor.name">المشرف</b>
-                                <small data-i18n="roles.supervisor.role">التخطيط والمراجعة والتقييم</small>
-                            </span>
-                        </button>
-                        <button type="button" role="tab" class="rx-tab" id="rx-tab-admin" aria-controls="rx-panel-admin"
-                            aria-selected="false" data-role="admin">
-                            <span class="rx-tab-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" y1="4" x2="14" y2="4"/><line x1="10" y1="4" x2="3" y2="4"/><line x1="21" y1="12" x2="12" y2="12"/><line x1="8" y1="12" x2="3" y2="12"/><line x1="21" y1="20" x2="16" y2="20"/><line x1="12" y1="20" x2="3" y2="20"/><line x1="14" y1="2" x2="14" y2="6"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="22"/></svg></span>
-                            <span class="rx-tab-text">
-                                <b data-i18n="roles.admin.name">الإدارة</b>
-                                <small data-i18n="roles.admin.role">ضبط النظام وتنظيم الفصل</small>
-                            </span>
-                        </button>
+                        @foreach ($rxRoles as $role => [$who, $nk, $name, $rk, $roleText])
+                            <button type="button" role="tab" class="rx-tab is-{{ $role }}" id="rx-tab-{{ $role }}" aria-controls="rx-panel-{{ $role }}"
+                                aria-selected="{{ $loop->first ? 'true' : 'false' }}" data-role="{{ $role }}">
+                                <span class="rx-tab-art" aria-hidden="true"><svg viewBox="-34 -100 68 106"><use href="#{{ $who }}" /></svg></span>
+                                <span class="rx-tab-text">
+                                    <b data-i18n="{{ $nk }}">{{ $name }}</b>
+                                    <small data-i18n="{{ $rk }}">{{ $roleText }}</small>
+                                </span>
+                                <span class="rx-tab-num" aria-hidden="true">0{{ $loop->iteration }}</span>
+                            </button>
+                        @endforeach
                     </div>
 
-                    <section class="rx-panel" id="rx-panel-student" role="tabpanel" aria-labelledby="rx-tab-student" data-panel="student">
-                        <div class="rx-scene" aria-hidden="true">
-                            <svg class="rx-person" viewBox="-32 -98 64 102"><use href="#hj-girl" /></svg>
-                            <div class="rx-card">
-                                <span class="rx-card-label" data-i18n="roles.scene.s.now">ماذا عليّ الآن</span>
-                                <div class="rx-task">
-                                    <span class="rx-task-dot is-warn" aria-hidden="true"></span>
-                                    <span>
-                                        <b data-i18n="roles.scene.s.stage">الفصل الثالث — التحليل</b>
-                                        <small data-i18n="roles.scene.s.due">آخر موعد بعد يومين</small>
-                                    </span>
-                                    <span class="rx-btn is-primary" data-i18n="roles.scene.s.submit">تسليم المرحلة</span>
+                    @foreach ($rxRoles as $role => [$who, $nk, $name, $rk, $roleText, $sk, $screen])
+                        <section class="rx-panel is-{{ $role }}" id="rx-panel-{{ $role }}" role="tabpanel" aria-labelledby="rx-tab-{{ $role }}" data-panel="{{ $role }}">
+                            {{-- نموذج من شاشة الدور الحقيقية --}}
+                            <div class="rx-scene" aria-hidden="true">
+                                <div class="rx-screen">
+                                    <div class="rx-screen-bar"><i></i><i></i><i></i><span data-i18n="{{ $sk }}">{{ $screen }}</span></div>
+                                    <div class="rx-screen-body">
+                                        @if ($role === 'student')
+                                            <div class="rx-card">
+                                                <span class="rx-card-label" data-i18n="roles.scene.s.now">ماذا عليّ الآن</span>
+                                                <div class="rx-task">
+                                                    <span class="rx-task-dot is-warn" aria-hidden="true"></span>
+                                                    <span>
+                                                        <b data-i18n="roles.scene.s.stage">الفصل الثالث — التحليل</b>
+                                                        <small data-i18n="roles.scene.s.due">آخر موعد بعد يومين</small>
+                                                    </span>
+                                                    <span class="rx-btn is-primary" data-i18n="roles.scene.s.submit">تسليم المرحلة</span>
+                                                </div>
+                                            </div>
+                                            <div class="rx-card">
+                                                <div class="rx-progress-head">
+                                                    <span data-i18n="roles.scene.s.progress">إنجاز المشروع</span>
+                                                    <b dir="ltr">3 / 5</b>
+                                                </div>
+                                                <span class="rx-progress" aria-hidden="true"><i style="--w: 60%"></i></span>
+                                                <div class="rx-avatars" aria-hidden="true"><i>سا</i><i>نب</i><i>يو</i></div>
+                                            </div>
+                                        @elseif ($role === 'supervisor')
+                                            <div class="rx-card">
+                                                <span class="rx-card-label" data-i18n="roles.scene.v.review">بانتظار مراجعتك</span>
+                                                <div class="rx-sub">
+                                                    <span class="rx-av" aria-hidden="true">تن</span>
+                                                    <span>
+                                                        <b data-i18n="roles.scene.v.team">فريق «التنبؤ بالتسرب»</b>
+                                                        <small data-i18n="roles.scene.v.round">الفصل الثالث · الجولة 2</small>
+                                                    </span>
+                                                </div>
+                                                <span class="rx-file"><i aria-hidden="true">PDF</i> <span dir="ltr">chapter-3.pdf</span></span>
+                                                <div class="rx-actions">
+                                                    <span class="rx-btn is-ok" data-i18n="roles.scene.v.approve">اعتماد</span>
+                                                    <span class="rx-btn is-warn" data-i18n="roles.scene.v.revise">مطلوب تعديل</span>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="rx-card">
+                                                <span class="rx-card-label" data-i18n="roles.scene.a.health">متابعة الفرق</span>
+                                                <div class="rx-health">
+                                                    <span class="is-alert"><b>3</b><small data-i18n="roles.scene.a.late">مرحلة فات موعدها</small></span>
+                                                    <span><b>0</b><small data-i18n="roles.scene.a.review">تسليم ينتظر المشرف</small></span>
+                                                    <span class="is-alert"><b>2</b><small data-i18n="roles.scene.a.idle">فريق متوقّف</small></span>
+                                                    <span><b>0</b><small data-i18n="roles.scene.a.roles">فريق بلا أدوار</small></span>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
+                                <svg class="rx-person" viewBox="-34 -100 68 106"><use href="#{{ $who }}" /></svg>
                             </div>
-                            <div class="rx-card">
-                                <div class="rx-progress-head">
-                                    <span data-i18n="roles.scene.s.progress">إنجاز المشروع</span>
-                                    <b dir="ltr">3 / 5</b>
-                                </div>
-                                <span class="rx-progress" aria-hidden="true"><i style="width: 60%"></i></span>
-                                <div class="rx-avatars" aria-hidden="true"><i>سا</i><i>نب</i><i>يو</i></div>
-                            </div>
-                        </div>
-                        <div class="rx-info">
-                            <h3 class="rx-title"><span data-i18n="roles.student.name">الطالب</span></h3>
-                            <ul class="rx-caps">
-                                <li>
-                                    <b data-i18n="roles.student.c1.t">تكوين الفريق</b>
-                                    <span data-i18n="roles.student.c1.d">زملاؤك من تخصصك، ومشرف لديه مقاعد متاحة</span>
-                                </li>
-                                <li>
-                                    <b data-i18n="roles.student.c2.t">تسليم المراحل</b>
-                                    <span data-i18n="roles.student.c2.d">ملف وملاحظة لكل مرحلة، وإعادة بعد التعديل</span>
-                                </li>
-                                <li>
-                                    <b data-i18n="roles.student.c3.t">نقاش الفريق</b>
-                                    <span data-i18n="roles.student.c3.d">قناة خاصة بالفريق، و@ لتنبيه زميل بعينه</span>
-                                </li>
-                                <li>
-                                    <b data-i18n="roles.student.c4.t">الأدوار والتذكير</b>
-                                    <span data-i18n="roles.student.c4.d">يوزّع القائد المسؤوليات، ويصل تذكير قبل كل موعد</span>
-                                </li>
-                            </ul>
-                            <p class="rx-private"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="roles.student.private">نقاش الفريق الخاص لا يصل المشرف ولا الإدارة</span></p>
-                        </div>
-                    </section>
 
-                    <section class="rx-panel" id="rx-panel-supervisor" role="tabpanel" aria-labelledby="rx-tab-supervisor" data-panel="supervisor">
-                        <div class="rx-scene" aria-hidden="true">
-                            <svg class="rx-person" viewBox="-32 -98 64 102"><use href="#hj-supervisor" /></svg>
-                            <div class="rx-card">
-                                <span class="rx-card-label" data-i18n="roles.scene.v.review">بانتظار مراجعتك</span>
-                                <div class="rx-sub">
-                                    <span class="rx-av" aria-hidden="true">تن</span>
-                                    <span>
-                                        <b data-i18n="roles.scene.v.team">فريق «التنبؤ بالتسرب»</b>
-                                        <small data-i18n="roles.scene.v.round">الفصل الثالث · الجولة 2</small>
-                                    </span>
-                                </div>
-                                <span class="rx-file"><i aria-hidden="true">PDF</i> <span dir="ltr">chapter-3.pdf</span></span>
-                                <div class="rx-actions">
-                                    <span class="rx-btn is-ok" data-i18n="roles.scene.v.approve">اعتماد</span>
-                                    <span class="rx-btn is-warn" data-i18n="roles.scene.v.revise">مطلوب تعديل</span>
-                                </div>
+                            <div class="rx-info">
+                                <h3 class="rx-title"><span data-i18n="{{ $nk }}">{{ $name }}</span></h3>
+                                <ul class="rx-caps">
+                                    @foreach ($rxCaps[$role] as [$icon, $ck, $ct, $cd])
+                                        <li>
+                                            <span class="rx-cap-icon" aria-hidden="true">{!! $rxIcon($icon) !!}</span>
+                                            <b data-i18n="roles.{{ $role }}.{{ $ck }}.t">{{ $ct }}</b>
+                                            <span data-i18n="roles.{{ $role }}.{{ $ck }}.d">{{ $cd }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                                <p class="rx-private"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="roles.{{ $role }}.private">{{ $rxPrivate[$role] }}</span></p>
                             </div>
-                        </div>
-                        <div class="rx-info">
-                            <h3 class="rx-title"><span data-i18n="roles.supervisor.name">المشرف</span></h3>
-                            <ul class="rx-caps">
-                                <li>
-                                    <b data-i18n="roles.supervisor.c1.t">قبول الطلبات</b>
-                                    <span data-i18n="roles.supervisor.c1.d">حسب مقاعده، مع تنبيه للفكرة المشابهة</span>
-                                </li>
-                                <li>
-                                    <b data-i18n="roles.supervisor.c2.t">خطة المراحل</b>
-                                    <span data-i18n="roles.supervisor.c2.d">مواعيد وقوالب تصل كل مجموعاته مرّة واحدة</span>
-                                </li>
-                                <li>
-                                    <b data-i18n="roles.supervisor.c3.t">المراجعة</b>
-                                    <span data-i18n="roles.supervisor.c3.d">اعتماد، أو «مطلوب تعديل» بسبب مكتوب</span>
-                                </li>
-                                <li>
-                                    <b data-i18n="roles.supervisor.c4.t">الدرجة</b>
-                                    <span data-i18n="roles.supervisor.c4.d">رصد بالتقدير والملاحظات، ثم اعتماد يقفلها</span>
-                                </li>
-                            </ul>
-                            <p class="rx-private"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="roles.supervisor.private">يرى مجموعاته وحدها — ونقاش الفريق الخاص يبقى للفريق</span></p>
-                        </div>
-                    </section>
-
-                    <section class="rx-panel" id="rx-panel-admin" role="tabpanel" aria-labelledby="rx-tab-admin" data-panel="admin">
-                        <div class="rx-scene" aria-hidden="true">
-                            <svg class="rx-person" viewBox="-32 -98 64 102"><use href="#hj-admin" /></svg>
-                            <div class="rx-card">
-                                <span class="rx-card-label" data-i18n="roles.scene.a.health">متابعة الفرق</span>
-                                <div class="rx-health">
-                                    <span class="is-alert"><b>3</b><small data-i18n="roles.scene.a.late">مرحلة فات موعدها</small></span>
-                                    <span><b>0</b><small data-i18n="roles.scene.a.review">تسليم ينتظر المشرف</small></span>
-                                    <span class="is-alert"><b>2</b><small data-i18n="roles.scene.a.idle">فريق متوقّف</small></span>
-                                    <span><b>0</b><small data-i18n="roles.scene.a.roles">فريق بلا أدوار</small></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="rx-info">
-                            <h3 class="rx-title"><span data-i18n="roles.admin.name">الإدارة</span></h3>
-                            <ul class="rx-caps">
-                                <li>
-                                    <b data-i18n="roles.admin.c1.t">إعداد الفصل</b>
-                                    <span data-i18n="roles.admin.c1.d">التخصصات وأنواع المشاريع وحدود الفرق والفصول</span>
-                                </li>
-                                <li>
-                                    <b data-i18n="roles.admin.c2.t">الحسابات</b>
-                                    <span data-i18n="roles.admin.c2.d">استيراد الطلاب والمشرفين من Excel دفعة واحدة</span>
-                                </li>
-                                <li>
-                                    <b data-i18n="roles.admin.c3.t">متابعة الفرق</b>
-                                    <span data-i18n="roles.admin.c3.d">المتأخّر والمتوقّف وما ينتظر المشرف، بنقرة</span>
-                                </li>
-                                <li>
-                                    <b data-i18n="roles.admin.c4.t">سجلّ التدقيق</b>
-                                    <span data-i18n="roles.admin.c4.d">كل قرار مسجّل، وفتح الدرجة المعتمدة بسبب مكتوب</span>
-                                </li>
-                            </ul>
-                            <p class="rx-private"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-i18n="roles.admin.private">ترى كل شيء إلا نقاش الفرق الخاص — وكل قرار لها في السجلّ</span></p>
-                        </div>
-                    </section>
+                        </section>
+                    @endforeach
 
                     {{-- كيف تتصل الأدوار: ما ينتقل من كل دور إلى التالي — وزرّ الجولة التلقائية --}}
                     <div class="rx-foot">
-                    <ol class="rx-flow" aria-label="كيف تتصل الأدوار" data-i18n-aria="roles.flow.label">
-                        <li class="rx-node" data-node="student">
-                            <span class="rx-node-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
-                            <b data-i18n="roles.student.name">الطالب</b>
-                        </li>
-                        <li class="rx-edge" data-edge="student"><span data-i18n="roles.flow.1">يسلّم المرحلة ويعدّل</span></li>
-                        <li class="rx-node" data-node="supervisor">
-                            <span class="rx-node-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></svg></span>
-                            <b data-i18n="roles.supervisor.name">المشرف</b>
-                        </li>
-                        <li class="rx-edge" data-edge="supervisor"><span data-i18n="roles.flow.2">يعتمد ويرصد الدرجة</span></li>
-                        <li class="rx-node" data-node="admin">
-                            <span class="rx-node-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" y1="4" x2="14" y2="4"/><line x1="10" y1="4" x2="3" y2="4"/><line x1="21" y1="12" x2="12" y2="12"/><line x1="8" y1="12" x2="3" y2="12"/><line x1="21" y1="20" x2="16" y2="20"/><line x1="12" y1="20" x2="3" y2="20"/><line x1="14" y1="2" x2="14" y2="6"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="22"/></svg></span>
-                            <b data-i18n="roles.admin.name">الإدارة</b>
-                            <small data-i18n="roles.flow.3">تتابع الفصل كلّه</small>
-                        </li>
-                    </ol>
-                    {{-- محتوى يتحرّك وحده يلزمه إيقاف (WCAG 2.2.2) — يظهر حين يعمل السكربت --}}
-                    <button type="button" class="rx-tour" data-rx-tour hidden aria-pressed="true">
-                        <svg class="rx-tour-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
-                        <svg class="rx-tour-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.8L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg>
-                        <span data-rx-tour-label>إيقاف الجولة</span>
-                    </button>
+                        <ol class="rx-flow" aria-label="كيف تتصل الأدوار" data-i18n-aria="roles.flow.label">
+                            @foreach ($rxRoles as $role => [$who, $nk, $name])
+                                <li class="rx-node is-{{ $role }}" data-node="{{ $role }}">
+                                    <span class="rx-node-face" aria-hidden="true"><svg viewBox="-17 -88 34 34"><use href="#{{ $who }}" /></svg></span>
+                                    <b data-i18n="{{ $nk }}">{{ $name }}</b>
+                                    @if ($role === 'admin')<small data-i18n="roles.flow.3">تتابع الفصل كلّه</small>@endif
+                                </li>
+                                @if ($role === 'student')
+                                    <li class="rx-edge" data-edge="student"><span data-i18n="roles.flow.1">يسلّم المرحلة ويعدّل</span></li>
+                                @elseif ($role === 'supervisor')
+                                    <li class="rx-edge" data-edge="supervisor"><span data-i18n="roles.flow.2">يعتمد ويرصد الدرجة</span></li>
+                                @endif
+                            @endforeach
+                        </ol>
+                        {{-- محتوى يتحرّك وحده يلزمه إيقاف (WCAG 2.2.2) — يظهر حين يعمل السكربت --}}
+                        <button type="button" class="rx-tour" data-rx-tour hidden aria-pressed="true">
+                            <svg class="rx-tour-pause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+                            <svg class="rx-tour-play" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.8L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg>
+                            <span data-rx-tour-label>إيقاف الجولة</span>
+                        </button>
                     </div>
                 </div>
             </div>
